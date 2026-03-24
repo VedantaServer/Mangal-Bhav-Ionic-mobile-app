@@ -1,0 +1,377 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="goBack()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <!-- <div class="inner-title">{{ categoryName }}</div> -->
+        <div class="inner-title">✦ Mangal.Bhav ✦</div>
+      </div>
+      <div class="inner-logo" (click)="goBack()">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div class="page-wrap">
+
+    <!-- <div class="service-banner" *ngIf="serviceName">
+      <div class="service-banner-left">
+        <span class="service-banner-label">Pandits for</span>
+       
+        <h3 class="service-banner-name clickable" (click)="openPoojaModal()">
+          {{ serviceName }} <ion-icon name="information-circle-outline"></ion-icon>
+        </h3>
+      </div>
+      <div class="service-banner-icon">🪔</div>
+    </div> -->
+
+
+     <div class="detail-modal-wrap">
+      <!-- Header block -->
+      <div class="detail-hero">
+        <div class="detail-hero-icon">🔥</div>
+        <h2 class="detail-hero-title" (click)="openPoojaModal()">{{ serviceName }}</h2>
+        <p class="detail-hero-sub">Sacred Vedic Ritual</p>
+      </div>
+
+      <!-- Info cards -->
+      <div class="detail-info-grid">
+        <div class="detail-info-item">
+          <ion-icon name="time-outline"></ion-icon>
+          <div>
+            <p class="detail-info-label">Duration</p>
+            <p class="detail-info-value">90 – 120 mins</p>
+          </div>
+        </div>
+        <div class="detail-info-item">
+          <ion-icon name="people-outline"></ion-icon>
+          <div>
+            <p class="detail-info-label">Family Members</p>
+            <p class="detail-info-value">All welcome</p>
+          </div>
+        </div>
+        <div class="detail-info-item">
+          <ion-icon name="location-outline"></ion-icon>
+          <div>
+            <p class="detail-info-label">Venue</p>
+            <p class="detail-info-value">At your home</p>
+          </div>
+        </div>
+        <div class="detail-info-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <div>
+            <p class="detail-info-label">Best Time</p>
+            <p class="detail-info-value">Morning muhurat</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-flame">🔥</div>
+      <p>Finding Pandits for you...</p>
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- EMPTY -->
+    <div class="empty-state" *ngIf="!isLoading && panditProfiles.length === 0">
+      <div class="empty-icon">🙏</div>
+      <h3>No Pandits Found</h3>
+      <p>No pandits available for this pooja right now.</p>
+    </div>
+
+    <!-- PANDIT LIST -->
+    <div class="pandit-list" *ngIf="!isLoading && panditProfiles.length > 0">
+
+      <p class="result-count">{{ panditProfiles.length }} Pandit{{ panditProfiles.length > 1 ? 's' : '' }} available</p>
+
+      <div class="pandit-card" *ngFor="let pandit of panditProfiles">
+
+        <div class="pandit-top-row">
+
+          <div class="pandit-photo-wrap">
+            <img [src]="getProfileImage(pandit.UserID)" class="pandit-photo" />
+          </div>
+
+          <div class="pandit-headline">
+            <div class="pandit-name-row">
+              <!-- ✅ Clickable pandit name -->
+              <h3 class="pandit-name clickable-name" (click)="openPanditModal(pandit)">
+                {{ pandit.FullName }}
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </h3>
+              <span class="verified-pill" *ngIf="pandit.VerificationStatus === 'Verified'">
+                ✓ Verified
+              </span>
+              <span class="unverified-pill" *ngIf="pandit.VerificationStatus !== 'Verified'">
+                ⏳ Pending
+              </span>
+            </div>
+
+            <div class="pandit-meta">
+              <span class="meta-chip" *ngIf="pandit.Gender">
+                <ion-icon name="person-outline"></ion-icon> {{ pandit.Gender }}
+              </span>
+              <span class="meta-chip" *ngIf="pandit.ExperienceYears">
+                <ion-icon name="time-outline"></ion-icon> {{ pandit.ExperienceYears }} yrs exp
+              </span>
+              <span class="meta-chip" *ngIf="pandit.Languages">
+                <ion-icon name="language-outline"></ion-icon> {{ pandit.Languages }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="pandit-bio" *ngIf="pandit.Bio">{{ pandit.Bio }}</p>
+
+        <div class="pandit-divider"></div>
+
+        <div class="pandit-bottom-row">
+          <div class="pandit-details">
+            <div class="detail-item" *ngIf="pandit.BasePrice">
+              <span class="detail-label">Dakshina</span>
+              <span class="detail-value price">₹{{ pandit.BasePrice }}</span>
+            </div>
+          </div>
+          <button class="book-now-btn" (click)="bookNow(pandit)">
+            🙏 Book Now →
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</ion-content>
+
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+<ion-tab-bar slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+
+<!--  
+  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  
+ <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+
+</ion-tab-bar>
+<!-- ================================================
+     POOJA DETAIL MODAL
+================================================ -->
+<ion-modal [isOpen]="isPoojaModalOpen" (didDismiss)="isPoojaModalOpen = false"
+  [breakpoints]="[0, 0.85, 1]" [initialBreakpoint]="0.85">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <div class="inner-header">
+          <button class="inner-back-btn" (click)="isPoojaModalOpen = false">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div class="inner-title-block">
+            <div class="inner-title">Seva Details</div>
+            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+          </div>
+          <div style="width:38px"></div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="detail-modal-wrap">
+
+        <!-- Header block -->
+        <div class="detail-hero">
+          <div class="detail-hero-icon">🔥</div>
+          <h2 class="detail-hero-title">{{ serviceName }}</h2>
+          <p class="detail-hero-sub">Sacred Vedic Ritual</p>
+        </div>
+
+        <!-- Info cards -->
+        <div class="detail-info-grid">
+          <div class="detail-info-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Duration</p>
+              <p class="detail-info-value">90 – 120 mins</p>
+            </div>
+          </div>
+          <div class="detail-info-item">
+            <ion-icon name="people-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Family Members</p>
+              <p class="detail-info-value">All welcome</p>
+            </div>
+          </div>
+          <div class="detail-info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Venue</p>
+              <p class="detail-info-value">At your home</p>
+            </div>
+          </div>
+          <div class="detail-info-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Best Time</p>
+              <p class="detail-info-value">Morning muhurat</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- About -->
+        <div class="detail-section">
+          <h4 class="detail-section-title">🪔 About this Seva</h4>
+          <p class="detail-section-text">
+            This sacred ritual has been performed by Hindu families for thousands of years.
+            It invokes divine blessings, purifies the surroundings, and brings peace,
+            prosperity, and protection to all family members. Conducted by our verified
+            Pandits with full Vedic vidhi and samagri.
+          </p>
+        </div>
+
+        <!-- What's included -->
+        <div class="detail-section">
+          <h4 class="detail-section-title">✅ What's Included</h4>
+          <div class="detail-checklist">
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Verified Pandit Ji</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Complete Vedic Vidhi</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Samagri checklist provided</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Muhurat consultation</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>At-home ceremony</span></div>
+          </div>
+        </div>
+
+        <!-- <button class="detail-book-btn" (click)="isPoojaModalOpen = false">
+          🙏 Book a Pandit →
+        </button> -->
+
+      </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>
+
+
+<!-- ================================================
+     PANDIT DETAIL MODAL
+================================================ -->
+<ion-modal [isOpen]="isPanditModalOpen" (didDismiss)="isPanditModalOpen = false"
+  [breakpoints]="[0, 0.9, 1]" [initialBreakpoint]="0.9">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <div class="inner-header">
+          <button class="inner-back-btn" (click)="isPanditModalOpen = false">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div class="inner-title-block">
+            <div class="inner-title">Pandit Profile</div>
+            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+          </div>
+          <div style="width:38px"></div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="detail-modal-wrap" *ngIf="selectedPandit">
+
+        <!-- Pandit hero -->
+        <div class="pandit-modal-hero">
+          <div class="pandit-modal-photo-wrap">
+            <img [src]="getProfileImage(selectedPandit.UserID)" class="pandit-modal-photo" />
+          </div>
+          <h2 class="pandit-modal-name">{{ selectedPandit.FullName }}</h2>
+          <span class="verified-pill" *ngIf="selectedPandit.VerificationStatus === 'Verified'">
+            ✓ Verified Pandit
+          </span>
+          <span class="unverified-pill" *ngIf="selectedPandit.VerificationStatus !== 'Verified'">
+            ⏳ Verification Pending
+          </span>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="detail-info-grid">
+          <div class="detail-info-item" *ngIf="selectedPandit.ExperienceYears">
+            <ion-icon name="time-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Experience</p>
+              <p class="detail-info-value">{{ selectedPandit.ExperienceYears }} Years</p>
+            </div>
+          </div>
+          <div class="detail-info-item" *ngIf="selectedPandit.Gender">
+            <ion-icon name="person-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Gender</p>
+              <p class="detail-info-value">{{ selectedPandit.Gender }}</p>
+            </div>
+          </div>
+          <div class="detail-info-item" *ngIf="selectedPandit.Languages">
+            <ion-icon name="language-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Languages</p>
+              <p class="detail-info-value">{{ selectedPandit.Languages }}</p>
+            </div>
+          </div>
+          <div class="detail-info-item" *ngIf="selectedPandit.BasePrice">
+            <ion-icon name="cash-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Dakshina</p>
+              <p class="detail-info-value">₹{{ selectedPandit.BasePrice }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="detail-section" *ngIf="selectedPandit.Bio">
+          <h4 class="detail-section-title">🙏 About Pandit Ji</h4>
+          <p class="detail-section-text">{{ selectedPandit.Bio }}</p>
+        </div>
+
+        <!-- Specializations dummy -->
+        <div class="detail-section">
+          <h4 class="detail-section-title">📿 Specializations</h4>
+          <div class="detail-checklist">
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Vedic Havans & Yagyas</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Jyotish & Muhurat</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Griha Pravesh & Vastu</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>Marriage Ceremonies</span></div>
+          </div>
+        </div>
+
+        <!-- <button class="detail-book-btn" (click)="bookNow(selectedPandit); isPanditModalOpen = false">
+          🙏 Book This Pandit →
+        </button> -->
+
+      </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Card</title>
+    <link rel="stylesheet" href="styles.css"> </head>
+    <style>
+        body {
+            font-family:'Times New Roman';
+            font-size: 12px;
+            line-height:1;
+        }
+     
+             .report-card {
+                 border: 1px solid #ccc;
+                 padding: 20px;
+                
+             }
+     
+     
+     .header {
+         text-align: center;
+         margin-bottom:5px;
+     }
+     
+     .header img {
+         width: 150px;
+         margin-bottom: 10px;
+     }
+     
+     .personal-details, .academic-performance, .remarks, .grading-scale {
+         margin-bottom: 20px;
+     }
+     
+     table {
+         width: 100%;
+         border-collapse: collapse;
+     }
+     
+     table th, table td {
+         border: 1px solid #ccc;
+         padding: 10px;
+         text-align: left;
+     }
+     
+     table th {
+         background-color: #f2f2f2;
+     }
+     
+     .remarks p {
+         margin: 5px 0;
+     }
+     
+     .signatures {
+         display: flex;
+         justify-content: space-between;
+     }
+     
+     .signature {
+         text-align: center;
+     }
+     
+     .signature img {
+         width: 100px;
+     }
+     .signature-section{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+     }
+     </style>
+<body>
+    <div class="report-card">
+        <div class="header">
+            <img class="logo" src="https://balbharati.org/wp-content/uploads/2016/03/logo.jpg" alt="">
+
+            <h5 class="school-address" style="margin: 0; padding: 0; font-size: 12px;">Parwana road ,Pitampura,
+                Delhi-110034,Tel: 011-27028600,27028700</h5>
+            <h5 style="margin: 0; padding: 0; font-size: 12px;"><b>Email</b>:balbharti@pp.balbharti.org ,
+                <b>Website</b>: https://bbpspp.balbharati.org/</h5>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">ACADEMIC SESSION: 2023-24</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">REPORT CARD ‑ Consolidated Report / Annual
+                Examination.</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">Class 6</h4>
+        </div>
+        <table class="personal-details">
+            <th colspan="12" style="text-align: center;">Personal Details</th>
+            <tr>
+                <th>NAME</th>
+                <td>AADITRI MISHRA</td>
+                <th>CLASS/SECTION</th>
+                <td>1-A</td>
+            </tr>
+            <tr>
+                <th>ADMISSION NO.</th>
+                <td>428-21-V</td>
+                <th>ROLL NO.</th>
+                <td>1</td>
+            </tr>
+            <tr>
+                <th>FATHER'S NAME</th>
+                <td>CHANDAN MISHRA</td>
+                <th>DATE OF BIRTH</th>
+                <td>22 JUN 2016</td>
+            </tr>
+            <tr>
+                <th>MOTHER'S NAME</th>
+                <td>BANDANA</td>
+                <th>GENDER</th>
+                <td>FEMALE</td>
+            </tr>
+        </table>
+
+        <div class="academic-performance">
+           
+            <table>
+               
+                <thead>
+                    <th colspan="12" style="text-align: center;">ACADEMIC PERFORMANCE</th>
+                    <tr>
+                        <th>SUBJECTS</th>
+                        <th>MAXIMUM MARK</th>
+                        <th>MARK SCORED</th>
+                       
+                        <th>GRADE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  
+                    <tr>
+                        <td>English</td>
+                        <td>0</td>
+                        <td>4</td>
+                        <td>18</td>
+                       
+                    </tr>
+                    <tr>
+                        <td>Mathematics</td>
+                        <td>0</td>
+                        <td>4</td>
+                        <td>18</td>
+                       
+                    </tr>
+                    <tr>
+                        <td>EVS</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>18</td>
+                      
+                    </tr>
+                    <tr>
+                        <td>Hindi</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>18</td>
+                       
+                    </tr>
+            
+            </table>
+            <table>
+                <tr>
+                    <td colspan="8">GRAND TOTAL</td>
+                    <td>346 / 400</td>
+                    <td>PERCENTAGE OF MARKS - (86.5%)</td>
+                </tr>
+                <tr>
+                    <td colspan="8">ATTENDANCE</td>
+                    <td>138 / 186</td>
+                    <td>PERCENTAGE OF ATTENDANCE - (74%)</td>
+                </tr>
+            </table>
+        </div>
+       
+        <div class="remarks-section">
+            <p>DATE: 28-Mar-2024</p>
+            <p>REMARKS: Passed and promoted to class IV. Awarded Certificate of proficiency in Math and E.V.S.</p>
+        </div>
+
+        <div class="signature-section">
+            <div>
+                <label>CLASS TEACHER</label>
+                <br><br><br>
+                <hr>
+            </div>
+            <div>
+                <label>DEPTT. INCHARGE</label>
+                <br><br><br>
+                <hr>
+            </div>
+            <div>
+                <label>PRINCIPAL</label>
+                <br><br><br>
+                <hr>
+            </div>
+            <div>
+                <label>PARENT</label>
+                <br><br><br>
+                <hr>
+            </div>
+        </div>
+        
+        <table class="grading-scale">
+            <th colspan="12">GRADING SCALE</th>
+            <tr>
+                <th colspan="8">SCHOLASTIC GRADING</th>
+
+                <th colspan="5">SOCIAL, PERSONAL SKILLS & CO-SCHOLASTIC</th>
+            </tr>
+            <tr>
+                <th>Marks Range</th>
+
+                <th>91-100</th>
+                <th>81-90</th>
+                <th>71-80</th>
+                <th>61-70</th>
+                <th>51-60</th>
+                <th>41-50</th>
+                <th>0-40</th>
+                <th>Grade</th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+
+
+            </tr>
+            <tr>
+                <td>Grade</td>
+                <td>A1</td>
+                <td>A2</td>
+                <td>B1</td>
+                <td>B2</td>
+                <td>C1</td>
+                <td>C2</td>
+                <td>D (Needs Improvement)</td>
+                <td>Level of Performance</td>
+                <td>Outstanding</td>
+                <td>Very Good</td>
+                <td>Good</td>
+
+            </tr>
+        </table>
+        <tr>
+            <td colspan="4" align="center">
+                <p align="center">This is a Computer Generated Report</p>
+            </td>
+        </tr>
+    </div>
+</body>
+</html>

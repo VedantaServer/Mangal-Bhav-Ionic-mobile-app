@@ -1,0 +1,224 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">Mangal.Bhav</div>
+        <div class="inner-title-sub">✦ Peace · Prosperity · Protection ✦</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- TOP BANNER -->
+    <div class="page-banner">
+      <div class="banner-text">
+        <p class="banner-sub">Your Sacred</p>
+        <h2 class="banner-title"> Profile</h2>
+      </div>
+      <div class="banner-om">ॐ</div>
+    </div>
+
+    <!-- PROFILE PHOTO -->
+    <div class="profile-photo-section">
+      <input type="file" accept="image/*" hidden #fileInput (change)="onFileSelected($event)" />
+      <div class="avatar-wrap" (click)="fileInput.click()">
+        <img [src]="profilePreview || 'assets/uploadfile.png'" class="avatar-img"
+          (error)="profilePreview = 'assets/uploadfile.png'" />
+        <div class="avatar-edit-badge">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
+      </div>
+      <p class="avatar-hint">Tap to change photo</p>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div class="section-label">Personal Details</div>
+
+    <div class="form-container">
+
+      <!-- FULL NAME -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="person-outline"></ion-icon>
+          Full Name
+        </div>
+        <div class="field-input-wrap">
+          <ion-input [(ngModel)]="profile.FullName" placeholder="Enter your full name"></ion-input>
+        </div>
+      </div>
+
+      <!-- PHONE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="call-outline"></ion-icon>
+          Phone
+        </div>
+        <div class="field-input-wrap readonly">
+          <ion-input readonly [(ngModel)]="profile.PhoneNumber"></ion-input>
+          <div class="readonly-badge">Verified</div>
+        </div>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="mail-outline"></ion-icon>
+          Email
+        </div>
+        <div class="field-input-wrap">
+          <ion-input type="email" [(ngModel)]="profile.Email" placeholder="Enter your email"></ion-input>
+        </div>
+      </div>
+
+      <!-- GENDER -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="transgender-outline"></ion-icon>
+          Gender
+        </div>
+        <div class="field-input-wrap">
+          <ion-select placeholder="Select Gender" [(ngModel)]="profile.Gender">
+            <ion-select-option value="Male">Male</ion-select-option>
+            <ion-select-option value="Female">Female</ion-select-option>
+            <ion-select-option value="Other">Other</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="briefcase-outline"></ion-icon>
+          Experience (Years)
+        </div>
+        <div class="field-input-wrap">
+          <ion-input type="number" [(ngModel)]="profile.ExperienceYears" placeholder="e.g. 10"></ion-input>
+        </div>
+      </div>
+
+      <!-- DOB -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="gift-outline"></ion-icon>
+          Date of Birth
+        </div>
+        <div class="field-input-wrap">
+          <ion-input type="date" [(ngModel)]="profile.DOB"></ion-input>
+        </div>
+      </div>
+
+      <!-- BIO -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="document-text-outline"></ion-icon>
+          Bio
+        </div>
+        <div class="field-input-wrap textarea">
+          <ion-textarea auto-grow="true" [(ngModel)]="profile.Bio"
+            placeholder="Tell devotees about yourself..."></ion-textarea>
+        </div>
+      </div>
+
+      <!-- LANGUAGE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="language-outline"></ion-icon>
+          Language
+        </div>
+        <div class="field-input-wrap">
+          <ion-select placeholder="Select Language" interface="action-sheet" [(ngModel)]="profile.Languages"
+            name="Languages">
+            <ion-select-option value="Hindi">Hindi</ion-select-option>
+            <ion-select-option value="English">English</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+
+      <!-- BASE PRICE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="cash-outline"></ion-icon>
+          Base Price (₹)
+        </div>
+        <div class="field-input-wrap">
+          <ion-input type="number" [(ngModel)]="profile.BasePrice" placeholder="e.g. 1100"></ion-input>
+        </div>
+      </div>
+
+
+      <div *ngIf="userDetails?.Role === 'PANDIT' && userDetails?.UserID"
+        style="display:flex;align-items: center;justify-content: center;">
+
+        <qrcode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="200" errorCorrectionLevel="M">
+        </qrcode>
+
+      </div>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="submit-wrap">
+      <button class="submit-btn" (click)="saveProfile()">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        {{ isEditMode ? 'Update Profile' : 'Create Profile' }}
+      </button>
+
+      <button class="logout-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Logout
+      </button>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+
+
+<!-- Floating scanner — outside tab bar -->
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')" *ngIf="userDetails?.Role == 'BHAKT'">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+
+
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>

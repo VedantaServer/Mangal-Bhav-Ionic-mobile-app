@@ -1,0 +1,1139 @@
+<!-- <ion-header>
+  <ion-toolbar color="warning">
+    <ion-title>Mangal Bhav</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content fullscreen>
+  <div>
+    <nav>
+      <div class="nav-logo" (click)="backToMain()">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">Mangal<span class="logo-dot">.</span>Bhav</div>
+          <div class="nav-logo-sub">✦Peace·Prosperity·Protection✦</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button>
+
+        <button class="header-logout-btn" (click)="openPage('find-pandit')">
+          <ion-icon name="qr-code-outline"></ion-icon>
+        </button>
+        <!-- <button class="nav-icon-btn login" (click)="openLoginSection()" title="Login">👤</button> -->
+      </div>
+    </nav>
+  </div>
+
+  <div *ngIf="showMainSection" class="main-wrapper">
+    <!-- 
+    <section class="life-journey-section" id="categories" id="pandit-section">
+      <div class="section" style="padding: 0 24px;">
+
+        
+        <p class="puja-welcome-line">
+          🪔 Sacred rituals for every event of life
+        </p>
+
+
+        <div class="categories-grid">
+
+          <div class="cat-card" *ngFor="let cat of categoryList">
+
+           
+            <img [src]="getCategoryImage(cat.CategoryName)" class="cat-img" [alt]="cat.CategoryName"
+              onerror="this.style.display='none'" />
+
+            <div class="cat-overlay-base"></div>
+
+            <div class="cat-default">
+              <span class="cat-icon">{{ getCategoryIcon(cat.CategoryName) }}</span>
+              <div class="cat-name">{{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}</div>
+            </div>
+
+            <div class="cat-hover">
+              <div class="cat-hover-title">
+                {{ getCategoryIcon(cat.CategoryName) }}
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+              </div>
+              <div class="cat-hover-sub"></div>
+              <p class="cat-hover-desc">
+                {{ Language === 'Hindi' ? cat.Description_HI : cat.Description }}
+              </p>
+              <div class="cat-hover-cta" (click)="explorePooja(cat.CategoryName)">Explore →</div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+      </div>
+    </section> -->
+
+
+
+    <section class="puja-list-section" id="pooja-list">
+
+      <p class="puja-welcome-line">
+        🪔 Sacred rituals for every event of life
+      </p>
+
+      <div class="category-dropdown-wrap">
+
+        <div class="category-select-box" (click)="toggleCategoryDropdown()">
+          <div class="category-select-left">
+            <span class="category-select-icon">
+              {{ selectedCategory ? getCategoryIcon(selectedCategory.CategoryName) : '🙏' }}
+            </span>
+            <span class="category-select-text">
+              {{ selectedCategory
+              ? (Language === 'Hindi' ? selectedCategory.CategoryName_HI : selectedCategory.CategoryName)
+              : 'Choose a life stage...' }}
+            </span>
+          </div>
+          <ion-icon [name]="isCategoryDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'"
+            class="category-select-arrow"></ion-icon>
+        </div>
+
+        <div class="category-dropdown-list" *ngIf="isCategoryDropdownOpen">
+          <div class="category-dropdown-item" *ngFor="let cat of categoryList" (click)="selectCategory(cat)">
+            <span class="category-item-icon">{{ getCategoryIcon(cat.CategoryName) }}</span>
+            <div class="category-item-text">
+              <span class="category-item-name">
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+                <span class="category-item-age" *ngIf="cat.AgeText">&nbsp;· {{ cat.AgeText }}</span>
+              </span>
+              <span class="category-item-desc">
+                {{ Language === 'Hindi'
+                ? cat.Description_HI?.split('।')?.[0]
+                : cat.Description?.split('.')?.[0] }}
+              </span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="category-item-arrow"></ion-icon>
+          </div>
+        </div>
+
+      </div>
+      <div class="puja-list-inner">
+
+
+        <div class="puja-phase" *ngFor="let cat of enrichedCategories" [id]="cat.CategoryName">
+
+          <div class="phase-header">
+            <div class="phase-icon-wrap">{{ getCategoryIcon(cat.CategoryName) }}</div>
+            <div>
+              <h3 class="phase-title">
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+              </h3>
+              <p class="phase-sub">{{ cat.services.length }} Rituals</p>
+            </div>
+            <div class="phase-line"></div>
+          </div>
+
+          <div class="puja-carousel-wrap">
+
+            <button class="carousel-btn carousel-prev"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'prev')">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <div class="puja-carousel" [id]="'carousel-cat-' + cat.CategoryID">
+
+            <div class="puja-card" *ngFor="let svc of cat.services">
+
+                <!-- IMAGE SECTION -->
+                <div class="puja-img-wrap">
+                  <img [src]="getServiceImagePath(svc.Name)" class="puja-img" (error)="onImgError($event)" />
+                  <div class="puja-img-overlay"></div>
+                  <div class="puja-img-badge">{{ getServiceBadge(svc.Name) }}</div>
+
+                  <!-- Booking count on image -->
+                  <div class="puja-img-count"
+                    *ngIf="serviceBookingCountMap && serviceBookingCountMap[svc.ServiceID.toString()] > 0">
+                    <ion-icon name="people-outline"></ion-icon>
+                    {{ serviceBookingCountMap[svc.ServiceID.toString()] }}+ booked
+                  </div>
+                </div>
+
+                <!-- BODY SECTION -->
+                <div class="puja-body">
+
+                  <!-- Rating row -->
+                  <div class="puja-rating-row">
+                    <div class="puja-rating-badge">
+                      <ion-icon name="star"></ion-icon>
+                      4.8
+                    </div>
+                    <span class="puja-rating-text">Very Good &nbsp;·&nbsp; 100+ Reviews</span>
+                  </div>
+
+                  <!-- Name -->
+                  <h4 class="puja-name">
+                    {{ Language === 'Hindi'
+                    ? (svc.Name?.split('/')?.[1]?.trim() || svc.Name)
+                    : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
+                  </h4>
+
+                  <!-- Duration chip -->
+                  <p class="puja-location-row">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home
+                  </p>
+
+                  <!-- Description -->
+                  <p class="puja-subtitle">
+                    {{ Language === 'Hindi'
+                    ? (svc.Description?.split('/')?.[1]?.trim() || svc.Description)
+                    : (svc.Description?.split('/')?.[0]?.trim() || svc.Description) }}
+                  </p>
+
+                  <!-- Features -->
+                  <div class="puja-features">
+                    <div class="puja-feature-item">
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                      Verified Pandit Ji
+                    </div>
+                    <div class="puja-feature-item">
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                      Samagri checklist provided
+                    </div>
+                  </div>
+
+                  <!-- Price + CTA row -->
+                  <div class="puja-price-row">
+                    <div class="puja-price-block">
+                      <span class="puja-price-label">Dakshina</span>
+                      <!-- <span class="puja-price-original">₹1,499</span> -->
+                      <span class="puja-price-final">₹ 999</span>
+                    </div>
+                    <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
+                     🧘 Find Pandit ji →
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+            <button class="carousel-btn carousel-next"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'next')">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+
+
+    <section class="puja-list-section" id="pooja-list">
+      <div class="puja-list-inner">
+
+        <h2 class="section-title">Every Stage of Life, Covered</h2>
+        <p class="section-sub">From the first breath to the final farewell — we're with you at every step</p>
+
+        <div class="puja-phase" *ngFor="let cat of enrichedCategories" [id]="cat.CategoryName">
+
+          <div class="phase-header">
+            <div class="phase-icon-wrap">{{ getCategoryIcon(cat.CategoryName) }}</div>
+            <div>
+              <h3 class="phase-title">
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+              </h3>
+              <p class="phase-sub">{{ cat.services.length }} Rituals</p>
+            </div>
+            <div class="phase-line"></div>
+          </div>
+
+          <div class="puja-carousel-wrap">
+
+            <button class="carousel-btn carousel-prev"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'prev')">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <div class="puja-carousel" [id]="'carousel-cat-' + cat.CategoryID">
+
+              <div class="puja-card" *ngFor="let svc of cat.services">
+                <div class="puja-img-wrap">
+                  <img [src]="getServiceImagePath(svc.Name)" class="puja-img" (error)="onImgError($event)" />
+                  <div class="puja-img-overlay"></div>
+                  <div class="puja-img-badge">{{ getServiceBadge(svc.Name) }}</div>
+                </div>
+                <div class="puja-body">
+                  <h4 class="puja-name">
+                    {{ Language === 'Hindi'
+                    ? (svc.Name?.split('/')?.[1]?.trim() || svc.Name)
+                    : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
+                  </h4>
+                  <p class="puja-subtitle">
+                    {{ Language === 'Hindi'
+                    ? (svc.Description?.split('/')?.[1]?.trim() || svc.Description)
+                    : (svc.Description?.split('/')?.[0]?.trim() || svc.Description) }}
+                  </p>
+                  <div class="puja-footer">
+                    <div class="puja-booking-count"
+                      *ngIf="serviceBookingCountMap && serviceBookingCountMap[svc.ServiceID.toString()] > 0">
+                      <ion-icon name="people-outline"></ion-icon>
+                      <span><strong>{{ serviceBookingCountMap[svc.ServiceID.toString()] }}</strong> bookings</span>
+                    </div>
+                    <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">Find Pandit
+                      →</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <button class="carousel-btn carousel-next"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'next')">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+    <!-- ================================================
+       3. HERO — Below puja list
+  ================================================ -->
+    <section class="hero">
+
+      <div class="hero-bg"></div>
+      <div class="hero-mandala-outer"></div>
+      <div class="hero-mandala-inner"></div>
+      <div class="diya diya-1">🪔</div>
+      <div class="diya diya-2">🪔</div>
+      <div class="diya diya-3">🔥</div>
+      <div class="diya diya-4">🔥</div>
+
+      <div class="hero-content">
+        <div class="hero-om">ॐ</div>
+        <div class="hero-badge">🙏 &nbsp; Connecting Yajman &amp; Pandit</div>
+        <h1 class="hero-title">Mangal<span class="title-dot">.</span>Bhav</h1>
+        <p class="hero-devanagari">मंगल.भव: — शांति. समृद्धि. संरक्षण.</p>
+        <div class="hero-divider">
+          <span class="divider-line"></span>
+          <span class="divider-symbol">🌸</span>
+          <span class="divider-line"></span>
+        </div>
+        <p class="hero-tagline">India's most trusted platform for booking verified Pandits
+          for every sacred ritual — from the first breath to the final farewell.</p>
+        <div class="hero-pills">
+          <div class="pill">🔥 16 Samskaras Covered</div>
+          <div class="pill">🧘 Verified Pandits</div>
+          <div class="pill">📍 At Your Doorstep</div>
+          <div class="pill">🛡️ Trusted by Families</div>
+        </div>
+        <!-- <div class="hero-buttons">
+          <button class="btn-primary" (click)="openRegisterSection()">
+            <span class="btn-icon">🙏</span>
+            <span>Book a Pandit</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          <button class="btn-secondary" (click)="openRegisterSection()">
+            <span class="btn-icon">🪔</span>
+            <span>Offer Your Seva</span>
+          </button>
+        </div> -->
+      </div>
+
+    </section>
+
+
+    <!-- ================================================
+       4. STATS BAND
+  ================================================ -->
+    <div class="stats-band">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">Sacred Rituals</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Verified Pandits</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Families Served</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Cities Covered</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ================================================
+       5. HOW IT WORKS
+  ================================================ -->
+    <section style="padding:80px 24px; background: white;">
+      <div class="section" style="padding: 0 0;">
+        <p class="section-label">Simple Process</p>
+        <h2 class="section-title">How Mangal.Bhav Works</h2>
+        <p class="section-sub">Connecting devotees with qualified pandits in 3 simple steps</p>
+        <div class="how-it-works-grid">
+          <div class="how-card">
+            <div class="how-icon">📿</div>
+            <div class="how-step">Step 01</div>
+            <div class="how-title">Choose Your Ritual</div>
+            <p class="how-desc">Browse from 30+ sacred havans and pooja ceremonies — from birth to ancestral rites.
+              Select the one that fits your need.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🧘</div>
+            <div class="how-step">Step 02</div>
+            <div class="how-title">Match a Pandit</div>
+            <p class="how-desc">Get matched with a verified, experienced Pandit from your region. View profiles,
+              specializations, languages, and ratings.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🏠</div>
+            <div class="how-step">Step 03</div>
+            <div class="how-title">Ritual at Your Home</div>
+            <p class="how-desc">The Pandit arrives at your doorstep with all necessary samagri. Experience authentic
+              Vedic rituals in the comfort of your home.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================
+       5. FOR WHOM
+  ================================================ -->
+    <section class="for-whom-section" id="for-whom">
+      <div class="for-whom-inner">
+
+        <p class="section-label">Built For</p>
+        <h2 class="section-title">Two Sides, One Sacred Bridge</h2>
+        <p class="section-sub">Whether you seek blessings or offer them — Mangal.Bhav is your home</p>
+
+        <div class="for-whom-grid">
+
+          <div class="for-card yajman">
+            <div class="card-glow-strip"></div>
+            <div class="for-card-header">
+              <div class="for-card-avatar">🙏</div>
+              <div>
+                <div class="for-card-title">Yajman</div>
+                <div class="for-card-subtitle">The Devotee · भक्त</div>
+              </div>
+              <div class="for-card-badge">For You</div>
+            </div>
+            <div class="for-card-divider"></div>
+            <ul class="for-features">
+              <li><span class="feat-icon">📿</span><span>Browse 30+ rituals by life stage</span></li>
+              <li><span class="feat-icon">✅</span><span>View verified Pandit profiles &amp; ratings</span></li>
+              <li><span class="feat-icon">📅</span><span>Book at-home ceremonies in minutes</span></li>
+              <li><span class="feat-icon">🌙</span><span>Get muhurat (auspicious timing) suggestions</span></li>
+              <li><span class="feat-icon">📜</span><span>Track ritual progress and history</span></li>
+              <li><span class="feat-icon">🛒</span><span>Samagri checklist provided beforehand</span></li>
+            </ul>
+            <!-- <button class="for-card-btn" (click)="openRegisterSection()">
+              🙏 Book a Pandit <span class="btn-arr">→</span>
+            </button> -->
+          </div>
+
+          <div class="cards-divider">
+            <div class="divider-vert"></div>
+            <div class="divider-om">ॐ</div>
+            <div class="divider-vert"></div>
+          </div>
+
+          <div class="for-card pandit">
+            <div class="card-glow-strip pandit-strip"></div>
+            <div class="for-card-header">
+              <div class="for-card-avatar pandit-avatar">🧘</div>
+              <div>
+                <div class="for-card-title">Pandit Ji</div>
+                <div class="for-card-subtitle">The Priest · पंडित</div>
+              </div>
+              <div class="for-card-badge pandit-badge">Join Us</div>
+            </div>
+            <div class="for-card-divider"></div>
+            <ul class="for-features">
+              <li><span class="feat-icon">🛡️</span><span>Create a verified professional profile</span></li>
+              <li><span class="feat-icon">📍</span><span>Receive booking requests near your location</span></li>
+              <li><span class="feat-icon">🗓️</span><span>Manage your schedule and availability</span></li>
+              <li><span class="feat-icon">🌐</span><span>Grow your reach beyond word-of-mouth</span></li>
+              <li><span class="feat-icon">⭐</span><span>Earn trust through reviews &amp; ratings</span></li>
+              <li><span class="feat-icon">📿</span><span>List all specializations and expertise</span></li>
+            </ul>
+            <!-- <button class="for-card-btn pandit-btn" (click)="openRegisterSection()">
+              🪔 Offer Your Seva <span class="btn-arr">→</span>
+            </button> -->
+          </div>
+
+        </div>
+
+        <div class="for-whom-footer">
+          <span>✦</span><span>Trusted by families across India</span><span>✦</span>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================
+       6. TESTIMONIALS
+  ================================================ -->
+    <section class="testimonials" id="testimonials">
+      <div class="testimonials-inner">
+        <p class="section-label">Trusted By Families</p>
+        <h2 class="section-title">What Families Say</h2>
+        <p class="section-sub" style="margin-bottom:48px">Real experiences from Yajmans across India</p>
+        <div class="testimonials-grid">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"We found a wonderful pandit for our daughter's Namakaran through Mangal.Bhav. He was
+              punctual, knowledgeable, and conducted the ceremony beautifully. Will definitely use again!"</p>
+            <div class="testi-author">
+              <div class="testi-avatar">👩</div>
+              <div>
+                <div class="testi-name">Priya Sharma</div>
+                <div class="testi-role">New Mother, Delhi</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"Booked a Griha Pravesh for our new flat. The pandit arrived on time with all samagri.
+              The havan was done with full Vedic vidhi. Our home feels so blessed now."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">👨</div>
+              <div>
+                <div class="testi-name">Rajesh Verma</div>
+                <div class="testi-role">Homeowner, Mumbai</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"As a Pandit, this app has transformed my practice. I now get bookings from families I
+              would never have reached. Very easy to use and the support team is responsive."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">🧘</div>
+              <div>
+                <div class="testi-name">Pt. Suresh Tiwari</div>
+                <div class="testi-role">Pandit, Varanasi</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <div class="divider">✦ ॐ ✦ ॐ ✦ ॐ ✦</div>
+
+
+    <!-- ================================================
+       7. APP DOWNLOAD CTA
+  ================================================ -->
+    <!-- <section class="app-cta" id="download">
+      <div class="app-cta-box">
+        <h2 class="app-cta-title">Start Your Sacred Journey Today</h2>
+        <p class="app-cta-sub">Download Mangal.Bhav and connect with India's most trusted Pandits
+          for every ritual, every moment that matters.</p>
+        <div class="app-btns">
+          <a class="app-btn">
+            <span class="app-btn-icon">📱</span>
+            <div>
+              <div style="font-size:10px;opacity:0.7;letter-spacing:1px;">DOWNLOAD ON</div>
+              <div style="font-size:16px;">App Store</div>
+            </div>
+          </a>
+          <a class="app-btn">
+            <span class="app-btn-icon">🤖</span>
+            <div>
+              <div style="font-size:10px;opacity:0.7;letter-spacing:1px;">GET IT ON</div>
+              <div style="font-size:16px;">Google Play</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section> -->
+
+
+    <section class="refer-section" id="refer">
+      <div class="refer-box">
+
+        <div class="refer-glow"></div>
+
+        <div class="refer-top">
+          <div class="refer-icon">🎁</div>
+          <h2 class="refer-title">Refer & Earn</h2>
+          <p class="refer-sub">Invite your family & friends to Mangal.Bhav<br>and earn sacred rewards together 🪔</p>
+        </div>
+
+        <div class="refer-rewards-row">
+          <div class="refer-reward-item">
+            <div class="reward-icon">👤</div>
+            <div class="reward-label">You Get</div>
+            <div class="reward-value">₹100 Off</div>
+          </div>
+          <div class="refer-reward-divider">✦</div>
+          <div class="refer-reward-item">
+            <div class="reward-icon">🙏</div>
+            <div class="reward-label">Friend Gets</div>
+            <div class="reward-value">₹50 Off</div>
+          </div>
+        </div>
+
+        <div class="refer-code-wrap">
+          <p class="refer-code-label">Your Referral Code</p>
+          <div class="refer-code-row">
+            <span class="refer-code">MANGAL{{ userReferCode }}</span>
+            <button class="refer-copy-btn" (click)="copyReferCode()">
+              <ion-icon name="copy-outline"></ion-icon>
+              {{ referCopied ? 'Copied!' : 'Copy' }}
+            </button>
+          </div>
+        </div>
+
+        <button class="refer-share-btn" (click)="shareReferCode()">
+          <ion-icon name="share-social-outline"></ion-icon>
+          Share with Friends
+        </button>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+      <div class="footer-inner">
+
+        <!-- Brand block -->
+        <div class="footer-brand">
+          <div class="footer-logo-wrap">
+            <img src="assets/mangalbhavlogo1.jpeg" class="footer-logo-img" />
+            <div>
+              <div class="footer-logo-text">Mangal<span class="footer-dot">.</span>Bhav</div>
+              <div class="footer-logo-sub">✦ Peace · Prosperity · Protection ✦</div>
+            </div>
+          </div>
+          <p class="footer-tagline">
+            India's most trusted platform for booking verified Pandits for every sacred ritual —
+            from the first breath to the final farewell.
+          </p>
+          <p class="footer-om">ॐ नमः शिवाय</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="footer-divider"></div>
+
+        <!-- Links grid -->
+        <div class="footer-links-grid">
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">🙏 Platform</h4>
+            <a class="footer-link">About Us</a>
+            <a class="footer-link">How It Works</a>
+            <a class="footer-link">All Rituals</a>
+            <a class="footer-link">Cities We Serve</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">🧘 For Pandits</h4>
+            <a class="footer-link">Join as Pandit</a>
+            <a class="footer-link">Pandit Dashboard</a>
+            <a class="footer-link">Manage Bookings</a>
+            <a class="footer-link">Support</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">📜 Legal</h4>
+            <a class="footer-link">Privacy Policy</a>
+            <a class="footer-link">Terms of Service</a>
+            <a class="footer-link">Refund Policy</a>
+            <a class="footer-link">Contact Us</a>
+          </div>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="footer-divider"></div>
+
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+          <p class="footer-copy">
+            © 2026 Mangal.Bhav . All rights reserved.
+          </p>
+          <!-- <p class="footer-made">Made with 🙏 in India</p> -->
+        </div>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+
+  <!-- ================= FIXED BOTTOM BAR ================= -->
+  <!-- <div *ngIf="showMainSection" class="bottom-bar">
+    <ion-button expand="block" class="register-btn" (click)="openRegisterSection()">
+      <span class="btn-inner">
+        <span class="btn-icon">🙏</span>
+        <span class="btn-text">Register</span>
+        <span class="btn-arrow">✦</span>
+      </span>
+    </ion-button>
+  </div> -->
+
+
+
+  <!-- ================= LOGIN SECTION ================= -->
+  <div *ngIf="showLoginSection" class="auth-wrapper">
+
+    <!-- Background -->
+    <div class="auth-bg">
+      <div class="auth-mandala"></div>
+      <div class="auth-diya diya-tl">🪔</div>
+      <div class="auth-diya diya-br">🪔</div>
+    </div>
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <!-- <div class="auth-logo-img">
+        <img src="../../assets/mangalbhavlogo2.png" />
+      </div> -->
+      <p class="auth-om">ॐ</p>
+    </div>
+
+    <!-- Title -->
+    <div class="auth-title-block">
+      <h2 class="auth-title">Namaste 🙏</h2>
+      <p class="auth-sub">Sign in to continue your sacred journey</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-card-strip"></div>
+
+      <!-- Mobile + Get OTP -->
+      <div class="auth-field">
+        <div class="field-icon">📱</div>
+        <div class="field-inner">
+          <label class="field-label">Mobile Number</label>
+          <div class="field-otp-row">
+            <ion-input placeholder="10-digit mobile number" type="number" [(ngModel)]="loginUsername"
+              class="field-input" [disabled]="loginOtpSent">
+            </ion-input>
+            <button class="get-otp-btn" (click)="getLoginOtp()" *ngIf="!loginOtpSent">
+              Get OTP
+            </button>
+            <button class="get-otp-btn resend" (click)="resendLoginOtp()" *ngIf="loginOtpSent">
+              Resend
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTP input — shows after Get OTP -->
+      <div class="auth-field" *ngIf="loginOtpSent">
+        <div class="field-icon">🔐</div>
+        <div class="field-inner">
+          <label class="field-label">Enter OTP</label>
+          <ion-input placeholder="Enter 6-digit OTP" type="number" [(ngModel)]="loginOtp" class="field-input"
+            maxlength="6">
+          </ion-input>
+        </div>
+      </div>
+
+      <!-- OTP sent message -->
+      <p class="otp-sent-msg" *ngIf="loginOtpSent">
+        ✅ OTP sent to +91 {{ loginUsername }}
+      </p>
+
+      <button class="auth-btn" (click)="verifyLoginOtp()" *ngIf="loginOtpSent">
+        <span>🙏</span> Verify & Sign In <span class="btn-arr">→</span>
+      </button>
+
+      <div class="auth-divider">
+        <span class="divider-line"></span>
+        <span class="divider-text">✦ ॐ ✦</span>
+        <span class="divider-line"></span>
+      </div>
+
+      <p class="auth-switch">
+        New to Mangal.Bhav?
+        <span class="auth-switch-link" (click)="openRegisterSection()">Create Account</span>
+      </p>
+    </div>
+
+    <button class="back-btn" (click)="backToMain()">← Back to Home</button>
+
+  </div>
+
+
+  <!-- ================= REGISTER SECTION ================= -->
+  <div *ngIf="showRegisterSection" class="auth-wrapper">
+
+    <!-- Sacred background — same as login -->
+    <div class="auth-bg">
+      <div class="auth-mandala"></div>
+      <div class="auth-diya diya-tl">🪔</div>
+      <div class="auth-diya diya-br">🪔</div>
+    </div>
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <!-- <div class="auth-logo-img">
+        <img src="../../assets/mangalbhavlogo2.png" />
+      </div> -->
+      <p class="auth-om">ॐ</p>
+    </div>
+
+    <!-- Title -->
+    <div class="auth-title-block">
+      <h2 class="auth-title">Join Mangal.Bhav 🙏</h2>
+      <p class="auth-sub">Begin your sacred journey in 3 simple steps</p>
+    </div>
+
+    <!-- Step progress -->
+    <div class="step-progress">
+      <div class="step-item" [class.step-active]="registerStep === 'mobile'"
+        [class.step-done]="registerStep === 'otp' || registerStep === 'role'">
+        <div class="step-circle">
+          <span *ngIf="registerStep === 'mobile'">1</span>
+          <span *ngIf="registerStep !== 'mobile'">✓</span>
+        </div>
+        <span class="step-label">Mobile</span>
+      </div>
+      <div class="step-connector" [class.connector-done]="registerStep === 'otp' || registerStep === 'role'">
+      </div>
+      <div class="step-item" [class.step-active]="registerStep === 'otp'" [class.step-done]="registerStep === 'role'">
+        <div class="step-circle">
+          <span *ngIf="registerStep !== 'role'">2</span>
+          <span *ngIf="registerStep === 'role'">✓</span>
+        </div>
+        <span class="step-label">OTP</span>
+      </div>
+      <div class="step-connector" [class.connector-done]="registerStep === 'role'"></div>
+      <div class="step-item" [class.step-active]="registerStep === 'role'">
+        <div class="step-circle">3</div>
+        <span class="step-label">Role</span>
+      </div>
+    </div>
+
+    <!-- ===== CARD ===== -->
+    <div class="auth-card">
+      <div class="auth-card-strip"></div>
+
+      <!-- ===== STEP 1: MOBILE ===== -->
+      <div *ngIf="registerStep === 'mobile'">
+
+        <div class="step-heading">
+          <span class="step-badge">Step 1 of 3</span>
+          <h3 class="step-title">Enter Your Mobile</h3>
+          <p class="step-desc">We'll send a one-time password to verify your number</p>
+        </div>
+
+        <div class="auth-field">
+          <div class="field-icon">📱</div>
+          <div class="field-inner">
+            <label class="field-label">Mobile Number</label>
+            <ion-input type="tel" maxlength="10" inputmode="numeric" placeholder="Enter Mobile Number"
+              [(ngModel)]="mobileNumber" class="field-input">
+            </ion-input>
+          </div>
+        </div>
+
+        <button class="auth-btn" (click)="goToOtp()">
+          <span>📲</span> Send OTP <span class="btn-arr">→</span>
+        </button>
+
+        <div class="auth-divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">✦ ॐ ✦</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <p class="auth-switch">
+          Already Registered?
+          <span class="auth-switch-link" (click)="openLoginSection()">Login</span>
+        </p>
+
+      </div>
+
+      <!-- ===== STEP 2: OTP ===== -->
+      <div *ngIf="registerStep === 'otp'">
+
+        <div class="step-heading">
+          <span class="step-badge">Step 2 of 3</span>
+          <h3 class="step-title">Verify OTP</h3>
+          <p class="step-desc">Enter the code sent to <strong>{{ mobileNumber }}</strong></p>
+        </div>
+
+        <div class="otp-hint">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          OTP sent successfully
+        </div>
+
+        <div class="auth-field">
+          <div class="field-icon">🔢</div>
+          <div class="field-inner">
+            <label class="field-label">One-Time Password</label>
+            <ion-input type="number" placeholder="Enter OTP" [(ngModel)]="otp" class="field-input">
+            </ion-input>
+          </div>
+        </div>
+
+        <button class="auth-btn" (click)="verifyOtp()">
+          <span>✅</span> Verify OTP <span class="btn-arr">→</span>
+        </button>
+
+        <div class="auth-divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">✦ ॐ ✦</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <p class="auth-switch">
+          Wrong number?
+          <span class="auth-switch-link" (click)="backToMobile()">Change</span>
+        </p>
+
+      </div>
+
+      <!-- ===== STEP 3: ROLE ===== -->
+      <div *ngIf="registerStep === 'role'" class="role-wrapper">
+
+        <div class="step-heading">
+          <span class="step-badge">Step 3 of 3</span>
+          <h3 class="step-title">Continue As</h3>
+          <p class="step-desc">How would you like to use Mangal.Bhav?</p>
+        </div>
+
+        <!-- Name + Age inputs -->
+        <div class="auth-field">
+          <div class="field-icon">👤</div>
+          <div class="field-inner">
+            <label class="field-label">Full Name</label>
+            <ion-input placeholder="Enter your full name" type="text" [(ngModel)]="signupName" class="field-input">
+            </ion-input>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <div class="field-icon">🎂</div>
+          <div class="field-inner">
+            <label class="field-label">Age</label>
+            <ion-input placeholder="Enter your age" type="number" [(ngModel)]="signupAge" class="field-input">
+            </ion-input>
+          </div>
+        </div>
+
+        <div class="role-cards">
+
+          <div class="role-card pandit" *ngIf="!(pendingPanditCategoryID && pendingPanditUserID)"
+            [class.role-selected]="selectedRole === 'PANDIT'" (click)="selectRole('PANDIT')">
+            <div class="role-card-strip pandit-strip"></div>
+            <div class="role-icon">🧘</div>
+            <h4 class="role-name">Pandit Ji</h4>
+            <p class="role-desc">Provide Puja Services</p>
+            <div class="role-select-indicator" *ngIf="selectedRole === 'PANDIT'">✓ Selected</div>
+          </div>
+
+
+          <div class="role-card jajman" [class.role-selected]="selectedRole === 'BHAKT'" (click)="selectRole('BHAKT')">
+            <div class="role-card-strip yajman-strip"></div>
+            <div class="role-icon">🙏</div>
+            <h4 class="role-name">Yajman</h4>
+            <p class="role-desc">Book Pandit Services</p>
+            <div class="role-select-indicator" *ngIf="selectedRole === 'BHAKT'">✓ Selected</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Back button -->
+    <button class="back-btn" (click)="backToMain()">← Back to Home</button>
+
+  </div>
+
+
+</ion-content>
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+<ion-tab-bar slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+
+<!-- 
+  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+
+</ion-tab-bar>
+
+<!-- TRIGGER BUTTON — replace your existing scrollToPandit call -->
+<!-- (click)="gotToOpenPanditPage()" stays same, no change needed -->
+
+
+<!-- ===== SEVA PREFERENCE MODAL ===== -->
+<ion-modal [isOpen]="isSevaModalOpen" (didDismiss)="isSevaModalOpen = false" [breakpoints]="[0, 0.80]"
+  [initialBreakpoint]="0.80" [backdropDismiss]="true">
+
+  <ng-template>
+
+    <ion-header class="ion-no-border">
+      <ion-toolbar style="--background: linear-gradient(135deg, #FF9500, #E07B00); --border-width: 0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 10px 16px;">
+
+          <!-- Close -->
+          <button (click)="isSevaModalOpen = false" style="width:38px; height:38px; border-radius:12px;
+                   background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35);
+                   display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="close-outline" style="font-size:20px; color:#fff;"></ion-icon>
+          </button>
+
+          <!-- Title -->
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;">
+            <span style=" font-size:20px; color:#fff; line-height:1;">
+              Find Your Seva
+            </span>
+            <span style=" font-size:8px; letter-spacing:2.5px;
+                         text-transform:uppercase; font-weight:600; color:rgba(255,240,180,0.9);">
+              ✦ Mangal.Bhav ✦
+            </span>
+          </div>
+
+          <!-- Logo -->
+          <div style="width:38px; height:38px; border-radius:12px;
+                      background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35);
+                      display:flex; align-items:center; justify-content:center;">
+            <img src="../../assets/mangalbhavlogo1.jpeg"
+              style="width:28px; height:28px; object-fit:contain; border-radius:8px;" />
+          </div>
+
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content style="--background: #FFFBF0;">
+      <div style="padding: 20px 16px;">
+
+        <!-- Subtitle -->
+        <p style=" font-size:13px; color:#7A4D00;
+                  text-align:center; margin-bottom:20px; line-height:1.5;">
+          Help us find the right Pandit for you 🙏
+        </p>
+
+        <!-- AGE INPUT -->
+        <div style="display:flex; align-items:center; gap:12px;
+                    background:#fff; border-radius:16px; padding:14px;
+                    border:1.5px solid rgba(255,184,0,0.3); margin-bottom:20px;">
+
+          <div style="width:40px; height:40px; border-radius:12px; flex-shrink:0;
+                      background:linear-gradient(135deg,#FFF5D6,#FFE8A0);
+                      border:1px solid rgba(255,184,0,0.3);
+                      display:flex; align-items:center; justify-content:center; font-size:18px;">
+            🎂
+          </div>
+
+          <div style="flex:1;">
+            <p style=" font-size:9px; font-weight:700;
+                      color:#FF9500; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">
+              Your Age
+            </p>
+            <ion-input type="number" placeholder="Enter your age" [(ngModel)]="selectedAge" style="--placeholder-color:#aaa; --color:#2B1A00;
+                      font-size:14px; font-weight:600;">
+            </ion-input>
+          </div>
+
+        </div>
+
+        <!-- SERVICE TYPE LABEL -->
+        <p style=" font-size:10px; font-weight:700;
+                  color:#FF9500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px;">
+          Select Type of Seva
+        </p>
+
+        <!-- SEVA TYPE GRID -->
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px;">
+
+          <div *ngFor="let s of sevaTypes" (click)="selectedServiceType = s.value" [style.border]="selectedServiceType === s.value
+              ? '2px solid #FF9500'
+              : '1.5px solid rgba(255,184,0,0.25)'" [style.background]="selectedServiceType === s.value
+              ? 'rgba(255,149,0,0.08)'
+              : '#fff'" [style.box-shadow]="selectedServiceType === s.value
+              ? '0 4px 14px rgba(255,149,0,0.2)'
+              : 'none'" style="position:relative; display:flex; flex-direction:column; align-items:center;
+                   gap:6px; padding:14px 8px; border-radius:16px; cursor:pointer;
+                   text-align:center; transition:all 0.2s;">
+
+            <span style="font-size:24px;">{{ s.icon }}</span>
+            <span style=" font-size:10px;
+                         font-weight:600; color:#2B1A00; line-height:1.3;">
+              {{ s.label }}
+            </span>
+
+            <!-- Check badge -->
+            <span *ngIf="selectedServiceType === s.value" style="position:absolute; top:6px; right:8px; font-size:10px;
+                     font-weight:700; color:#16a34a;">
+              ✓
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div style="display:flex; gap:10px;">
+
+          <button (click)="skipAndScroll()" style="flex:1; padding:14px; border-radius:50px; cursor:pointer;
+                   border:1.5px solid rgba(255,184,0,0.4); background:#FFF8EC;
+                   color:#7A4D00; font-size:13px; font-weight:600;
+                   ">
+            Skip
+          </button>
+
+          <button (click)="confirmAndScroll()" style="flex:2; display:flex; align-items:center; justify-content:center;
+                   gap:8px; padding:14px; border-radius:50px; border:none; cursor:pointer;
+                   background:linear-gradient(135deg,#FF9500,#E07B00); color:#fff;
+                   font-size:13px; font-weight:700; 
+                   box-shadow:0 6px 20px rgba(224,123,0,0.35);">
+            <ion-icon name="search-outline" style="font-size:16px;"></ion-icon>
+            Find Pandit 🙏
+          </button>
+
+        </div>
+
+      </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>

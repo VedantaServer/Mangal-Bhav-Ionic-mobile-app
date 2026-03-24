@@ -1,0 +1,129 @@
+<div *ngIf="!ShowList">
+<div class="row">
+<div class="col-md-12">
+<app-breadcrum></app-breadcrum>
+</div>
+</div>
+  <div class="row">
+    <div class="col-md-6">
+      <h4>BusinessFunction Management</h4>
+   </div>
+   <div class="col-md-6">
+   <div class="float-right">
+     <smart-button #button class="button-demo rounded-button" formCaption="Add New BusinessFunction"
+                   form-control-name="submit" type="submit" (click)="ActionClicked('add')"><i class="fa fa-plus"></i> </smart-button>
+   <smart-button [disabled]='RecordStatus.Disabled' (click)="toggleEditMode()" form-control-name="submit" type="submit" *ngIf="visibileMode"><i class="fa fa-edit"></i></smart-button>
+    <smart-button #button class="warning" [disabled]='!DisableEditMode' form-control-name="submit" type="submit" (click)="ActionClicked('delete')" *ngIf="visibileMode"><i class="fa fa-trash"></i></smart-button>
+   <smart-button #button class="print" [disabled]='!DisableEditMode' form-control-name="submit" type="submit" (click)="printPage('printableContent')" *ngIf="visibileMode"><i class="fa fa-print"></i></smart-button>
+ <smart-button #button class="gridshow"  form-control-name="submit" type="submit" (click)="togglePanel()" *ngIf="visibileMode" ><i class="fa fa-ellipsis-v"></i></smart-button>
+    </div>
+    </div>
+ </div>
+ <div class="row" style="background-color: white">
+   <div class="col-md-4">
+     <div class="input-group col-md-16">
+       <input class="form-control py-2" type="search" placeholder="Search/Filter,Keep Blank for all Data" [(ngModel)]="txtSearch" id="txtSearch">
+       <span class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="btnsearch"  (click)="loadSearch()">
+    <i class="fa fa-search"></i>
+    </button>
+    <button class="btn btn-outline-secondary" type="button" id="btnlist"  (click)="loadlist()">
+   <i class="fa fa-list"></i>
+   </button>
+ </span>
+</div>
+ <div class="col-md-16">
+   <smart-grid [columns]="columns" #grid id="grid" [filtering]="filtering" [sorting]="sorting"></smart-grid>
+    </div>
+  </div>
+  <div class="col-md-6">
+   <div class="col-lg-12" [hidden]="HideAddEdit"  id="printableContent">
+       <div style="background-color: white">
+        <form id="BusinessFunctionForm" style="padding:2px" class="row g-3 needs-validation" >
+ <div class="col-md-12" style="align-content:center">
+ <div class="center-screen" style="min-height: 2vh">
+ <b> {{formCaption}}</b>
+ </div>
+ </div>
+<div class="col-md-4">
+<label class="form-label"> Function Name:</label>
+<input type="text" id="FunctionName" [(ngModel)]="BusinessFunction.FunctionName"  name="BusinessFunction.FunctionName" class="form-control" [disabled]="DisableEditMode"   />
+</div>
+<div class="col-md-4">
+<label class="form-label"> Icon Name:</label>
+<input type="text" id="IconName" [(ngModel)]="BusinessFunction.IconName"  name="BusinessFunction.IconName" class="form-control" [disabled]="DisableEditMode"   />
+</div>
+<div class="col-md-4">
+<label class="form-label"> Description:</label>
+<input type="text" id="Description" [(ngModel)]="BusinessFunction.Description"  name="BusinessFunction.Description" class="form-control" [disabled]="DisableEditMode"   />
+</div>
+<div class="col-md-4">
+<label class="form-label"> Is Active:</label>
+<input type="checkbox"   id="IsActive" [(ngModel)]="BusinessFunction.IsActive" name="BusinessFunction.IsActive" class="form-control" [disabled]="DisableEditMode"   />
+</div>
+<div class="col-md-12" *ngIf="DisableEditMode">
+<ngx-qrcode style="margin: 0px" [elementType]="'url'" [value]="QRCode" [width]="150"></ngx-qrcode>
+</div>
+<div class="col-md-12">
+<b style='color:red;'> {{lblMessage.Message}} </b>
+</div>
+<div class="col-md-8"> 
+<label class="form-label"></label>
+<smart-button #button class="success" *ngIf="!DisableEditMode"  form-control-name ="submit" type="submit" (click)="InsertUpdate(); ">{{RecordStatus.Message}}</smart-button>
+</div>
+<div class="col-md-4">
+<label class="form-label"></label>
+<smart-button #button class="cancelled" *ngIf="!DisableEditMode" form-control-name="submit" type="submit" (click)="toggleEditMode(); " >Cancel Edit</smart-button>
+</div>
+<div id="validationsummary" style="color:red" class="col-md-12"></div> 
+            </form>
+          </div>
+        </div>
+    <div [hidden]="HideDelete">
+      <div class="row">
+        <div class="col-lg-12">
+          <input type="image" title="Back to List" img src="\assets\list.png" class=" color"
+(click)="ActionClicked('list')" /> &nbsp;
+          <span class="Header-White-h4">BusinessFunction Delete</span>
+          <div style="background-color: white">
+            <code>
+              <pre>{{BusinessFunction |json}}</pre>
+            </code>
+            <smart-button #button class="warning" [disabled]='RecordStatus.Disabled'
+form-control-name="submit" type="submit" (click)="Delete(); ActionClicked('list')">{{RecordStatus.Message}}</smart-button>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+<div class="col-md-2" [hidden]="HideAddEdit" [ngClass]="{'side-panel': true, 'hidden': !isPanelVisible}" style="padding:2px;"> 
+ <div [ngClass]="{ 'side-panel': true, 'hidden': !isPanelVisible}">
+<label class="form-label">{{BusinessFunction.FunctionName}}'s</label>
+<smart-menu #menu id="menu" [mode]="'tree'" style="background-color:lightblue;height:auto;">
+<smart-menu-item (click)="gotoPage('servicegroup')" [separator]="true" mode="vertical">ServiceGroup</smart-menu-item>
+</smart-menu>
+          </div>
+          </div>
+    </div>
+    </div>
+  <div *ngIf="ShowList">
+  <div class="row">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6">
+    <h4>BusinessFunction Management</h4>
+  </div>
+  </div>
+  <div class="row" style="background-color: white">
+    <div class="col-md-12">
+     <div class="float-right">
+<button class="btn btn-outline-secondary" type="button" (click)="back()">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+      </button>
+    </div>
+   </div>
+  <div class="col-md-12">
+    <smart-grid #griddata id="griddata" [appearance]="appearance" [filtering]="filtering" [sorting]="sorting"></smart-grid>
+   </div>
+   </div>
+  </div>

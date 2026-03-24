@@ -1,0 +1,178 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <div class="nav-logo" (click)="goToLoggedInHomePage()">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">Mangal<span class="logo-dot">.</span>Bhav</div>
+          <div class="nav-logo-sub">✦Peace·Prosperity·Protection✦</div>
+        </div>
+      </div>
+
+
+
+      <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button>
+
+      <button class="header-logout-btn" (click)="openPage('find-pandit')">
+        <ion-icon name="qr-code-outline"></ion-icon>
+      </button>
+      <!-- <div class="mb-scanner-float" (click)="openPage('find-pandit')">
+  <div class="mb-scanner-inner">
+    <ion-icon name="qr-code-outline"></ion-icon>
+    <span class="mb-scanner-label">Scan</span>
+  </div>
+</div> -->
+      
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="page-wrapper">
+
+    <!-- ===== GREETING ===== -->
+    <div class="greeting">
+      <div class="greeting-text">
+        <p class="greeting-sub">Namaste 🙏 {{userDetails?.FullName?.split(' ')?.[0]}} ji</p>
+        <h2 class="greeting-title">Let's Plan Your Next Puja</h2>
+      </div>
+      <div class="greeting-om">ॐ</div>
+    </div>
+
+    <!-- ===== QUICK ACTIONS ===== -->
+    <div class="section-label">Quick Actions</div>
+
+    <div class="dashboard-grid">
+
+      <!-- <div class="dash-card" (click)="openPage('find-pandit')">
+        <div class="dash-icon">📍</div>
+        <span>Find Pandit</span>
+      </div> -->
+
+      <!-- <div class="dash-card" (click)="openPageBookPooja()">
+        <div class="dash-icon">🕉️</div>
+        <span>Book Puja</span>
+      </div> -->
+
+      <div class="dash-card" (click)="openPage('booking')">
+        <div class="dash-icon">📅</div>
+        <span>My Bookings</span>
+      </div>
+
+      <!-- <div class="dash-card" (click)="openPage('top-rated')">
+        <div class="dash-icon">⭐</div>
+        <span>Top Rated</span>
+      </div> -->
+
+      <div class="dash-card" (click)="openPage('user-profile')">
+        <div class="dash-icon">👤</div>
+        <span>Profile</span>
+      </div>
+      <div class="dash-card" (click)="openPage('india-festival')">
+        <div class="dash-icon">🪔</div>
+        <span>Festivals</span>
+      </div>
+
+      <!-- <div class="dash-card">
+        <div class="dash-icon">🎧</div>
+        <span>Support</span>
+      </div> -->
+
+    </div>
+
+    <!-- ===== OVERVIEW ===== -->
+    <div class="section-label">History</div>
+
+    <div class="summary-row">
+
+      <div class="summary-box" (click)="openPage('upcoming-booking')">
+        <div class="summary-icon">⏳</div>
+        <!-- <h3>2</h3> -->
+        <p>Upcoming</p>
+      </div>
+
+      <div class="summary-box featured" (click)="openPage('completed-booking')">
+        <div class="summary-icon">✅</div>
+        <!-- <h3>5</h3> -->
+        <p>Done</p>
+      </div>
+
+      <!-- <div class="summary-box">
+        <div class="summary-icon">⭐</div>
+        <h3>3</h3>
+        <p>Favourites</p>
+      </div> -->
+
+    </div>
+
+    <!-- ===== INFO CARDS ===== -->
+    <div class="section-label">At a Glance</div>
+
+    <!-- Nearby Pandits -->
+    <div class="info-card" (click)="openPage('find-pandit')">
+      <div class="info-card-left">
+        <div class="info-icon">📍</div>
+        <div>
+          <h4 class="info-title">Nearby Pandits</h4>
+          <p class="info-sub">3 Pandits available near you</p>
+        </div>
+      </div>
+      <div class="info-arrow">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Next Puja -->
+    <div class="info-card highlight" (click)="openPage('booking')">
+      <div class="info-card-left">
+        <div class="info-icon">🪔</div>
+        <div>
+          <h4 class="info-title">Next Puja</h4>
+          <p class="info-sub">Satyanarayan Katha – 10 Feb</p>
+        </div>
+      </div>
+      <div class="info-chip-right">
+        <span>Upcoming</span>
+      </div>
+    </div>
+
+    <!-- ===== DIVIDER ===== -->
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+    <div class="chalisa-slogan">
+      <p>{{ sloganName}}</p>
+    </div>
+
+  </div>
+</ion-content>
+
+
+<!-- Floating scanner — outside tab bar -->
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+<!-- 
+  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>

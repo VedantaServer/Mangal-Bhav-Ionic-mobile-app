@@ -1,0 +1,19 @@
+<div class="popup-overlay" *ngIf="isShow">
+  <div class="popup-container w-50">
+    <div class="d-flex justify-content-between align-content-between popup-head">
+      <h5>{{ title }}</h5>
+      <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="text-white">&times;</span>
+      </button>
+    </div>
+
+    <div class="popup-drop p-3 mb-3">
+     
+      <ng-content></ng-content>
+    </div>
+
+    <!--<div class="col-md-12">
+      <button type="submit" class="btn btn-primary" (click)="submitForm()">Submit</button>
+    </div>-->
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<!--<ul class="breadcrumb">
+  <li><i class="fa fa-home" aria-hidden="true"></i></li>
+  <li *ngFor="let breadcrumb of breadcrumbs; let last = last">
+    <a (click)="ActionClicked(breadcrumb)">{{ breadcrumb.label }}</a>
+    <i *ngIf="!last" class="fa fa-angle-double-right" style="color:red" aria-hidden="true"></i>
+  </li>
+</ul>-->
+<span *ngFor="let breadcrumb of breadcrumbs; let last = last">
+  <i class="fa fa-home" aria-hidden="true"></i>
+  <a (click)="ActionClicked(breadcrumb)"> {{ breadcrumb.label }} </a>
+  <i class="fa fa-angle-double-right" style="color:white" aria-hidden="true"></i>
+</span>

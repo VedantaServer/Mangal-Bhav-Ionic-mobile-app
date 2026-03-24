@@ -1,0 +1,38 @@
+.breadcrumb {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 5px;
+  margin: 5px;
+}
+
+  .breadcrumb li { 
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+    color: #007bff;
+    background-color: #e9ecef;
+    padding:3px;
+    border-radius: 0.25em;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size:1em; /* Reduced font size */
+  }
+
+    .breadcrumb a:hover {
+      background-color: #dc3545;
+      color: #ffffff;
+    }
+
+  .breadcrumb li i {
+    margin: 1px;
+    padding:1px;
+    color: #6c757d;
+  }
+ 
+ 
+
+  

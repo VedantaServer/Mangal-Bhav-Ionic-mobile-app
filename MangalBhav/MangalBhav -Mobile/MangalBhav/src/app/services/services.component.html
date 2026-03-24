@@ -1,0 +1,174 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="warning">
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title class="ion-text-center">
+      Servicess
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <img src="../../assets/Picture1.png" height="35" />
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card *ngFor="let item of ServicesList" class="entity-card">
+
+    <div class="status-badge"
+         *ngIf="item.IsActive !== undefined"
+         [ngClass]="item.IsActive ? 'active' : 'inactive'">
+      {{ item.IsActive ? 'Active' : 'Inactive' }}
+    </div>
+
+    <ion-card-header>
+      <div class="card-header-flex">
+
+        <div class="title-section">
+          <ion-card-title>
+            
+          </ion-card-title>
+        </div>
+
+        <ion-button fill="clear"
+                    color="warning"
+                    (click)="editItem(item)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      
+      <div class="detail-row">
+        <span class="label">TenantID</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Description</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">DurationMinutes</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">IsActive</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">DateAdded</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">DateModified</span>
+        <span class="value"></span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">UpdatedByUser</span>
+        <span class="value"></span>
+      </div>
+    </ion-card-content>
+
+  </ion-card>
+
+  <div *ngIf="ServicesList?.length === 0"
+       class="empty-state">
+    <ion-icon name="cube-outline" size="large"></ion-icon>
+    <p>No Servicess added yet</p>
+  </div>
+
+  <ion-fab vertical="bottom"
+           horizontal="end"
+           slot="fixed">
+    <ion-fab-button color="warning"
+                    (click)="openModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isModalOpen"
+             (didDismiss)="closeModal()">
+
+    <ng-template>
+
+      <ion-header>
+        <ion-toolbar color="warning">
+          <ion-title>
+            {{ isEditMode ? 'Edit Services'
+                          : 'Add Services' }}
+          </ion-title>
+
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+
+        <ion-list lines="none"
+                  class="form-container">
+          
+  <ion-item>
+    <ion-input type="number" placeholder="TenantID" [(ngModel)]="services.TenantID"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input placeholder="Name" [(ngModel)]="services.Name"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input placeholder="Description" [(ngModel)]="services.Description"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input type="number" placeholder="DurationMinutes" [(ngModel)]="services.DurationMinutes"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>IsActive</ion-label>
+    <ion-toggle [(ngModel)]="services.IsActive"></ion-toggle>
+  </ion-item>
+
+  <ion-item>
+    <ion-input type="date" placeholder="DateAdded" [(ngModel)]="services.DateAdded"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input type="date" placeholder="DateModified" [(ngModel)]="services.DateModified"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input placeholder="UpdatedByUser" [(ngModel)]="services.UpdatedByUser"></ion-input>
+  </ion-item>
+        </ion-list>
+
+        <ion-button expand="block"
+                    color="warning"
+                    class="ion-margin-top"
+                    (click)="save()">
+
+          {{ isEditMode ? 'Update Services'
+                         : 'Create Services' }}
+
+        </ion-button>
+
+      </ion-content>
+
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

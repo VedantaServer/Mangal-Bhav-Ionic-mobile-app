@@ -1,0 +1,14 @@
+.access-denied-container {
+  background-image: url('/assets/403-forbidden-error-5.jpg');
+  background-size: cover; 
+  background-position: center; 
+  height: 100vh; 
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+}
+
+.access-denied-content {
+  text-align: center;
+  color: white; 
+}

@@ -1,0 +1,12 @@
+
+<smart-drop-down-list #foreignkeyDropDown
+                      [valueMember]="'Key'"
+                      [displayMember]="'Value'"
+                      [(ngModel)]="model"
+                      [filterable]="true"
+                      (change)="onChange($event)"
+                      [displayLoadingIndicator]="true"
+                      [disabled]="disabled"
+                      [selectedIndexes]="selectedItem">
+</smart-drop-down-list>
+Child:{{model}}

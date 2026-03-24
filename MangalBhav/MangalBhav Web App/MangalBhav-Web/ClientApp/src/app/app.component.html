@@ -1,0 +1,155 @@
+<div id="primaryContainer">
+  <app-nav-menu></app-nav-menu>
+  <div id="secondaryContainer">
+
+
+    <nav  class="navbar navbar-expand-lg navbar-light bg-light" >
+      <div class="container-fluid" >
+        <div id="toggleButton" class="mr-2" ></div>
+        <!-- Logo Section -->
+        <div class="d-flex align-items-center mx-2" >
+          <a class="navbar-bran" [routerLink]="['/home']">
+            <div id="logo" class="logo"></div>
+          </a>
+          <div class="vertical-line mt-3"></div>
+        </div>
+
+        <!-- Navbar Toggler for Mobile -->
+        <button class="navbar-toggler"
+                type="button"
+                (click)="toggleNavbar()"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"  >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Menu (collapsed on small screens) -->
+        <div [ngClass]="{
+  'collapse navbar-collapse bgmenu p-2': navbarCollapsed,
+  'navbar-collapse': !navbarCollapsed
+}" id="navbarSupportedContent">
+          <ul *ngIf="shownav" class="navbar-nav mx-auto mb-2 mb-lg-0 bg-white p-2">
+            <li class="nav-item">
+              <a class="nav-link " aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle"
+                 id="navbarDropdown"
+                 role="button"
+                 data-bs-toggle="dropdown"
+                 aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">About</a>
+            </li>
+
+          </ul>
+
+          <!-- Right-side User Info Section -->
+
+
+          <div class="collapse navbar-collapse ms-auto text-end justify-content-end p-2 bg-white" id="userInfo" style="padding: -0.5rem !important;max-width: 80vw;">
+            <ul class="navbar-nav align-items-center">
+              <!-- User Info Section -->
+              <li class="nav-item">
+                <div class="user-info d-flex align-items-center">
+                  <div class="vertical-line me-2" style="width: 2px; height: 20px; background-color: #ccc;"></div>
+                  <label class="mx-2 text-muted" *ngIf="showlogout">
+                    {{ Welcome }} <strong class="text-dark">{{ currentUser?.username }}</strong>
+                    ({{user_roleName}})
+                  </label>
+                         
+</div>
+              </li>
+
+              <!-- Logout Button -->
+              <li class="nav-item dropdown" *ngIf="showlogout">
+                <a id="toggleButtonlogout" (click)="logoutOnClick()" routerLinkActive="active"
+                   style="display: flex; align-items: center; font-size: 14px; color: #d9534f; font-weight: bold; text-decoration: none; padding: 5px 10px; border-radius: 4px; transition: background 0.3s, color 0.3s; color: #fff; background: #d9534f;"
+                   title="Logout">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
+                    <path d="M7.5 1v7h1V1z" />
+                    <path d="M3 8.812a5 5 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812" />
+                  </svg> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+
+
+          <!--<div class="collapse navbar-collapse ms-auto text-end justify-content-end p-2 bg-white" id="userInfo">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <div class="user-infon d-flex align-items-center">
+          <div class="vertical-line mr-2"></div>
+          <label class="mx-2">{{ Welcome }} &nbsp; <strong>{{ currentUser?.username }}</strong></label>-->
+          <!--<span class="right-corner">{{ headerInfo }}</span>-->
+          <!--</div>
+
+      </li>
+      <li class="nav-item dropdown" *ngIf="showlogout">
+        <a id="toggleButtonlogout" (click)="logoutOnClick()" routerLinkActive="active" class="render" title="Logout">
+          <svg style="color:black;" xmlns="http://www.w3.org/2000/svg" width="18" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
+            <path d="M7.5 1v7h1V1z" />
+            <path d="M3 8.812a5 5 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812" />
+          </svg> LogOut
+        </a>
+      </li>
+    </ul>
+  </div>-->
+        </div>
+      </div>
+    </nav>
+
+
+    <div id="content">
+
+      <router-outlet></router-outlet>
+
+    </div>
+    <div id="footer" class="d-flex p-3 justify-content-between align-content-between">
+      <div class="">
+        <b>School</b> : <span class="text-primary">{{SchoolName}}</span>
+      </div>
+      <div class="">
+        &nbsp; <b>Powered by</b> :<a href="https://vedantaschoolerp.com/" target="_blank">
+          Vedanta ERP Solution
+        </a>
+      </div>
+    </div>
+  </div>
+  <!--<div id="settingsButton" (click)="toggleSettingsPanel()"><span class="material-symbols-outlined">
+  </span></div>-->
+  <div id="settingsPanel">
+    <div id="settingsLabel" (click)="toggleSettingsPanel()"><span>Settings</span><span id="settingsCloseButton"></span></div>
+    <div id="settingsContent" style="padding-top: 1rem;">
+      <smart-check-box id="toggleBoxedLayout" [checked]="isBoxedLayoutEnabled" (click)="toggleBoxedLayout()">
+        Boxed Layout
+      </smart-check-box>
+      <hr />
+      <div class="label">THEME</div>
+      <img (click)="setIsThemeDark(false)" id="lightThemePreview" class="theme-preview" src="assets/theme-light2.png" />
+      <div class="theme-label">Light Content</div>
+      <img (click)="setIsThemeDark(true)" id="darkThemePreview" class="theme-preview" src="assets/theme-dark2.png" />
+      <div class="theme-label">Dark Content</div>
+
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Report Card</title>
+    <style>
+        body {
+            font-family:'Times New Roman';
+            font-size: 12px;
+            line-height:1;
+        }
+
+        .report-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .report-card h2 {
+            text-align: center;
+        }
+
+        .report-card table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .report-card th,
+        .report-card td {
+            border: 1px solid #ccc;
+            padding: 2px;
+            text-align: left;
+        }
+
+        .report-card th {
+       
+        }
+
+        .report-card .section-header {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .report-card .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .report-card .signature-row .signature {
+            text-align: center;
+        }
+
+        .report-card .grading-scale {
+            margin-top: 5px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .report-card .grading-scale th,
+        .report-card .grading-scale td {
+            border: 1px solid #ccc;
+            padding: 2px;
+            text-align: center;
+        }
+
+        .report-card .grading-scale th {
+        
+        }
+
+        .report-card .footer {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .reort-head {
+            border: 1px solid rgb(207, 204, 204);
+            text-align: center;
+            padding: 2px;
+        }
+
+        .logo{
+            height:80px;
+        }
+
+        .tables-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.table-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0px;
+}
+
+.subject-grades {
+    width: 48%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.subject-grades th,
+.subject-grades td {
+    border: 1px solid #ddd;
+    padding: 3px;
+}
+
+.subject-grades th {
+   
+    font-weight: bold;
+    text-align: center;
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="report-card">
+        <div>
+            <img class="logo" src="https://balbharati.org/wp-content/uploads/2016/03/logo.jpg" alt="">
+
+            <h6 class="school-address" style="margin: 0; padding: 0; font-size: 11px;">Parwana road ,Pitampura,
+                Delhi-110034,Tel: 011-27028600,27028700</h6>
+            <h6 style="margin: 0; padding: 0; font-size: 11px;"><b>Email</b>:balbharti@pp.balbharti.org ,
+                <b>Website</b>: https://bbpspp.balbharati.org/</h6>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">ACADEMIC SESSION: {{AcademicSession}}</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">REPORT CARD ‑ Consolidated Report / Annual
+                Examination.</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">Class {{ClassName}}</h4>
+        </div>
+
+        <table class="personal-details">
+          <th colspan="12" style="text-align: center;">PERSONAL DETAILS</th>
+          <tr>
+            <th>NAME</th>
+            <td>{{StudentName}}</td>
+            <th>CLASS/SECTION</th>
+            <td>{{ClassSection}}</td>
+          </tr>
+          <tr>
+            <th>ADMISSION NO.</th>
+            <td>{{AdmissionNo}}</td>
+            <th>ROLL NO.</th>
+            <td>{{RollNo}}</td>
+          </tr>
+          <tr>
+            <th>FATHER'S NAME</th>
+            <td>{{FatherName}}</td>
+            <th>DATE OF BIRTH</th>
+            <td>{{BirthDate}}</td>
+          </tr>
+          <tr>
+            <th>MOTHER'S NAME</th>
+            <td>{{MotherName}}</td>
+            <th>GENDER</th>
+            <td>{{Gender}}</td>
+          </tr>
+        </table>
+ 
+            <div class="tables-container">
+                <div class="table-row">
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">ENGLISH</td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{ENGLISH ELECTIVE-N}}
+                  </table>
+            
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">MATHEMATICS</td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{MATHEMATICS}}
+                  </table>
+                </div>
+                
+                <div class="table-row">
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">HINDI</td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{HINDI}}
+                  </table>
+            
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">ENVIRONMENTAL SCIENCE</td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{ENVIRONMENTAL SCIENCE}}
+                  </table>
+                </div>
+                <div class="table-row">
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">
+                        CO-SCHOLASTIC SKILLS
+                      </td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{CO-SCHOLASTIC SKILLS}}
+                  </table>
+                  <table class="subject-grades">
+                    <tr>
+                      <td colspan="2">
+                        PERSONAL SKILLS
+                      </td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>GRADE</td>
+                    </tr>
+                    {{PERSONAL SKILLS}}
+                  </table>
+                </div>
+            </div>
+            
+ 
+        <table class="attendance">
+            <tr>
+                <td>ATTENDANCE</td>
+                <td>{{AttendanceCount}} {{AttendancePercentage}}% </td>
+            </tr>
+        </table>
+
+        <table class="date-remarks">
+            <tr>
+                <th>DATE</th>
+                <td>{{CDate}}</td>
+                <th>REMARKS</th>
+                <td>{{TeacherRemarks}}</td>
+            </tr>
+        </table>
+
+        <div class="signature-row" style="margin-top: 50px;">
+          <div class="signature">
+              <span>{{TeacherSignature}}</span><br>
+              <span>--------------------------</span> <br>
+              <span class="signature-name" style="font-weight: bold;"> CLASS TEACHER</span>
+          </div>
+          <div class="signature">
+              <span>{{ExamInChargeSignature}}</span> <br>
+              <span>--------------------------</span> <br>
+              <span class="signature-name" style="font-weight: bold;">DEPARTMENT INCHARGE </span>
+          </div>
+          <div class="signature">
+              <span>{{PrincipalSignature}}</span><br>
+              <span>--------------------------</span> <br>
+              <span class="signature-name" style="font-weight: bold;">PRINCIPAL</span>
+          </div>
+         
+      </div>
+
+
+
+        <table class="grading-scale">
+            <th colspan="12">GRADING SCALE</th>
+            <tr>
+                <th colspan="8">SCHOLASTIC GRADING</th>
+
+                <th colspan="5">SOCIAL, PERSONAL SKILLS & CO-SCHOLASTIC</th>
+            </tr>
+            <tr>
+                <th>Marks Range</th>
+
+                <th>91-100</th>
+                <th>81-90</th>
+                <th>71-80</th>
+                <th>61-70</th>
+                <th>51-60</th>
+                <th>41-50</th>
+                <th>0-40</th>
+                <th>Grade</th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+
+
+            </tr>
+            <tr>
+                <td>Grade</td>
+                <td>A1</td>
+                <td>A2</td>
+                <td>B1</td>
+                <td>B2</td>
+                <td>C1</td>
+                <td>C2</td>
+                <td>D (Needs Improvement)</td>
+                <td>Level of Performance</td>
+                <td>Outstanding</td>
+                <td>Very Good</td>
+                <td>Good</td>
+
+            </tr>
+        </table>
+
+        <p class="footer">*This is a computer generated report</p>
+    </div>
+   
+</body>
+
+</html>
+

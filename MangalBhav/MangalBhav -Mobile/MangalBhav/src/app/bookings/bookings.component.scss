@@ -1,0 +1,941 @@
+/* ================================================
+   MY BOOKINGS PAGE — Mangal.Bhav (Bhakt Side)
+   Unique: status-color strips, filter tabs,
+   pandit avatar row, payment pill colors
+   ================================================ */
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+ion-header {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  box-shadow: 0 4px 20px rgba(224, 123, 0, 0.35);
+  &::after { display: none; }
+}
+
+.inner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  gap: 12px;
+}
+
+.inner-back-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+
+  ion-icon { font-size: 20px; color: #ffffff; }
+  &:active { background: rgba(255,255,255,0.28); }
+}
+
+.inner-title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.inner-title {
+  
+  font-size: 20px;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-shadow:
+    0 1px 0 rgba(255,180,0,0.4),
+    0 2px 8px rgba(0,0,0,0.15);
+}
+
+.inner-title-sub {
+  
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  line-height: 1;
+  background: linear-gradient(90deg,
+    rgba(255,240,180,0.6),
+    rgba(255,255,220,1),
+    rgba(255,240,180,0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmerText 4s linear infinite;
+}
+
+@keyframes shimmerText {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.inner-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: divaGlow 3s ease-in-out infinite;
+
+  img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+}
+
+@keyframes divaGlow {
+  0%,100% {
+    box-shadow:
+      0 0 0 3px rgba(255,220,80,0.15),
+      0 0 10px rgba(255,200,50,0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(255,220,80,0.1),
+      0 0 18px rgba(255,200,50,0.35);
+  }
+}
+
+ion-content {
+  --background: #FFFBF0;
+  
+}
+
+ion-header::after { display: none; }
+
+ion-toolbar {
+  --background: linear-gradient(135deg, #FF9500, #E07B00);
+  --border-width: 0;
+  --min-height: 62px;
+  --color: #ffffff;
+  box-shadow: 0 4px 20px rgba(224, 123, 0, 0.4);
+}
+
+ion-back-button { --color: #ffffff; }
+
+.header-title {
+  
+  font-size: 18px !important;
+  color: #ffffff !important;
+  letter-spacing: 1px;
+}
+
+/* ===== PAGE WRAPPER ===== */
+.page-wrapper {
+  min-height: 100%;
+  background: #FFFBF0;
+  padding-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: 'ॐ';
+    position: fixed;
+    bottom: 80px;
+    right: -20px;
+    font-size: 220px;
+    color: #FF9500;
+    opacity: 0.04;
+    pointer-events: none;
+    
+    z-index: 0;
+  }
+
+  &::after {
+    content: '🔥';
+    position: fixed;
+    top: 100px;
+    left: -20px;
+    font-size: 160px;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* ===== TOP BANNER ===== */
+.page-banner {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  padding: 22px 24px 42px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 28px;
+    background: #FFFBF0;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+}
+
+.banner-text { position: relative; z-index: 2; }
+
+.banner-sub {
+  font-size: 11px;
+  
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.banner-title {
+  
+  font-size: 24px;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.banner-om {
+  
+  font-size: 56px;
+  color: rgba(255,255,255,0.15);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== FILTER TABS — unique to this page ===== */
+.filter-tabs-wrap {
+  padding: 16px 16px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filter-tab {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  
+  padding: 7px 16px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255, 184, 0, 0.3);
+  background: #ffffff;
+  color: #7A4D00;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+
+  &.active {
+    background: linear-gradient(135deg, #FF9500, #E07B00);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(224, 123, 0, 0.35);
+  }
+
+  &:active { transform: scale(0.95); }
+}
+
+/* ===== SECTION LABEL ===== */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #FF9500;
+  
+  padding: 20px 20px 10px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== CARDS CONTAINER ===== */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== BOOKING CARD ===== */
+.booking-card {
+  background: #ffffff;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 184, 0, 0.2);
+  box-shadow:
+    0 3px 14px rgba(255, 149, 0, 0.08),
+    0 1px 3px rgba(0,0,0,0.04);
+  animation: slideUp 0.3s ease both;
+
+  /* Status-specific left border glow — unique to this page */
+  &.card-requested {
+    border-left: 4px solid #F59E0B;
+    border-left-color: #F59E0B;
+  }
+
+  &.card-confirmed {
+    border-left: 4px solid #22c55e;
+  }
+
+  &.card-cancelled {
+    border-left: 4px solid #ef4444;
+    opacity: 0.85;
+  }
+
+  &.card-completed {
+    border-left: 4px solid #6366f1;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== STATUS STRIP — the key unique element ===== */
+/* Colored banner at top of each card based on status */
+.status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+
+  &.strip-requested {
+    background: rgba(245, 158, 11, 0.1);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  &.strip-confirmed {
+    background: rgba(34, 197, 94, 0.08);
+    border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+  }
+
+  &.strip-cancelled {
+    background: rgba(239, 68, 68, 0.07);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+  }
+
+  &.strip-completed {
+    background: rgba(99, 102, 241, 0.07);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+  }
+}
+
+.strip-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.strip-icon { font-size: 16px; line-height: 1; }
+
+.strip-status {
+  font-size: 11px;
+  font-weight: 700;
+  
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  .strip-requested &  { color: #D97706; }
+  .strip-confirmed &  { color: #16a34a; }
+  .strip-cancelled &  { color: #dc2626; }
+  .strip-completed &  { color: #4F46E5; }
+}
+
+.strip-date {
+  font-size: 11px;
+  font-weight: 600;
+  
+  color: #7A4D00;
+  background: rgba(255,255,255,0.7);
+  padding: 3px 10px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 184, 0, 0.25);
+}
+
+/* ===== CARD BODY ===== */
+.card-body {
+  padding: 16px 18px 16px;
+}
+
+/* Service name + price side by side */
+.card-body-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.service-name {
+  
+  font-size: 18px;
+  color: #2B1A00;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.duration-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7A4D00;
+  
+  background: #FFF5D6;
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  border-radius: 50px;
+  padding: 3px 10px;
+
+  ion-icon { font-size: 12px; color: #FF9500; }
+}
+
+/* Price block right side */
+.price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.price-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #7A4D00;
+  
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.price-value {
+  
+  font-size: 22px;
+  color: #E07B00;
+  line-height: 1;
+}
+
+/* ===== CARD DIVIDER ===== */
+.card-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,184,0,0.3), transparent);
+  margin: 12px 0;
+}
+
+/* ===== PANDIT ROW ===== */
+.pandit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pandit-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: white;
+  
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
+}
+
+.pandit-details { flex: 1; min-width: 0; }
+
+.pandit-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2B1A00;
+  
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pandit-phone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #7A4D00;
+  
+
+  ion-icon { font-size: 12px; color: #FF9500; }
+}
+
+/* ===== INFO PILLS ROW ===== */
+.info-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  color: #2B1A00;
+  background: #FFF5D6;
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  border-radius: 50px;
+  padding: 5px 12px;
+
+  ion-icon { font-size: 13px; color: #FF9500; }
+
+  &.pill-paid {
+    background: rgba(34, 197, 94, 0.08);
+    color: #16a34a;
+    border-color: rgba(34, 197, 94, 0.3);
+    ion-icon { color: #16a34a; }
+  }
+
+  &.pill-pending {
+    background: rgba(245, 158, 11, 0.08);
+    color: #D97706;
+    border-color: rgba(245, 158, 11, 0.3);
+    ion-icon { color: #D97706; }
+  }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 32px;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+.empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.35; }
+
+.empty-title {
+  
+  font-size: 22px;
+  color: #E07B00;
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-size: 13px;
+  color: #7A4D00;
+  
+  line-height: 1.6;
+  max-width: 220px;
+}
+
+/* ===== PAGE DIVIDER ===== */
+.page-divider {
+  text-align: center;
+  padding: 24px 0 8px;
+  font-size: 16px;
+  color: #FFB800;
+  letter-spacing: 10px;
+  opacity: 0.5;
+  position: relative;
+  z-index: 1;
+}
+
+
+.custom-tab-bar {
+  --background: #ffffff;
+  border-top: 1px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 -4px 20px rgba(255, 149, 0, 0.1);
+  height: 62px;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible !important;
+}
+
+.tab-btn-stretch {
+  flex: 1;
+  --color: #B08050;
+  --color-selected: #FF9500;
+
+  ion-icon { font-size: 20px; }
+
+  ion-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+.tab-home-btn {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+}
+
+.tab-center-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(224, 123, 0, 0.5);
+  margin-top: -20px;
+  border: 3px solid #ffffff;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.tab-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 3px;
+  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.35);
+}
+
+
+
+
+.tab-home-btn {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+  --ripple-color: transparent;
+  position: relative;
+}
+
+.tab-center-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;           // ← square-ish, not circle
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -24px;             // ← floats higher above bar
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 20px rgba(224, 123, 0, 0.45),
+    0 4px 16px rgba(224, 123, 0, 0.3);
+  position: relative;
+
+  // glowing ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 22px;
+    border: 2px solid rgba(255, 149, 0, 0.25);
+    animation: scanRing 2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+@keyframes scanRing {
+  0%, 100% { transform: scale(1);   opacity: 0.5; }
+  50%       { transform: scale(1.1); opacity: 0;   }
+}
+
+
+
+
+
+// ===== MANGAL BHAV BOTTOM TAB BAR =====
+
+.mb-tab-bar {
+  --background: #ffffff;
+  height: 64px;
+  border-top: 1.5px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 -6px 24px rgba(255, 149, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar {
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar::part(native) {
+  overflow: visible !important;
+}
+
+// Left + Right buttons
+.mb-tab-btn {
+  flex: 1;
+  --color: #C4934A;
+  --color-selected: #FF9500;
+  --ripple-color: rgba(255, 149, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  ion-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+}
+
+// Center scanner wrapper
+.mb-tab-center-wrap {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+  --ripple-color: transparent;
+  --background-focused: transparent;
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+// Scanner button
+.mb-tab-scanner {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -22px;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  // Pulsing outer ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+@keyframes mbScanPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.6; }
+  50%       { transform: scale(1.12); opacity: 0;   }
+}
+
+// User avatar circle
+.mb-tab-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.4);
+  margin-bottom: 2px;
+}
+
+.mb-scanner-float {
+  position: fixed;
+  bottom: 10px !important;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:active { transform: translateX(-50%) scale(0.92); }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+.mb-tab-spacer {
+  flex: 0 0 72px;
+  pointer-events: none;
+  --color: transparent;
+}
+
+
+.mb-scanner-float {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow:
+    0 8px 24px rgba(224, 123, 0, 0.5),
+    0 2px 8px rgba(224, 123, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  // outer glow ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(255, 149, 0, 0.35);
+    animation: mbScanPulse 2s ease-in-out infinite;
+  }
+
+  // top shine
+  &::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 8px; right: 8px;
+    height: 30%;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+.mb-scanner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.mb-scanner-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+@keyframes mbScanPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.5; }
+  50%       { transform: scale(1.1); opacity: 0;   }
+}
+
+
+.mb-scanner-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.custom-tab-icon {
+  width: 100px;
+  height: 100px;
+  background-image: url('/assets/yagna2.png'); // your image path
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

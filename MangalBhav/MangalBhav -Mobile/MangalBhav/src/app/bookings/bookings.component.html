@@ -1,0 +1,169 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">My Bookings</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- TOP BANNER -->
+    <div class="page-banner">
+      <div class="banner-text">
+        <p class="banner-sub">Track Your</p>
+        <h2 class="banner-title">Seva Journey</h2>
+      </div>
+      <div class="banner-om">ॐ</div>
+    </div>
+
+    <!-- STATUS FILTER TABS -->
+    <div class="filter-tabs-wrap">
+      <div class="filter-tabs">
+        <button class="filter-tab active">All</button>
+        <button class="filter-tab">Requested</button>
+        <button class="filter-tab">Confirmed</button>
+        <button class="filter-tab">Completed</button>
+      </div>
+    </div>
+
+    <div class="section-label">Your Bookings</div>
+
+    <!-- BOOKING CARDS -->
+    <div class="cards-container">
+
+      <div class="booking-card" *ngFor="let item of BookingsList" [ngClass]="getCardClass(item.Status)">
+
+        <!-- COLORED STATUS STRIP at top -->
+        <div class="status-strip" [ngClass]="getStripClass(item.Status)">
+          <div class="strip-left">
+            <span class="strip-status">{{ getStatusEmoji(item.Status) }}</span>
+            <!-- <span class="strip-status">{{ item.Status }}</span> -->
+          </div>
+          <span class="strip-date">
+            {{ item.PoojaDate | date:'dd MMM yyyy' }}
+          </span>
+        </div>
+
+        <!-- CARD BODY -->
+        <div class="card-body">
+
+          <!-- Service name + price -->
+          <div class="card-body-top">
+            <div>
+              <!-- <h3 class="service-name">{{ item.Service?.Name }}</h3> -->
+              <h3 class="service-name">
+                {{ Language === 'Hindi'
+                ? (item.Service?.Name?.split('/')[1]?.trim() || item.Service?.Name)
+                : (item.Service?.Name?.split('/')[0]?.trim() || item.Service?.Name) }}
+              </h3>
+              <div class="duration-chip">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ item.Service?.DurationMinutes }} mins
+              </div>
+            </div>
+            <div class="price-block">
+              <span class="price-label">Amount</span>
+              <span class="price-value">₹ {{ item.TotalAmount }}</span>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <!-- Pandit info row -->
+          <div class="pandit-row">
+            <div class="pandit-avatar">
+              {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+            </div>
+            <div class="pandit-details">
+              <p class="pandit-name">{{ item.Profile?.FullName }}</p>
+              <p class="pandit-phone">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ item.Profile?.PhoneNumber }}
+              </p>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <!-- Info pills -->
+          <div class="info-pills">
+
+            <div class="info-pill">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ item.Location?.Name }}, {{ item.Location?.City }}</span>
+            </div>
+
+            <div class="info-pill" [ngClass]="item.PaymentStatus === 'PAID' ? 'pill-paid' : 'pill-pending'">
+              <ion-icon name="card-outline"></ion-icon>
+              <span style="text-transform: lowercase;">Payment {{ item.PaymentStatus }}</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="BookingsList?.length === 0" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3 class="empty-title">No Bookings Yet</h3>
+      <p class="empty-sub">Book a puja to see your seva journey here</p>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+
+
+
+<!-- Floating scanner — outside tab bar -->
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+
+
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>

@@ -1,0 +1,36 @@
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+} 
+
+#copyright {
+  font-size: smaller;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+#copyright {
+  font-size : smaller;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+#primaryContainer.collapsed #sideBar {
+  margin-left: calc(-1 * var(--menu-width));
+}
+

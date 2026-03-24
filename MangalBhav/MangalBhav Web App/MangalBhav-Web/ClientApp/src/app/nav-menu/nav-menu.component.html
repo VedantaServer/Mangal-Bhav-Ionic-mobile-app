@@ -1,0 +1,76 @@
+<div id="sideBar" style="background-color:whitesmoke">
+  <div style="padding: 10px;">
+    <div *ngIf="currentUser" class="hover-container">
+      Hello <br />
+      <h4 style="color: red;word-break: break-word; white-space: normal; max-width: 100%; display: block;">
+        {{currentUser?.username}}
+        <br />
+      </h4>
+      <hr />
+      <smart-button #button class="raised" *ngIf="currentUser?.isActive==='True'" (click)="gotoPage('dashboardpanel')">
+        <i class="material-icons">
+          dashboard
+        </i>
+        Dashboard &nbsp;&nbsp;
+      </smart-button>
+      <br /> <br />
+      <smart-button #button class="raised" *ngIf="currentUser?.isActive==='True'" (click)="gotoPage('userinstallation')">
+        <i class="material-icons">
+          settings
+        </i>
+        Installation
+      </smart-button>
+      <hr style="color:red;" size="3" />
+      <div class="smartcard">
+        <div class="card-title">Choose Working Location</div>
+        <div class="card p-1">
+
+          <div class="mb-1">
+            <label for="dropdownlist" class="form-label">School</label>
+            <select #dropdownlist [(ngModel)]="tenantID" (change)="FillLocationDropDown()" class="form-control" id="dropdownlist">
+              <option *ngFor="let item of Organization; let i = index" [value]="item.TenantID">{{item.TenantDescription}}</option>
+            </select>
+          </div>
+          <!-- Branch Dropdown -->
+          <div class="mb-1">
+            <label for="locationDropdown" class="form-label">Branch</label>
+            <select #locationDropdown [(ngModel)]="SchoolID" class="form-control" id="locationDropdown">
+              <option *ngFor="let item of Location; let i = index" [value]="item.ID">
+                {{item.MappedName}}
+              </option>
+            </select>
+          </div>
+
+          <!-- Financial Year Dropdown -->
+          <div class="mb-1">
+            <label for="FYDropdown" class="form-label">Academic Year</label>
+            <select #FYDropdown [(ngModel)]="FYValue" class="form-control" id="FYDropdown">
+              <option *ngFor="let item of AcademicSession; let i = index" [value]="item.AcademicSessionID">{{item.SessionYear}}</option>
+            </select>
+          </div>
+
+          <smart-button (click)="setCurrent()" class="raised primary"><strong>Set Location</strong></smart-button>
+          <a style="font-size:smaller" (click)="loadOrgData()" class="raised primary"><strong>Reload Location(s) & Year</strong></a>
+        </div>
+       
+      </div>
+     
+
+    </div>
+    <div *ngIf="!currentUser" class="hover-container">
+      <br />
+      <h4> You are not logged in ..</h4>
+      <br />
+      <i class="material-icons">
+        login
+      </i><a id="toggleButtonDashboard" [routerLink]="['/secure-login']" routerLinkActive="active" class="render">Login/Register</a>
+    </div>
+    <div id="copyright">
+      <strong>{{systemInfo?.Name}} - {{systemInfo?.Version}} </strong> <br />
+      {{systemInfo?.DatePublish | date: 'dd/MM/yyyy'}} <br />
+      {{systemInfo?.SupportEmail}} <br />
+      {{systemInfo?.SupportContact}}
+      <br /><br /> 
+    </div>
+  </div>
+</div>

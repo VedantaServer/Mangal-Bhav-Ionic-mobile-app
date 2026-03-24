@@ -1,0 +1,19 @@
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.FLASHLIGHT" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+
+
+
+// <- ADD THIS BLOCK (exactly)
+    packagingOptions {
+        jniLibs {
+            excludes += ["*/libbarhopper_v3.so", "*/libimage_processing_util_jni.so"]
+        }
+    }
+    // <- end added block

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Card</title>
+    <style>
+        .table-style{
+            width: 100%; border-collapse: collapse; margin-top: 4px;
+        }
+        .table-data{
+            border: 1px solid #ccc; padding: 5px;
+            text-align: left;
+        }
+
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+        .signature-row .signature {
+            text-align: center;
+        }
+
+        @media print {
+    body {
+        zoom: 0.8; /* Adjust zoom to fit everything */
+    }
+    .no-break {
+        page-break-inside: avoid; /* Prevent breaking inside elements */
+    }
+}
+
+        @page {
+    size: A4;
+    margin: 0;
+}
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0px;
+        }
+
+        .subject-grades {
+            width: 48%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+            .subject-grades th,
+            .subject-grades td {
+                border: 1px solid #ddd;
+                padding: 3px;
+            }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        .signature-row {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .signature {
+            width: 20%;
+            text-align: center;
+        }
+
+            .signature span {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+        .signature-name {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body style="font-family: 'Arial'; font-size: 14px; line-height: 1; text-align: center;">
+    <div style="border: 1px solid #ccc; padding: 20px;">
+        <img src="https://balbharati.org/wp-content/uploads/2016/03/logo.jpg" alt="School Logo" style="height: 80px;">
+        <h6 style="margin: 0; padding: 0; font-size: 11px;">{{SchoolAddressLine1}},Tel: {{SchoolTelephone}}</h6>
+        <h6 style="margin: 0; padding: 0; font-size: 11px;"><b>Email</b>: {{SchoolEmailID}}, <b>Website</b>: {{SchoolWebsite}}</h6>
+        <h4 style="margin: 2px 0; padding: 0; font-size: 12px;">Academic Session: {{AcademicSession}}</h4>
+        <h4 style="margin: 2px 0; padding: 0; font-size: 12px;">REPORT CARD ‑ {{HeaderName}}</h4>
+        <h4 style="margin: 2px 0; padding: 0; font-size: 12px;">Class {{ClassName}}</h4>
+
+
+        <table class="table-style">
+            <tr>
+                <th colspan="4" style="text-align: center;" class="table-data">PERSONAL DETAILS</th>
+            </tr>
+            <tr>
+                <th class="table-data">NAME</th>
+                <td class="table-data">{{StudentName}}</td>
+                <th class="table-data">CLASS & SECTION</th>
+                <td class="table-data">{{ClassSection}}</td>
+            </tr>
+            <tr>
+                <th class="table-data">ADMISSION NO.</th>
+                <td class="table-data">{{AdmissionNo}}</td>
+                <th class="table-data">ROLL NO.</th>
+                <td class="table-data">{{RollNo}}</td>
+            </tr>
+            <tr>
+                <th class="table-data">FATHER'S NAME</th>
+                <td class="table-data">{{FatherName}}</td>
+                <th class="table-data">DATE OF BIRTH</th>
+                <td class="table-data">
+                    {{BirthDate}}
+                </td>
+            </tr>
+            <tr>
+                <th class="table-data">MOTHER'S NAME</th>
+                <td class="table-data">{{MotherName}}</td>
+                <th class="table-data">GENDER</th>
+                <td class="table-data">{{Gender}}</td>
+            </tr>
+        </table>
+
+        <div class="table-row">
+            <table class="subject-grades">
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <b>ACADEMIC PERFORMANCE</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>SUBJECTS</b></td>
+                    <td><b>Unit Test-1</b> </td>
+                    <td><b>Half Yearly</b></td>
+                
+                </tr>
+                {{SubjectGrid}}
+            </table>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr>
+                <td style="border: 1px solid #ccc;width: 200px; padding-left: 20px;  font-weight: bold; height: 30px;">GRAND TOTAL</td>
+                <td style="border: 1px solid #ccc;width: 150px; padding-left: 20px;">{{ObtainedMarksOverallTotal}}/{{MaxMarksOverallTotal}} </td>
+                <td style="border: 1px solid #ccc;padding-left: 20px; font-weight: bold;">PERCENTAGE OF MARKS - {{PercentageMarks}}</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc;width: 200px; padding-left: 20px;  font-weight: bold; height: 30px;">ATTENDANCE</td>
+                <td style="border: 1px solid #ccc;width: 150px; padding-left: 20px;">{{AttendanceCount}}</td>
+                <td style="border: 1px solid #ccc;padding-left: 20px; font-weight: bold;">PERCENTAGE OF ATTENDANCE - {{AttendancePercentage}}</td>
+            </tr>
+
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr>
+                <th style="border: 1px solid #ccc; padding: 5px; text-align: center;">CO-SCHOLASTIC ACTIVITIES</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">{{CO-SCHOLASTIC SKILLS}}</td>
+            </tr>
+        </table>
+
+        <div class="date-remarks" style="text-align: left; margin-top: 10px;">
+            <div><strong>DATE:</strong>{{CDate}} </div>
+            <div style="margin-top: 10px;">
+                <strong>REMARKS:</strong>{{TeacherRemarks}}
+
+            </div>
+            <br />
+            <br />
+            <div class="signature-row">
+                <div class="signature">
+                    <span>{{TeacherSignature}}</span>
+                    <span>--------------------------</span>
+                    <span class="signature-name">CLASS TEACHER</span>
+                </div>
+                <div class="signature">
+                    <span>{{ExamInChargeSignature}}</span>
+                    <span>--------------------------</span>
+                    <span class="signature-name">DEPTT. INCHARGE</span>
+                </div>
+                <div class="signature">
+                    <span>{{PrincipalSignature}}</span>
+                    <span>--------------------------</span>
+                    <span class="signature-name">PRINCIPAL</span>
+                </div>
+                <div class="signature">
+                    <span>--------------------------</span>
+                    <span class="signature-name">PARENT</span>
+                </div>
+            </div>
+            <br />
+            <br />
+
+            <table style="width:100%">
+                <tr>
+                    <th colspan="9" style="text-align:center;">GRADING SCALE</th>
+                    <th colspan="10" style="text-align:center;">GRADING SCALE</th>
+                </tr>
+                <tr>
+                    <th colspan="9" style="text-align:center;">SCHOLASTIC GRADING</th>
+                    <th colspan="10" style="text-align:center;">CO-SCHOLASTIC GRADING</th>
+                </tr>
+                <tr>
+                    <th>Marks Range</th>
+                    <th>91 - 100</th>
+                    <th>81 - 90</th>
+                    <th>71 - 80</th>
+                    <th>61 - 70</th>
+                    <th>51 - 60</th>
+                    <th>41 - 50</th>
+                    <th>33 - 40</th>
+                    <th>0 - 32</th>
+                    <th>Grade</th>
+                    <th>A1</th>
+                    <th>A2</th>
+                    <th>B1</th>
+                    <th>B2</th>
+                    <th>C1</th>
+                    <th>C2</th>
+                    <th>D1</th>
+                    <th>D2</th>
+                    <th>E</th>
+                </tr>
+                <tr>
+                    <th>Grade</th>
+                    <td>A1</td>
+                    <td>A2</td>
+                    <td>B1</td>
+                    <td>B2</td>
+                    <td>C1</td>
+                    <td>C2</td>
+                    <td>D</td>
+                    <td>E (Essential Repeat)</td>
+                    <th colspan="1">Level of performance</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <p style="text-align: center; margin-top: 5px; font-weight: bold;">*This is a computer generated report</p>
+        </div>
+</body>
+</html>

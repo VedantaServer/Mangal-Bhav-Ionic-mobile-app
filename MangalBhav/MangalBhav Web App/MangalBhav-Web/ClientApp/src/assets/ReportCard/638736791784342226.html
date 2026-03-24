@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Report Card</title>
+    <style>
+           @media print {
+    body {
+        margin: 0;
+        padding: 0;
+        font-size: 21px; /* Reduced for fitting on page */
+        zoom: 95%; /* Scales content to fit A4 */
+    }
+
+    .report-card {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .report-card table, 
+    .table-row, 
+    .tables-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .report-card td, 
+    .report-card th {
+        padding: 3px !important;
+        font-size: 11px !important;
+    }
+
+    .logo {
+        max-height: 60px;
+    }
+
+    .signature-row {
+        margin-top: 20px !important;
+    }
+}
+        body {
+            font-family: 'Arial';
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .report-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .report-card h2 {
+            text-align: center;
+        }
+
+        .report-card table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .report-card th,
+        .report-card td {
+            border: 1px solid #ccc;
+            padding: 2px;
+            text-align: left;
+        }
+
+        .report-card th {}
+
+        .report-card .section-header {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .report-card .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .report-card .signature-row .signature {
+            text-align: center;
+        }
+
+        .report-card .grading-scale {
+            margin-top: 5px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .report-card .grading-scale th,
+        .report-card .grading-scale td {
+            border: 1px solid #ccc;
+            padding: 2px;
+            text-align: center;
+        }
+
+        .report-card .grading-scale th {}
+
+        .report-card .footer {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .reort-head {
+            border: 1px solid rgb(207, 204, 204);
+            text-align: center;
+            padding: 2px;
+        }
+
+        .logo {
+            height: 80px;
+        }
+
+        .tables-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0px;
+        }
+
+        .subject-grades {
+            width: 48%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .subject-grades th,
+        .subject-grades td {
+            border: 1px solid #ddd;
+            padding: 3px;
+        }
+
+        .subject-grades th {
+
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="report-card">
+        <div>
+            <img class="logo" src="https://balbharati.org/wp-content/uploads/2016/03/logo.jpg" alt="">
+
+            <h6 class="school-address" style="margin: 0; padding: 0; font-size: 11px;">{{SchoolAddressLine1}},Tel: {{SchoolTelephone}}</h6>
+            <h6 style="margin: 0; padding: 0; font-size: 11px;"><b>Email</b>:{{SchoolEmailID}} ,
+                <b>Website</b>: {{SchoolWebsite}}
+            </h6>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">ACADEMIC SESSION: {{AcademicSession}}</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">REPORT CARD ‑ {{HeaderName}}</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">Class {{ClassName}}</h4>
+        </div>
+
+        <table class="personal-details">
+            <th colspan="12" style="text-align: center;">PERSONAL DETAILS</th>
+            <tr>
+                <th>NAME</th>
+                <td>{{StudentName}}</td>
+                <th>CLASS/SECTION</th>
+                <td>{{ClassSection}}</td>
+            </tr>
+            <tr>
+                <th>ADMISSION NO.</th>
+                <td>{{AdmissionNo}}</td>
+                <th>ROLL NO.</th>
+                <td>{{RollNo}}</td>
+            </tr>
+            <tr>
+                <th>FATHER'S NAME</th>
+                <td>{{FatherName}}</td>
+                <th>DATE OF BIRTH</th>
+                <td>{{BirthDate}}</td>
+            </tr>
+            <tr>
+                <th>MOTHER'S NAME</th>
+                <td>{{MotherName}}</td>
+                <th>GENDER</th>
+                <td>{{Gender}}</td>
+            </tr>
+        </table>
+       
+
+        <div class="tables-container" style="margin-top: 8px;">
+
+            <div class="table-row">
+                <table class="subject-grades">
+                    <tr>
+                        <td colspan="4" style="text-align: center;">
+                            <b>ACADEMIC PERFORMANCE</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">SUBJECTS</td>
+                        <td style="font-weight: bold; text-align: center;">MAXIMUM MARKS </td>
+                        <td style="font-weight: bold; text-align: center;">MARKS SCORED</td>
+                        <td style="font-weight: bold; text-align: center;">GRADE</td>
+                    </tr>
+                    {{SubjectGrid}}
+                </table>
+            </div>
+    
+            <div class="table-row" style="margin-top: 8px;">
+                <table width="100%">
+                    <tr>
+                        <!-- Table 1 -->
+                        <td width="50%" style="border: none; padding-right: 10px;" valign="top">
+                            <table width="100%" cellspacing="0">
+                                <tr>
+                                    <td style="text-align: center;"><b>GRAND TOTAL</b></td>
+                                    <td style="text-align: center;">{{ObtainedMarksOverallTotal}}/{{MaxMarksOverallTotal}}</td>
+                                </tr>
+                            </table>
+                        </td>
+
+                        <!-- Table 2 -->
+                        <td width="50%" style="border: none; padding-left: 2px;" valign="top">
+                            <table width="100%" cellspacing="0">
+                                <tr>
+                                    <td style="text-align: center;"><b>PERCENTAGE</b></td>
+                                    <td style="text-align: center;">{{PercentageMarks}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <br />
+
+            <div class="table-row">
+                <table width="100%">
+                    <tr>
+                        <!-- Table 1 -->
+                        <td width="50%" style="border: none; padding-right: 12px;" valign="top">
+                            <table width="100%" cellspacing="0">
+                                <tr>
+                                    <td style="text-align: center;"><b>CO-SCHOLASTIC ACTIVITIES</b></td>
+                                    {{CO-SCHOLASTIC SKILLS}}
+                                </tr>
+                                <table style="margin-top: 5px;">
+                                    <tr class="date-remarks" >
+                                        <td style="border: none;margin-top: 8px;"><b>ATTENDANCE </b>- {{AttendanceCount}} {{AttendancePercentage}}</td>                                    
+                                    </tr>
+                                    <tr class="date-remarks" style="margin-top: 8px;">
+                                        <td style="border: none;"> <b>DATE</b> - {{CDate}}</td>
+                                    </tr>
+                                    <tr class="date-remarks" style="margin-top: 8px;">
+                                        <td style="border: none;"> <b>REMARKS</b> : {{TeacherRemarks}}</td>
+                                    </tr>
+                                </table>
+                            </table>
+                            <br>
+
+
+                        </td>
+
+
+                        <!-- Table 2 -->
+                        <td width="50%" style="border: none; padding-left: 15px;" valign="top">
+                            <table width="100%" cellspacing="0">
+                                <tr>
+                                    <td colspan="4" style="text-align: center;"><b>GRADING SCALES</b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center; font-weight: bold;">SCHOLASTIC </td>
+                                    <td colspan="2" style="text-align: center; font-weight: bold;">CO-SCHOLASTIC </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center; width: 50px;">A1 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+                                    <td style="text-align: center; font-weight: bold;">Grade </td>
+                                    <td style="text-align: center; font-weight: bold;">Level of Performance </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">A2 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+                                    <td style="text-align: center;">A </td>
+                                    <td style="text-align: center;">Outstanding </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">B1 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+                                    <td style="text-align: center;">B </td>
+                                    <td style="text-align: center;">Vey Good </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">B2 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+                                    <td style="text-align: center;">C </td>
+                                    <td style="text-align: center;">Fair</td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">C1 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">C2 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">D1 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE</td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">D2 </td>
+                                    <td style="text-align: center;">TOP 1/8 TH OF THE
+                                        PASSED CANDIDATE </td>
+
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">E </td>
+                                    <td style="text-align: center;">ESSENTIAL REPEAT </td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <br />
+
+            <table>
+
+            </table>
+            <div class="signature-row" style="margin-top: 40px;">
+                <div class="signature">
+                    <span>{{TeacherSignature}}</span><br>
+
+                    <span>--------------------------</span> <br>
+                    <span class="signature-name"><b>CLASS TEACHER</b> </span>
+                </div>
+                <div class="signature">
+                    <span>{{ExamInChargeSignature}}</span><br>
+
+                    <span>--------------------------</span> <br>
+                    <span class="signature-name"><b>DEPARTMENT INCHARGE</b> </span>
+                </div>
+                <div class="signature">
+                    <span>{{PrincipalSignature}}</span><br>
+
+                    <span>--------------------------</span> <br>
+                    <span class="signature-name"><b>PRINCIPAL</b></span>
+                </div>
+                
+            </div>
+
+            <br />
+            <br />
+            <p class="footer" style="font-weight: bold;">*This is a computer generated report</p>
+        </div>
+
+</body>
+
+</html>

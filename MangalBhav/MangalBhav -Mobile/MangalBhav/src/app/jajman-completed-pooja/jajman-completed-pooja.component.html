@@ -1,0 +1,354 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">My Bookings</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- TOP BANNER -->
+    <div class="page-banner">
+      <div class="banner-text">
+        <p class="banner-sub">Track Your</p>
+        <h2 class="banner-title">Seva Journey</h2>
+      </div>
+      <div class="banner-om">ॐ</div>
+    </div>
+
+
+
+    <div class="section-label">Completed Bookings</div>
+
+    <!-- BOOKING CARDS -->
+    <div class="cards-container">
+
+      <div class="booking-card" *ngFor="let item of BookingsList" [ngClass]="getCardClass(item.Status)">
+
+        <!-- COLORED STATUS STRIP at top -->
+        <div class="status-strip" [ngClass]="getStripClass(item.Status)">
+          <div class="strip-left">
+            <span class="strip-icon">{{ getStatusEmoji(item.Status) }}</span>
+            <span class="strip-status">{{ item.Status }}</span>
+          </div>
+          <span class="strip-date">
+            {{ item.PoojaDate | date:'dd MMM yyyy' }}
+          </span>
+        </div>
+
+        <!-- CARD BODY -->
+        <div class="card-body">
+
+          <!-- Service name + price -->
+          <div class="card-body-top">
+            <div>
+              <!-- <h3 class="service-name">{{ item.Service?.Name }}</h3> -->
+              <h3 class="service-name">
+                {{ Language === 'Hindi'
+                ? (item.Service?.Name?.split('/')[1]?.trim() || item.Service?.Name)
+                : (item.Service?.Name?.split('/')[0]?.trim() || item.Service?.Name) }}
+              </h3>
+              <div class="duration-chip">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ item.Service?.DurationMinutes }} mins
+              </div>
+            </div>
+            <div class="price-block">
+              <span class="price-label">Amount</span>
+              <span class="price-value">₹ {{ item.TotalAmount }}</span>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <!-- Pandit info row -->
+          <div class="pandit-row">
+            <div class="pandit-avatar">
+              {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+            </div>
+            <div class="pandit-details">
+              <p class="pandit-name">{{ item.Profile?.FullName }}</p>
+              <p class="pandit-phone">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ item.Profile?.PhoneNumber }}
+              </p>
+            </div>
+          </div>
+
+          <div class="card-divider"></div>
+
+          <!-- Info pills -->
+          <div class="info-pills">
+
+            <div class="info-pill">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ item.Location?.Name }}, {{ item.Location?.City }}</span>
+            </div>
+
+            <div class="info-pill" [ngClass]="item.PaymentStatus === 'PAID' ? 'pill-paid' : 'pill-pending'">
+              <ion-icon name="card-outline"></ion-icon>
+              <span style="text-transform: lowercase;">Payment {{ item.PaymentStatus }}</span>
+            </div>
+
+          </div>
+
+          <!-- ACTION BUTTONS — after info-pills div -->
+          <div class="card-divider"></div>
+
+          <div class="card-actions">
+
+            <!-- Make Payment — only if payment pending -->
+            <button class="action-btn payment-btn" *ngIf="item.PaymentStatus === 'PENDING'" (click)="makePayment(item)">
+              <ion-icon name="card-outline"></ion-icon>
+              <span>Make Payment</span>
+            </button>
+
+            <!-- Upload Photo — only if confirmed or completed -->
+            <button class="action-btn photo-btn" *ngIf="item.Status === 'CONFIRMED' || item.Status === 'COMPLETED'"
+              (click)="uploadPhoto(item)">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span>Upload Photo</span>
+            </button>
+
+            <!-- Give Feedback — only if completed -->
+            <button class="action-btn feedback-btn" *ngIf="item.Status === 'COMPLETED'" (click)="giveFeedback(item)">
+              <ion-icon name="star-outline"></ion-icon>
+              <span>Feedback</span>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="BookingsList?.length === 0" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3 class="empty-title">No Bookings Yet</h3>
+      <p class="empty-sub">Book a puja to see your seva journey here</p>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
+  <div class="mb-scanner-inner">
+    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
+  </div>
+</div> -->
+<ion-tab-bar slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+
+<!--  
+  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
+<!-- FEEDBACK MODAL -->
+<ion-modal [isOpen]="isFeedbackModalOpen" (didDismiss)="isFeedbackModalOpen = false" [breakpoints]="[0, 0.65]"
+  [initialBreakpoint]="0.65">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <div class="inner-header">
+          <button class="inner-back-btn" (click)="isFeedbackModalOpen = false">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div class="inner-title-block">
+            <div class="inner-title">Rate Your Experience</div>
+            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+          </div>
+          <div style="width:38px"></div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="feedback-modal-wrap">
+
+        <p class="feedback-service-name">🪔 {{ selectedFeedbackItem?.ServiceName }}</p>
+
+        <!-- LOADING -->
+        <div class="feedback-loading" *ngIf="feedbackLoading">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <p>Checking feedback...</p>
+        </div>
+
+        <!-- ALREADY GIVEN — show existing -->
+        <div class="feedback-existing" *ngIf="!feedbackLoading && existingFeedback">
+
+          <div class="feedback-done-badge">✅ Feedback Submitted</div>
+
+          <div class="feedback-existing-stars">
+            <span *ngFor="let star of [1,2,3,4,5]">
+              <ion-icon [name]="isStarFilled(star) ? 'star' : 'star-outline'"
+                [style.color]="isStarFilled(star) ? '#FFB800' : 'rgba(255,184,0,0.25)'">
+              </ion-icon>
+            </span>
+          </div>
+
+          <p class="feedback-existing-rating-label">{{ getExistingRatingLabel() }}</p>
+
+          <div class="feedback-existing-desc" *ngIf="existingFeedback.Description">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            <p>{{ existingFeedback.Description }}</p>
+          </div>
+
+          <p class="feedback-existing-date">
+            Submitted on {{ existingFeedback.DateAdded | date:'dd MMM yyyy' }}
+          </p>
+
+        </div>
+
+        <!-- NEW FORM — not yet given -->
+        <ng-container *ngIf="!feedbackLoading && !existingFeedback">
+
+          <div class="feedback-stars-label">How would you rate this seva?</div>
+          <div class="feedback-stars">
+            <span class="feedback-star" *ngFor="let star of [1,2,3,4,5]" [class.active]="feedbackRating >= star"
+              (click)="feedbackRating = star">
+              <ion-icon [name]="feedbackRating >= star ? 'star' : 'star-outline'"></ion-icon>
+            </span>
+          </div>
+          <p class="feedback-rating-label">{{ getRatingLabel() }}</p>
+
+          <div class="feedback-field">
+            <label class="feedback-field-label">Share your experience</label>
+            <textarea class="feedback-textarea" placeholder="Tell us about your experience with the pandit and seva..."
+              [(ngModel)]="feedbackDescription" rows="4">
+            </textarea>
+          </div>
+
+          <button class="feedback-submit-btn" (click)="submitFeedback()" [disabled]="feedbackRating === 0">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Submit Feedback
+          </button>
+
+        </ng-container>
+
+      </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>
+<!-- ===== BOOKING PHOTOS UPLOAD MODAL ===== -->
+<ion-modal [isOpen]="isUploadModalOpen" (didDismiss)="closeUploadModal()" [breakpoints]="[0, 0.92, 1]"
+  [initialBreakpoint]="0.92">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <div class="inner-header">
+          <button class="inner-back-btn" (click)="closeUploadModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div class="inner-title-block">
+            <div class="inner-title">Seva Photos</div>
+            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+          </div>
+          <div class="inner-logo">
+            <img src="../../assets/mangalbhavlogo1.jpeg" />
+          </div>
+        </div>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="modal-wrapper">
+
+        <!-- UPLOAD ZONE -->
+        <div class="upload-zone" (click)="fileInput.click()">
+          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none" />
+          <div class="upload-zone-inner">
+            <div class="upload-icon-wrap">
+              <ion-icon name="camera-outline"></ion-icon>
+            </div>
+            <p class="upload-zone-title">Tap to Upload Photo</p>
+            <p class="upload-zone-sub">JPG, PNG supported</p>
+          </div>
+        </div>
+
+        <!-- Confirm upload button -->
+        <button class="upload-confirm-btn" *ngIf="selectedFile" (click)="uploadImage()">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          Upload Selected Photo
+        </button>
+
+        <!-- GALLERY -->
+        <div class="gallery-section" *ngIf="serviceImages && serviceImages.length > 0">
+          <div class="gallery-header">
+            <span class="gallery-label">📸 Booking Photos</span>
+            <span class="gallery-count">{{ serviceImages.length }} photos</span>
+          </div>
+          <div class="photo-grid">
+            <div class="photo-tile" *ngFor="let photo of serviceImages; let i = index" (click)="previewPhoto(photo)">
+              <img [src]="photo.imageUrl" class="photo-img" (error)="onImgError($event)" />
+              <div class="photo-tile-overlay">
+                <ion-icon name="expand-outline"></ion-icon>
+              </div>
+              <div class="photo-index">{{ i + 1 }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="gallery-empty" *ngIf="!serviceImages || serviceImages.length === 0">
+          <div class="empty-img-icon">🖼️</div>
+          <p class="empty-img-title">No Photos Yet</p>
+          <p class="empty-img-sub">Preserve the memories of this sacred seva</p>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- FULL SCREEN PREVIEW -->
+<ion-modal [isOpen]="isPreviewOpen" (didDismiss)="isPreviewOpen = false">
+  <ng-template>
+    <ion-content>
+      <div class="preview-wrapper">
+        <button class="preview-close" (click)="isPreviewOpen = false">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <img [src]="previewUrl" class="preview-full-img" />
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,372 @@
+/* Section styling */
+.searched-batch {
+  min-height: 120vh;
+  width: 95vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+.no-border-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #000;
+  width: 100%;
+}
+
+/* Keep border 0 even when clicked or focused */
+.no-border-input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Header */
+.searched-batch h1 {
+  font-size: 4vh;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Course plan container */
+.course-plan-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Individual cards */
+.course-plan-list .card {
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  width: 250px;
+  box-sizing: border-box;
+  transition: transform 0.2s;
+}
+
+/* Highlight selected card */
+.course-plan-list .card.selected {
+  border: 2px solid #007bff;
+  transform: scale(1.05);
+}
+
+/* Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Popup box */
+.popup-content {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  animation: slideDown 0.3s ease-in-out;
+  position: relative;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Header */
+.popup-header h2 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.8rem;
+}
+
+/* Body */
+.popup-body h3 {
+  margin: 10px 0 20px;
+  color: #27ae60;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+/* Footer buttons */
+.popup-footer {
+  display: flex;
+  justify-content: space-around;
+}
+
+.popup-footer button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Payment button */
+.btn-payment {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-payment:hover {
+  background: #2ecc71;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Close button */
+.btn-close {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-close:hover {
+  background: #ff4d4d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+fieldset div {
+  color: red;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* Hero Section */
+.hero {
+  position: relative;
+  height: 90vh;
+  /* Full screen */
+  background: url('../../assets/663f778958b1a-performing-arts-conference-triveni-kala-sangam-delhi-11500053-16x9.jpeg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+.hero .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  padding: 2rem;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  background: #ff9800;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.course-plan-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.course-plan-list .card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-plan-list .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.course-plan-list .card h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #2c3e50;
+}
+
+.course-plan-list .card p {
+  font-size: 14px;
+  margin: 6px 0;
+  color: #555;
+}
+
+.course-plan-list .card strong {
+  color: #222;
+}
+
+@media (max-width: 600px) {
+  .course-plan-list {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+.register-btn {
+  background-color: #007bff; 
+  color: #fff; 
+  border: none; 
+  padding: 10px 20px; 
+  font-size: 16px; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: background-color 0.3s, transform 0.2s;
+}
+.register-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+.register-btn:active {
+  transform: scale(0.98);
+}
+
+.searched-batch{
+  height: 100vh;
+  padding: 4rem 2rem;
+  background: white;
+  text-align: center;
+}
+
+
+.btn:hover {
+  background: #e68900;
+}
+
+/* Course Search Section */
+.search-section {
+  height: 95vh;
+  padding: 4rem 2rem;
+  background: white;
+  text-align: center;
+}
+
+.search-section h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.search-form .form-group select {
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 180px;
+}
+
+.btn-search {
+  padding: 0.5rem 1.5rem;
+  background: #0078d7;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+.formsubmit {
+  padding: 0.5rem 1.5rem;
+  background: #0078d7;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+   margin-bottom: 5vh;
+}
+
+.course-plan-list .card.selected {
+  border: 2px solid #007bff;
+  background-color: #f0f8ff;
+}
+
+.form-section {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+
+fieldset {
+  width: 70vw;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+legend {
+  font-weight: bold;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 7px;
+  box-sizing: border-box;
+}

@@ -1,0 +1,711 @@
+// ================================================
+// community.component.scss
+// ================================================
+
+:host {
+  --ion-background-color: #FFFBF0;
+}
+
+ion-content {
+  --background: #FFFBF0;
+}
+
+
+// ================================================
+// global.scss — paste all below
+// ================================================
+
+// ── WRAP ──
+.comm-wrap {
+  background: #FFFBF0;
+}
+
+// ── HERO ──
+.comm-hero {
+  background: linear-gradient(160deg, #2B1A00 0%, #4A2E00 45%, #7A4500 100%);
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 60px 24px 70px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 184, 0, 0.07);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: commRing 40s linear infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 184, 0, 0.1);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: commRing 22s linear infinite reverse;
+  }
+}
+
+.comm-hero-bg-om {
+  position: absolute;
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 420px;
+  color: rgba(255, 149, 0, 0.04);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: commBreathe 8s ease-in-out infinite;
+  line-height: 1;
+}
+
+.comm-diya {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.55;
+  animation: commFloat 4s ease-in-out infinite;
+
+  &.d1 {
+    top: 14%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  &.d2 {
+    top: 18%;
+    right: 10%;
+    animation-delay: 1.4s;
+  }
+
+  &.d3 {
+    bottom: 18%;
+    left: 8%;
+    animation-delay: 0.7s;
+  }
+
+  &.d4 {
+    bottom: 15%;
+    right: 9%;
+    animation-delay: 2s;
+  }
+}
+
+.comm-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.comm-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid rgba(255, 184, 0, 0.28);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 220, 130, 0.9);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.comm-hero-title {
+  font-family: 'Yatra One', cursive;
+  font-size: 64px;
+  color: #FFD580;
+  line-height: 1;
+  margin-bottom: 10px;
+  text-shadow: 0 0 50px rgba(255, 149, 0, 0.3);
+}
+
+.comm-hero-devanagari {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 16px;
+  color: rgba(255, 200, 100, 0.65);
+  letter-spacing: 3px;
+  margin-bottom: 24px;
+}
+
+.comm-hero-desc {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 230, 170, 0.7);
+  max-width: 340px;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.comm-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.comm-pill {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 184, 0, 0.22);
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 230, 170, 0.82);
+}
+
+
+// ── SECTION BASE ──
+.comm-section {
+  padding: 64px 24px;
+  background: #FFFBF0;
+}
+
+.comm-stats-section {
+  background: #FFF5DC;
+}
+
+.comm-eyebrow {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #FF9500;
+  margin-bottom: 10px;
+}
+
+.comm-heading {
+  font-family: 'Yatra One', cursive;
+  font-size: 28px;
+  text-align: center;
+  color: #2B1A00;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.comm-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  text-align: center;
+  color: #9A7A50;
+  max-width: 320px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+
+
+// ── PILLARS ──
+.comm-pillars-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comm-pillar-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 28px 24px;
+  border: 1.5px solid rgba(255, 184, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 16px rgba(255, 149, 0, 0.07);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF9500, #FFB800);
+  }
+
+  &::after {
+    content: attr(data-devanagari);
+    position: absolute;
+    bottom: -8px;
+    right: 4px;
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 80px;
+    color: rgba(255, 149, 0, 0.05);
+    line-height: 1;
+    pointer-events: none;
+  }
+}
+
+.comm-pillar-icon {
+  font-size: 32px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.comm-pillar-title {
+  font-family: 'Yatra One', cursive;
+  font-size: 22px;
+  color: #2B1A00;
+  margin-bottom: 4px;
+}
+
+.comm-pillar-hindi {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 13px;
+  color: #FF9500;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.comm-pillar-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #7A4D00;
+}
+
+
+// ── HANUMAN ──
+.comm-hanuman {
+  background: linear-gradient(160deg, #2B1A00, #4A2E00);
+  padding: 72px 24px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.comm-hanuman-bg-om {
+  position: absolute;
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 400px;
+  color: rgba(255, 149, 0, 0.03);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: commRing 60s linear infinite;
+  line-height: 1;
+}
+
+.comm-hanuman-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.comm-hanuman-flame {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+  animation: commBreathe 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 16px rgba(255, 149, 0, 0.5));
+}
+
+.comm-hanuman-title {
+  font-family: 'Yatra One', cursive;
+  font-size: 44px;
+  color: #FFD580;
+  margin-bottom: 6px;
+  text-shadow: 0 0 32px rgba(255, 149, 0, 0.35);
+}
+
+.comm-hanuman-sub {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 15px;
+  color: rgba(255, 200, 100, 0.6);
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+
+.comm-chalisa-strip {
+  border-top: 1px solid rgba(255, 184, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 184, 0, 0.15);
+  padding: 24px 0;
+  margin-bottom: 32px;
+}
+
+.comm-chalisa-verse {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 18px;
+  color: rgba(255, 230, 170, 0.82);
+  line-height: 2;
+}
+
+.comm-hanuman-attrs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.comm-attr {
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 220, 130, 0.82);
+}
+
+
+// ── STATS ──
+.comm-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.comm-stat-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 16px;
+  text-align: center;
+  border: 1.5px solid rgba(255, 184, 0, 0.18);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(255, 149, 0, 0.06);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF9500, #FFB800);
+  }
+}
+
+.comm-stat-number {
+  font-family: 'Yatra One', cursive;
+  font-size: 40px;
+  color: #FF9500;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.comm-stat-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #7A4D00;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+
+// ── VALUES ──
+.comm-values-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.comm-value-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 28px 0;
+  border-bottom: 1px solid rgba(255, 184, 0, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.comm-value-number {
+  font-family: 'Yatra One', cursive;
+  font-size: 40px;
+  color: rgba(255, 184, 0, 0.2);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 52px;
+}
+
+.comm-value-content {
+  flex: 1;
+}
+
+.comm-value-title {
+  font-family: 'Yatra One', cursive;
+  font-size: 20px;
+  color: #2B1A00;
+  margin-bottom: 3px;
+}
+
+.comm-value-hindi {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 12px;
+  color: #FF9500;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.comm-value-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: #7A4D00;
+  line-height: 1.8;
+}
+
+
+// ── FOOTER STRIP ──
+.comm-footer-strip {
+  background: linear-gradient(135deg, #1A0E00, #2B1A00);
+  padding: 40px 24px 32px;
+  text-align: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #FF9500, #FFB800, #FF9500, transparent);
+  }
+}
+
+.comm-footer-logo {
+  font-family: 'Yatra One', cursive;
+  font-size: 28px;
+  color: #FFD580;
+  margin-bottom: 6px;
+}
+
+.comm-footer-tag {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 12px;
+  color: rgba(255, 200, 100, 0.45);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.comm-footer-copy {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: rgba(255, 200, 100, 0.3);
+
+  span {
+    color: #FF9500;
+  }
+}
+
+
+// ── ANIMATIONS ──
+@keyframes commRing {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes commBreathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+@keyframes commFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+ion-header {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  box-shadow: 0 4px 20px rgba(224, 123, 0, 0.35);
+
+  &::after {
+    display: none;
+  }
+}
+
+.inner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  gap: 12px;
+}
+
+.inner-back-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+
+  ion-icon {
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.28);
+  }
+}
+
+.inner-title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.inner-title {
+
+  font-size: 20px;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-shadow:
+    0 1px 0 rgba(255, 180, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.inner-title-sub {
+
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  line-height: 1;
+  background: linear-gradient(90deg,
+      rgba(255, 240, 180, 0.6),
+      rgba(255, 255, 220, 1),
+      rgba(255, 240, 180, 0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmerText 4s linear infinite;
+}
+
+@keyframes shimmerText {
+  0% {
+    background-position: 200% center;
+  }
+
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.inner-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: divaGlow 3s ease-in-out infinite;
+
+  img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+}
+
+@keyframes divaGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px rgba(255, 220, 80, 0.15),
+      0 0 10px rgba(255, 200, 50, 0.2);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(255, 220, 80, 0.1),
+      0 0 18px rgba(255, 200, 50, 0.35);
+  }
+}
+
+ion-content {
+  --background: #FFFBF0;
+
+}
+
+ion-header::after {
+  display: none;
+}
+
+ion-toolbar {
+  --background: linear-gradient(135deg, #FF9500, #E07B00);
+  --border-width: 0;
+  --min-height: 62px;
+  --color: #ffffff;
+  box-shadow: 0 4px 20px rgba(224, 123, 0, 0.4);
+}
+
+ion-back-button {
+  --color: #ffffff;
+}
+
+.header-title {
+
+  font-size: 18px !important;
+  color: #ffffff !important;
+  letter-spacing: 1px;
+}

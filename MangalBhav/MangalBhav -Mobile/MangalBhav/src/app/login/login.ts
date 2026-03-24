@@ -1,0 +1,910 @@
+import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Api, ApiNU } from '../../providers';
+import { Capacitor } from '@capacitor/core';
+import { Storage } from '@ionic/storage-angular';
+import { FcmService } from '../../providers/fcm/fcm';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule, IonInput, NavController, Platform } from '@ionic/angular';
+import { Network } from '@capacitor/network';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { Geolocation } from '@capacitor/geolocation';
+import { Filesystem } from '@capacitor/filesystem';
+import { HttpClient } from '@angular/common/http';
+import { AlertController } from '@ionic/angular';
+import { ViewChild } from '@angular/core';
+import { IonContent } from '@ionic/angular';
+import { forkJoin } from 'rxjs';
+
+
+
+
+@Component({
+  selector: 'page-login',
+  templateUrl: 'login.html',
+  styleUrls: ['login.scss'],
+  //standalone: true,  // 👈 makes it standalone
+  imports: [CommonModule, FormsModule, IonicModule]
+})
+export class LoginPage {
+  @ViewChild(IonContent) content!: IonContent;
+
+
+  @ViewChildren('phoneInput') phoneInputs!: QueryList<any>;
+
+  phoneDigits = new Array(10).fill('');
+  isPhoneComplete = false;
+  isSevaModalOpen = false;
+  selectedAge: number | null = null;
+  selectedServiceType: string | null = null;
+  sevaTypes = [
+    { icon: '🔥', label: 'Havan / Yagna', value: 'Havan' },
+    { icon: '🪔', label: 'Griha Pravesh', value: 'GrihaPravesh' },
+    { icon: '💍', label: 'Vivah Sanskar', value: 'Vivah' },
+    { icon: '👶', label: 'Namkaran', value: 'Namkaran' },
+    { icon: '🌸', label: 'Satyanarayan Katha', value: 'Satyanarayan' },
+    { icon: '🕉️', label: 'Other Seva', value: 'Other' }
+  ];
+
+  isLoading = false;
+  LoginTitle: string = '';
+  lblSchoolName: any;
+  schoolLogo: any;
+  account: { password: string, username: string } = {
+    password: '',
+    username: ''
+  };
+
+  username: any;
+  password: any;
+
+  profilePreview: string | null = null;
+
+  showMainSection = true;
+
+  signupName: string = '';
+  signupAge: string = '';
+  showAuthLanding = false;
+  showLoginSection = false;
+  showRegisterSection = false;
+
+  registerStep: 'mobile' | 'otp' | 'form' | 'role' = 'mobile';
+  data: any;
+  lblMessage: string = '';
+  loadingData: boolean = false;
+  showLoginForm: boolean = false;
+  forgetPassword: string = '';
+  isOnline: any = true;
+  responseText!: string;
+  response!: string;
+  tenantForImg: any = null;
+  loginArea: any = false;
+  showIntro: boolean = true;
+  mobileNumber: any;
+  otp: any;
+  selectedRole: string = '';
+  userDetails: any;
+  generatedOTP!: string;
+  pendingPanditUserID: any;
+  pendingPanditCategoryID: any;
+  loginUsername: string = '';
+  loginOtp: string = '';
+  loginOtpSent: boolean = false;
+  loginGeneratedOtp: string = '';
+  referCopied = false;
+  userReferCode: string = '';
+  Language: any = 'English';
+
+
+  categoryList: any[] = [];
+  serviceList: any[] = [];
+  servicecategoryMapList: any[] = [];
+  enrichedCategories: any[] = [];  // ← this drives the HTML
+
+
+
+  serviceBookingCountMap: { [key: string]: number } = {};
+  pendingPanditServiceID: any;
+  sloganName!: string[] | null;
+  constructor(public routerCtrl: NavController,
+    public api: Api,
+    private storage: Storage,
+    private fcm: FcmService,
+    private plt: Platform,
+    private http: HttpClient,
+    public apinu: ApiNU,
+    private alertCtrl: AlertController
+  ) {
+    this.lblSchoolName = this.api.SchoolName;
+    this.forgetPassword = this.api.getForgetPasswordLink();
+    this.schoolLogo = this.api.getSchoolLogo();
+
+  }
+
+  passwordType: string = 'password';
+  passwordIcon: string = 'eye-off';
+  hideShowPassword() {
+    this.passwordType = this.passwordType === 'text' ? 'password' : 'text';
+    this.passwordIcon = this.passwordIcon === 'eye-off' ? 'eye' : 'eye-off';
+  }
+
+  // ngAfterViewInit() {
+  //   this.duplicateCarousels();
+  // }
+
+  // duplicateCarousels() {
+  //   const carousels = document.querySelectorAll('.puja-carousel');
+  //   carousels.forEach((carousel: any) => {
+  //     const originalCards = Array.from(carousel.children);
+  //     originalCards.forEach((card: any) => {
+  //       carousel.appendChild(card.cloneNode(true));
+  //     });
+  //   });
+  // }
+
+  toggleLanguage() {
+
+    if (this.Language === 'English') {
+      this.Language = 'Hindi';
+    } else {
+      this.Language = 'English';
+    }
+
+    this.storage.set('language', this.Language);
+
+    console.log("Current Language:", this.Language);
+
+  }
+
+
+  async ngOnInit() {
+
+
+
+    this.getSlogan();
+    const savedLang = this.storage.get('language');
+
+    if (savedLang) {
+      this.Language = savedLang;
+    } else {
+      this.Language = 'English'; // default language
+      this.storage.set('language', this.Language);
+    }
+
+    // this.api.post('ImportFestivalsByYear',null)
+    // .subscribe((res:any)=>{
+    //   console.log(res)
+    // })
+
+    this.getAllCategories();
+    // this.getAllCategoryMap();
+    // this.getAllServices();
+
+    this.loadPujaSection();
+
+    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+
+    if (Number(this.pendingPanditServiceID) > 0) {
+      this.openRegisterSection();
+    }
+
+    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+      this.openRegisterSection();
+    }
+
+    this.userDetails = await this.storage.get("account");
+    // console.log(await this.storage.get("IsUserLoggedIn"))
+    // console.log(Boolean( await this.storage.get("IsUserLoggedIn")))
+    if (
+      await this.storage.get("IsUserLoggedIn")
+    ) {
+
+      if (this.userDetails?.Role == 'PANDIT') {
+        this.routerCtrl.navigateRoot('/tabs/tab1');
+      } else {
+        this.routerCtrl.navigateRoot('/jajmandashboard');
+      }
+
+    }
+  }
+
+
+  getServiceImagePath(serviceName: string): string {
+    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
+    // console.log(englishName)
+    return `assets/img/${englishName}.jfif`;
+  }
+
+  loadPujaSection() {
+    forkJoin({
+      categories: this.api.post(`ServiceCategorySelectAll?tenantID=1`, null),
+      services: this.api.post(`ServiceSelectAll?tenantID=1`, null),
+      mapping: this.api.post(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+    }).subscribe((res: any) => {
+
+      const categories = res.categories.ServiceCategoryList;
+      const services = res.services.ServiceList;               // ✅ fixed key
+      const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
+
+      // Build each category with its services attached
+      this.enrichedCategories = categories.map((cat: any) => {
+
+        const serviceIDs = mapping
+          .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
+          .map((m: any) => m.ServiceID);
+
+        const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+
+        return { ...cat, services: catServices };
+      });
+
+      console.log('Enriched Categories:', this.enrichedCategories);
+      this.loadAllServiceCounts();
+
+    });
+  }
+
+  // Extract English name for image lookup
+  getServiceEnglishName(fullName: string): string {
+    return fullName?.split('/')?.[0]?.trim() || fullName;
+  }
+
+  // Badge per service
+  getServiceBadge(serviceName: string): string {
+    const n = serviceName?.toLowerCase() || '';
+    if (n.includes('havan') || n.includes('homa')) return '🔥 Havan';
+    if (n.includes('katha') || n.includes('path')) return '📿 Katha';
+    if (n.includes('naming') || n.includes('naamkaran')) return '📛 Naming';
+    if (n.includes('mundan')) return '✂️ Mundan';
+    if (n.includes('annaprash')) return '🍚 First Food';
+    if (n.includes('upanayan') || n.includes('thread')) return '🧵 Sacred Thread';
+    if (n.includes('wedding') || n.includes('vivah')) return '💍 Vivah';
+    if (n.includes('griha')) return '🏡 Griha Pravesh';
+    if (n.includes('vastu')) return '🏠 Vastu';
+    if (n.includes('navagraha')) return '🪐 Navagraha';
+    if (n.includes('lakshmi')) return '🌼 Lakshmi';
+    if (n.includes('ganesh')) return '🐘 Ganesh';
+    if (n.includes('durga')) return '🦁 Durga';
+    if (n.includes('antim') || n.includes('sanskar') && n.includes('antim')) return '🕯️ Antyeshti';
+    if (n.includes('shraddha') || n.includes('pitru')) return '🙏 Shraddha';
+    return '🔥 Puja';
+  }
+
+
+  getAllCategories() {
+    this.api.post(`ServiceCategorySelectAll?tenantID=1`, null)
+      .subscribe((res: any) => {
+        this.categoryList = res.ServiceCategoryList;
+        this.selectedCategory = this.categoryList[3];
+      })
+  }
+  getAllServices() {
+    this.api.post(`ServiceSelectAll?tenantID=1`, null)
+      .subscribe((res: any) => {
+        this.serviceList = res.ServiceList;
+        //  console.log(res.ServiceList)
+      })
+  }
+
+  getAllCategoryMap() {
+    this.api.post(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+      .subscribe((res: any) => {
+        this.servicecategoryMapList = res.ServiceCategoryMappingList;
+        //console.log(res.ServiceCategoryMappingList)
+      })
+  }
+
+
+  getCategoryIcon(name: string): string {
+    const n = name?.toLowerCase() || '';
+    if (n.includes('birth')) return '🌱';
+    if (n.includes('childhood')) return '👶';
+    if (n.includes('marriage')) return '💍';
+    if (n.includes('house') || n.includes('property')) return '🏡';
+    if (n.includes('dosha') || n.includes('special')) return '⭐';
+    if (n.includes('antim') || n.includes('death')) return '🕯️';
+    if (n.includes('health')) return '🏥';
+    if (n.includes('navagraha')) return '🪐';
+    if (n.includes('education')) return '📚';
+    return '🪔';
+  }
+
+  gotToOpenPanditPage(categoryid: any, serviceid?: any) {
+    //alert(categoryid);
+
+    this.routerCtrl.navigateRoot('/pandit-list', {
+      queryParams: {
+        categoryid: categoryid,
+        serviceid: serviceid || null
+      }
+    });
+  }
+
+
+  getCategoryImage(name: string): string {
+    const n = name?.toLowerCase() || '';
+    if (n.includes('birth')) return 'assets/img/PunsavanSanskar2.jfif';
+    if (n.includes('childhood')) return 'assets/img/AnnaprashanCeremony.jfif';
+    if (n.includes('marriage')) return 'assets/img/WeddingCeremony(VivahSanskar).jfif';
+    if (n.includes('house') || n.includes('property')) return 'assets/img/GrihaPraveshPuja.jfif';
+    if (n.includes('dosha') || n.includes('special')) return 'assets/img/GaneshPuja.jfif';
+    if (n.includes('antim') || n.includes('death')) return 'assets/img/AntimSanskar.jfif';
+    if (n.includes('navagraha')) return 'assets/img/NavagrahaShantiPuja3.jfif';
+    if (n.includes('education')) return 'assets/img/UpanayanCeremony.jfif';
+    return 'assets/img/default.jpg';
+  }
+  slideCarousel(carouselId: string, direction: 'prev' | 'next') {
+    const carousel = document.getElementById(carouselId);
+    if (!carousel) return;
+    const cardWidth = carousel.querySelector('.puja-card')?.clientWidth || 300;
+    carousel.scrollBy({ left: direction === 'next' ? cardWidth + 20 : -(cardWidth + 20), behavior: 'smooth' });
+  }
+
+
+  poojaList = [
+    {
+      title: 'Specific Poojas at Ghat / Temple',
+      experience: '4 year',
+      description: 'These rituals are performed at a particular temple / place of pilgrimage.',
+      count: 3,
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtETvui1PCLoBiaEDAs-WZGsFqom6FK20IpQ&s'
+    },
+    {
+      title: 'Regular Poojas at Home',
+      experience: '4 year',
+      description: 'This includes all the poojas which are performed at home without any hassle.',
+      count: 3,
+      image: 'data:image/jpeg;base64,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'
+    },
+    {
+      title: 'Virtual / Online Pooja',
+      experience: '4 year',
+      description: 'All the poojas which are performed at home can also be performed online.',
+      count: 3,
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZb1BlAoLIco497PyyLY8AG08ZSiVtoVba5A&s'
+    },
+    {
+      title: 'Katha Vachan',
+      experience: '4 year',
+      description: 'Katha vachan includes keertans, bhajans and spiritual discourses.',
+      count: 3,
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmAqKqXthvBDnKl-t4O_t8v0qKnIJDPxd9Fw&s'
+    }
+  ];
+
+
+
+
+  getLoginOtp() {
+    if (!this.loginUsername || this.loginUsername.toString().length !== 10) {
+      alert('Please enter a valid 10-digit mobile number');
+      return;
+    }
+
+    this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
+      .subscribe((res: any) => {
+        console.log(res);
+        if (res.UserList.length === 0) {
+          alert('Please register..');
+          this.openRegisterSection();
+          this.mobileNumber = this.loginUsername;
+          this.goToOtp();
+          return;
+        } else {
+          // Generate OTP
+          this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+          this.loginOtpSent = true;
+          alert(this.loginGeneratedOtp)
+          // Send via WhatsApp
+          const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.loginUsername}&type=template&templateid=813743&placeholders=${this.loginGeneratedOtp}`;
+
+          console.log(url);
+
+          // this.http.get(url).subscribe(
+          //   (response: any) => {
+          //     console.log('Login OTP Sent Successfully', response);
+          //     this.loginOtpSent = true;
+          //     alert('OTP sent on WhatsApp');
+          //   },
+          //   (error) => {
+          //     console.error('Error sending Login OTP', error);
+          //     alert('Failed to send OTP. Please try again.');
+          //   }
+          // );
+        }
+      })
+  }
+
+  resendLoginOtp() {
+    this.loginOtp = '';
+    this.loginOtpSent = false;
+    this.getLoginOtp();
+  }
+  // Step 2 — verify OTP then call VedantaLogin
+  verifyLoginOtp() {
+    if (!this.loginOtp || this.loginOtp.toString().length < 4) {
+      alert('Please enter the OTP');
+      return;
+    }
+
+    if (this.loginOtp.toString() !== this.loginGeneratedOtp.toString()) {
+      alert('Invalid OTP. Please try again.');
+      return;
+    }
+
+    // OTP matched — call login API
+    this.userLogin();
+  }
+
+
+
+
+  userLogin() {
+
+    this.api.post(`VedantaLogin?UserName=${this.loginUsername}`, null)
+      .subscribe(async (res: any) => {
+        console.log(res)
+        if (res) {
+          if (res.Role == 'PANDIT') {
+            await this.storage.set("account", res);
+            await this.storage.set("IsUserLoggedIn", "true");
+            await this.storage.set("Language", res.Languages);
+            this.routerCtrl.navigateRoot('/tabs/tab1');
+          } else {
+
+            await this.storage.set("account", res);
+            await this.storage.set("IsUserLoggedIn", "true");
+            await this.storage.set("Language", res.Languages);
+            this.routerCtrl.navigateRoot('/jajmandashboard');
+          }
+        }
+      })
+  }
+
+
+
+
+  onProfileSelected(event: any) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.profilePreview = reader.result as string;
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+
+
+
+
+
+  scrollToPandit() {
+    this.isSevaModalOpen = true;
+  }
+  skipAndScroll() {
+    this.isSevaModalOpen = false;
+    setTimeout(() => {
+      const el = document.getElementById('pandit-section');
+      if (el) {
+        const yOffset = el.getBoundingClientRect().top + window.scrollY - 70;
+        this.content.scrollToPoint(0, yOffset, 600);
+      }
+    }, 400);
+  }
+
+  confirmAndScroll() {
+    console.log('Age:', this.selectedAge);
+    console.log('Service Type:', this.selectedServiceType);
+    this.isSevaModalOpen = false;
+    setTimeout(() => {
+      const el = document.getElementById('pandit-section');
+      if (el) {
+        const yOffset = el.getBoundingClientRect().top + window.scrollY - 70;
+        this.content.scrollToPoint(0, yOffset, 600);
+      }
+    }, 400);
+  }
+
+  doScroll() {
+    setTimeout(() => {
+      document.getElementById('pandit-section')?.scrollIntoView({
+        behavior: 'smooth', block: 'start'
+      });
+    }, 350);
+  }
+
+  onImgError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = '../../assets/img/default.jpg';
+    // If even default fails, use a CSS gradient placeholder
+    img.onerror = null;
+  }
+
+  currentImageIndex: { [key: string]: number } = {};
+  imageIntervals: { [key: string]: any } = {};
+
+  getCurrentImage(serviceName: string): string {
+    //console.log(serviceName)
+    const key = serviceName;
+    const images = this.getServiceImages(serviceName);
+
+    if (!(key in this.currentImageIndex)) {
+      this.startSlideshow(serviceName);
+    }
+
+    return images[this.currentImageIndex[key] || 0];
+  }
+
+
+  getServiceImages(serviceName: string): string[] {
+    const cleanName = serviceName;
+
+    return [
+      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}2.jfif`,
+      `assets/img/${cleanName}3.jfif`
+    ];
+  }
+
+  startSlideshow(serviceName: string) {
+    const key = serviceName;
+
+    if (this.imageIntervals[key]) return; // avoid multiple intervals
+
+    this.currentImageIndex[key] = 0;
+
+    this.imageIntervals[key] = setInterval(() => {
+      this.currentImageIndex[key] =
+        (this.currentImageIndex[key] + 1) % 3;
+    }, 1000000); // change every 3 seconds
+  }
+
+  async explorePooja(cat: any) {
+    const el = document.getElementById(cat);
+    if (!el) return;
+
+    const scrollEl = await this.content.getScrollElement();
+    const yOffset = el.offsetTop - 80;
+
+    this.content.scrollToPoint(0, yOffset, 600);
+  }
+
+  openRegisterSection() {
+    this.showMainSection = false;
+    this.showLoginSection = false;
+    this.showRegisterSection = true;
+
+    this.registerStep = 'mobile';
+  }
+
+  // goToOtp() {
+  //   // call API to send OTP here
+
+  //   this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
+  //     .subscribe((res: any) => {
+  //       console.log(res.UserList);
+
+  //       if (res.UserList.length > 0) {
+  //         alert('User Already Exists.Please login or use different mobile no.');
+  //       } else {
+  //         alert('Otp sent on whatsapp on registered mobile number')
+  //         this.registerStep = 'otp';
+  //       }
+  //     })
+  // }
+
+
+
+  // verifyOtp() {
+
+
+  //   if (this.otp == '123') {
+  //     // this.api.post('')
+  //     this.registerStep = 'role';
+  //   } else {
+  //     alert('Otp did not matched.Please try again.')
+  //   }
+
+  // }
+
+
+  goToOtp() {
+    // call API to send OTP here
+
+    this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
+      .subscribe((res: any) => {
+        console.log(res.UserList);
+
+        if (res.UserList.length > 0) {
+          alert('User Already Exists.Please login or use different mobile no.');
+        } else {
+          alert('Otp sent on whatsapp');
+          this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+          // const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.mobileNumber}&type=template&templateid=813743&placeholders=${this.generatedOTP}`;
+          const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.mobileNumber}&type=template&templateid=813743&placeholders=${this.generatedOTP}`;
+
+          console.log(url)
+          // this.http.get(url).subscribe(
+          //   (response: any) => {
+          //     console.log('OTP Sent Successfully', response);
+
+          //     alert('OTP sent successfully');
+          //   },
+          //   (error) => {
+          //     console.error('Error sending OTP', error);
+          //     alert('Failed to send OTP');
+          //   }
+          // );
+          this.registerStep = 'otp';
+        }
+      })
+  }
+
+
+
+
+  verifyOtp(): void {
+
+    // alert('clicked')
+    if (!this.otp) {
+      alert('Please enter valid otp');
+      return;
+    }
+    //console.log(this.otp)
+    // console.log(this.generatedOTP)
+    // console.log(typeof(this.otp))
+    //console.log(typeof(this.generatedOTP))
+    if (Number(this.otp) === Number(this.generatedOTP)) {
+      //  alert('correct');
+      this.registerStep = 'role';
+    } else {
+      alert('Incorrect Otp.')
+    }
+
+  }
+
+
+  async selectRole(role: string) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Confirm Selection',
+      message: `Are you sure you want to continue as ${role.toUpperCase()}?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Yes, Continue',
+          handler: () => {
+            this.confirmRole(role);
+            // this.selectedRole = role;
+            // this.registerStep = 'form';
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+  confirmRole(role: string) {
+    this.selectedRole = role;
+
+    var body = {
+
+      "TenantID": Number(1),
+      "Role": String(role),
+      "LoginID": String(this.mobileNumber),
+      "PasswordHash": String('Pass@123'),
+      "IsLocked": Boolean(0),
+      "Status": String('ACTIVE'),
+      "LastLoginAt": new Date(),
+      "PasswordChangedAt": new Date(),
+      "DateAdded": new Date(),
+      "DateModified": new Date(),
+      "UpdatedByUser": String(this.mobileNumber)
+    }
+    this.api.post('UsersInsert', body)
+      .subscribe((res: any) => {
+        // console.log(res);
+
+        alert('User Created Successfully!');
+
+
+        const body = {
+          profileID: 0,
+          tenantID: 1,
+          userID: res.UserID,
+          fullName: this.signupName || '',
+          dOB: new Date().toISOString(),
+          gender: '',
+          phoneNumber: String(this.mobileNumber) || '',
+          email: '',
+          experienceYears: 0,
+          bio: '',
+          languages: '',
+          basePrice: 0,
+          profilePhotoUrl: '',
+          verificationStatus: 'PENDING',
+          isActive: Boolean(1),
+          dateAdded: new Date().toISOString(),
+          dateModified: new Date().toISOString(),
+          updatedByUser: ''
+        }
+        this.api.post('ProfilesInsert', body).subscribe((res: any) => {
+          this.api.post(`VedantaLogin?UserName=${this.mobileNumber}`, null)
+            .subscribe(async (res: any) => {
+              console.log(res)
+              if (res) {
+                if (res.Role == 'PANDIT') {
+                  await this.storage.set("account", res);
+                  await this.storage.set("IsUserLoggedIn", "true");
+                  await this.storage.set("Language", res.Languages);
+                  this.routerCtrl.navigateRoot('/tabs/tab1');
+                } else {
+
+                  await this.storage.set("account", res);
+                  await this.storage.set("IsUserLoggedIn", "true");
+                  await this.storage.set("Language", res.Languages);
+                  this.routerCtrl.navigateRoot('/jajmandashboard');
+                }
+              }
+            })
+
+        })
+
+        //  const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.mobileNumber}&type=template&templateid=813743&placeholders=${this.generatedOTP}`;
+        //   this.http.get(url).subscribe(
+        //     (response: any) => {
+        //       alert('Username and password sent on whatsapp!');
+        //     },
+        //     (error) => {
+        //       console.error('Error sending OTP', error);
+        //       alert('Failed to send OTP');
+        //     }
+        //   )
+        // this.routerCtrl.navigateRoot('/login');
+        //   this.showRegisterSection = false;
+        // this.showMainSection = true;
+        //this.registerStep = 'form';
+      })
+
+
+  }
+
+
+
+
+  backToMobile() {
+    this.registerStep = 'mobile';
+  }
+
+  openAuthLanding() {
+    this.showMainSection = false;
+    this.showAuthLanding = true;
+    this.showLoginSection = false;
+    this.showRegisterSection = false;
+  }
+
+  openLoginSection() {
+    this.showMainSection = false;
+    this.showAuthLanding = false;
+    this.showLoginSection = true;
+    this.showRegisterSection = false;
+  }
+
+
+  loadAllServiceCounts() {
+    this.enrichedCategories.forEach((cat: any) => {
+      cat.services.forEach((svc: any) => {
+
+        this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← default 10
+
+        this.api.post(`PanditServicesSelectAllByServiceID?serviceID=${svc.ServiceID}`, null)
+          .subscribe({
+            next: (res: any) => {
+
+              const panditServiceIDs = res.PanditServiceList?.map((p: any) => p.PanditServiceID) || [];
+
+              if (panditServiceIDs.length === 0) {
+                this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← no pandits = 10
+                return;
+              }
+
+              const bookingCalls = panditServiceIDs.map((psid: any) =>
+                this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${psid}`, null)
+              );
+
+              forkJoin(bookingCalls).subscribe({
+                next: (results: any) => {
+                  const totalCount = results.reduce((sum: number, r: any) => {
+                    return sum + (r?.BookingList?.length || 0);
+                  }, 0);
+
+                  // ← real count + 10
+                  this.serviceBookingCountMap[String(svc.ServiceID)] = totalCount + 5;
+                },
+                error: () => {
+                  this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← error = 10
+                }
+              });
+            },
+            error: () => {
+              this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← error = 10
+            }
+          });
+      });
+    });
+  }
+
+  // @ViewChild(IonContent) content!: IonContent;
+
+  async backToMain() {
+    await this.storage.clear();
+    this.showMainSection = true;
+    this.showAuthLanding = false;
+    this.showLoginSection = false;
+    this.showRegisterSection = false;
+
+    setTimeout(() => {
+      this.content.scrollToTop(500);
+    }, 100);
+  }
+
+  copyReferCode() {
+    const code = `MANGAL${this.userReferCode}`;
+    navigator.clipboard.writeText(code).then(() => {
+      this.referCopied = true;
+      setTimeout(() => this.referCopied = false, 2500);
+    });
+  }
+
+  shareReferCode() {
+    const code = `MANGAL${this.userReferCode}`;
+    const msg = `🪔 Join me on Mangal.Bhav — India's most trusted Pandit booking app!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
+
+    if (navigator.share) {
+      navigator.share({ title: 'Mangal.Bhav Referral', text: msg });
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  }
+
+  isCategoryDropdownOpen = false;
+  selectedCategory: any = null;
+
+  toggleCategoryDropdown() {
+    this.isCategoryDropdownOpen = !this.isCategoryDropdownOpen;
+  }
+
+  selectCategory(cat: any) {
+    this.selectedCategory = cat;
+    this.isCategoryDropdownOpen = false;
+    // same as before — scroll to that section
+    this.explorePooja(cat.CategoryName);
+  }
+
+
+
+  openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
+  getSlogan() {
+    const randomIndex = Math.floor(Math.random() * 40);
+    this.sloganName = this.api.getChalisaLine(randomIndex);
+  }
+
+}

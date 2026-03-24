@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{LoginTitle}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<br>
+<ion-spinner name="bubbles" *ngIf="loadingData"></ion-spinner>
+<br>
+ 
+<form style="margin-bottom: 20vh;">
+
+  <ion-card class="ion-padding" id="cont" style="text-align: center;">
+    <ion-item>
+      <img src="{{schoolLogo}}" id="profile-image" />
+    </ion-item>
+    <ion-card-header>
+      <h1> OTP Login Please </h1>
+    </ion-card-header>
+    <ion-item>
+      <ion-input type="text" *ngIf="showInput" placeholder="{{optTitle}}" [(ngModel)]="account.phonenumber"
+        name="phonenumber" autofocus #focusInput></ion-input>
+    </ion-item>
+    <ion-label color="danger">{{lblMessage}}</ion-label>  
+    <ion-button color="primary" expand="block" (click)="sendOTP()" *ngIf="showGetOTP">Get OTP</ion-button>
+    <ion-button color="secondary" expand="block" (click)="ConfirmOTP()" *ngIf="showConfimOTP">Confirm OTP</ion-button>
+    <div *ngIf="ShowStudents">
+      <ion-card *ngFor="let item of data">
+        <ion-item style="font-size:large">{{item.schoolName}} </ion-item>
+        <ion-item style="font-size:xx-large"> 
+          <h2>{{item.admissionNumber}} | {{item.studentName}}</h2>
+        </ion-item>
+        <ion-item style="font-size:large">Class: {{item.standardName}} </ion-item>
+        <ion-button color="primary" expand="block" (click)="doLogin(item.personid,item.tenantID)">
+          <ion-icon name="log-in-outline"></ion-icon>
+          Login
+        </ion-button>
+      </ion-card>
+    </div> 
+    <a style="font-size: smaller;" (click)="doCancel()">Cancel</a>
+    <ion-item>Powered by
+      <img src="https://vedantaschoolerp.com/img/core-img/logo.png">
+    </ion-item>
+  </ion-card>
+
+</form>

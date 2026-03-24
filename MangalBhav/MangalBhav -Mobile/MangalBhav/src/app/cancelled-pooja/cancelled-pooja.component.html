@@ -1,0 +1,148 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">Bookings</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- TOP BANNER -->
+    <div class="page-banner">
+      <div class="banner-text">
+        <p class="banner-sub">Cancelled</p>
+        <h2 class="banner-title">Seva Bookings</h2>
+      </div>
+      <div class="banner-om">ॐ</div>
+    </div>
+
+    <div class="section-label">Your Services</div>
+
+    <!-- SERVICE + BOOKING CARDS -->
+    <div class="cards-container">
+      <ng-container *ngFor="let service of PanditServicesList; let i = index">
+
+        <!-- ===== SERVICE CARD ===== -->
+        <div class="service-card" (click)="toggleService(i)" [class.expanded]="expandedIndex === i">
+
+          <!-- SERVICE IMAGE BANNER -->
+          <div class="service-image-wrap">
+            <img [src]="getCurrentImage(service.Service?.Name)" [alt]="getLocalizedText(service.Service?.Name)"
+              class="service-image" (error)="onImgError($event)" />
+            <div class="image-overlay"></div>
+            <div class="image-title">
+              <h3>{{ getLocalizedText(service.Service?.Name) }}</h3>
+              <p>{{ getLocalizedText(service.Location?.City) }}</p>
+            </div>
+            <div class="image-badge">
+              <span>{{ service.Bookings?.length || 0 }}</span>
+              <p>Bookings</p>
+            </div>
+          </div>
+
+          <!-- SERVICE DETAILS ROW -->
+          <div class="service-info-row">
+            <div class="service-info-left">
+              <div class="info-chip">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ getLocalizedText(service.Location?.Name) }},
+                {{ getLocalizedText(service.Location?.City) }}
+              </div>
+            </div>
+            <div class="service-info-right">
+              <div class="price-tag">₹ {{ service.Price }}</div>
+              <div class="expand-icon" [class.rotated]="expandedIndex === i">
+                <ion-icon name="chevron-down-outline"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== BOOKING CARDS (expanded) ===== -->
+        <div *ngIf="expandedIndex === i" class="bookings-list">
+
+          <div class="bookings-label">
+            <ion-icon name="people-outline"></ion-icon>
+            {{ service.Bookings?.length || 0 }} Booking(s)
+          </div>
+
+          <!-- Empty bookings -->
+          <div *ngIf="!service.Bookings?.length" class="no-bookings">
+            <span>🙏</span>
+            <p>No bookings yet for this service</p>
+          </div>
+
+          <div class="booking-card" *ngFor="let booking of service.Bookings">
+
+            <!-- Booking Top Row -->
+            <div class="booking-top">
+              <div class="bhakt-avatar">
+                {{ booking.BhaktProfile?.FullName?.charAt(0) || '🙏' }}
+              </div>
+              <div class="bhakt-info">
+                <h4 class="bhakt-name">{{ booking.BhaktProfile?.FullName }}</h4>
+                <p class="bhakt-phone">
+                  <ion-icon name="call-outline"></ion-icon>
+                  {{ booking.BhaktProfile?.PhoneNumber }}
+                </p>
+              </div>
+              <div class="booking-status-wrap">
+                <div class="booking-status-badge" [ngClass]="getStatusClass(booking.Status)">
+                  {{ booking.Status }}
+                </div>
+              </div>
+            </div>
+
+            <div class="booking-divider"></div>
+
+            <!-- Booking Detail Pills -->
+            <div class="booking-pills">
+              <div class="booking-pill">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ booking.PoojaDate | date:'dd MMM yyyy' }}</span>
+              </div>
+              <div class="booking-pill">
+                <ion-icon name="cash-outline"></ion-icon>
+                <span>₹ {{ booking.TotalAmount }}</span>
+              </div>
+              <div class="booking-pill" [ngClass]="getPaymentClass(booking.PaymentStatus)">
+                <ion-icon name="card-outline"></ion-icon>
+                <span>{{ booking.PaymentStatus }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!PanditServicesList?.length" class="empty-state">
+      <div class="empty-icon">📜</div>
+      <h3 class="empty-title">No Services Found</h3>
+      <p class="empty-sub">Add services first to start receiving bookings</p>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+<app-panditjibottomtabs></app-panditjibottomtabs>

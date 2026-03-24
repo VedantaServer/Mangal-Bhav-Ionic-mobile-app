@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Card</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    body {
+            font-family:'Times New Roman';
+            font-size: 12px;
+            line-height:1;
+        }
+
+    .report-card {
+        border: 1px solid #ccc;
+        padding: 20px;
+
+    }
+
+
+    .header {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .header img {
+        width: 150px;
+        margin-bottom: 10px;
+    }
+
+    .personal-details,
+    .academic-performance,
+    .remarks,
+    .grading-scale {
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+    }
+
+    table th {
+        background-color: #f2f2f2;
+    }
+
+    .remarks p {
+        margin: 5px 0;
+    }
+
+    .signature {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .signature {
+        text-align: center;
+    }
+
+    .signature img {
+        width: 100px;
+    }
+
+    .signature-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<body>
+    <div class="report-card">
+        <div class="header">
+            <img class="logo" src="https://balbharati.org/wp-content/uploads/2016/03/logo.jpg" alt="">
+
+            <h5 class="school-address" style="margin: 0; padding: 0; font-size: 12px;">Parwana road ,Pitampura,
+                Delhi-110034,Tel: 011-27028600,27028700</h5>
+            <h5 style="margin: 0; padding: 0; font-size: 12px;"><b>Email</b>:balbharti@pp.balbharti.org ,
+                <b>Website</b>: https://bbpspp.balbharati.org/
+            </h5>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">ACADEMIC SESSION: 2023-24</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">REPORT CARD ‑ Consolidated Report / Annual
+                Examination.</h4>
+            <h4 style="margin: 5px 0; padding: 0; font-size: 12px;">Class 6</h4>
+        </div>
+        <table class="personal-details">
+            <th colspan="12" style="text-align: center;">Personal Details</th>
+            <tr>
+                <th>NAME</th>
+                <td>AADITRI MISHRA</td>
+                <th>CLASS/SECTION</th>
+                <td>1-A</td>
+            </tr>
+            <tr>
+                <th>ADMISSION NO.</th>
+                <td>428-21-V</td>
+                <th>ROLL NO.</th>
+                <td>1</td>
+            </tr>
+            <tr>
+                <th>FATHER'S NAME</th>
+                <td>CHANDAN MISHRA</td>
+                <th>DATE OF BIRTH</th>
+                <td>22 JUN 2016</td>
+            </tr>
+            <tr>
+                <th>MOTHER'S NAME</th>
+                <td>BANDANA</td>
+                <th>GENDER</th>
+                <td>FEMALE</td>
+            </tr>
+        </table>
+
+        <div class="academic-performance">
+
+            <table>
+
+                <thead>
+                    <th colspan="12" style="text-align: center;">ACADEMIC PERFORMANCE</th>
+                    <tr>
+                        <th>SUBJECTS</th>
+                        <th>MAXIMUM MARK</th>
+                        <th>MARK OBTAINED</th>
+
+                        <th>GRADE</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>English</td>
+                        <td>0</td>
+                        <td>4</td>
+                        <td>18</td>
+
+                    </tr>
+                    <tr>
+                        <td>Mathematics</td>
+                        <td>0</td>
+                        <td>4</td>
+                        <td>18</td>
+
+                    </tr>
+                    <tr>
+                        <td>EVS</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>18</td>
+
+                    </tr>
+                    <tr>
+                        <td>Hindi</td>
+                        <td>0</td>
+                        <td>5</td>
+                        <td>18</td>
+
+                    </tr>
+
+            </table>
+            <table>
+                <tr>
+                    <td colspan="8">GRAND TOTAL</td>
+                    <td>346 / 400</td>
+                    <td>PERCENTAGE</td>
+                    <td>94.71</td>
+                </tr>
+
+            </table>
+            <div style="display: flex; justify-content:space-evenly;align-items: center;">
+                <div>
+                        
+                    <table class="table table-bordered mt-2 text-center">
+                        <thead>
+                          <tr>
+                            <th>Grade</th>
+                            <th>Performance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><b>A</b></td>
+                            <td>Outstanding</td>
+                          </tr>
+                          <tr>
+                            <td><b>B</b></td>
+                            <td>Very Good</td>
+                          </tr>
+                          <tr>
+                            <td><b>C</b></td>
+                            <td>Fair</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    <p>
+                        <b>ATTENDANCE -</b> 106/127(83.5%)
+                    </p>
+                    <p><b> DATE - </b>27-Dec-2023</p>
+                    <p><b>REMARKS</b> : Shape your destiny by embracing the power
+                        of hardwork and resilience.</p>
+                </div>
+                <div >
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <th colspan="12">GRADING SCALES</th>
+                          <tr>
+                            <th colspan="2" >SCHOLASTIC</th>
+                            <th> CO-SCHOLASTIC</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>A1</td>
+                            <td>TOP 1/8 OF THE PASSED CANDIDATE</td>
+                            <td rowspan="9">
+                               
+                                <table class="table table-bordered mt-2 text-center">
+                                  <thead>
+                                    <tr>
+                                      <th>Grade</th>
+                                      <th>Performance</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td><b>A</b></td>
+                                      <td>Outstanding</td>
+                                    </tr>
+                                    <tr>
+                                      <td><b>B</b></td>
+                                      <td>Very Good</td>
+                                    </tr>
+                                    <tr>
+                                      <td><b>C</b></td>
+                                      <td>Fair</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                              
+                          </tr>
+                          <tr>
+                            <td>A2</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>B1</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>B2</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>C1</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>C2</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>D1</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>D2</td>
+                            <td>NEXT 1/8 OF THE PASSED CANDIDATE</td>
+                          </tr>
+                          <tr>
+                            <td>E</td>
+                            <td>ESSENTIAL REPEAT</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                </div>
+              
+            </div>
+            
+        </div>
+        <div class="signature">
+            <p align="center">CLASS TEACHER ...........</p>
+            <p align="center">DEPTT. INCHARGE...........</p>
+            <p align="center">PRINCIPAL...........</p>
+            <p align="center">PARENT...........</p>
+        </div>
+    </div>
+</body>
+
+</html>

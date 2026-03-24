@@ -1,0 +1,68 @@
+{
+  "BACK_BUTTON_TEXT": "Back",
+
+  "NAME": "Name",
+  "EMAIL": "Email",
+  "USERNAME": "Username",
+  "PASSWORD": "Password",
+  "LOGIN": "Sign in",
+  "SIGNUP": "Sign up",
+
+  "TAB1_TITLE": "Dashboard",
+  "TAB2_TITLE": "Community",
+  "TAB3_TITLE": "Help",
+
+  "MAP_TITLE": "Map",
+
+  "TUTORIAL_SKIP_BUTTON": "Skip",
+  "TUTORIAL_CONTINUE_BUTTON": "Continue to login..",
+
+  "TUTORIAL_SLIDE1_TITLE": "Vedanta ERP Mobile App",
+  "TUTORIAL_SLIDE1_DESCRIPTION": "The <b>next generation mobile</b> is ready to help you make real time decision..",
+
+  "TUTORIAL_SLIDE2_TITLE": "How to use this mobile app",
+  "TUTORIAL_SLIDE2_DESCRIPTION": "You need to login using your credential to securely gain access to your data. The app divided into various section for ease of use however most information shall be available at the most 2 click.",
+
+  "TUTORIAL_SLIDE3_TITLE": "Need Help",
+  "TUTORIAL_SLIDE3_DESCRIPTION": "Need help? Check out the Help Section README for a full tutorial. Click chat option to have a real time resolution with our technical support executive.",
+
+  "TUTORIAL_SLIDE4_TITLE": "Ready to awesomeness?",
+
+  "WELCOME_INTRO": "The starting point you would need your username & password given to by school.",
+
+  "SETTINGS_TITLE": "Settings",
+  "SETTINGS_OPTION1": "Option 1",
+  "SETTINGS_OPTION2": "Option 2",
+  "SETTINGS_OPTION3": "Option 3",
+  "SETTINGS_OPTION4": "Option 4",
+
+  "SETTINGS_PROFILE_BUTTON": "Edit Profile",
+
+  "SETTINGS_PAGE_PROFILE": "Edit Profile",
+
+  "WELCOME_TITLE": "Welcome",
+
+  "LOGIN_TITLE": "Sign in",
+  "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",
+  "LOGIN_BUTTON": "Sign in",
+  "SIGNUP_TITLE": "Sign up",
+  "SIGNUP_ERROR": "Unable to create account. Please check your account information and try again.",
+  "SIGNUP_BUTTON": "Sign up",
+
+  "LIST_MASTER_TITLE": "Items",
+
+  "ITEM_CREATE_TITLE": "New Item",
+  "ITEM_CREATE_CHOOSE_IMAGE": "Add Image",
+
+  "ITEM_NAME_PLACEHOLDER": "Name",
+  "ITEM_ABOUT_PLACEHOLDER": "About",
+
+  "DONE_BUTTON": "Done",
+  "CANCEL_BUTTON": "Cancel",
+  "DELETE_BUTTON": "Delete",
+
+  "CARDS_TITLE": "Social",
+
+  "SEARCH_TITLE": "Search",
+  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Donald Duck\""
+}

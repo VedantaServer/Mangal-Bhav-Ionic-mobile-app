@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Indian Festivals</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="festival-page-wrap">
+
+    <!-- LOADING -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-flame">🪔</div>
+      <p>Loading festivals...</p>
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- CONTENT -->
+    <div *ngIf="!isLoading">
+
+      <!-- Month filter pills -->
+      <div class="month-filter-wrap">
+        <button class="month-pill" [class.active]="selectedMonth === null" (click)="filterByMonth(null)">
+          All
+        </button>
+        <button class="month-pill" *ngFor="let m of availableMonths" [class.active]="selectedMonth === m.value"
+          (click)="filterByMonth(m.value)">
+          {{ m.label }}
+        </button>
+      </div>
+
+      <div class="goto-upcoming-wrap">
+        <button class="goto-upcoming-btn" (click)="goToUpcomingFestival()">
+          <ion-icon name="calendar-outline"></ion-icon>
+          Next: {{ upcomingFestival?.FestivalName }} — {{ upcomingFestival?.FestivalDate | date:'dd MMM' }}
+        </button>
+      </div>
+
+      <!-- Festival count -->
+      <p class="festival-count">
+        🪔 {{ filteredFestivals.length }} Festival{{ filteredFestivals.length !== 1 ? 's' : '' }}
+      </p>
+
+      <!-- Festival cards -->
+      <div class="festival-list">
+        <div class="festival-card" *ngFor="let festival of filteredFestivals" [id]="'festival-' + festival.FestivalID">
+
+          <div class="festival-date-block">
+            <div class="festival-day">{{ festival.FestivalDate | date:'dd' }}</div>
+            <div class="festival-month">{{ festival.FestivalDate | date:'MMM' }}</div>
+          </div>
+
+          <div class="festival-info">
+            <div class="festival-name-row">
+              <h3 class="festival-name">{{ festival.FestivalName }}</h3>
+              <span class="festival-emoji">{{ getFestivalEmoji(festival.FestivalName) }}</span>
+            </div>
+            <p class="festival-desc">{{ festival.Description }}</p>
+            <div class="festival-footer">
+              <span class="festival-year-chip">{{ festival.FestivalDate | date:'EEEE' }}</span>
+              <span class="festival-year-chip">{{ festival.Year }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

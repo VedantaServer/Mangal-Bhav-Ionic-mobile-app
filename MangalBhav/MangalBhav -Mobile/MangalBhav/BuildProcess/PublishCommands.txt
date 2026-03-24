@@ -1,0 +1,144 @@
+
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\PADMAM.jks app-release-unsigned.apk key0
+Pass@123
+AppKeys\zipalign -v 4 app-release-unsigned.apk PADMAM.1.2.apk
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\YesCampusConnectSchool.jks app-release-unsigned.apk YesCampusConnectSchool
+AppKeys\zipalign -v 4 app-release-unsigned.apk YesCampusConnectSchool.2.3.apk
+Pass@123
+
+ 
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\BuddhaInternationalKey.jks app-release-unsigned.apk BuddhaInternational
+AppKeys\zipalign -v 4 app-release-unsigned.apk BuddhaInternational.1.1.apk
+Pass@123
+
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\DPSJhansiKey.jks app-release-unsigned.apk DPSJhansi
+zipalign -v 4 app-release-unsigned.apk DPSJhansi1.0.apk
+Pass@123
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\VEDANTAKey.jks app-release-unsigned.apk Vedanta
+AppKeys\zipalign -v 4 app-release-unsigned.apk Vedanta.2.7.apk
+Pass@123
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\RVSERP.jks app-release-unsigned.apk RVSERP
+AppKeys\zipalign -v 4 app-release-unsigned.apk RVSERP9.5.2.apk
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\GoodShepherd.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk GoodShepherd1.0.apk
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\BasavaKey.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk Basava6.4.0.apk
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\omkey.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk OM.3.8.apk
+Pass@123
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\SummerFieldsGGN.jks app-release-unsigned.apk my-alias
+AppKeys\zipalign -v 4 app-release-unsigned.apk SummerFieldsGGN10.apk
+Pass@123
+
+
+--BuddhaInternationalKey
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\biskey.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk BIS10.apk
+Pass@123
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\mvm.jks app-release-unsigned.apk MVM
+AppKeys\zipalign -v 4 app-release-unsigned.apk MVM.2.8.apk
+Pass@123 
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\BRGSIPKey.jks app-release-unsigned.apk vedanta
+Pass@123
+
+zipalign -v 4 app-release-unsigned.apk BRGS2.6.apk
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\OasisKeyLatet.jks app-release-unsigned.apk upload
+Pass@123 
+AppKeys\zipalign -v 4 app-release-unsigned.apk OasisDoon3.8.apk
+
+apksigner sign --ks AppKeys\OasisKeyLatet.jks  --v1-signing-enabled true --v2-signing-enabled true Oasis.3.8.apk
+
+
+
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys\RRRAKey.jks app-release-unsigned.apk RRRA
+zipalign -v 4 app-release-unsigned.apk RRRAKey4.1.apk
+Pass@123
+
+
+keytool -genkey -v -keystore AppKeys/aryansinternational.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/aryansinternational.jks app-release-unsigned.apk key0
+zipalign -v 4 app-release-unsigned.apk AryanInternational1.0.0.apk
+
+keytool -genkey -v -keystore ppsavani.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/ppsavani.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk ppsavani.1.1.0.apk
+Pass@123 
+apksigner sign --ks AppKeys\ppsavani.jks  --v1-signing-enabled true --v2-signing-enabled true ppsavani.1.1.0.apk
+
+
+
+keytool -genkey -v -keystore sjis.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/sjis.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk sjis.1.3.apk
+Pass@123
+
+
+keytool -genkey -v -keystore alchemy.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/alchemy.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk alchemy.0.0.0.apk
+Pass@123
+
+
+
+keytool -genkey -v -keystore AppKeys\radiant.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/radiant.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk radiant.1.0.0.apk
+Pass@123
+
+
+
+keytool -genkey -v -keystore springmeadows.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/springmeadows.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk springmeadows-1.0.0.apk
+Pass@123 
+ 
+
+ 
+keytool -genkey -v -keystore advanceschool.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/advanceschool.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk advanceschool-1.0.0.apk
+Pass@123 
+
+keytool -genkey -v -keystore satyaprakash.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key0
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore AppKeys/satyaprakash.jks app-release-unsigned.apk key0
+AppKeys\zipalign -v 4 app-release-unsigned.apk satyaprakash-1.0.0.apk
+Pass@123 
+ 
+
+
+FaceUP-AI 
+-> key-FACEUP-AI.jks 
+-> alias-key0
+-> Pass-Pass@123
+-> com.mobile.FACEUPAI
+
+
+for testing the notifications.
+https://VedantaSchoolERP.com/SendPushNotifications.aspx?fTokenID=fq4JsHdyzZE:APA91bHtIXkm_Q7GJZZcd7VA-ivijQlpIJA0LhzaPRcTKHvC_VWCVEp2Cn10-oQGm9KtDszJ4TIMEKrSlYLPiPIEGUhNeGSO0hqYD4SSXhv1FkaAKpU-E2tVh-FXcorwLyXHsrZ8MdA5&message=test&ticker=1&title=test
+
+
+

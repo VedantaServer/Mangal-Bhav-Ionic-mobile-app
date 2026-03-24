@@ -1,0 +1,47 @@
+<div class="center-screen">
+
+  <smart-card *ngIf="showForm" style="padding:10px;margin-top:8%;box-shadow:1px 1px 10px #000000;border-radius:10px">
+   
+    <form action="./" style="margin-left:1%;">
+      <img src="../../assets/vedanta.jpg" style="display: block; margin: 1vh auto;" />
+      <h4 style="text-align:center"><i class="material-icons">lock</i>  User Login </h4>
+      <div class="input-holder" style="margin-top:30px;">
+        <input placeholder="Email or Phone Number" type="text" id="userInput" style="border:1px solid #cfcbcb;padding:15px" class="smart-input form-control" [(ngModel)]="username" name="username" />
+        <br />
+        <br />
+        <input placeholder="Password" type="password" id="accessPassword" style="border: 1px solid #cfcbcb; padding: 15px"  class="smart-input form-control" [(ngModel)]="password" name="password" />
+        <br />
+        <br />
+        <input type="checkbox" id="terms" style="float:right;width:15px;height:15px;margin-left:10px"/>
+        <label for="terms" style="float:right">Terms of Use</label>
+        <br />
+        <br />
+        <smart-button #button class="success pull-right" style="float:right" [disabled]="loading" form-control-name="submit" type="submit"
+                      (click)="loginOnClick()">Login Now!</smart-button>
+        <br />
+        <br />
+      </div>
+      <div id="validationsummary" style="color:red"></div>
+      <h3 style="color:red"> {{errorMessage}} </h3>
+    </form>
+  </smart-card>
+  <smart-card style="width:50%;height:50%; align-content:center;margin-left:15%;padding:10px" *ngIf="showLoginpage">
+    <div class="row">
+      <div class="col-xs-12"> 
+        <div class="alert alert-success" id="Loginpage" >
+          <div style="color:green; text-align:center;font-size:20px;">
+            {{successfullyMsg}}<br />
+            <div><input type="button" value="Login Now" (click)="Loginpage()"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </smart-card>
+</div>
+
+
+
+
+
+

@@ -1,0 +1,304 @@
+<body style="max-width: 95vw; background-color: white; margin-top: 3vh;padding: 2vh;">
+  <div class="dashboard-cards">
+
+    <div class="card schools">
+      <i class="fas fa-school icon"></i>
+      <p>{{CollegeCount}}</p>
+      <span>Total Colleges</span>
+    </div>
+
+    <div class="card students">
+      <i class="fas fa-user-graduate icon"></i>
+      <p>{{StudentData?.length || 0}}</p>
+      <span>Total Students</span>
+    </div>
+
+    <div class="card staff">
+      <i class="fas fa-chalkboard-teacher icon"></i>
+      <p>{{StaffData?.length || 0}}</p>
+      <span>Total Staff</span>
+    </div>
+
+    <div class="card users">
+      <i class="fas fa-users icon"></i>
+      <p>{{ActiveUserData?.length || 0}}</p>
+      <span>Total Active Users</span>
+    </div>
+
+    <div class="card attendance">
+      <i class="fas fa-chalkboard-teacher icon"></i>
+      <p>{{studentAttendanceData?.length || 0}}</p>
+      <span>Todays Attendance</span>
+    </div>
+
+  </div>
+
+  <div class="dashboard-charts-container">
+
+    <div style="width: 45vw;" *ngIf="dataSourceStudentAttendance">
+      <fusioncharts type="Bar3D" width="80%" height="400" [dataSource]="dataSourceStudentAttendance">
+      </fusioncharts>
+    </div>
+    <div style="width: 45vw;" *ngIf="dataSourcePeriodAttendance">
+      <fusioncharts [type]="'Spline'" [width]="'100%'" [height]="'400'" [dataSource]="dataSourcePeriodAttendance">
+      </fusioncharts>
+    </div>
+
+    <div class="course-charts-wrapper" style="display: flex;" *ngIf="fusionChartsDataByType">
+      <div class="course-chart" *ngFor="let chart of fusionChartsDataByType">
+        <h3>{{ chart.coursePlanType }}</h3>
+        <fusioncharts width="100%" height="400" type="column3D" [dataSource]="chart.dataSource">
+        </fusioncharts>
+      </div>
+    </div>
+
+    <div *ngIf="fusionChartDataBySubject" 
+     style="display: flex; gap: 20px; flex-wrap: nowrap; justify-content: center; align-items: flex-start;margin-top: 5vh;">
+     
+    <fusioncharts type="mscolumn2d" width="90%" height="400" [dataSource]="fusionChartDataBySubject">
+    </fusioncharts>
+    
+    <fusioncharts type="pie3d" width="90%" height="400" [dataSource]="dataSourceGenderGraph">
+    </fusioncharts>
+    
+</div>
+
+  </div>
+</body>
+
+
+
+<!--
+<body>
+
+  
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12 text-center" style="background-color:darkcyan;">
+          <h2 style="color:white;">{{currentUser?.username}}'s Dashboard</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 d-flex" style="margin-top:10px;justify-content:space-around;">
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color:lightblue;">
+              <div class="card-content">
+                <p class="count" style="color: red;">{{CollegeCount}}</p>
+                {{CollegeCount}}
+                <span class="card-title">Total College</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color:lightgreen;">
+              <div class="card-content">
+                <p class="count">{{StudentData?.length || 0}}</p>
+                <span class="card-title">Total Students</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style=" height: 120px; width: 200px; background-color: lightsalmon;">
+              <div class="card-content">
+                <p class="count">{{StaffData?.length || 0}}</p>
+                <span class="card-title">Total Staff</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color: lightpink;">
+              <div class="card-content">
+                <p class="count">{{ActiveUserData?.length || 0}}</p>
+                <span class="card-title">Total Active Users</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color: lightcoral; ">
+              <div class="card-content">
+                <p class="count">{{ExamData?.length || 0}}</p>
+                <span class="card-title">Total Exams Created</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color: lightskyblue;">
+              <div class="card-content">
+                <p class="count">0</p>
+                <span class="card-title">Core School Average</span>
+              </div>
+            </smart-card>
+          </div>
+          <div class="smart-card">
+            <smart-card class="basic-card" style="height: 120px; width: 200px; background-color: lightsteelblue;">
+              <div class="card-content">
+                <p class="count">0</p>
+                <span class="card-title">Project School Average</span>
+              </div>
+            </smart-card>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-md-12">
+        <div style="display:flex; justify-content:left;padding:25px;">
+          <input type="radio" [(ngModel)]="showGarph" value="StudentGraph" (change)="ShowGraphData('StudentGraph')" />
+          <label style="margin-right: 25px; margin-left: 7px; font-size:20px;"><strong>Student</strong></label>
+
+          <input type="radio" [(ngModel)]="showGarph" value="StaffGraph" (change)="ShowGraphData('StaffGraph')" />
+          <label style="margin-right: 25px; margin-left: 7px; font-size: 20px; "><strong>Staff</strong></label>
+        </div>
+        <div class="smart-card col-md-12">
+          <smart-card class="card-auto-height col-md-12" *ngIf="StudentGraphSection"
+            style="width:98%;height:fit-content;padding:1px">
+            <div class="col-md-12 d-flex">
+              <fusioncharts type="pie3d" width="85%" height="500" [dataSource]="dataSourceStudentGraph">
+              </fusioncharts>
+              <div class="table-container" *ngIf="StudentGraphSection"
+                style="margin-right:10px; min-height:480px; width:100%">
+                <table class="table-bordered table table-striped responsive-table">
+                  <tr>
+                    <th>SchoolName</th>
+                    <th>StudentCount</th>
+                  </tr>
+                  <tr *ngFor="let item of schoolWiseStudentCount">
+                    <td>{{item.SchoolName}}</td>
+                    <td>{{item.StudentCount}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </smart-card>
+          <smart-card class="card-auto-height col-md-12" *ngIf="StaffGraphSection"
+            style="width:98%;height:fit-content;padding:1px">
+            <div class="col-md-12 d-flex">
+              <fusioncharts type="pie3d" width="80%" height="500" [dataSource]="dataSourceStaffGraph">
+              </fusioncharts>
+              <div class="table-container" *ngIf="StaffGraphSection" style="margin-right:10px; min-height:480px;">
+                <table class="table-bordered table table-striped responsive-table">
+                  <tr>
+                    <th>SchoolName</th>
+                    <th>StaffCount</th>
+                  </tr>
+                  <tr *ngFor="let item of StaffSchoolWiseGroupedData">
+                    <td>{{item.SchoolName}}</td>
+                    <td>{{item.StaffCount}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </smart-card>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <hr />
+      </div>
+      <div class="col-md-12 d-flex justify-content-end" style="margin-right:10px; padding:25px;">
+        <select [(ngModel)]="selectedSchool" (change)="SchoolSectionWiseData()">
+          <option *ngFor="let item of SchoolData" [value]="item.SchoolID">{{item.ShortName}}</option>
+        </select>
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-12 text-center">
+          <h3>{{selectedSchoolName}}</h3>
+        </div>
+        <div class="col-md-12 d-flex" style="margin-top: 20px;">
+          <div>
+            <div class="smart-card">
+              <smart-card class="card-auto-height" style="width:100%;height:fit-content;padding:1px">
+                <fusioncharts type="column3D" width="80%" height="420" [dataSource]="dataSourceRoleGraph">
+                </fusioncharts>
+              </smart-card>
+            </div>
+          </div>
+          <div>
+            <div class="table-container flex-grow-1" style="margin-right:10px; min-height:420px; margin-top:20px;">
+              <table class="table-bordered table table-striped table-responsive" style="min-height: 420px;">
+                <tr>
+                  <th style="position: sticky; top: 0; z-index: 1;">Role</th>
+                  <th style="position: sticky; top: 0; z-index: 1;">Role Count</th>
+                </tr>
+                <tr *ngFor="let item of schoolWiseUserRoleData">
+                  <td>{{item.RoleName}}</td>
+                  <td>{{item.RoleCount}}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <hr />
+      </div>
+      <div class="col-md-12 d-flex gap-4">
+        <div class="table-container flex-grow-1" style="margin-right: 10px; margin-bottom: 20px;">
+          <table class="table-bordered table table-striped responsive-table" style="width: 100%">
+            <tr>
+              <th colspan="4" class="text-center">Class Section-Wise Strength</th>
+            </tr>
+            <tr>
+              <th>ClassName</th>
+              <th>Section</th>
+              <th>StudentCount</th>
+            </tr>
+            <tr *ngFor="let item of sectionWisegroupedData">
+              <td>{{item.ClassName}}</td>
+              <td>{{item.ClassSection}}</td>
+              <td>{{item.StudentCount}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="table-container flex-grow-1">
+          <table class="table-bordered table table-striped responsive-table" style="width: 100%">
+            <tr>
+              <th colspan="4" class="text-center">Gender-Wise Strength</th>
+            </tr>
+            <tr>
+              <th>ClassName</th>
+              <th>Section</th>
+              <th>MaleCount</th>
+              <th>FemaleCount</th>
+            </tr>
+            <tr *ngFor="let item of GenderWisegroupedData">
+              <td>{{item.ClassName}}</td>
+              <td>{{item.ClassSection}}</td>
+              <td>{{item.MaleCount}}</td>
+              <td>{{item.FemaleCount}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <hr />
+      </div>
+      <div class="col-md-12">
+        <div class="col-md-12 d-flex" style="justify-content: space-around; align-items: center; margin-bottom: 7px;">
+          <h3>School Wise Subject Analysis</h3>
+        </div>
+        <div class="row">
+          <div class="col-md-7">
+            <smart-card class="card-auto-height" style="width:100%;height:fit-content;padding:1px">
+              <fusioncharts type="column3D" width="60%" height="400" [dataSource]="dummySourceSubjectGraph">
+              </fusioncharts>
+            </smart-card>
+          </div>
+          <div class="col-md-4">
+            <table class="table-bordered table table-striped responsive-table">
+              <tr>
+                <th>Subject</th>
+                <th>Average Marks</th>
+              </tr>
+              <tr *ngFor="let item of dummyDataSubjectWise">
+                <td>{{item.label}}</td>
+                <td>{{item.value}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>-->

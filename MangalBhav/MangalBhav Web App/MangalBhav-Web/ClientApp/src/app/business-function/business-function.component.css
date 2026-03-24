@@ -1,0 +1,71 @@
+ smart-grid {
+  height:500px;
+  width: auto;
+  padding:0px;
+  border:1px solid;
+  --smart-grid-freeze-splitter-size: 0px;
+  --smart-grid-row-height: 100%;
+  --smart-grid-column-header-background: var(--smart-grid-cell-background);
+  --smart-grid-row-header-background: var(--smart-grid-cell-background);
+  --smart-grid-column-header-background-freeze: var(--smart-grid-cell-background);
+}
+ 
+smart-grid-column[checkbox] .smart-input,
+smart-grid-column[checkbox] .smart-input::after,
+smart-grid-cell[checkbox] .smart-input {
+  border-radius: 50% !important;
+}
+ 
+smart-grid-cell {
+  transition: background ease-in-out 0.25s !important;
+}
+ 
+smart-grid-row[selected] smart-grid-cell {
+  background: #DADADA !important;
+  color: #333 !important;
+}
+ 
+ smart-grid-row:hover smart-grid-cell {
+ background: #F4F4F4 !important;
+}
+
+.row {
+    display:flex;
+}
+smart-splitter {
+  width: 100%;
+  height: auto;
+}
+
+ smart-splitter {
+   width: 100%;
+ }
+
+ smart-accordion {
+   width: 100%;
+   height: auto;
+ }
+
+ #ProductAd {
+   width: 1px;
+  height: 1px;
+ }
+.div.side-panel {
+position:fixed;
+top: 50px;
+right: 0px;
+width: 20%;
+height: 100%;
+background-color: white;
+box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+padding: 15px;
+transition: transform 0.5s ease;
+}
+.hidden {
+transform: translateX(100%);
+}
+.toggle-button {
+ margin: 10px;
+  transition: margin-right 0.3s ease;
+ margin-right: 20%;
+}
