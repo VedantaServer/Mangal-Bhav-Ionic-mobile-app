@@ -11,13 +11,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 @Component({
   selector: 'app-book-pooja',
   templateUrl: './book-pooja.component.html',
   styleUrls: ['./book-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule]
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,PanditjibottomtabsComponent]
 })
 export class BookPoojaComponent implements OnInit {
   userDetails: any;
@@ -67,12 +68,20 @@ export class BookPoojaComponent implements OnInit {
     private alertCtrl: AlertController
   ) { }
 
+
+
+   openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
+  
   async ngOnInit() {
 
     this.route.queryParams.subscribe(params => {
       console.log('Received ID:', params['id']);
       this.paramID = params['id'];
     });
+
 
 
 

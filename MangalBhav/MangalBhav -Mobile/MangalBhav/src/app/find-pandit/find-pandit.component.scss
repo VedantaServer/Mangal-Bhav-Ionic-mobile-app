@@ -1706,3 +1706,178 @@ ion-tab-bar.mb-tab-bar::part(native) {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+
+// ===== DETAIL MODAL =====
+.detail-modal-wrap {
+  padding-right: 15px;
+  padding-left: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+ 
+.detail-hero {
+  text-align: center;
+  padding: 20px 0 8px;
+}
+ 
+.detail-hero-icon {
+  font-size: 44px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px rgba(255,149,0,0.4));
+}
+ 
+.detail-hero-title {
+  font-size: 22px;
+  color: #2B1A00;
+  margin: 0 0 4px;
+}
+ 
+.detail-hero-sub {
+  font-size: 11px;
+  color: #C45E00;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0;
+}
+ 
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+ 
+.detail-info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFF8EC;
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 184, 0, 0.2);
+ 
+  ion-icon {
+    font-size: 20px;
+    color: #FF9500;
+    flex-shrink: 0;
+  }
+}
+ 
+.detail-info-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #B08050;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 2px;
+}
+ 
+.detail-info-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2B1A00;
+  margin: 0;
+}
+ 
+.detail-section {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1.5px solid rgba(255, 184, 0, 0.2);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+ 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF9500, #FFB800, #FF9500);
+  }
+}
+ 
+.detail-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #E07B00;
+  margin: 0 0 12px;
+}
+ 
+.detail-section-text {
+  font-size: 13px;
+  color: #2B1A00;
+  line-height: 1.7;
+  margin: 0;
+}
+ 
+.detail-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+ 
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #2B1A00;
+ 
+  ion-icon {
+    font-size: 16px;
+    color: #22a855;
+    flex-shrink: 0;
+  }
+}
+ 
+.detail-book-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(224, 123, 0, 0.4);
+  transition: transform 0.2s;
+ 
+  &:active { transform: scale(0.97); }
+}
+
+
+
+// Pandit modal hero
+.pandit-modal-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 4px;
+}
+ 
+.pandit-modal-photo-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 184, 0, 0.5);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(255, 149, 0, 0.25);
+}
+ 
+.pandit-modal-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+ 
+.pandit-modal-name {
+  font-size: 22px;
+  color: #2B1A00;
+  margin: 0;
+  text-align: center;
+}

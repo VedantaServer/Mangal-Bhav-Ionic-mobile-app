@@ -42,7 +42,7 @@ export class FindPanditComponent implements OnInit {
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
     this.language = await this.storage.get("Language");
-    this.openQrScanner();   
+    this.openQrScanner();
   }
 
 
@@ -203,141 +203,148 @@ export class FindPanditComponent implements OnInit {
 
     if (match) {
       const userId = Number(match[1]);
-   //   alert(userId)
-       this.api.post(
-      `UsersNUSelectByQuery?Query=Role='PANDIT' and UserID = ${userId} `,
-      null
-    ).subscribe((userRes: any) => {
+      //   alert(userId)
+      this.api.post(
+        `UsersNUSelectByQuery?Query=Role='PANDIT' and UserID = ${userId} `,
+        null
+      ).subscribe((userRes: any) => {
 
-      const users = userRes.UserList;
+        const users = userRes.UserList;
 
-      if (!users || users.length === 0) return;
+        if (!users || users.length === 0) return;
 
-      // Process each user sequentially
-      from(users)
-        .pipe(
-          // 2️⃣ Get Profile using UserID
-          mergeMap((user: any) =>
-            this.api.post(
-              `ProfilesSelectAllByUserID?userID=${user.UserID}`,
-              null
-            ).pipe(
-              map((profileRes: any) => ({
-                user,
-                profile: profileRes?.ProfileList?.[0] || null
-              }))
-            )
-          ),
-          // 3️⃣ Get Pandit Services using UserID
-          mergeMap((data: any) =>
-            this.api.post(
-              `PanditServicesSelectAllByProfileID?profileID=${data.user.UserID}`,
-              null
-            ).pipe(
-              map((serviceRes: any) => ({
-                ...data,
-                panditServices: serviceRes?.PanditServiceList || []
-              }))
-            )
-          ),
+        // Process each user sequentially
+        from(users)
+          .pipe(
+            // 2️⃣ Get Profile using UserID
+            mergeMap((user: any) =>
+              this.api.post(
+                `ProfilesSelectAllByUserID?userID=${user.UserID}`,
+                null
+              ).pipe(
+                map((profileRes: any) => ({
+                  user,
+                  profile: profileRes?.ProfileList?.[0] || null
+                }))
+              )
+            ),
+            // 3️⃣ Get Pandit Services using UserID
+            mergeMap((data: any) =>
+              this.api.post(
+                `PanditServicesSelectAllByProfileID?profileID=${data.user.UserID}`,
+                null
+              ).pipe(
+                map((serviceRes: any) => ({
+                  ...data,
+                  panditServices: serviceRes?.PanditServiceList || []
+                }))
+              )
+            ),
 
-          // 4️⃣ Get Service + Location Details for each PanditService
-          mergeMap((data: any) => {
+            // 4️⃣ Get Service + Location Details for each PanditService
+            mergeMap((data: any) => {
 
-            if (!data.panditServices.length) {
-              return [data];
-            }
+              if (!data.panditServices.length) {
+                return [data];
+              }
 
-            return from(data.panditServices).pipe(
+              return from(data.panditServices).pipe(
 
-              mergeMap((ps: any) =>
+                mergeMap((ps: any) =>
 
-                forkJoin({
+                  forkJoin({
 
-                  // 1️⃣ Service Details
-                  serviceDetail: this.api.post(
-                    `ServiceSelect?serviceID=${ps.ServiceID}&tenantID=${this.userDetails.TenantID}`,
-                    null
-                  ),
+                    // 1️⃣ Service Details
+                    serviceDetail: this.api.post(
+                      `ServiceSelect?serviceID=${ps.ServiceID}&tenantID=${this.userDetails.TenantID}`,
+                      null
+                    ),
 
-                  // 2️⃣ Location Details
-                  locationDetail: this.api.post(
-                    `LocationSelect?locationID=${ps.LocationID}&tenantID=${this.userDetails.TenantID}`,
-                    null
-                  ),
+                    // 2️⃣ Location Details
+                    locationDetail: this.api.post(
+                      `LocationSelect?locationID=${ps.LocationID}&tenantID=${this.userDetails.TenantID}`,
+                      null
+                    ),
 
-                  // 3️⃣ Category Mapping
-                  categoryMapping: this.api.post(
-                    `ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`,
-                    null
+                    // 3️⃣ Category Mapping
+                    categoryMapping: this.api.post(
+                      `ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`,
+                      null
+                    )
+
+                  }).pipe(
+
+                    // 🔥 After getting mapping, fetch category details
+                    mergeMap((res: any) => {
+
+                      const mappings = res.categoryMapping?.ServiceCategoryMappingList || [];
+
+                      if (!mappings.length) {
+                        return of({
+                          ...ps,
+                          ServiceDetails: res.serviceDetail?.ServiceList || null,
+                          LocationDetails: res.locationDetail?.LocationList || null,
+                          Categories: []
+                        });
+                      }
+
+                      return from(mappings).pipe(
+
+                        mergeMap((mapItem: any) =>
+                          this.api.post(
+                            `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=${this.userDetails.TenantID}`,
+                            null
+                          ).pipe(
+                            map((catRes: any) => ({
+                              ...mapItem,
+                              CategoryDetails: catRes?.ServiceCategoryList?.[0] || null
+                            }))
+                          )
+                        ),
+
+                        toArray(),
+
+                        map((categoriesWithDetails: any[]) => ({
+                          ...ps,
+                          ServiceDetails: res.serviceDetail?.ServiceList || null,
+                          LocationDetails: res.locationDetail?.LocationList || null,
+                          Categories: categoriesWithDetails
+                        }))
+
+                      );
+
+                    })
+
                   )
 
-                }).pipe(
+                ),
 
-                  // 🔥 After getting mapping, fetch category details
-                  mergeMap((res: any) => {
+                toArray(),
 
-                    const mappings = res.categoryMapping?.ServiceCategoryMappingList || [];
+                map((servicesWithDetails: any[]) => ({
+                  ...data,
+                  panditServices: servicesWithDetails
+                }))
 
-                    if (!mappings.length) {
-                      return of({
-                        ...ps,
-                        ServiceDetails: res.serviceDetail?.ServiceList || null,
-                        LocationDetails: res.locationDetail?.LocationList || null,
-                        Categories: []
-                      });
-                    }
+              );
 
-                    return from(mappings).pipe(
+            }),
+            toArray()
+          )
+          .subscribe((finalResult: any) => {
+            console.log("Final Structured Data:", finalResult);
+            this.panditList = finalResult;
+            this.loadPanditServiceBookingCounts();
 
-                      mergeMap((mapItem: any) =>
-                        this.api.post(
-                          `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=${this.userDetails.TenantID}`,
-                          null
-                        ).pipe(
-                          map((catRes: any) => ({
-                            ...mapItem,
-                            CategoryDetails: catRes?.ServiceCategoryList?.[0] || null
-                          }))
-                        )
-                      ),
 
-                      toArray(),
+            this.panditList.forEach((item: any) => {
+              if (item.profile) this.loadProfileImage(item.profile);
+            });
 
-                      map((categoriesWithDetails: any[]) => ({
-                        ...ps,
-                        ServiceDetails: res.serviceDetail?.ServiceList || null,
-                        LocationDetails: res.locationDetail?.LocationList || null,
-                        Categories: categoriesWithDetails
-                      }))
 
-                    );
+          });
 
-                  })
-
-                )
-
-              ),
-
-              toArray(),
-
-              map((servicesWithDetails: any[]) => ({
-                ...data,
-                panditServices: servicesWithDetails
-              }))
-
-            );
-
-          }),
-          toArray()
-        )
-        .subscribe((finalResult: any) => {
-          console.log("Final Structured Data:", finalResult);
-          this.panditList = finalResult;
-            this.loadPanditServiceBookingCounts(); 
-        });
-
-    });
+      });
     }
 
     console.log('Scanned QR:', this.scannedQrData);
@@ -348,27 +355,51 @@ export class FindPanditComponent implements OnInit {
   }
 
 
-   panditServiceBookingMap: { [key: string]: number } = {};
+  panditServiceBookingMap: { [key: string]: number } = {};
 
-// Call after panditList is set in subscribe
-loadPanditServiceBookingCounts() {
-  this.panditList.forEach((item: any) => {
-    item.panditServices?.forEach((ps: any) => {
-      if (!ps.PanditServiceID) return;
+  // Call after panditList is set in subscribe
+  loadPanditServiceBookingCounts() {
+    this.panditList.forEach((item: any) => {
+      item.panditServices?.forEach((ps: any) => {
+        if (!ps.PanditServiceID) return;
 
-      this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
+        this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
 
-      this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
-        .subscribe((res: any) => {
-          this.panditServiceBookingMap[String(ps.PanditServiceID)] = 
-            (res?.BookingList?.length || 0) + 10;
-        });
+        this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
+          .subscribe((res: any) => {
+            this.panditServiceBookingMap[String(ps.PanditServiceID)] =
+              (res?.BookingList?.length || 0) + 10;
+          });
+      });
     });
-  });
-}
+  }
 
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
+
+  // 1. Property
+  profileImages: { [key: number]: string } = {};
+
+  // 2. Methods
+  loadProfileImage(profile: any) {
+    if (!profile?.ProfilePhotoUrl || !profile?.UserID) return;
+    this.api.getImage('DownloadImages', {
+      imageName: profile.ProfilePhotoUrl,
+      imagePurpose: 'ProfilePhoto'
+    }).subscribe({
+      next: (blob: Blob) => {
+        if (blob?.type?.startsWith('image/')) {
+          this.profileImages[profile.UserID] = URL.createObjectURL(blob);
+        }
+      },
+      error: () => { }
+    });
+  }
+
+  getProfileImage(userID: number): string {
+    return this.profileImages[userID] || 'assets/default.jfif';
+  }
+
 
 }

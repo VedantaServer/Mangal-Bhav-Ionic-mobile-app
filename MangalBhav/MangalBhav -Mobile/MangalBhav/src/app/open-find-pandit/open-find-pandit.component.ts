@@ -32,8 +32,8 @@ export class OpenFindPanditComponent implements OnInit {
   minDate: string = new Date().toISOString();
   searchQuery: string = '';
   language: any;
-  
 
+  profileImages: { [key: number]: string } = {};
   formats = [BarcodeFormat.QR_CODE];
   constructor(public routerCtrl: NavController,
     public api: Api,
@@ -350,7 +350,11 @@ export class OpenFindPanditComponent implements OnInit {
             console.log("Final Structured Data:", finalResult);
             this.panditList = finalResult;
 
-              this.loadPanditServiceBookingCounts(); 
+            this.loadPanditServiceBookingCounts();
+
+            this.panditList.forEach((item: any) => {
+              if (item.profile) this.loadProfileImage(item.profile);
+            });
           });
 
       });
@@ -365,22 +369,43 @@ export class OpenFindPanditComponent implements OnInit {
 
   panditServiceBookingMap: { [key: string]: number } = {};
 
-// Call after panditList is set in subscribe
-loadPanditServiceBookingCounts() {
-  this.panditList.forEach((item: any) => {
-    item.panditServices?.forEach((ps: any) => {
-      if (!ps.PanditServiceID) return;
+  // Call after panditList is set in subscribe
+  loadPanditServiceBookingCounts() {
+    this.panditList.forEach((item: any) => {
+      item.panditServices?.forEach((ps: any) => {
+        if (!ps.PanditServiceID) return;
 
-      this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
+        this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
 
-      this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
-        .subscribe((res: any) => {
-          this.panditServiceBookingMap[String(ps.PanditServiceID)] = 
-            (res?.BookingList?.length || 0) + 10;
-        });
+        this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
+          .subscribe((res: any) => {
+            this.panditServiceBookingMap[String(ps.PanditServiceID)] =
+              (res?.BookingList?.length || 0) + 10;
+          });
+      });
     });
-  });
-}
+  }
 
+  loadProfileImage(profile: any) {
+    if (!profile?.ProfilePhotoUrl || !profile?.UserID) return;
+
+    const params = {
+      imageName: profile.ProfilePhotoUrl,
+      imagePurpose: 'ProfilePhoto'
+    };
+
+    this.api.getImage('DownloadImages', params).subscribe({
+      next: (blob: Blob) => {
+        if (blob?.type?.startsWith('image/')) {
+          this.profileImages[profile.UserID] = URL.createObjectURL(blob);
+        }
+      },
+      error: () => { /* falls back to default in getter */ }
+    });
+  }
+
+  getProfileImage(userID: number): string {
+    return this.profileImages[userID] || 'assets/default.jfif';
+  }
 
 }

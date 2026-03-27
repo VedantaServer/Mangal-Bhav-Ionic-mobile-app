@@ -626,6 +626,7 @@ export class LoginPage {
 
         if (res.UserList.length > 0) {
           alert('User Already Exists.Please login or use different mobile no.');
+          return;
         } else {
           alert('Otp sent on whatsapp');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
@@ -645,6 +646,8 @@ export class LoginPage {
           //     alert('Failed to send OTP');
           //   }
           // );
+
+          alert(this.generatedOTP);
           this.registerStep = 'otp';
         }
       })
