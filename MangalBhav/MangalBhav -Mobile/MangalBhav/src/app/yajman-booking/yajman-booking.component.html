@@ -11,6 +11,10 @@
         <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
       </div>
 
+       <button class="inner-reload-btn" (click)="loadList()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+
       <div class="inner-logo">
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
@@ -29,12 +33,21 @@
       </div>
       <div class="banner-om">ॐ</div>
     </div>
+
+     <div class="filter-tabs-wrap">
+      <div class="filter-tabs">
+        <button class="filter-tab active" (click)="openPage('yajman-booking')">Requested</button>
+        <button class="filter-tab" (click)="openPage('pending-pooja')" >Accepted</button>
+        <button class="filter-tab"(click)="openPage('completed-pooja')"  >Completed</button>
+        <button class="filter-tab" (click)="openPage('Cancelled-pooja')">Cancelled</button>
+      </div>
+    </div>
     <div class="section-label">Your Services</div>
     <!-- SERVICE + BOOKING CARDS -->
     <div class="cards-container">
       <ng-container *ngFor="let service of PanditServicesList; let i = index">
         <!-- ===== SERVICE CARD ===== -->
-        <div class="service-card" (click)="toggleService(i)" [class.expanded]="expandedIndex === i">
+        <div class="service-card" (click)="toggleService(i)" [class.expanded]="expandedIndices.has(i)">
           <!-- SERVICE IMAGE BANNER -->
           <div class="service-image-wrap">
             <!-- <img src="../../assets/img/BabyShowerPuja.jfif" alt=""> -->
@@ -64,14 +77,14 @@
             </div>
             <div class="service-info-right">
               <div class="price-tag">₹ {{ service.Price }}</div>
-              <div class="expand-icon" [class.rotated]="expandedIndex === i">
+              <div class="expand-icon"  [class.rotated]="expandedIndices.has(i)">
                 <ion-icon name="chevron-down-outline"></ion-icon>
               </div>
             </div>
           </div>
         </div>
         <!-- ===== BOOKING CARDS (expanded) ===== -->
-        <div *ngIf="expandedIndex === i" class="bookings-list">
+        <div *ngIf="expandedIndices.has(i)" class="bookings-list">
           <div class="bookings-label">
             <ion-icon name="people-outline"></ion-icon>
             {{ service.Bookings?.length || 0 }} Booking(s)
@@ -93,7 +106,10 @@
                 </h4>
                 <p class="bhakt-phone">
                   <ion-icon name="call-outline"></ion-icon>
-                  {{ booking.BhaktProfile?.PhoneNumber }}
+                  {{ booking.BhaktProfile?.PhoneNumber 
+    ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4) 
+    : '' 
+}}
                 </p>
               </div>
               <div class="booking-status-wrap">

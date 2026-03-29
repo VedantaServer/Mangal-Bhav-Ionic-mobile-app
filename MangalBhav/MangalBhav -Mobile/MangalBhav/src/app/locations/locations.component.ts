@@ -6,6 +6,7 @@ import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { AlertController } from '@ionic/angular';
   templateUrl: './locations.component.html',
   styleUrls: ['./locations.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
 })
 export class LocationsComponent implements OnInit {
 

@@ -29,6 +29,7 @@ import { LoggedinHomeComponent } from './loggedin-home/loggedin-home.component';
 import { LoggedinPanditsearchComponent } from './loggedin-panditsearch/loggedin-panditsearch.component';
 import { OpenFindPanditComponent } from './open-find-pandit/open-find-pandit.component';
 import { OpenCommunityPageComponent } from './open-community-page/open-community-page.component';
+import { JajmanRequestedPoojaComponent } from './jajman-requested-pooja/jajman-requested-pooja.component';
 
 const routes: Routes = [
   {
@@ -142,6 +143,12 @@ const routes: Routes = [
     path: 'Cancelled-pooja',
     component: CancelledPoojaComponent  // directly use the standalone component
   }
+  ,
+  {
+    path: 'requested-pooja',
+    component: JajmanRequestedPoojaComponent  // directly use the standalone component
+  }
+
   ,
   {
     path: 'today-pooja',

@@ -11,7 +11,8 @@ import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-
+import { QRCodeComponent } from 'angularx-qrcode';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
@@ -20,9 +21,12 @@ import { Router } from '@angular/router';
   styleUrls: ['tab1.page.scss'],
   standalone: false,
 
+
 })
 export class Tab1Page {
   userDetails!: any;
+  showIdCard = false;
+  profileImageUrl: string | null = null;
   labels = {
     en: {
       appTitle: '🕉️ Mangal Bhav',
@@ -68,21 +72,25 @@ export class Tab1Page {
   };
   language: any;
   FullName: any;
-  sloganName:any;
+  sloganName: any;
   constructor(private alertCtrl: AlertController, private storage: Storage, public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider,
     private datePipe: DatePipe, public routerCtrl: NavController, private http: HttpClient
   ) { }
 
 
-  toggleLanguage(){
+  toggleLanguage() {
 
   }
+
+
   async ngOnInit() {
     this.getSlogan();
     this.language = await this.storage.get("Language");
     this.userDetails = await this.storage.get("account");
     this.FullName = this.userDetails.FullName;
+    console.log('ACCOUNT OBJECT:', this.userDetails);
+    this.loadProfilePhoto();
 
     if (this.FullName == null) {
       const alert = await this.alertCtrl.create({
@@ -113,7 +121,29 @@ export class Tab1Page {
     }
   }
 
-   getSlogan() {
+
+  loadProfilePhoto() {
+    const photoFileName = this.userDetails?.ProfilePhotoUrl;
+
+    console.log('Photo filename:', photoFileName); // → should print "639101418926498179.png"
+
+    if (!photoFileName) return;
+
+    this.api.getImage('DownloadImages', {
+      imageName: photoFileName,
+      imagePurpose: 'ProfilePhoto'   // ✅ check if your API expects a different value here
+    }).subscribe({
+      next: (blob: Blob) => {
+        console.log('Blob size:', blob?.size, 'Type:', blob?.type);
+        if (blob && blob.size > 0) {
+          this.profileImageUrl = URL.createObjectURL(blob);
+        }
+      },
+      error: (err) => console.error('getImage failed:', err)
+    });
+  }
+
+  getSlogan() {
     const randomIndex = Math.floor(Math.random() * 40);
     this.sloganName = this.api.getChalisaLine(randomIndex);
     //alert(this.sloganName)
@@ -135,6 +165,11 @@ export class Tab1Page {
     this.router.navigate([`/${pageName}`], {
       queryParams: { id: 0 }
     });
+  }
+
+
+  onImgError(event: any) {
+    event.target.src = 'assets/default-pandit.png'; // your fallback image
   }
 
   async logout() {

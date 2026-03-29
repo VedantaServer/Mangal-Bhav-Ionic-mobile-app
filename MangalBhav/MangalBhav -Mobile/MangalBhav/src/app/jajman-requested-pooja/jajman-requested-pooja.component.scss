@@ -117,7 +117,6 @@ ion-header {
       0 0 18px rgba(255,200,50,0.35);
   }
 }
-
 ion-content {
   --background: #FFFBF0;
   
@@ -175,6 +174,14 @@ ion-back-button { --color: #ffffff; }
   }
 }
 
+
+.samagri-btn {
+  background: linear-gradient(135deg, #FFF5D6, #FFE8A0) !important;
+  border: 1.5px solid rgba(255, 184, 0, 0.4) !important;
+  color: #7A4D00 !important;
+
+  ion-icon { color: #E07B00 !important; }
+}
 /* ===== TOP BANNER ===== */
 .page-banner {
   background: linear-gradient(135deg, #FF9500, #E07B00);
@@ -262,19 +269,6 @@ ion-back-button { --color: #ffffff; }
 
   &:active { transform: scale(0.95); }
 }
-
-.inner-reload-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.4rem;
-  color: inherit;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 
 /* ===== SECTION LABEL ===== */
 .section-label {
@@ -590,115 +584,136 @@ ion-back-button { --color: #ffffff; }
 }
 
 
-.custom-tab-bar {
-  --background: #ffffff;
-  border-top: 1px solid rgba(255, 184, 0, 0.2);
-  box-shadow: 0 -4px 20px rgba(255, 149, 0, 0.1);
-  height: 62px;
-  padding-bottom: env(safe-area-inset-bottom);
-  overflow: visible !important;
-}
-
-.tab-btn-stretch {
-  flex: 1;
-  --color: #B08050;
-  --color-selected: #FF9500;
-
-  ion-icon { font-size: 20px; }
-
-  ion-label {
-    font-family: 'Poppins', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-  }
-}
-
-.tab-home-btn {
-  flex: 0 0 72px;
-  --color: transparent;
-  --color-selected: transparent;
-}
-
-.tab-center-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FF9500, #E07B00);
+/* ===== CARD ACTIONS — UPCOMING PAGE ===== */
+.card-actions {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+/* Row 1 — primary action pills */
+.actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(224, 123, 0, 0.5);
-  margin-top: -20px;
-  border: 3px solid #ffffff;
-
-  ion-icon {
-    font-size: 24px;
-    color: #ffffff;
-  }
-}
-
-.tab-user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FF9500, #E07B00);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 3px;
-  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.35);
+  
+  padding: 9px 14px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+
+  ion-icon { font-size: 15px; }
+  &:active { transform: scale(0.95); }
+
+  &.directions-btn {
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  }
+
+  &.calendar-btn {
+    background: #FFF8EC;
+    color: #7A4D00;
+    border: 1.5px solid rgba(255, 184, 0, 0.4);
+  }
+
+  &.payment-btn {
+    background: linear-gradient(135deg, #FF9500, #E07B00);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(224, 123, 0, 0.35);
+  }
 }
 
-
-
-
-.tab-home-btn {
-  flex: 0 0 72px;
-  --color: transparent;
-  --color-selected: transparent;
-  --ripple-color: transparent;
-  position: relative;
-}
-
-.tab-center-btn {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;           // ← square-ish, not circle
-  background: linear-gradient(135deg, #FF9500, #E07B00);
+/* Row 2 — Contact Pandit strip */
+.contact-pandit-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-top: -24px;             // ← floats higher above bar
-  border: 3px solid #FFFBF0;
-  box-shadow:
-    0 -4px 20px rgba(224, 123, 0, 0.45),
-    0 4px 16px rgba(224, 123, 0, 0.3);
-  position: relative;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #FFF5D6, #FFE8A0);
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(255, 184, 0, 0.3);
+}
 
-  // glowing ring
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -5px;
-    border-radius: 22px;
-    border: 2px solid rgba(255, 149, 0, 0.25);
-    animation: scanRing 2s ease-in-out infinite;
+.contact-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2B1A00;
+  
+
+  ion-icon { font-size: 14px; color: #FF9500; }
+}
+
+.contact-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  ion-icon { font-size: 15px; }
+  &:active { transform: scale(0.95); }
+
+  &.call-btn {
+    background: #ffffff;
+    color: #2B1A00;
+    border: 1.5px solid rgba(255, 184, 0, 0.4);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
 
-  ion-icon {
-    font-size: 26px;
+  &.whatsapp-btn {
+    background: #25D366;
     color: #ffffff;
+    box-shadow: 0 3px 10px rgba(37, 211, 102, 0.35);
   }
 }
 
-@keyframes scanRing {
-  0%, 100% { transform: scale(1);   opacity: 0.5; }
-  50%       { transform: scale(1.1); opacity: 0;   }
+/* Cancel link — subtle destructive */
+.cancel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  
+  color: #dc2626;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+
+  ion-icon { font-size: 14px; }
+  &:active { opacity: 1; }
 }
+
 
 
 
@@ -821,7 +836,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
 
 .mb-scanner-float {
   position: fixed;
-  bottom: 10px !important;
+   bottom: 10px !important;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -922,6 +937,13 @@ ion-tab-bar.mb-tab-bar::part(native) {
   }
 }
 
+.mb-scanner-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
 .mb-scanner-label {
   font-family: 'Poppins', sans-serif;
   font-size: 9px;
@@ -936,13 +958,6 @@ ion-tab-bar.mb-tab-bar::part(native) {
   50%       { transform: scale(1.1); opacity: 0;   }
 }
 
-
-.mb-scanner-logo-img {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  object-fit: contain;
-}
 
 .custom-tab-icon {
   width: 100px;

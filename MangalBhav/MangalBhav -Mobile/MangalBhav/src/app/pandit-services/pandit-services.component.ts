@@ -215,6 +215,7 @@ onAddLocation() {
             UpdatedByUser: this.userDetails.LoginID
           };
           this.api.post(`DocumentInsert`, body).subscribe((resp: any) => {
+            alert('Success');
             this.selectedFile = null;
           })
         }

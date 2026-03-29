@@ -179,7 +179,9 @@
                   <!-- Duration chip -->
                   <p class="puja-location-row">
                     <ion-icon name="time-outline"></ion-icon>
-                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home
+                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home  &nbsp;·&nbsp;
+  <ion-icon name="cash-outline"></ion-icon>
+  ₹ 999
                   </p>
 
                   <!-- Description -->
@@ -204,9 +206,8 @@
                   <!-- Price + CTA row -->
                   <div class="puja-price-row">
                     <div class="puja-price-block">
-                      <span class="puja-price-label">Dakshina</span>
-                      <!-- <span class="puja-price-original">₹1,499</span> -->
-                      <span class="puja-price-final">₹ 999</span>
+                      <span class="puja-price-label"></span>
+                      <span class="puja-price-final"></span>
                     </div>
                     <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
                      🧘 Find Pandit ji →
@@ -233,7 +234,7 @@
 
 
 
-    <section class="puja-list-section" id="pooja-list">
+    <!-- <section class="puja-list-section" id="pooja-list">
       <div class="puja-list-inner">
 
         <h2 class="section-title">Every Stage of Life, Covered</h2>
@@ -301,7 +302,7 @@
         </div>
 
       </div>
-    </section>
+    </section> -->
 
 
 

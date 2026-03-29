@@ -4659,3 +4659,36 @@ ion-tab-bar.mb-tab-bar::part(native) {
     margin: 0;
   }
 }
+
+
+.field-input-wrap {
+  background: #FFF5D6;
+  border-radius: 12px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  display: flex;
+  align-items: center;
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --color: #2B1A00;
+    --placeholder-color: #BFA060;
+    
+    font-size: 14px;
+    font-weight: 500;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  &.readonly {
+    background: rgba(255, 184, 0, 0.08);
+    border-color: rgba(255, 184, 0, 0.2);
+    justify-content: space-between;
+  }
+
+  &.textarea {
+    align-items: flex-start;
+    padding: 8px 12px;
+  }
+}

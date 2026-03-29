@@ -37,6 +37,10 @@ export class CancelledPoojaComponent implements OnInit {
     this.loadList();
   }
 
+   openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
   loadList() {
 
     this.api.post(

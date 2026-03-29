@@ -30,12 +30,83 @@
   <div class="page-wrapper">
 
     <!-- ===== GREETING ===== -->
+    <!-- Greeting -->
     <div class="greeting">
       <div class="greeting-text">
         <p class="greeting-sub">{{ t.greetingSubtitle }}</p>
-        <h2 class="greeting-title">{{ t.greetingTitle }} {{FullName}}</h2>
+        <h2 class="greeting-title">{{ t.greetingTitle }}
+          <span class="name-clickable" (click)="showIdCard = true">{{FullName}}</span>
+        </h2>
       </div>
       <div class="greeting-om">ॐ</div>
+    </div>
+
+    <!-- ID CARD POPUP -->
+    <div class="idcard-overlay" *ngIf="showIdCard" (click)="showIdCard = false">
+      <div class="idcard-popup" (click)="$event.stopPropagation()">
+
+        <!-- Close -->
+        <button class="idcard-close" (click)="showIdCard = false">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+
+        <!-- Card Header -->
+        <div class="idcard-header">
+          <div class="idcard-brand-row">
+            <img src="../../assets/mangalbhavlogo1.jpeg" class="idcard-logo" />
+            <div>
+              <div class="idcard-brand-name">Mangal Bhav</div>
+              <div class="idcard-brand-sub">✦ Verified Pandit Ji ✦</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="idcard-body">
+
+          <!-- Profile Photo -->
+          <!-- Profile Photo -->
+          <div class="idcard-photo-wrap">
+
+            <!-- ✅ Show loaded photo -->
+            <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="idcard-photo" (error)="onImgError($event)" />
+
+            <!-- ✅ Fallback avatar while loading or if no photo -->
+            <div class="idcard-avatar-fallback" *ngIf="!profileImageUrl">
+              {{ FullName?.charAt(0) || '🙏' }}
+            </div>
+
+            <div class="idcard-photo-ring"></div>
+            <div class="idcard-verified-badge">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Name -->
+          <h2 class="idcard-name">{{ FullName }}</h2>
+
+         
+          <!-- Info Pills -->
+          <!-- <div class="idcard-info-list">
+            <div class="idcard-info-item">
+              <ion-icon name="call-outline"></ion-icon>
+              <span>{{ userDetails?.LoginID || '—' }}</span>
+            </div>
+            <div class="idcard-info-item">
+             <ion-icon name="mail-outline"></ion-icon>
+              <span>{{ userDetails?.Email || '—' }}</span>
+            </div>
+          </div> -->
+
+          <!-- QR Code -->
+          <div class="idcard-qr-wrap">
+            <div class="idcard-qr-label">Scan to Book</div>
+            <qrcode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="150" errorCorrectionLevel="M">
+            </qrcode>
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <!-- ===== SECTION LABEL ===== -->
@@ -59,7 +130,7 @@
         <span>{{ t.bookings }}</span>
       </div>
 
-      <div class="dash-card" (click)="openPage('pending-pooja')">
+      <!-- <div class="dash-card" (click)="openPage('pending-pooja')">
         <div class="dash-icon">⏳</div>
         <span>{{ t.pending }}</span>
       </div>
@@ -72,7 +143,7 @@
       <div class="dash-card" (click)="openPage('completed-pooja')">
         <div class="dash-icon">✅</div>
         <span>{{ t.completed }}</span>
-      </div>
+      </div> -->
 
       <div class="dash-card" (click)="openPage('user-profile')">
         <div class="dash-icon">👤</div>
@@ -98,18 +169,18 @@
         <span>My Bookings</span>
       </div>
 
-
+      <!-- 
       <div class="dash-card" (click)="openPage('upcoming-booking')">
         <div class="dash-icon">⏳</div>
-        <!-- <h3>2</h3> -->
+     
         <p>Upcoming</p>
       </div>
 
       <div class="dash-card" (click)="openPage('completed-booking')">
         <div class="dash-icon">✅</div>
-        <!-- <h3>5</h3> -->
+   
         <p>Done</p>
-      </div>
+      </div> -->
 
 
       <!-- <div class="summary-box" (click)="openPage('today-pooja')">

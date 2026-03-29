@@ -50,6 +50,10 @@ reviewsLoading = false;
     this.loadList();
   }
 
+   openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
   loadList() {
 
     this.api.post(
@@ -303,6 +307,7 @@ reviewsLoading = false;
 
         this.api.post('DocumentInsert', body).subscribe(() => {
           this.selectedFile = null;
+          alert('Success');
           this.getBookingPhotos();   // ← refresh gallery after upload
         });
       }

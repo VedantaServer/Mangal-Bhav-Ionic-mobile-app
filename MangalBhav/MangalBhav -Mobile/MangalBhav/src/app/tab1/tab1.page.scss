@@ -615,3 +615,209 @@ ion-toolbar {
     margin: 0;
   }
 }
+
+
+/* Clickable name */
+.name-clickable {
+  cursor: pointer;
+  border-bottom: 1.5px dashed #c8860a;
+  transition: color 0.2s;
+  &:hover { color: #c8860a; }
+}
+
+/* Overlay */
+.idcard-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease;
+}
+
+/* Card */
+.idcard-popup {
+  position: relative;
+  width: 310px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(180, 100, 0, 0.45);
+  animation: slideUp 0.3s ease;
+  background: linear-gradient(160deg, #fff8ec 0%, #fff3d6 60%, #fde9b0 100%);
+  border: 2px solid #e6b830;
+}
+
+/* Close btn */
+.idcard-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.7);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #8b4513;
+  z-index: 2;
+}
+
+/* Header */
+.idcard-header {
+  background: linear-gradient(135deg, #c8860a, #e6b830, #a0600a);
+  padding: 14px 16px 12px;
+}
+.idcard-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.idcard-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #fff8;
+  object-fit: cover;
+}
+.idcard-brand-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+.idcard-brand-sub {
+  color: #fde9b0;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+}
+
+/* Body */
+.idcard-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 53vh;
+  padding: 18px 16px 10px;
+  overflow: scroll;
+}
+
+/* Photo */
+.idcard-photo-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 10px;
+}
+.idcard-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e6b830;
+}
+.idcard-photo-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px dashed #c8860a88;
+}
+.idcard-verified-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #fff;
+  border-radius: 50%;
+  color: #27ae60;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+}
+
+/* Name */
+.idcard-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #6b3a00;
+  margin: 0;
+  text-align: center;
+}
+.idcard-title-tag {
+  font-size: 0.78rem;
+  color: #a0600a;
+  margin: 4px 0 0;
+}
+
+/* Divider */
+.idcard-divider {
+  color: #c8860a;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  margin: 10px 0 8px;
+}
+
+/* Info */
+.idcard-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 0 10px;
+}
+.idcard-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(200, 134, 10, 0.1);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  color: #6b3a00;
+  ion-icon { color: #c8860a; font-size: 1rem; }
+}
+
+/* QR */
+.idcard-qr-wrap {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 14px;
+  border: 1.5px solid #e6b83060;
+}
+.idcard-qr-label {
+  font-size: 0.68rem;
+  color: #a0600a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* Footer */
+.idcard-footer {
+  background: linear-gradient(135deg, #c8860a, #e6b830);
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  font-size: 0.68rem;
+  color: #fff8ec;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0 } to { opacity: 1 }
+}
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0 }
+  to   { transform: translateY(0);    opacity: 1 }
+}

@@ -36,6 +36,10 @@ export class PendingPoojaComponent implements OnInit {
     this.loadList();
   }
 
+   openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
 
 
   currentImageIndex: { [key: string]: number } = {};

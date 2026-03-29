@@ -123,6 +123,47 @@ ion-content {
   --background: #FFFBF0;
   
 }
+/* ===== FILTER TABS — unique to this page ===== */
+.filter-tabs-wrap {
+  padding: 16px 16px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.filter-tab {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  
+  padding: 7px 16px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255, 184, 0, 0.3);
+  background: #ffffff;
+  color: #7A4D00;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+
+  &.active {
+    background: linear-gradient(135deg, #FF9500, #E07B00);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(224, 123, 0, 0.35);
+  }
+
+  &:active { transform: scale(0.95); }
+}
+
 
 ion-header::after { display: none; }
 

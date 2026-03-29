@@ -11,6 +11,11 @@
         <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
       </div>
 
+      <button class="inner-reload-btn" (click)="loadList()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+
+
       <div class="inner-logo">
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
@@ -34,10 +39,10 @@
     <!-- STATUS FILTER TABS -->
     <div class="filter-tabs-wrap">
       <div class="filter-tabs">
-        <button class="filter-tab active">All</button>
-        <button class="filter-tab">Requested</button>
-        <button class="filter-tab">Confirmed</button>
-        <button class="filter-tab">Completed</button>
+        <button class="filter-tab active" (click)="openPage('booking')">All</button>
+        <button class="filter-tab" (click)="openPage('requested-pooja')">Requested</button>
+        <button class="filter-tab" (click)="openPage('upcoming-booking')">Confirmed</button>
+        <button class="filter-tab" (click)="openPage('completed-booking')">Completed</button>
       </div>
     </div>
 
@@ -77,7 +82,7 @@
               </div>
             </div>
             <div class="price-block">
-              <span class="price-label">Amount</span>
+              <span class="price-label">Dakshina</span>
               <span class="price-value">₹ {{ item.TotalAmount }}</span>
             </div>
           </div>
@@ -93,7 +98,11 @@
               <p class="pandit-name">{{ item.Profile?.FullName }}</p>
               <p class="pandit-phone">
                 <ion-icon name="call-outline"></ion-icon>
-                {{ item.Profile?.PhoneNumber }}
+                {{
+                item.Profile?.PhoneNumber
+                ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+                : ''
+                }}
               </p>
             </div>
           </div>
@@ -167,3 +176,6 @@
   </ion-tab-button>
 
 </ion-tab-bar>
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>

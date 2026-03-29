@@ -6,7 +6,7 @@ import { FcmService } from '../../providers/fcm/fcm';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, IonInput, NavController, Platform } from '@ionic/angular';
+import { IonicModule, IonInput, NavController, Platform, ToastController } from '@ionic/angular';
 import { Network } from '@capacitor/network';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { Geolocation } from '@capacitor/geolocation';
@@ -36,6 +36,7 @@ export class LoginPage {
   phoneDigits = new Array(10).fill('');
   isPhoneComplete = false;
   isSevaModalOpen = false;
+  UserLanguage: any;
   selectedAge: number | null = null;
   selectedServiceType: string | null = null;
   sevaTypes = [
@@ -107,12 +108,14 @@ export class LoginPage {
   serviceBookingCountMap: { [key: string]: number } = {};
   pendingPanditServiceID: any;
   sloganName!: string[] | null;
+  upiId: any;
   constructor(public routerCtrl: NavController,
     public api: Api,
     private storage: Storage,
     private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient,
+    private toastCtrl: ToastController,
     public apinu: ApiNU,
     private alertCtrl: AlertController
   ) {
@@ -157,9 +160,17 @@ export class LoginPage {
 
   }
 
+  sendWhatsApp() {
+    const url = `https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=9310050113&otp=101010`;
+    this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=9310050113&otp=101010`, null).subscribe((res: any) => {
+      console.log(res);
+    });
+  }
+
 
   async ngOnInit() {
 
+    //  this.sendWhatsApp();
 
 
     this.getSlogan();
@@ -397,24 +408,13 @@ export class LoginPage {
         } else {
           // Generate OTP
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-          this.loginOtpSent = true;
-          alert(this.loginGeneratedOtp)
-          // Send via WhatsApp
-          const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.loginUsername}&type=template&templateid=813743&placeholders=${this.loginGeneratedOtp}`;
 
-          console.log(url);
-
-          // this.http.get(url).subscribe(
-          //   (response: any) => {
-          //     console.log('Login OTP Sent Successfully', response);
-          //     this.loginOtpSent = true;
-          //     alert('OTP sent on WhatsApp');
-          //   },
-          //   (error) => {
-          //     console.error('Error sending Login OTP', error);
-          //     alert('Failed to send OTP. Please try again.');
-          //   }
-          // );
+          // this.loginOtpSent = true;
+          //    alert(this.loginGeneratedOtp)
+          this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe((res: any) => {
+            console.log(res);
+            this.loginOtpSent = true;
+          });
         }
       })
   }
@@ -626,29 +626,18 @@ export class LoginPage {
 
         if (res.UserList.length > 0) {
           alert('User Already Exists.Please login or use different mobile no.');
+
+          this.showRegisterSection = false;
+          this.showLoginSection = true;
+
           return;
         } else {
           alert('Otp sent on whatsapp');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
-          // const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.mobileNumber}&type=template&templateid=813743&placeholders=${this.generatedOTP}`;
-          const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.mobileNumber}&type=template&templateid=813743&placeholders=${this.generatedOTP}`;
-
-          console.log(url)
-          // this.http.get(url).subscribe(
-          //   (response: any) => {
-          //     console.log('OTP Sent Successfully', response);
-
-          //     alert('OTP sent successfully');
-          //   },
-          //   (error) => {
-          //     console.error('Error sending OTP', error);
-          //     alert('Failed to send OTP');
-          //   }
-          // );
-
-          alert(this.generatedOTP);
-          this.registerStep = 'otp';
+          this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.mobileNumber}&otp=${this.generatedOTP}`, null).subscribe((res: any) => {
+            this.registerStep = 'otp';
+          });
         }
       })
   }
@@ -679,6 +668,69 @@ export class LoginPage {
 
   async selectRole(role: string) {
 
+    // 👉 If role is pandit → ask for UPI
+    if (role === 'PANDIT') {
+
+      const upiAlert = await this.alertCtrl.create({
+        header: 'Enter UPI ID',
+        inputs: [
+          {
+            name: 'upi',
+            type: 'text',
+            placeholder: 'Enter your UPI ID (e.g. name@upi)'
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Continue',
+            handler: (data) => {
+              if (!data.upi) {
+                this.showToastMessage('UPI ID is required', 'danger');
+                return false;
+              }
+
+
+              this.upiId = data.upi;
+
+
+              this.showConfirmAlert(role);
+              return true;
+            }
+          }
+        ]
+      });
+
+      await upiAlert.present();
+
+    } else {
+      // 👉 Normal flow
+      this.showConfirmAlert(role);
+    }
+  }
+
+  async showToastMessage(message: string, color: string = 'primary') {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2000, // 2 seconds
+      position: 'bottom',
+      color: color, // success, danger, warning, primary
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await toast.present();
+  }
+
+
+  async showConfirmAlert(role: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirm Selection',
       message: `Are you sure you want to continue as ${role.toUpperCase()}?`,
@@ -691,8 +743,6 @@ export class LoginPage {
           text: 'Yes, Continue',
           handler: () => {
             this.confirmRole(role);
-            // this.selectedRole = role;
-            // this.registerStep = 'form';
           }
         }
       ]
@@ -700,7 +750,6 @@ export class LoginPage {
 
     await alert.present();
   }
-
 
   confirmRole(role: string) {
     this.selectedRole = role;
@@ -723,6 +772,30 @@ export class LoginPage {
       .subscribe((res: any) => {
         // console.log(res);
 
+
+        const bankbody = {
+          TenantId: Number(1),
+          UserID: Number(res.UserID),
+          AccountHolderName: "",
+          BankName: "",
+          AccountNumber: "",
+          IFSCCode: "",
+          BranchName: "",
+          UPIId: String(this.upiId),
+          AccountType: "",
+          IsActive: Boolean(1),
+          DateAdded: new Date(),
+          DateModified: new Date(),
+          UpdatedByUser: Number(res.UserID)
+        }
+
+
+        this.api.post(`BankDetailsInsert`, bankbody)
+          .subscribe((res: any) => {
+            console.log(res)
+          })
+
+
         alert('User Created Successfully!');
 
 
@@ -737,7 +810,7 @@ export class LoginPage {
           email: '',
           experienceYears: 0,
           bio: '',
-          languages: '',
+          languages: String(this.UserLanguage) || '',
           basePrice: 0,
           profilePhotoUrl: '',
           verificationStatus: 'PENDING',

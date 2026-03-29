@@ -20,7 +20,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;
@@ -128,9 +128,12 @@ export class UserProfileComponent implements OnInit {
       if (res.Status === 'Success') {
         this.selectedProfileFile = null;
         this.profileObject.ProfilePhotoUrl = res.FileName;
-        this.api.post('ProfilesUpdate', this.profileObject).subscribe((res: any) => {
-          console.log(res)
+        this.api.post('ProfilesUpdate', this.profileObject).subscribe(async (res: any) => {
+          console.log(res.FileName)
           if (res.ProfileID > 0) {
+            const account = await this.storage.get('account');
+            account.ProfilePhotoUrl = this.profileObject.ProfilePhotoUrl;;
+            await this.storage.set('account', account);
             alert('Profile photo updated successfully');
           }
         })
@@ -199,7 +202,7 @@ export class UserProfileComponent implements OnInit {
     this.routerCtrl.navigateRoot('/login');
   }
 
-   openPage(pageName: any) {
+  openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 

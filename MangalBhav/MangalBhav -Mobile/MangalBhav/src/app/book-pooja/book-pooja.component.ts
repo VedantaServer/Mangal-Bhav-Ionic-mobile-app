@@ -265,7 +265,7 @@ export class BookPoojaComponent implements OnInit {
       "🪔 Service: " + this.selectedBooking?.ServiceName + "\n" +
       "📍 Location: " + this.selectedBooking?.LocationName + "\n" +
       "📅 Date: " + date + "\n" +
-      "💰 Amount: ₹ " + this.selectedBooking?.Price + "\n\n" +
+      "💰 Dakshina: ₹ " + this.selectedBooking?.Price + "\n\n" +
       "Do you want to proceed?"
     );
 

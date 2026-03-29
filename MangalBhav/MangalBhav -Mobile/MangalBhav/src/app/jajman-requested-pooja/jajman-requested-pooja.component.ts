@@ -8,15 +8,15 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
-
 @Component({
-  selector: 'app-jajman-upcoming-pooja',
-  templateUrl: './jajman-upcoming-pooja.component.html',
-  styleUrls: ['./jajman-upcoming-pooja.component.scss'],
+  selector: 'app-jajman-requested-pooja',
+  templateUrl: './jajman-requested-pooja.component.html',
+  styleUrls: ['./jajman-requested-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
 })
-export class JajmanUpcomingPoojaComponent implements OnInit {
+export class JajmanRequestedPoojaComponent implements OnInit {
+
   userDetails: any;
   isEditMode = false;
   isModalOpen = false;
@@ -141,7 +141,7 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
   loadList() {
 
     this.api.post(
-      `BookingsSelectByQuery?Query=BhaktProfileID=${this.userDetails.UserID} and Status = 'CONFIRMED'`,
+      `BookingsSelectByQuery?Query=BhaktProfileID=${this.userDetails.UserID} and Status = 'REQUESTED'`,
       null
     ).pipe(
 
@@ -325,49 +325,6 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
       dateModified: this.bookings.DateModified ? new Date(this.bookings.DateModified).toISOString() : null,
       updatedByUser: this.bookings.UpdatedByUser || '',
     };
-  }
-
-
-  whatsappFamily(item: any) {
-    const pandit = item.profile;
-    const services = item.panditServices;
-
-    // Build service list text
-    const serviceLines = services?.map((ps: any) =>
-      `  🔸 ${this.getLocalizedText(ps.ServiceDetails?.[0]?.Name)} — ₹${ps.Price}`
-    ).join('\n') || '  🔸 Services available on request';
-
-    // Build the message
-    const message =
-      `🙏 *Mangal Bhav — Pandit Ji Details* 🙏\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `👤 *Name:* ${pandit?.FullName || '—'}\n` +
-      `📞 *Contact:* ${pandit?.PhoneNumber || pandit?.LoginID || '—'}\n` +
-      `🏙️ *City:* ${pandit?.City || '—'}\n` +
-      `🕉️ *Experience:* ${pandit?.ExperienceYears || '—'} Years\n` +
-      `🗣️ *Languages:* ${pandit?.Languages || '—'}\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `📿 *Available Sevas:*\n${serviceLines}\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `📲 Book via Mangal Bhav App\n` +
-      `🔗 Scan QR: pandituserid=${pandit?.UserID}`;
-
-    // Encode for URL
-    const encoded = encodeURIComponent(message);
-
-    // Opens WhatsApp — user can pick any contact or broadcast list
-    const url = `https://wa.me/?text=${encoded}`;
-
-    window.open(url, '_blank');
-  }
-
-  getLocalizedText(text: string): string {
-    if (!text) return '';
-    const parts = text.split(' / ');
-    if (this.Language === 'Hindi' && parts.length > 1) {
-      return parts[1].trim();
-    }
-    return parts[0].trim();
   }
 
   // -----------------------------

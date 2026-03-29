@@ -31,6 +31,15 @@
       <div class="banner-om">ॐ</div>
     </div>
 
+     <div class="filter-tabs-wrap">
+      <div class="filter-tabs">
+        <button class="filter-tab " (click)="openPage('yajman-booking')">Requested</button>
+        <button class="filter-tab" (click)="openPage('pending-pooja')" >Accepted</button>
+        <button class="filter-tab active"(click)="openPage('completed-pooja')"  >Completed</button>
+        <button class="filter-tab" (click)="openPage('Cancelled-pooja')">Cancelled</button>
+      </div>
+    </div>
+
     <div class="section-label">Your Services</div>
 
     <!-- SERVICE + BOOKING CARDS -->
@@ -99,7 +108,10 @@
                 <h4 class="bhakt-name">{{ booking.BhaktProfile?.FullName }}</h4>
                 <p class="bhakt-phone">
                   <ion-icon name="call-outline"></ion-icon>
-                  {{ booking.BhaktProfile?.PhoneNumber }}
+                  {{ booking.BhaktProfile?.PhoneNumber 
+    ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4) 
+    : '' 
+}}
                 </p>
               </div>
               <div class="booking-status-wrap">

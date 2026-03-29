@@ -42,6 +42,7 @@ export class FindPanditComponent implements OnInit {
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
     this.language = await this.storage.get("Language");
+    this.panditList = [];
     this.openQrScanner();
   }
 

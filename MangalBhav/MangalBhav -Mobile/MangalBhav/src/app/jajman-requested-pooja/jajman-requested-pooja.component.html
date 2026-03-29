@@ -30,14 +30,16 @@
       <div class="banner-om">ॐ</div>
     </div>
 
-    <div class="filter-tabs-wrap">
+
+     <div class="filter-tabs-wrap">
       <div class="filter-tabs">
         <button class="filter-tab " (click)="openPage('booking')">All</button>
-        <button class="filter-tab " (click)="openPage('requested-pooja')">Requested</button>
-        <button class="filter-tab active" (click)="openPage('upcoming-booking')">Confirmed</button>
+        <button class="filter-tab active" (click)="openPage('requested-pooja')">Requested</button>
+        <button class="filter-tab" (click)="openPage('upcoming-booking')">Confirmed</button>
         <button class="filter-tab" (click)="openPage('completed-booking')">Completed</button>
       </div>
     </div>
+
 
     <div class="section-label">Upcoming Bookings</div>
 
@@ -92,10 +94,10 @@
               <p class="pandit-phone">
                 <ion-icon name="call-outline"></ion-icon>
                 {{
-                item.Profile?.PhoneNumber
-                ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
-                : ''
-                }}
+    item.Profile?.PhoneNumber
+      ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+      : ''
+  }}
               </p>
             </div>
           </div>
@@ -123,15 +125,15 @@
             <!-- Row 1: Primary actions -->
             <div class="actions-row">
 
-              <button class="action-btn directions-btn" (click)="getDirections(item)">
+              <!-- <button class="action-btn directions-btn" (click)="getDirections(item)">
                 <ion-icon name="navigate-outline"></ion-icon>
                 <span>Directions</span>
-              </button>
+              </button> -->
 
-              <button class="action-btn calendar-btn" (click)="addToCalendar(item)">
+              <!-- <button class="action-btn calendar-btn" (click)="addToCalendar(item)">
                 <ion-icon name="calendar-outline"></ion-icon>
                 <span>Add to Calendar</span>
-              </button>
+              </button> -->
 
               <button class="action-btn payment-btn" *ngIf="item.PaymentStatus === 'PENDING'"
                 (click)="makePayment(item)">
@@ -167,24 +169,6 @@
 
               </div>
             </div>
-
-
-            <div class="contact-pandit-row">
-              <div class="contact-label">
-                <ion-icon name="person-outline"></ion-icon>
-                Share with Family
-              </div>
-              <div class="contact-btns">
-
-                <button class="contact-btn whatsapp-btn" (click)="whatsappFamily(item)">
-                  <!-- WhatsApp logo via ionicon logo slot -->
-                  <ion-icon name="logo-whatsapp"></ion-icon>
-                  WhatsApp
-                </button>
-
-              </div>
-            </div>
-
 
             <!-- Cancel — subtle, at bottom -->
             <button class="cancel-link" *ngIf="item.Status === 'REQUESTED' || item.Status === 'CONFIRMED'"

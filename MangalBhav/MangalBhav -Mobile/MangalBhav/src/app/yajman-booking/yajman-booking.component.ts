@@ -15,7 +15,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './yajman-booking.component.html',
   styleUrls: ['./yajman-booking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class YajmanBookingComponent implements OnInit {
   userDetails: any;
@@ -51,6 +51,11 @@ export class YajmanBookingComponent implements OnInit {
       this.query = `PanditServicesSelectAllByProfileID?profileID=${this.userDetails.UserID}`;
     }
     this.loadList();
+  }
+
+
+  openPage(pageName: any) {
+    this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
   loadList() {
@@ -157,6 +162,7 @@ export class YajmanBookingComponent implements OnInit {
       next: (finalList: any) => {
         console.log('🔥 Final Fully Enriched List:', finalList);
         this.PanditServicesList = finalList;
+        this.PanditServicesList.forEach((_: any, i: number) => this.expandedIndices.add(i));
       },
 
       error: (err) => {
@@ -183,14 +189,15 @@ export class YajmanBookingComponent implements OnInit {
 
   expandedIndex: number | null = null;
 
-  toggleService(index: number) {
-    if (this.expandedIndex === index) {
-      this.expandedIndex = null;
+  expandedIndices: Set<number> = new Set();
+
+  toggleService(i: number) {
+    if (this.expandedIndices.has(i)) {
+      this.expandedIndices.delete(i);
     } else {
-      this.expandedIndex = index;
+      this.expandedIndices.add(i);
     }
   }
-
 
   async updateBookingStatus(booking: any, status: string) {
 

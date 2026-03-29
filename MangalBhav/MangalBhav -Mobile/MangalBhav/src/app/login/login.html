@@ -230,7 +230,9 @@
                   <!-- Duration chip -->
                   <p class="puja-location-row">
                     <ion-icon name="time-outline"></ion-icon>
-                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home
+                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home &nbsp;·&nbsp;
+                    <ion-icon name="cash-outline"></ion-icon>
+                    ₹ 999
                   </p>
 
                   <!-- Description -->
@@ -255,9 +257,9 @@
                   <!-- Price + CTA row -->
                   <div class="puja-price-row">
                     <div class="puja-price-block">
-                      <span class="puja-price-label">Dakshina</span>
+                      <span class="puja-price-label"></span>
                       <!-- <span class="puja-price-original">₹1,499</span> -->
-                      <span class="puja-price-final">₹ 999</span>
+                      <span class="puja-price-final"></span>
                     </div>
                     <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
                       🧘 Find Pandit ji →
@@ -830,9 +832,9 @@
           </div>
         </div>
 
-        <button class="auth-btn" (click)="goToOtp()">
+        <!-- <button class="auth-btn" (click)="goToOtp()">
           <span>📲</span> Send OTP <span class="btn-arr">→</span>
-        </button>
+        </button> -->
 
         <div class="auth-divider">
           <span class="divider-line"></span>
@@ -913,6 +915,15 @@
             <ion-input placeholder="Enter your age" type="number" [(ngModel)]="signupAge" class="field-input">
             </ion-input>
           </div>
+        </div>
+
+
+        <div class="field-input-wrap" style="margin-bottom: 4vh;">
+          <ion-select placeholder="Select Language" interface="action-sheet" [(ngModel)]="UserLanguage"
+            name="Languages">
+            <ion-select-option value="Hindi">Hindi</ion-select-option>
+            <ion-select-option value="English">English</ion-select-option>
+          </ion-select>
         </div>
 
         <div class="role-cards">

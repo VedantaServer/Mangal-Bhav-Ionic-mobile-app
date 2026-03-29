@@ -7,13 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 @Component({
   selector: 'app-jajman-completed-pooja',
   templateUrl: './jajman-completed-pooja.component.html',
   styleUrls: ['./jajman-completed-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
 })
 export class JajmanCompletedPoojaComponent implements OnInit {
 
@@ -370,6 +371,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
         };
 
         this.api.post('DocumentInsert', body).subscribe(() => {
+          alert('Success');
           this.selectedFile = null;
           this.getBookingPhotos(); // refresh gallery
         });

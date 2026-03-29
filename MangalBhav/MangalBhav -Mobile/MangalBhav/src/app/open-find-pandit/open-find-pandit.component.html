@@ -126,7 +126,11 @@
         <div class="contact-row">
           <div class="contact-chip" *ngIf="item.profile?.PhoneNumber">
             <ion-icon name="call-outline"></ion-icon>
-            {{ item.profile?.PhoneNumber }}
+            {{
+    item.Profile?.PhoneNumber
+      ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+      : ''
+  }}
           </div>
           <div class="contact-chip" *ngIf="item.profile?.Email">
             <ion-icon name="mail-outline"></ion-icon>
