@@ -34,10 +34,102 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
     UpdatedByUser: '',
   };
 
+  labels = {
+    en: {
+         appTitle: '✦ Mangal.Bhav ✦',
+      pageTitle: 'My Bookings',
+      bannerSub: 'Track Your',
+      bannerTitle: 'Seva Journey',
+
+      all: 'All',
+      requested: 'Requested',
+      confirmed: 'Confirmed',
+      completed: 'Completed',
+
+      upcomingBookings: 'Upcoming Bookings',
+
+      dakshina: 'Dakshina',
+      mins: 'mins',
+
+      payment: 'Payment',
+      paid: 'Paid',
+      pending: 'Pending',
+
+      directions: 'Directions',
+      addCalendar: 'Add to Calendar',
+      payNow: 'Pay Now',
+      buySamagri: 'Buy Samagri',
+
+      contactPandit: 'Contact Pandit Ji',
+      call: 'Call',
+      whatsapp: 'WhatsApp',
+
+      shareFamily: 'Share with Family',
+
+      cancelBooking: 'Cancel this Booking',
+
+      noBookings: 'No Bookings Yet',
+      noBookingsSub: 'Book a puja to see your seva journey here',
+
+      explore: 'Explore Life',
+      me: 'Me',
+      status_requested: '⏳ Awaiting Pandit Ji',
+      status_confirmed: '✅ Pandit Ji Confirmed',
+      status_cancelled: '❌ Cancelled',
+      status_completed: '🪔 Seva Completed',
+      status_progress: '📿 In Progress'
+    },
+
+    hi: {
+      pageTitle: 'मेरी बुकिंग्स',
+      bannerSub: 'ट्रैक करें',
+      bannerTitle: 'सेवा यात्रा',
+
+      all: 'सभी',
+      requested: 'अनुरोधित',
+      confirmed: 'पुष्ट',
+      completed: 'पूर्ण',
+
+      upcomingBookings: 'आगामी बुकिंग्स',
+
+      dakshina: 'दक्षिणा',
+      mins: 'मिनट',
+
+      payment: 'भुगतान',
+      paid: 'भुगतान किया गया',
+      pending: 'लंबित',
+
+      directions: 'दिशा देखें',
+      addCalendar: 'कैलेंडर में जोड़ें',
+      payNow: 'अभी भुगतान करें',
+      buySamagri: 'सामग्री खरीदें',
+
+      contactPandit: 'पंडित जी से संपर्क करें',
+      call: 'कॉल करें',
+      whatsapp: 'व्हाट्सऐप',
+
+      shareFamily: 'परिवार के साथ साझा करें',
+
+      cancelBooking: 'इस बुकिंग को रद्द करें',
+      status_requested: '⏳ पंडित जी की प्रतीक्षा',
+      status_confirmed: '✅ पंडित जी ने पुष्टि की',
+      status_cancelled: '❌ रद्द',
+      status_completed: '🪔 सेवा पूर्ण',
+      status_progress: '📿 प्रगति में',
+      noBookings: 'अभी कोई बुकिंग नहीं',
+      noBookingsSub: 'अपनी सेवा यात्रा देखने के लिए पूजा बुक करें',
+
+      explore: 'जीवन देखें',
+        appTitle: '✦ मंगल भाव ✦',
+      me: 'मैं'
+    }
+  };
+
   BookingsList: any[] = [];
 
   selectedFile: any = null;
   Language: any;
+  language: any;
 
   constructor(
     public routerCtrl: NavController,
@@ -50,7 +142,7 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.Language = await this.storage.get("Language");
+    this.language = this.userDetails.Languages;
 
 
 
@@ -128,13 +220,22 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
   }
 
 
+
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
+
   getStatusEmoji(status: string): string {
-    switch (status?.toUpperCase()) {
-      case 'REQUESTED': return '⏳ Awaiting Pandit Ji';
-      case 'CONFIRMED': return '✅ Pandit Ji Confirmed';
-      case 'CANCELLED': return '❌ Cancelled';
-      case 'COMPLETED': return '🪔 Seva Completed';
-      default: return '📿 In Progress';
+    const key = status?.toUpperCase();
+
+    switch (key) {
+      case 'REQUESTED': return this.t.status_requested;
+      case 'CONFIRMED': return this.t.status_confirmed;
+      case 'CANCELLED': return this.t.status_cancelled;
+      case 'COMPLETED': return this.t.status_completed;
+      default: return this.t.status_progress;
     }
   }
 

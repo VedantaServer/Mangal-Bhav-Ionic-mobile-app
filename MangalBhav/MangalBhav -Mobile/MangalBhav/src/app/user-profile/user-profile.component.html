@@ -7,8 +7,8 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">Mangal.Bhav</div>
-        <div class="inner-title-sub">✦ Peace · Prosperity · Protection ✦</div>
+        <div class="inner-title">{{ t.appTitle }}</div>
+        <div class="inner-title-sub">{{ t.appSub }}</div>
       </div>
 
       <div class="inner-logo">
@@ -25,8 +25,8 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Your Sacred</p>
-        <h2 class="banner-title"> Profile</h2>
+        <p class="banner-sub">{{ t.bannerSub }}</p>
+        <h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
@@ -41,11 +41,11 @@
           <ion-icon name="camera-outline"></ion-icon>
         </div>
       </div>
-      <p class="avatar-hint">Tap to change photo</p>
+      <p class="avatar-hint">{{ t.changePhoto }}</p>
     </div>
 
     <!-- FORM SECTION -->
-    <div class="section-label">Personal Details</div>
+    <div class="section-label">{{ t.personalDetails }}</div>
 
     <div class="form-container">
 
@@ -53,10 +53,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="person-outline"></ion-icon>
-          Full Name
+          {{ t.fullName }}
         </div>
         <div class="field-input-wrap">
-          <ion-input [(ngModel)]="profile.FullName" placeholder="Enter your full name"></ion-input>
+          <ion-input [(ngModel)]="profile.FullName" [placeholder]="t.enterFullName"></ion-input>
         </div>
       </div>
 
@@ -64,11 +64,11 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="call-outline"></ion-icon>
-          Phone
+          {{ t.phone }}
         </div>
         <div class="field-input-wrap readonly">
           <ion-input readonly [(ngModel)]="profile.PhoneNumber"></ion-input>
-          <div class="readonly-badge">Verified</div>
+          <div class="readonly-badge">{{ t.verified }}</div>
         </div>
       </div>
 
@@ -76,10 +76,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="mail-outline"></ion-icon>
-          Email
+          {{ t.email }}
         </div>
         <div class="field-input-wrap">
-          <ion-input type="email" [(ngModel)]="profile.Email" placeholder="Enter your email"></ion-input>
+          <ion-input type="email" [(ngModel)]="profile.Email" [placeholder]="t.enterEmail"></ion-input>
         </div>
       </div>
 
@@ -87,13 +87,15 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="transgender-outline"></ion-icon>
-          Gender
+          {{ t.gender }}
         </div>
         <div class="field-input-wrap">
           <ion-select placeholder="Select Gender" [(ngModel)]="profile.Gender">
-            <ion-select-option value="Male">Male</ion-select-option>
-            <ion-select-option value="Female">Female</ion-select-option>
-            <ion-select-option value="Other">Other</ion-select-option>
+            <ion-select [placeholder]="t.selectGender">
+              <ion-select-option value="Male">{{ t.male }}</ion-select-option>
+              <ion-select-option value="Female">{{ t.female }}</ion-select-option>
+              <ion-select-option value="Other">{{ t.other }}</ion-select-option>
+            </ion-select>
           </ion-select>
         </div>
       </div>
@@ -102,10 +104,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="briefcase-outline"></ion-icon>
-          Experience (Years)
+          {{ t.experience }}
         </div>
         <div class="field-input-wrap">
-          <ion-input type="number" [(ngModel)]="profile.ExperienceYears" placeholder="e.g. 10"></ion-input>
+          <ion-input type="number" [(ngModel)]="profile.ExperienceYears" [placeholder]="t.enterExperience"></ion-input>
         </div>
       </div>
 
@@ -113,7 +115,7 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="gift-outline"></ion-icon>
-          Date of Birth
+          {{ t.dob }}
         </div>
         <div class="field-input-wrap">
           <ion-input type="date" [(ngModel)]="profile.DOB"></ion-input>
@@ -124,11 +126,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="document-text-outline"></ion-icon>
-          Bio
+          {{ t.bio }}
         </div>
         <div class="field-input-wrap textarea">
-          <ion-textarea auto-grow="true" [(ngModel)]="profile.Bio"
-            placeholder="Tell devotees about yourself..."></ion-textarea>
+          <ion-textarea auto-grow="true" [(ngModel)]="profile.Bio" [placeholder]="t.bioPlaceholder"></ion-textarea>
         </div>
       </div>
 
@@ -136,10 +137,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="language-outline"></ion-icon>
-          Language
+          {{ t.language }}
         </div>
         <div class="field-input-wrap">
-          <ion-select placeholder="Select Language" interface="action-sheet" [(ngModel)]="profile.Languages"
+          <ion-select [placeholder]="t.selectLanguage" interface="action-sheet" [(ngModel)]="profile.Languages"
             name="Languages">
             <ion-select-option value="Hindi">Hindi</ion-select-option>
             <ion-select-option value="English">English</ion-select-option>
@@ -151,10 +152,10 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="cash-outline"></ion-icon>
-          Base Price (₹)
+         {{ t.basePrice }}
         </div>
         <div class="field-input-wrap">
-          <ion-input type="number" [(ngModel)]="profile.BasePrice" placeholder="e.g. 1100"></ion-input>
+          <ion-input type="number" [(ngModel)]="profile.BasePrice"  [placeholder]="t.enterPrice"></ion-input>
         </div>
       </div>
 
@@ -172,12 +173,12 @@
     <div class="submit-wrap">
       <button class="submit-btn" (click)="saveProfile()">
         <ion-icon name="checkmark-circle-outline"></ion-icon>
-        {{ isEditMode ? 'Update Profile' : 'Create Profile' }}
+       {{ isEditMode ? t.updateProfile : t.createProfile }}
       </button>
 
       <button class="logout-btn" (click)="logout()">
         <ion-icon name="log-out-outline"></ion-icon>
-        Logout
+        {{ t.logout }}
       </button>
     </div>
 

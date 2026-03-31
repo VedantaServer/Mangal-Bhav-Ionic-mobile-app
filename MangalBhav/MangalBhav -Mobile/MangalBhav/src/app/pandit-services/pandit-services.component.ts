@@ -6,7 +6,6 @@ import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { QRCodeComponent } from 'angularx-qrcode';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
@@ -17,7 +16,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './pandit-services.component.html',
   styleUrls: ['./pandit-services.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class PanditServicesComponent implements OnInit {
 
@@ -52,26 +51,120 @@ export class PanditServicesComponent implements OnInit {
     UpdatedByUser: '',
   };
 
+
   labels = {
     en: {
       serviceTitle: '🪔 Service',
-      category: '📂 Category',
-      service: '🪔 Service',
-      location: '📍 Location',
-      price: '💰 Price',
-      status: '⚙ Status',
+       appTitle: '✦ Mangal.Bhav ✦',
+
+      pageTitle: 'Seva Services',
+      bannerSub: 'Manage Your',
+      bannerTitle: 'Pandit Services',
+      sevaList: 'Your Seva List',
+
       active: 'Active',
-      inactive: 'Inactive'
+      inactive: 'Inactive',
+
+      category: 'Category',
+      service: 'Service',
+      location: 'Location',
+      price: 'Price',
+
+      bookings: 'Bookings',
+      uploadPhotos: 'Upload Photos',
+      activate: 'Activate',
+      deactivate: 'Deactivate',
+
+      emptyTitle: 'No Services Yet',
+      emptySub: 'Tap the + button to add your first seva service',
+
+      editService: 'Edit Service',
+      addService: 'Add Service',
+
+      sevaDetails: 'Seva Details',
+      selectCategory: 'Select Category',
+      chooseCategory: 'Choose Category',
+
+      selectService: 'Select Service',
+      chooseService: 'Choose Service',
+
+      locationPricing: 'Location & Pricing',
+      selectLocation: 'Select Location',
+      chooseLocation: 'Choose Location',
+      enterPrice: 'Enter Price',
+
+      status: 'Status',
+      activeService: 'Active Service',
+      activeSub: 'Make this seva available for booking',
+
+      updateService: 'Update Service',
+      createService: 'Create Service',
+
+      sevaPhotos: 'Seva Photos',
+      tapUpload: 'Tap to Upload Photo',
+      imgSupport: 'JPG, PNG supported',
+      uploadSelected: 'Upload Selected Photo',
+
+      uploadedPhotos: 'Uploaded Photos',
+      noPhotos: 'No Photos Yet',
+      noPhotosSub: 'Upload photos of your seva to attract more bookings'
     },
+
     hi: {
       serviceTitle: '🪔 सेवा',
-      category: '📂 श्रेणी',
-      service: '🪔 सेवा',
-      location: '📍 स्थान',
-      price: '💰 मूल्य',
-      status: '⚙ स्थिति',
+        appTitle: '✦ मंगल भाव ✦',
+
+      pageTitle: 'सेवा सेवाएँ',
+      bannerSub: 'अपनी',
+      bannerTitle: 'पंडित सेवाएँ प्रबंधित करें',
+      sevaList: 'आपकी सेवा सूची',
+
       active: 'सक्रिय',
-      inactive: 'निष्क्रिय'
+      inactive: 'निष्क्रिय',
+
+      category: 'श्रेणी',
+      service: 'सेवा',
+      location: 'स्थान',
+      price: 'मूल्य',
+
+      bookings: 'बुकिंग्स',
+      uploadPhotos: 'फोटो अपलोड करें',
+      activate: 'सक्रिय करें',
+      deactivate: 'निष्क्रिय करें',
+
+      emptyTitle: 'अभी कोई सेवा नहीं',
+      emptySub: 'अपनी पहली सेवा जोड़ने के लिए + बटन दबाएँ',
+
+      editService: 'सेवा संपादित करें',
+      addService: 'सेवा जोड़ें',
+
+      sevaDetails: 'सेवा विवरण',
+      selectCategory: 'श्रेणी चुनें',
+      chooseCategory: 'श्रेणी चुनें',
+
+      selectService: 'सेवा चुनें',
+      chooseService: 'सेवा चुनें',
+
+      locationPricing: 'स्थान और मूल्य',
+      selectLocation: 'स्थान चुनें',
+      chooseLocation: 'स्थान चुनें',
+      enterPrice: 'मूल्य दर्ज करें',
+
+      status: 'स्थिति',
+      activeService: 'सक्रिय सेवा',
+      activeSub: 'इस सेवा को बुकिंग के लिए उपलब्ध करें',
+
+      updateService: 'सेवा अपडेट करें',
+      createService: 'सेवा बनाएं',
+
+      sevaPhotos: 'सेवा फोटो',
+      tapUpload: 'फोटो अपलोड करने के लिए टैप करें',
+      imgSupport: 'JPG, PNG समर्थित',
+      uploadSelected: 'चयनित फोटो अपलोड करें',
+
+      uploadedPhotos: 'अपलोड की गई फोटो',
+      noPhotos: 'अभी कोई फोटो नहीं',
+      noPhotosSub: 'अधिक बुकिंग पाने के लिए सेवा की फोटो अपलोड करें'
     }
   };
 
@@ -90,13 +183,13 @@ export class PanditServicesComponent implements OnInit {
     private alertCtrl: AlertController
   ) { }
 
-onAddLocation() {
-  this.closeModal();
+  onAddLocation() {
+    this.closeModal();
 
-  setTimeout(() => {
-    this.routerCtrl.navigateForward('/location');
-  }, 300); // delay in milliseconds
-}
+    setTimeout(() => {
+      this.routerCtrl.navigateForward('/location');
+    }, 300); // delay in milliseconds
+  }
 
 
   async ngOnInit() {

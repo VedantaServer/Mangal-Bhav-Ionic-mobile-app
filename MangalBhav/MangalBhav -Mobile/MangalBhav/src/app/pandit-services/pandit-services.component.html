@@ -7,8 +7,9 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">Seva Services</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+        <div class="inner-title">{{ t.pageTitle }}</div>
+        <div class="inner-title-sub">{{t.appTitle}}</div> 
+      
       </div>
 
       <div class="inner-logo">
@@ -25,13 +26,13 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Manage Your</p>
-        <h2 class="banner-title">Pandit Services</h2>
+        <p class="banner-sub">{{ t.bannerSub }}</p>
+        <h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
 
-    <div class="section-label">Your Seva List</div>
+    <div class="section-label">{{ t.sevaList }}</div>
 
     <!-- SERVICE CARDS -->
     <div class="cards-container">
@@ -51,7 +52,7 @@
           <div class="card-top-right">
             <div class="status-badge" [ngClass]="item.IsActive ? 'active' : 'inactive'">
               <span class="badge-dot"></span>
-              {{ item.IsActive ? 'Active' : 'Inactive' }}
+              {{ item.IsActive ? t.active : t.inactive }}
             </div>
             <button class="edit-btn" (click)="editItem(item)">
               <ion-icon name="create-outline"></ion-icon>
@@ -66,28 +67,28 @@
         <div class="card-details">
 
           <div class="detail-row">
-            <span class="detail-label">📂 Category</span>
+            <span class="detail-label">📂 {{ t.category }}</span>
             <span class="detail-value">
               {{ getCategoryNameByServiceID(item.ServiceID) }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="detail-label">🪔 Service</span>
+            <span class="detail-label">🪔 {{ t.service }}</span>
             <span class="detail-value">
               {{ getServiceName(item.ServiceID) }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="detail-label">📍 Location</span>
+           <span class="detail-label">📍 {{ t.location }}</span>
             <span class="detail-value">
               {{ getLocationName(item.LocationID) }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="detail-label">💰 Price</span>
+            <span class="detail-label">💰 {{ t.price }}</span>
             <span class="detail-value price-value">₹ {{ item.Price }}</span>
           </div>
 
@@ -98,29 +99,25 @@
         <!-- SERVICE ACTIONS -->
         <div class="service-actions">
 
-          <!-- Upload Photos — primary -->
-          <button class="svc-action-btn upload-btn" (click)="uploadPhotos(item)">
-            <ion-icon name="camera-outline"></ion-icon>
-            <span>Upload Photos</span>
-          </button>
+
 
           <!-- View Bookings for this service -->
           <button class="svc-action-btn bookings-btn" (click)="viewServiceBookings(item)">
             <ion-icon name="calendar-outline"></ion-icon>
-            <span>Bookings</span>
+            <span>{{ t.bookings }}</span>
           </button>
 
           <!-- Share service -->
-          <button class="svc-action-btn share-btn" (click)="openShareModal(item)">
-            <ion-icon name="share-social-outline"></ion-icon>
-            <span>Share</span>
+          <button class="svc-action-btn share-btn" (click)="uploadPhotos(item)">
+            <ion-icon name="camera-outline"></ion-icon>
+            <span>{{ t.uploadPhotos }}</span>
           </button>
 
           <!-- Toggle Active/Inactive -->
           <button class="svc-action-btn toggle-btn" [class.toggle-active]="item.IsActive"
             [class.toggle-inactive]="!item.IsActive" (click)="toggleActive(item)">
             <ion-icon [name]="item.IsActive ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-            <span>{{ item.IsActive ? 'Deactivate' : 'Activate' }}</span>
+            <span>{{ item.IsActive ? t.deactivate : t.activate }}</span>
           </button>
 
         </div>
@@ -131,8 +128,8 @@
     <!-- EMPTY STATE -->
     <div *ngIf="PanditServicesList?.length === 0" class="empty-state">
       <div class="empty-icon">🕉️</div>
-      <h3 class="empty-title">No Services Yet</h3>
-      <p class="empty-sub">Tap the + button to add your first seva service</p>
+      <h3 class="empty-title">{{ t.emptyTitle }}</h3>
+      <p class="empty-sub">{{ t.emptySub }}</p>
     </div>
 
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
@@ -158,7 +155,7 @@
             </ion-button>
           </ion-buttons>
           <ion-title class="header-title">
-            {{ isEditMode ? '✏️ Edit Service' : '➕ Add Service' }}
+            {{ isEditMode ? t.editService : t.addService }}
           </ion-title>
         </ion-toolbar>
       </ion-header>
@@ -168,7 +165,7 @@
 
           <!-- SEVA DETAILS -->
           <div class="form-section">
-            <div class="form-section-title">🪔 Seva Details</div>
+            <div class="form-section-title">{{ t.sevaDetails }}</div>
 
             <!-- Category Select -->
             <div class="select-group">
@@ -176,8 +173,8 @@
                 <ion-icon name="grid-outline"></ion-icon>
               </div>
               <div class="select-inner">
-                <p class="select-label">Select Category</p>
-                <ion-select placeholder="Choose Category" interface="action-sheet" [(ngModel)]="selectedCategoryID"
+                <p class="select-label">{{ t.selectCategory }}</p>
+                <ion-select [placeholder]="t.chooseCategory" interface="action-sheet" [(ngModel)]="selectedCategoryID"
                   (ionChange)="onCategoryChange($event)">
                   <ion-select-option *ngFor="let category of ServiceCategoryList" [value]="category.CategoryID">
                     {{ language === 'Hindi'
@@ -194,8 +191,8 @@
                 <ion-icon name="flame-outline"></ion-icon>
               </div>
               <div class="select-inner">
-                <p class="select-label">Select Service</p>
-                <ion-select placeholder="Choose Service" interface="action-sheet"
+                <p class="select-label">{{ t.selectService }}</p>
+                <ion-select [placeholder]="t.chooseService" interface="action-sheet"
                   [(ngModel)]="panditServices.ServiceID">
                   <ion-select-option *ngFor="let service of FilteredServiceList" [value]="service.ServiceID">
                     {{ getServiceNameHindiEnglish(service) }}
@@ -208,7 +205,7 @@
 
           <!-- LOCATION & PRICE -->
           <div class="form-section">
-            <div class="form-section-title">📍 Location & Pricing</div>
+            <div class="form-section-title">{{ t.locationPricing }}</div>
 
             <!-- Location Select -->
             <div class="select-group">
@@ -217,12 +214,12 @@
               </div>
               <div class="select-inner">
                 <div class="select-header">
-                  <p class="select-label">Select Location</p>
+                  <p class="select-label">{{ t.selectLocation }}</p>
                   <ion-button fill="clear" size="small" (click)="onAddLocation()" style="color: black;">
                     <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 </div>
-                <ion-select placeholder="Choose Location" interface="action-sheet"
+                <ion-select [placeholder]="t.chooseLocation" interface="action-sheet"
                   [(ngModel)]="panditServices.LocationID">
                   <ion-select-option *ngFor="let location of LocationList" [value]="location.LocationID">
                     {{ location.Name }}
@@ -237,7 +234,7 @@
                 <ion-icon name="cash-outline"></ion-icon>
               </div>
               <div class="price-prefix">₹</div>
-              <ion-input type="number" placeholder="Enter Price" [(ngModel)]="panditServices.Price">
+              <ion-input type="number" [placeholder]="t.enterPrice" [(ngModel)]="panditServices.Price">
               </ion-input>
             </div>
 
@@ -245,14 +242,14 @@
 
           <!-- STATUS -->
           <div class="form-section">
-            <div class="form-section-title">⚙️ Status</div>
+            <div class="form-section-title">{{ t.status }}</div>
 
             <div class="toggle-row">
               <div class="toggle-left">
                 <ion-icon name="checkmark-circle-outline" class="toggle-icon"></ion-icon>
                 <div>
-                  <p class="toggle-label">Active Service</p>
-                  <p class="toggle-sub">Make this seva available for booking</p>
+                  <p class="toggle-label">{{ t.activeService }}</p>
+                  <p class="toggle-sub">{{ t.activeSub }}</p>
                 </div>
               </div>
               <ion-toggle color="warning" [(ngModel)]="panditServices.IsActive">
@@ -266,7 +263,7 @@
             <ion-button expand="block" class="save-btn" (click)="save()">
               <ion-icon [name]="isEditMode ? 'checkmark-circle-outline' : 'add-circle-outline'" slot="start">
               </ion-icon>
-              {{ isEditMode ? 'Update Service' : 'Create Service' }}
+             {{ isEditMode ? t.updateService : t.createService }}
             </ion-button>
           </div>
 
@@ -281,126 +278,6 @@
 <app-panditjibottomtabs></app-panditjibottomtabs>
 
 
-<!-- ===== SHARE SERVICE MODAL ===== -->
-<ion-modal [isOpen]="isShareModalOpen" (didDismiss)="isShareModalOpen = false" [breakpoints]="[0, 0.85, 1]"
-  [initialBreakpoint]="0.85">
-  <ng-template>
-
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="isShareModalOpen = false">
-            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title class="header-title">🔗 Share Seva</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content>
-      <div class="modal-wrapper">
-
-        <!-- SERVICE IMAGE -->
-        <div class="share-img-wrap">
-          <img [src]="getCurrentImage(getServiceName(shareItem?.ServiceID))" class="share-img"
-            (error)="onImgError($event)" />
-          <div class="share-img-overlay"></div>
-          <div class="share-img-badge">🔥 Havan</div>
-          <div class="share-img-bottom">
-            <h2 class="share-img-title">{{ getServiceName(shareItem?.ServiceID) }}</h2>
-            <div class="share-price-pill">₹ {{ shareItem?.Price }}</div>
-          </div>
-        </div>
-
-        <!-- SERVICE DETAILS -->
-        <div class="share-details-card">
-          <div class="share-card-strip"></div>
-
-          <div class="share-detail-row">
-            <div class="share-detail-icon">📍</div>
-            <div>
-              <p class="share-detail-label">Location</p>
-              <p class="share-detail-value">{{ getLocationName(shareItem?.LocationID) }}</p>
-            </div>
-          </div>
-
-          <div class="share-divider"></div>
-
-          <div class="share-detail-row">
-            <div class="share-detail-icon">💰</div>
-            <div>
-              <p class="share-detail-label">Starting Price</p>
-              <p class="share-detail-value price-hl">₹ {{ shareItem?.Price }}</p>
-            </div>
-          </div>
-
-          <div class="share-divider"></div>
-
-          <div class="share-detail-row">
-            <div class="share-detail-icon">🆔</div>
-            <div>
-              <p class="share-detail-label">Service ID</p>
-              <p class="share-detail-value id-text">#{{ shareItem?.PanditServiceID }}</p>
-            </div>
-          </div>
-
-          <div class="share-divider"></div>
-
-          <div class="share-detail-row">
-            <div class="share-detail-icon">✅</div>
-            <div>
-              <p class="share-detail-label">Status</p>
-              <p class="share-detail-value" [style.color]="shareItem?.IsActive ? '#16a34a' : '#dc2626'">
-                {{ shareItem?.IsActive ? 'Available' : 'Unavailable' }}
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- QR CODE SECTION -->
-        <div class="share-qr-section">
-          <div class="share-section-title">📲 Scan to Book</div>
-          <div class="qr-wrap">
-            <!-- <img [src]="getQrUrl(shareItem?.PanditServiceID)" class="qr-img" alt="QR Code" /> -->
-
-            <qrcode [qrdata]="'panditserviceid=' + shareItem?.PanditServiceID" class="qr-img" errorCorrectionLevel="M">
-            </qrcode>
-            <div class="qr-label">Service ID: #{{ shareItem?.PanditServiceID }}</div>
-          </div>
-        </div>
-
-        <!-- SHARE BUTTONS -->
-        <div class="share-actions">
-
-          <button class="share-action-btn whatsapp-share" (click)="shareViaWhatsApp(shareItem)">
-            <ion-icon name="logo-whatsapp"></ion-icon>
-            <span>WhatsApp</span>
-          </button>
-
-          <button class="share-action-btn native-share" (click)="shareViaNative(shareItem)">
-            <ion-icon name="share-social-outline"></ion-icon>
-            <span>Share</span>
-          </button>
-
-          <button class="share-action-btn copy-link" (click)="copyLink(shareItem)">
-            <ion-icon name="copy-outline"></ion-icon>
-            <span>Copy Link</span>
-          </button>
-
-        </div>
-
-        <!-- Copied toast indicator -->
-        <div class="copy-toast" *ngIf="linkCopied">
-          ✅ Link copied to clipboard!
-        </div>
-
-      </div>
-    </ion-content>
-
-  </ng-template>
-</ion-modal>
-
 
 <ion-modal [isOpen]="isUploadModalOpen" (didDismiss)="closeUploadModal()" [breakpoints]="[0, 0.92, 1]"
   [initialBreakpoint]="0.92">
@@ -414,8 +291,8 @@
             <ion-icon name="close-outline"></ion-icon>
           </button>
           <div class="inner-title-block">
-            <div class="inner-title">Seva Photos</div>
-            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+           <div class="inner-title">{{ t.sevaPhotos }}</div>
+            <div class="inner-title-sub">{{t.appTitle}}</div>
           </div>
           <div class="inner-logo">
             <img src="../../assets/mangalbhavlogo1.jpeg" />
@@ -435,22 +312,22 @@
             <div class="upload-icon-wrap">
               <ion-icon name="camera-outline"></ion-icon>
             </div>
-            <p class="upload-zone-title">Tap to Upload Photo</p>
-            <p class="upload-zone-sub">JPG, PNG supported</p>
+            <p class="upload-zone-title">{{ t.tapUpload }}</p>
+           <p class="upload-zone-sub">{{ t.imgSupport }}</p>
           </div>
         </div>
 
         <!-- Upload button — shows only when file selected -->
         <button class="upload-confirm-btn" *ngIf="selectedFile" (click)="uploadImage()">
           <ion-icon name="cloud-upload-outline"></ion-icon>
-          Upload Selected Photo
+         {{ t.uploadSelected }}
         </button>
 
         <!-- ===== GALLERY ===== -->
         <div class="gallery-section" *ngIf="serviceImages && serviceImages.length > 0">
 
           <div class="gallery-header">
-            <span class="gallery-label">📸 Uploaded Photos</span>
+            <span class="gallery-label">📸 {{ t.uploadedPhotos }}</span>
             <span class="gallery-count">{{ serviceImages.length }} photos</span>
           </div>
 
@@ -475,8 +352,8 @@
         <!-- Empty state -->
         <div class="gallery-empty" *ngIf="!serviceImages?.length">
           <div class="empty-img-icon">🖼️</div>
-          <p class="empty-img-title">No Photos Yet</p>
-          <p class="empty-img-sub">Upload photos of your seva to attract more bookings</p>
+          <p class="empty-img-title">{{ t.noPhotos }}</p>
+          <p class="empty-img-sub">{{ t.noPhotos }}</p>
         </div>
 
       </div>

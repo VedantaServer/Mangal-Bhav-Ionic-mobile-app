@@ -6,21 +6,15 @@
       <div class="nav-logo">
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">
-          <div class="nav-logo-text">Mangal<span class="logo-dot">.</span>Bhav</div>
-          <div class="nav-logo-sub">✦ Peace · Prosperity · Protection ✦</div>
+          <div class="nav-logo-text">{{ t.logoTitle }}</div>
+          <div class="nav-logo-sub">{{ t.logoSub }}</div>
         </div>
       </div>
+      <!-- <button class="inner-reload-btn" (click)="ngOnInit()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button> -->
 
-      <!-- Logout -->
-      <!-- <div class="header-actions">
-        <button class="header-logout-btn" (click)="logout()">
-          <ion-icon name="log-out-outline"></ion-icon>
-        </button>
-      </div> -->
-
-      <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button>
-
-
+      <button class="nav-icon-btn" title="Change Language">🌐</button>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -85,18 +79,7 @@
           <!-- Name -->
           <h2 class="idcard-name">{{ FullName }}</h2>
 
-         
-          <!-- Info Pills -->
-          <!-- <div class="idcard-info-list">
-            <div class="idcard-info-item">
-              <ion-icon name="call-outline"></ion-icon>
-              <span>{{ userDetails?.LoginID || '—' }}</span>
-            </div>
-            <div class="idcard-info-item">
-             <ion-icon name="mail-outline"></ion-icon>
-              <span>{{ userDetails?.Email || '—' }}</span>
-            </div>
-          </div> -->
+
 
           <!-- QR Code -->
           <div class="idcard-qr-wrap">
@@ -110,16 +93,10 @@
     </div>
 
     <!-- ===== SECTION LABEL ===== -->
-    <div class="section-label">My Seva</div>
+    <div class="section-label">{{ t.mySeva }}</div>
 
     <!-- ===== DASHBOARD GRID ===== -->
     <div class="dashboard-grid">
-
-      <!-- <div class="dash-card" (click)="openPage('location')">
-        <div class="dash-icon">📍</div>
-        <span>{{ t.kshetra }}</span>
-      </div> -->
-
       <div class="dash-card" (click)="openPage('panditservice')">
         <div class="dash-icon">🕉️</div>
         <span>{{ t.addSeva }}</span>
@@ -129,36 +106,14 @@
         <div class="dash-icon">📜</div>
         <span>{{ t.bookings }}</span>
       </div>
-
-      <!-- <div class="dash-card" (click)="openPage('pending-pooja')">
-        <div class="dash-icon">⏳</div>
-        <span>{{ t.pending }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPage('Cancelled-pooja')">
-        <div class="dash-icon">❌</div>
-        <span>{{ t.cancelled }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPage('completed-pooja')">
-        <div class="dash-icon">✅</div>
-        <span>{{ t.completed }}</span>
-      </div> -->
-
       <div class="dash-card" (click)="openPage('user-profile')">
         <div class="dash-icon">👤</div>
         <span>{{ t.profile }}</span>
       </div>
-      <!-- <div class="dash-card" (click)="openPage('india-festival')">
-        <div class="dash-icon">🪔</div>
-        <span>Festivals</span>
-      </div> -->
-
-
     </div>
 
     <!-- ===== SECTION LABEL ===== -->
-    <div class="section-label">Booked Seva</div>
+    <div class="section-label">{{ t.bookedSeva }}</div>
 
     <!-- ===== SUMMARY ROW ===== -->
     <div class="dashboard-grid">
@@ -166,62 +121,25 @@
 
       <div class="dash-card" (click)="openPage('booking')">
         <div class="dash-icon">📅</div>
-        <span>My Bookings</span>
+        <span>{{ t.myBookings }}</span>
       </div>
 
-      <!-- 
-      <div class="dash-card" (click)="openPage('upcoming-booking')">
-        <div class="dash-icon">⏳</div>
-     
-        <p>Upcoming</p>
-      </div>
 
-      <div class="dash-card" (click)="openPage('completed-booking')">
-        <div class="dash-icon">✅</div>
-   
-        <p>Done</p>
-      </div> -->
-
-
-      <!-- <div class="summary-box" (click)="openPage('today-pooja')">
-        <div class="summary-icon">📅</div>
-        <p>{{ t.today }}</p>
-      </div> -->
-
-      <!-- <div class="summary-box featured" (click)="openPage('upcoming-pooja')">
-        <div class="summary-icon">⏳</div>
-        <h3>7</h3>
-        <p>{{ t.upcoming }}</p>
-      </div> -->
-
-      <!-- <div class="summary-box" (click)="openPage('completed-pooja')">
-        <div class="summary-icon">✅</div>
-        <p>{{ t.completed }}</p>
-      </div> -->
 
     </div>
 
     <!-- ===== STATUS CARD ===== -->
-    <div class="section-label">Status</div>
+    <!-- <div class="section-label">Status</div> -->
 
-    <div class="status-card">
 
-      <div class="status-left">
-        <div class="status-location-label">{{ t.currentLocation }}</div>
-        <div class="status-location-value">
-          <ion-icon name="location-sharp"></ion-icon>
-          Indore, MP
-        </div>
-      </div>
 
-      <div class="status-right">
+    <!-- <div class="status-right">
         <div class="availability online">
           <span class="dot"></span>
           {{ t.available }}
         </div>
-      </div>
+      </div> -->
 
-    </div>
 
     <!-- ===== DIVIDER ===== -->
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>

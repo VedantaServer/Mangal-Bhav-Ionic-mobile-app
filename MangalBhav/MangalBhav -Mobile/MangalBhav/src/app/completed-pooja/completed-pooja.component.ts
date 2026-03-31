@@ -15,7 +15,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './completed-pooja.component.html',
   styleUrls: ['./completed-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class CompletedPoojaComponent implements OnInit {
   userDetails: any;
@@ -25,9 +25,86 @@ export class CompletedPoojaComponent implements OnInit {
   isUploadModalOpen = false;
   isPreviewOpen = false;
   isReviewsModalOpen = false;
-selectedReviewItem: any = null;
-reviewsList: any[] = [];
-reviewsLoading = false;
+ labels = {
+  en: {
+    appTitle: '✦ Mangal.Bhav ✦',
+    pageTitle: 'Bookings',
+    bannerSubCompleted: 'Completed',
+    bannerTitle: 'Seva Bookings',
+
+    requested: 'Requested',
+    accepted: 'Accepted',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+
+    yourServices: 'Your Services',
+    bookings: 'Bookings',
+
+    noBookings: 'No bookings yet for this service',
+
+    uploadPhotos: 'Upload Photos',
+    viewReviews: 'View Reviews',
+
+    noServices: 'No Services Found',
+    noServicesSub: 'Add services first to start receiving bookings',
+
+    reviews: 'Reviews',
+    loadingReviews: 'Loading reviews...',
+    noReviews: 'No Reviews Yet',
+    noReviewsSub: 'Be the first to review this seva',
+
+    uploadTitle: 'Seva Photos',
+    tapUpload: 'Tap to Upload Photo',
+    imgSupport: 'JPG, PNG supported',
+    uploadSelected: 'Upload Selected Photo',
+
+    bookingPhotos: 'Booking Photos',
+    noPhotos: 'No Photos Yet',
+    noPhotosSub: 'Upload photos from this booking to preserve sacred memories'
+  },
+
+  hi: {
+
+     
+    pageTitle: 'बुकिंग्स',
+    bannerSubCompleted: 'पूर्ण',
+    bannerTitle: 'सेवा बुकिंग्स',
+     appTitle: '✦ मंगल भाव ✦',
+
+    requested: 'अनुरोधित',
+    accepted: 'स्वीकृत',
+    completed: 'पूर्ण',
+    cancelled: 'रद्द',
+
+    yourServices: 'आपकी सेवाएँ',
+    bookings: 'बुकिंग्स',
+
+    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+
+    uploadPhotos: 'फोटो अपलोड करें',
+    viewReviews: 'रिव्यू देखें',
+
+    noServices: 'कोई सेवा नहीं मिली',
+    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें',
+
+    reviews: 'रिव्यू',
+    loadingReviews: 'रिव्यू लोड हो रहे हैं...',
+    noReviews: 'अभी कोई रिव्यू नहीं',
+    noReviewsSub: 'इस सेवा का पहला रिव्यू दें',
+
+    uploadTitle: 'सेवा फोटो',
+    tapUpload: 'फोटो अपलोड करने के लिए टैप करें',
+    imgSupport: 'JPG, PNG समर्थित',
+    uploadSelected: 'चयनित फोटो अपलोड करें',
+
+    bookingPhotos: 'बुकिंग फोटो',
+    noPhotos: 'अभी कोई फोटो नहीं',
+    noPhotosSub: 'इस सेवा की यादों को सहेजने के लिए फोटो अपलोड करें'
+  }
+};
+  selectedReviewItem: any = null;
+  reviewsList: any[] = [];
+  reviewsLoading = false;
   selectedFile: any = null;
   selectedBookingID: any = null;   // ← BookingID instead of ServiceID
   serviceImages: any[] = [];
@@ -50,9 +127,16 @@ reviewsLoading = false;
     this.loadList();
   }
 
-   openPage(pageName: any) {
+  openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
+
+    get t() {
+  return this.language === 'Hindi'
+    ? this.labels.hi
+    : this.labels.en;
+}
+
 
   loadList() {
 
@@ -357,25 +441,25 @@ reviewsLoading = false;
 
 
 
-viewFeedback(booking: any) {
-  this.selectedReviewItem = booking;
-  this.isReviewsModalOpen = true;
-  this.loadReviews(booking);
-}
+  viewFeedback(booking: any) {
+    this.selectedReviewItem = booking;
+    this.isReviewsModalOpen = true;
+    this.loadReviews(booking);
+  }
 
-loadReviews(booking: any) {
-  this.reviewsLoading = true;
-  this.reviewsList = [];
+  loadReviews(booking: any) {
+    this.reviewsLoading = true;
+    this.reviewsList = [];
 
-  this.api.post(`FeedbackSelectByQuery?Query=BookingID=${booking.BookingID}`, null)
-    .subscribe((res: any) => {
-      this.reviewsList = res?.FeedbackList || [];
-      this.reviewsLoading = false;
-      console.log('Reviews:', this.reviewsList);
-    });
-}
+    this.api.post(`FeedbackSelectByQuery?Query=BookingID=${booking.BookingID}`, null)
+      .subscribe((res: any) => {
+        this.reviewsList = res?.FeedbackList || [];
+        this.reviewsLoading = false;
+        console.log('Reviews:', this.reviewsList);
+      });
+  }
 
-getStarArray(rating: number): number[] {
-  return [1, 2, 3, 4, 5];
-}
+  getStarArray(rating: number): number[] {
+    return [1, 2, 3, 4, 5];
+  }
 }

@@ -7,8 +7,8 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">Book Pandit</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+        <div class="inner-title">{{ t.bookPanditTitle }}</div>
+        <div class="inner-title-sub">✦ {{ t.logoTitle }} ✦</div>
       </div>
 
       <div class="inner-logo">
@@ -25,8 +25,8 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Find & Book</p>
-        <h2 class="banner-title">Your Seva Pandit</h2>
+        <p class="banner-sub">{{ t.bannerSub }}</p>
+        <h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
@@ -35,9 +35,8 @@
     <div class="search-wrap">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Search by name, language..." class="search-input" [(ngModel)]="searchQuery" />
-        <ion-icon name="qr-code-outline" class="qr-scan-icon" (click)="openQrScanner()">
-        </ion-icon>
+        <input type="text" [placeholder]="t.searchPlaceholder" class="search-input" [(ngModel)]="searchQuery" />
+        <ion-icon name="qr-code-outline" class="qr-scan-icon" (click)="openQrScanner()"></ion-icon>
       </div>
     </div>
 
@@ -46,8 +45,8 @@
 
       <div class="qr-overlay-header">
         <div class="inner-title-block">
-          <div class="inner-title">Scan QR Code</div>
-          <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+          <div class="inner-title">{{ t.scanQrTitle }}</div>
+          <div class="inner-title-sub">✦ {{ t.logoTitle }} ✦</div>
         </div>
         <button class="inner-back-btn" (click)="closeQrScanner()">
           <ion-icon name="close-outline"></ion-icon>
@@ -69,11 +68,11 @@
         </div>
       </div>
 
-      <p class="qr-hint">Point camera at a Mangal.Bhav QR code</p>
+      <p class="qr-hint">{{ t.qrHint }}</p>
 
     </div>
 
-    <div class="section-label">Available Services</div>
+    <div class="section-label">{{ t.availableServices }}</div>
 
     <!-- ===== SERVICE CARDS ===== -->
     <div class="cards-container">
@@ -91,12 +90,12 @@
           <!-- Active/Inactive pill on image -->
           <div class="status-pill" [ngClass]="item.IsActive ? 'active' : 'inactive'">
             <span class="status-dot"></span>
-            {{ item.IsActive ? 'Available' : 'Unavailable' }}
+            {{ item.IsActive ? t.statusAvailable : t.statusUnavailable }}
           </div>
 
           <!-- Price floating on image bottom-left -->
           <div class="image-price">
-            <span class="price-label">Starting at</span>
+            <span class="price-label">{{ t.startingAt }}</span>
             <span class="price-amount">₹ {{ item.Price | number:'1.0-0' }}</span>
           </div>
         </div>
@@ -109,8 +108,8 @@
             <div class="card-body-left">
               <h3 class="service-name">
                 {{ Language === 'Hindi'
-                ? (item.ServiceName?.split('/')[1]?.trim() || item.ServiceName)
-                : (item.ServiceName?.split('/')[0]?.trim() || item.ServiceName) }}
+                  ? (item.ServiceName?.split('/')[1]?.trim() || item.ServiceName)
+                  : (item.ServiceName?.split('/')[0]?.trim() || item.ServiceName) }}
               </h3>
               <div class="pandit-row">
                 <div class="pandit-avatar">
@@ -133,31 +132,29 @@
             <span>{{ item.LocationName }}</span>
           </div>
 
-
-          <!-- ✅ Booking count chip -->
+          <!-- Booking count chip -->
           <div class="booking-count-chip" *ngIf="getBookingCount(item.PanditServiceID) > 0">
             <ion-icon name="people-outline"></ion-icon>
-            <span><strong>{{ getBookingCount(item.PanditServiceID) }}</strong> people have booked this</span>
+            <span><strong>{{ getBookingCount(item.PanditServiceID) }}</strong> {{ t.peopleBooked }}</span>
           </div>
 
           <!-- Tags row -->
           <div class="tags-row">
-            <span class="tag">🔥 Havan</span>
-            <span class="tag">📿 Vedic</span>
-            <span class="tag">🏠 At Home</span>
+            <span class="tag">{{ t.tagHavan }}</span>
+            <span class="tag">{{ t.tagVedic }}</span>
+            <span class="tag">{{ t.tagAtHome }}</span>
           </div>
-
 
           <!-- View Pandit Photos button -->
           <button class="view-photos-btn" (click)="viewServicePhotos(item); $event.stopPropagation()">
             <ion-icon name="images-outline"></ion-icon>
-            View Seva Photos
+            {{ t.viewSevaPhotos }}
           </button>
 
           <!-- Book button -->
           <button class="book-btn" (click)="bookNow(item)" [disabled]="!item.IsActive">
             <ion-icon name="calendar-outline"></ion-icon>
-            {{ item.IsActive ? 'Book Now' : 'Not Available' }}
+            {{ item.IsActive ? t.bookNowBtn : t.notAvailable }}
           </button>
 
         </div>
@@ -169,8 +166,8 @@
     <!-- EMPTY STATE -->
     <div *ngIf="!PanditServicesList?.length" class="empty-state">
       <div class="empty-icon">🪔</div>
-      <h3 class="empty-title">No Services Found</h3>
-      <p class="empty-sub">Check back soon for available pandits near you</p>
+      <h3 class="empty-title">{{ t.emptyTitle }}</h3>
+      <p class="empty-sub">{{ t.emptySub }}</p>
     </div>
 
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
@@ -179,34 +176,25 @@
 </ion-content>
 
 
-
-
-
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-
 
 <ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
 
   <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
     <ion-icon name="sparkles-outline"></ion-icon>
-    <ion-label>Explore Life</ion-label>
+    <ion-label>{{ t.explore }}</ion-label>
   </ion-tab-button>
-
-  <!-- 
-  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
 
   <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
     <div class="custom-tab-icon"></div>
   </ion-tab-button>
 
-
   <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
     <ion-icon name="person"></ion-icon>
-    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || t.me }}</ion-label>
   </ion-tab-button>
 
 </ion-tab-bar>
-
 
 
 <!-- ===== BOOKING MODAL ===== -->
@@ -222,7 +210,7 @@
             <ion-icon name="close-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title class="header-title">✅ Confirm Booking</ion-title>
+        <ion-title class="header-title">{{ t.confirmBooking }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -236,12 +224,10 @@
           <div class="modal-img-wrap">
             <img [src]="getCurrentImage(selectedBooking?.ServiceName)" class="modal-img" (error)="onImgError($event)" />
             <div class="modal-img-overlay"></div>
-            <!-- <h3 class="modal-img-title">{{ selectedBooking?.ServiceName }}</h3> -->
-
             <h3 class="modal-img-title">
               {{ Language === 'Hindi'
-              ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
-              : (selectedBooking?.ServiceName?.split('/')[0]?.trim() ||selectedBooking?.ServiceName) }}
+                ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
+                : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
             </h3>
           </div>
 
@@ -253,7 +239,7 @@
                 <ion-icon name="person-outline"></ion-icon>
               </div>
               <div>
-                <p class="summary-item-label">Pandit</p>
+                <p class="summary-item-label">{{ t.summaryLabelPandit }}</p>
                 <p class="summary-item-value">{{ selectedBooking?.UserName }}</p>
               </div>
             </div>
@@ -265,7 +251,7 @@
                 <ion-icon name="location-outline"></ion-icon>
               </div>
               <div>
-                <p class="summary-item-label">Location</p>
+                <p class="summary-item-label">{{ t.summaryLabelLocation }}</p>
                 <p class="summary-item-value">{{ selectedBooking?.LocationName }}</p>
               </div>
             </div>
@@ -277,28 +263,29 @@
                 <ion-icon name="cash-outline"></ion-icon>
               </div>
               <div>
-                <p class="summary-item-label">Dakshina</p>
+                <p class="summary-item-label">{{ t.summaryLabelDakshina }}</p>
                 <p class="summary-item-value price-highlight">
                   ₹ {{ selectedBooking?.Price | number:'1.2-2' }}
                 </p>
               </div>
             </div>
+
             <div class="summary-divider"></div>
 
-            <!-- Description row — NEW -->
+            <!-- Description row -->
             <div class="summary-row-item description-row">
               <div class="summary-icon-wrap">
                 <ion-icon name="document-text-outline"></ion-icon>
               </div>
               <div>
-                <p class="summary-item-label">About this Seva</p>
+                <p class="summary-item-label">{{ t.summaryLabelAboutSeva }}</p>
                 <p class="summary-item-value description-text">
                   {{ Language === 'Hindi'
-                  ? (selectedBooking?.ServiceDescription?.split('/')[1]?.trim()
-                  || selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
-                  || 'No description available')
-                  : (selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
-                  || 'No description available') }}
+                    ? (selectedBooking?.ServiceDescription?.split('/')[1]?.trim()
+                    || selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
+                    || t.noDescription)
+                    : (selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
+                    || t.noDescription) }}
                 </p>
               </div>
             </div>
@@ -309,8 +296,7 @@
 
         <!-- DATE PICKER SECTION -->
         <div class="form-section">
-          <div class="form-section-title">📅 Select Puja Date</div>
-
+          <div class="form-section-title">{{ t.selectPujaDate }}</div>
           <div class="date-picker-wrap">
             <ion-datetime presentation="date" [(ngModel)]="BookingDate" [min]="minDate" color="warning"
               class="custom-datetime">
@@ -322,7 +308,7 @@
         <div class="modal-footer">
           <ion-button expand="block" class="confirm-btn" (click)="confirmBooking()">
             <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-            Confirm Booking
+            {{ t.confirmBtn }}
           </ion-button>
         </div>
 
@@ -332,9 +318,6 @@
   </ng-template>
 
 </ion-modal>
-
-
-
 
 <!-- ===== VIEW SERVICE PHOTOS MODAL ===== -->
 <ion-modal [isOpen]="isPhotosModalOpen" (didDismiss)="closePhotosModal()" [breakpoints]="[0, 0.92, 1]"

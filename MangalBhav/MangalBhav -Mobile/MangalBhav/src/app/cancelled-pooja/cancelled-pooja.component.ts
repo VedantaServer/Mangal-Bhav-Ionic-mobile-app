@@ -20,6 +20,47 @@ export class CancelledPoojaComponent implements OnInit {
   language: any;
   PanditServicesList: any;
 
+  labels = {
+  en: {
+    pageTitle: 'Bookings',
+    bannerSubCancelled: 'Cancelled',
+    bannerTitle: 'Seva Bookings',
+appTitle: '✦ Mangal.Bhav ✦',
+    requested: 'Requested',
+    accepted: 'Accepted',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+
+    yourServices: 'Your Services',
+    bookings: 'Bookings',
+
+    noBookings: 'No bookings yet for this service',
+
+    noServices: 'No Services Found',
+    noServicesSub: 'Add services first to start receiving bookings'
+  },
+
+  hi: {
+    pageTitle: 'बुकिंग्स',
+    bannerSubCancelled: 'रद्द',
+    bannerTitle: 'सेवा बुकिंग्स',
+
+    requested: 'अनुरोधित',
+    accepted: 'स्वीकृत',
+    completed: 'पूर्ण',
+    cancelled: 'रद्द',
+      appTitle: '✦ मंगल भाव ✦',
+
+    yourServices: 'आपकी सेवाएँ',
+    bookings: 'बुकिंग्स',
+
+    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+
+    noServices: 'कोई सेवा नहीं मिली',
+    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
+  }
+};
+
   constructor(
     public routerCtrl: NavController,
     public api: Api,
@@ -40,6 +81,13 @@ export class CancelledPoojaComponent implements OnInit {
    openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
+
+    get t() {
+  return this.language === 'Hindi'
+    ? this.labels.hi
+    : this.labels.en;
+}
+
 
   loadList() {
 

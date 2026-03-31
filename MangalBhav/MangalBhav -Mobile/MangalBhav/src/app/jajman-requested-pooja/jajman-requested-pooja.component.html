@@ -7,8 +7,8 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">My Bookings</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+    <div class="inner-title">{{ t.pageTitle }}</div>
+        <div class="inner-title-sub">{{t.appTitle}}</div>
       </div>
 
       <div class="inner-logo">
@@ -24,24 +24,24 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Track Your</p>
-        <h2 class="banner-title">Seva Journey</h2>
+     <p class="banner-sub">{{ t.bannerSub }}</p>
+<h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
 
 
-     <div class="filter-tabs-wrap">
+    <div class="filter-tabs-wrap">
       <div class="filter-tabs">
-        <button class="filter-tab " (click)="openPage('booking')">All</button>
-        <button class="filter-tab active" (click)="openPage('requested-pooja')">Requested</button>
-        <button class="filter-tab" (click)="openPage('upcoming-booking')">Confirmed</button>
-        <button class="filter-tab" (click)="openPage('completed-booking')">Completed</button>
+         <button class="filter-tab " (click)="openPage('booking')">{{ t.all }}</button>
+        <button class="filter-tab active" (click)="openPage('requested-pooja')">{{ t.requested }}</button>
+        <button class="filter-tab" (click)="openPage('upcoming-booking')">{{ t.confirmed }}</button>
+        <button class="filter-tab" (click)="openPage('completed-booking')">{{ t.completed }}</button>
       </div>
     </div>
 
 
-    <div class="section-label">Upcoming Bookings</div>
+   <div class="section-label">{{ t.upcomingBookings }}</div>
 
     <!-- BOOKING CARDS -->
     <div class="cards-container">
@@ -67,17 +67,17 @@
             <div>
               <!-- <h3 class="service-name">{{ item.Service?.Name }}</h3> -->
               <h3 class="service-name">
-                {{ Language === 'Hindi'
+                {{ language === 'Hindi'
                 ? (item.Service?.Name?.split('/')[1]?.trim() || item.Service?.Name)
                 : (item.Service?.Name?.split('/')[0]?.trim() || item.Service?.Name) }}
               </h3>
               <div class="duration-chip">
                 <ion-icon name="time-outline"></ion-icon>
-                {{ item.Service?.DurationMinutes }} mins
+              {{ item.Service?.DurationMinutes }} {{ t.mins }}
               </div>
             </div>
             <div class="price-block">
-              <span class="price-label">Dakshina</span>
+             <span class="price-label">{{ t.dakshina }}</span>
               <span class="price-value">₹ {{ item.TotalAmount }}</span>
             </div>
           </div>
@@ -94,10 +94,10 @@
               <p class="pandit-phone">
                 <ion-icon name="call-outline"></ion-icon>
                 {{
-    item.Profile?.PhoneNumber
-      ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
-      : ''
-  }}
+                item.Profile?.PhoneNumber
+                ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+                : ''
+                }}
               </p>
             </div>
           </div>
@@ -125,25 +125,16 @@
             <!-- Row 1: Primary actions -->
             <div class="actions-row">
 
-              <!-- <button class="action-btn directions-btn" (click)="getDirections(item)">
-                <ion-icon name="navigate-outline"></ion-icon>
-                <span>Directions</span>
-              </button> -->
-
-              <!-- <button class="action-btn calendar-btn" (click)="addToCalendar(item)">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <span>Add to Calendar</span>
-              </button> -->
 
               <button class="action-btn payment-btn" *ngIf="item.PaymentStatus === 'PENDING'"
                 (click)="makePayment(item)">
                 <ion-icon name="card-outline"></ion-icon>
-                <span>Pay Now</span>
+                <span>{{ t.payNow }}</span>
               </button>
 
               <button class="action-btn samagri-btn" (click)="buySamagri(item)">
                 <ion-icon name="basket-outline"></ion-icon>
-                <span>Buy Samagri</span>
+                <span>{{ t.buySamagri }}</span>
               </button>
 
             </div>
@@ -152,19 +143,19 @@
             <div class="contact-pandit-row">
               <div class="contact-label">
                 <ion-icon name="person-outline"></ion-icon>
-                Contact Pandit Ji
+                 {{ t.contactPandit }}
               </div>
               <div class="contact-btns">
 
                 <button class="contact-btn call-btn" (click)="callPandit(item)">
                   <ion-icon name="call-outline"></ion-icon>
-                  Call
+                  {{ t.call }}
                 </button>
 
                 <button class="contact-btn whatsapp-btn" (click)="whatsappPandit(item)">
                   <!-- WhatsApp logo via ionicon logo slot -->
                   <ion-icon name="logo-whatsapp"></ion-icon>
-                  WhatsApp
+                  {{ t.whatsapp }}
                 </button>
 
               </div>
@@ -174,7 +165,7 @@
             <button class="cancel-link" *ngIf="item.Status === 'REQUESTED' || item.Status === 'CONFIRMED'"
               (click)="cancelBooking(item)">
               <ion-icon name="close-circle-outline"></ion-icon>
-              Cancel this Booking
+             {{ t.cancelBooking }}
             </button>
 
           </div>
@@ -187,8 +178,8 @@
     <!-- EMPTY STATE -->
     <div *ngIf="BookingsList?.length === 0" class="empty-state">
       <div class="empty-icon">📅</div>
-      <h3 class="empty-title">No Bookings Yet</h3>
-      <p class="empty-sub">Book a puja to see your seva journey here</p>
+      <h3>{{ t.noBookings }}</h3>
+<p>{{ t.noBookingsSub }}</p>
     </div>
 
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
@@ -198,11 +189,6 @@
 
 
 
-<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')">
-  <div class="mb-scanner-inner">
-    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
-  </div>
-</div> -->
 <ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
 
   <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">

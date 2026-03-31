@@ -14,13 +14,78 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './bookings.component.html',
   styleUrls: ['./bookings.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class BookingsComponent implements OnInit {
 
   userDetails: any;
   isEditMode = false;
   isModalOpen = false;
+  labels = {
+    en: {
+      appTitle: '✦ Mangal.Bhav ✦',
+      pageTitle: 'My Bookings',
+      bannerSub: 'Track Your',
+      bannerTitle: 'Seva Journey',
+
+      all: 'All',
+      requested: 'Requested',
+      confirmed: 'Confirmed',
+      completed: 'Completed',
+
+      yourBookings: 'Your Bookings',
+
+      dakshina: 'Dakshina',
+      mins: 'mins',
+
+      payment: 'Payment',
+      paid: 'Paid',
+      pending: 'Pending',
+
+      noBookings: 'No Bookings Yet',
+      noBookingsSub: 'Book a puja to see your seva journey here',
+
+      explore: 'Explore Life',
+      me: 'Me',
+      status_requested: '⏳ Awaiting Pandit Ji',
+      status_confirmed: '✅ Pandit Ji Confirmed',
+      status_cancelled: '❌ Cancelled',
+      status_completed: '🪔 Seva Completed',
+      status_progress: '📿 In Progress'
+    },
+
+    hi: {
+      pageTitle: 'मेरी बुकिंग्स',
+      bannerSub: 'ट्रैक करें',
+      bannerTitle: 'सेवा यात्रा',
+
+      all: 'सभी',
+      requested: 'अनुरोधित',
+      confirmed: 'पुष्ट',
+      completed: 'पूर्ण',
+
+      yourBookings: 'आपकी बुकिंग्स',
+
+      dakshina: 'दक्षिणा',
+      appTitle: '✦ मंगल भाव ✦',
+      mins: 'मिनट',
+
+      payment: 'भुगतान',
+      paid: 'भुगतान किया गया',
+      pending: 'लंबित',
+
+      noBookings: 'अभी कोई बुकिंग नहीं',
+      noBookingsSub: 'अपनी सेवा यात्रा देखने के लिए पूजा बुक करें',
+
+      explore: 'जीवन देखें',
+      me: 'मैं',
+      status_requested: '⏳ पंडित जी की प्रतीक्षा',
+      status_confirmed: '✅ पंडित जी ने पुष्टि की',
+      status_cancelled: '❌ रद्द',
+      status_completed: '🪔 सेवा पूर्ण',
+      status_progress: '📿 प्रगति में'
+    }
+  };
 
   bookings: any = {
     BookingID: 0,
@@ -39,6 +104,7 @@ export class BookingsComponent implements OnInit {
 
   selectedFile: any = null;
   Language: any;
+  language: any;
 
   constructor(
     public routerCtrl: NavController,
@@ -51,7 +117,7 @@ export class BookingsComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.Language = await this.storage.get("Language");
+    this.language = this.userDetails.Languages;
 
 
 
@@ -83,13 +149,20 @@ export class BookingsComponent implements OnInit {
     }
   }
 
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
   getStatusEmoji(status: string): string {
-    switch (status?.toUpperCase()) {
-      case 'REQUESTED': return '⏳ Awaiting Pandit Ji';
-      case 'CONFIRMED': return '✅ Pandit Ji Confirmed';
-      case 'CANCELLED': return '❌ Cancelled';
-      case 'COMPLETED': return '🪔 Seva Completed';
-      default: return '📿 In Progress';
+    const key = status?.toUpperCase();
+
+    switch (key) {
+      case 'REQUESTED': return this.t.status_requested;
+      case 'CONFIRMED': return this.t.status_confirmed;
+      case 'CANCELLED': return this.t.status_cancelled;
+      case 'COMPLETED': return this.t.status_completed;
+      default: return this.t.status_progress;
     }
   }
   // -----------------------------

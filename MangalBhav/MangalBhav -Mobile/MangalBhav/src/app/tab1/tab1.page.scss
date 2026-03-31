@@ -708,6 +708,19 @@ ion-toolbar {
   overflow: scroll;
 }
 
+.inner-reload-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* Photo */
 .idcard-photo-wrap {
   position: relative;

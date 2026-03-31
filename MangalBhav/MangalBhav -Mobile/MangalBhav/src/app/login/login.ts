@@ -410,7 +410,7 @@ export class LoginPage {
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
           // this.loginOtpSent = true;
-          //    alert(this.loginGeneratedOtp)
+             alert(this.loginGeneratedOtp)
           this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe((res: any) => {
             console.log(res);
             this.loginOtpSent = true;

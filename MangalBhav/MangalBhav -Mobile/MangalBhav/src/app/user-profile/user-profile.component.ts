@@ -47,8 +47,107 @@ export class UserProfileComponent implements OnInit {
 
   isEditMode = false;
   profileObject: any;
+  language: any;
 
+labels = {
+  en: {
+    appTitle: 'Mangal.Bhav',
+    appSub: '✦ Peace · Prosperity · Protection ✦',
 
+    bannerSub: 'Your Sacred',
+    bannerTitle: 'Profile',
+
+    changePhoto: 'Tap to change photo',
+
+    personalDetails: 'Personal Details',
+
+    fullName: 'Full Name',
+    enterFullName: 'Enter your full name',
+
+    phone: 'Phone',
+    verified: 'Verified',
+
+    email: 'Email',
+    enterEmail: 'Enter your email',
+
+    gender: 'Gender',
+    selectGender: 'Select Gender',
+
+    male: 'Male',
+    female: 'Female',
+    other: 'Other',
+
+    experience: 'Experience (Years)',
+    enterExperience: 'e.g. 10',
+
+    dob: 'Date of Birth',
+
+    bio: 'Bio',
+    bioPlaceholder: 'Tell devotees about yourself...',
+
+    language: 'Language',
+    selectLanguage: 'Select Language',
+
+    basePrice: 'Base Price (₹)',
+    enterPrice: 'e.g. 1100',
+
+    updateProfile: 'Update Profile',
+    createProfile: 'Create Profile',
+
+    logout: 'Logout',
+    explore: 'Explore Life',
+    me: 'Me'
+  },
+
+  hi: {
+    appTitle: 'मंगल.भाव',
+    appSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+
+    bannerSub: 'आपका पवित्र',
+    bannerTitle: 'प्रोफाइल',
+
+    changePhoto: 'फोटो बदलने के लिए टैप करें',
+
+    personalDetails: 'व्यक्तिगत जानकारी',
+
+    fullName: 'पूरा नाम',
+    enterFullName: 'अपना पूरा नाम दर्ज करें',
+
+    phone: 'फोन',
+    verified: 'सत्यापित',
+
+    email: 'ईमेल',
+    enterEmail: 'अपना ईमेल दर्ज करें',
+
+    gender: 'लिंग',
+    selectGender: 'लिंग चुनें',
+
+    male: 'पुरुष',
+    female: 'महिला',
+    other: 'अन्य',
+
+    experience: 'अनुभव (वर्ष)',
+    enterExperience: 'जैसे 10',
+
+    dob: 'जन्म तिथि',
+
+    bio: 'परिचय',
+    bioPlaceholder: 'अपने बारे में भक्तों को बताएं...',
+
+    language: 'भाषा',
+    selectLanguage: 'भाषा चुनें',
+
+    basePrice: 'मूल्य (₹)',
+    enterPrice: 'जैसे 1100',
+
+    updateProfile: 'प्रोफाइल अपडेट करें',
+    createProfile: 'प्रोफाइल बनाएं',
+
+    logout: 'लॉगआउट',
+    explore: 'जीवन देखें',
+    me: 'मैं'
+  }
+};
   constructor(public routerCtrl: NavController,
     public api: Api,
     private storage: Storage,
@@ -58,6 +157,7 @@ export class UserProfileComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
+    this.language = this.userDetails.Languages; 
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
@@ -82,6 +182,13 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
+
+    get t() {
+  return this.language === 'Hindi'
+    ? this.labels.hi
+    : this.labels.en;
+}
+
 
 
   loadProfileImage() {
@@ -214,6 +321,21 @@ export class UserProfileComponent implements OnInit {
       .subscribe(async (res: any) => {
         //console.log(res);
         if (res.ProfileID > 0) {
+
+
+
+
+
+            const account = await this.storage.get('account');
+            account.Languages = payload.languages;
+            await this.storage.set('account', account);
+
+
+
+
+
+
+          
           alert("Profile saved successfully ✅");
           this.uploadProfilePhoto();
         } else {

@@ -27,49 +27,59 @@ export class Tab1Page {
   userDetails!: any;
   showIdCard = false;
   profileImageUrl: string | null = null;
+ 
   labels = {
-    en: {
-      appTitle: '🕉️ Mangal Bhav',
-      greetingTitle: 'Namaste 🙏, ',
-      greetingSubtitle: 'Ready for today’s seva?',
+  en: {
+    appTitle: '🕉️ Mangal Bhav',
+    logoTitle: 'Mangal.Bhav',
+    logoSub: '✦ Peace · Prosperity · Protection ✦',
 
-      kshetra: 'Kshetra',
-      addSeva: 'Add Service',
-      bookings: 'Yajman Bookings',
-      pending: 'Pending Puja',
-      cancelled: 'Rejected Pooja',   // ✅ Added
-      dakshina: 'Dakshina',
-      profile: 'Pandit Profile',
+    greetingTitle: 'Namaste 🙏, ',
+    greetingSubtitle: 'Ready for today’s seva?',
 
-      today: 'Today',
-      upcoming: 'Upcoming',
-      completed: 'Done',
+    addSeva: 'Add Service',
+    bookings: 'Yajman Bookings',
+    profile: 'Pandit Profile',
 
-      currentLocation: 'Current Location',
-      available: 'Available'
-    },
+    mySeva: 'My Seva',
+    bookedSeva: 'Booked Seva',
+    myBookings: 'My Bookings',
+    status: 'Status',
 
-    hi: {
-      appTitle: '🕉️ मंगल भाव',
-      greetingTitle: 'नमस्ते 🙏, ',
-      greetingSubtitle: 'आज की सेवा के लिए तैयार हैं?',
+    scanToBook: 'Scan to Book',
 
-      kshetra: 'क्षेत्र',
-      addSeva: 'सेवा जोड़ें',
-      bookings: 'यजमान बुकिंग',
-      pending: 'लंबित पूजा',
-      cancelled: 'रद्द की गई पूजा',   // ✅ Added
-      dakshina: 'दक्षिणा',
-      profile: 'पंडित प्रोफाइल',
+    currentLocation: 'Current Location',
+    available: 'Available',
 
-      today: 'आज',
-      upcoming: 'आगामी',
-      completed: 'पूर्ण',
+    changeLang: 'Change Language'
+  },
 
-      currentLocation: 'वर्तमान स्थान',
-      available: 'उपलब्ध'
-    }
-  };
+  hi: {
+    appTitle: '🕉️ मंगल भाव',
+    logoTitle: 'मंगल.भाव',
+    logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+
+    greetingTitle: 'नमस्ते 🙏, ',
+    greetingSubtitle: 'क्या आप आज की सेवा के लिए तैयार हैं?',
+
+    addSeva: 'सेवा जोड़ें',
+    bookings: 'यजमान बुकिंग',
+    profile: 'पंडित प्रोफाइल',
+
+    mySeva: 'मेरी सेवा',
+    bookedSeva: 'बुक की गई सेवा',
+    myBookings: 'मेरी बुकिंग्स',
+    status: 'स्थिति',
+
+    scanToBook: 'बुक करने के लिए स्कैन करें',
+
+    currentLocation: 'वर्तमान स्थान',
+    available: 'उपलब्ध',
+
+    changeLang: 'भाषा बदलें'
+  }
+};
+
   language: any;
   FullName: any;
   sloganName: any;
@@ -83,11 +93,15 @@ export class Tab1Page {
 
   }
 
+  
+
 
   async ngOnInit() {
     this.getSlogan();
-    this.language = await this.storage.get("Language");
+    
     this.userDetails = await this.storage.get("account");
+
+    this.language = this.userDetails.Languages;
     this.FullName = this.userDetails.FullName;
     console.log('ACCOUNT OBJECT:', this.userDetails);
     this.loadProfilePhoto();

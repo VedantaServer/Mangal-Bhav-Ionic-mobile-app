@@ -7,8 +7,8 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">Bookings</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+        <div class="inner-title">{{ t.pageTitle }}</div>
+         <div class="inner-title-sub">{{t.appTitle}}</div> 
       </div>
 
       <div class="inner-logo">
@@ -25,29 +25,29 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Completed</p>
-        <h2 class="banner-title">Seva Bookings</h2>
+        <p class="banner-sub">{{ t.bannerSubCompleted }}</p>
+        <h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
 
-     <div class="filter-tabs-wrap">
+    <div class="filter-tabs-wrap">
       <div class="filter-tabs">
-        <button class="filter-tab " (click)="openPage('yajman-booking')">Requested</button>
-        <button class="filter-tab" (click)="openPage('pending-pooja')" >Accepted</button>
-        <button class="filter-tab active"(click)="openPage('completed-pooja')"  >Completed</button>
-        <button class="filter-tab" (click)="openPage('Cancelled-pooja')">Cancelled</button>
+        <button class="filter-tab " (click)="openPage('yajman-booking')">{{ t.requested }}</button>
+        <button class="filter-tab" (click)="openPage('pending-pooja')">{{ t.accepted }}</button>
+        <button class="filter-tab active" (click)="openPage('completed-pooja')">{{ t.completed }}</button>
+        <button class="filter-tab" (click)="openPage('Cancelled-pooja')">{{ t.cancelled }}</button>
       </div>
     </div>
 
-    <div class="section-label">Your Services</div>
+    <div class="section-label">{{ t.yourServices }}</div>
 
     <!-- SERVICE + BOOKING CARDS -->
     <div class="cards-container">
       <ng-container *ngFor="let service of PanditServicesList; let i = index">
 
         <!-- ===== SERVICE CARD ===== -->
-        <div class="service-card" (click)="toggleService(i)" [class.expanded]="expandedIndex === i">
+        <div class="service-card" (click)="toggleService(i)" class="service-card expanded">
 
           <!-- SERVICE IMAGE BANNER -->
           <div class="service-image-wrap">
@@ -60,7 +60,7 @@
             </div>
             <div class="image-badge">
               <span>{{ service.Bookings?.length || 0 }}</span>
-              <p>Bookings</p>
+              <p>{{ t.bookings }}</p>
             </div>
           </div>
 
@@ -84,17 +84,17 @@
         </div>
 
         <!-- ===== BOOKING CARDS (expanded) ===== -->
-        <div *ngIf="expandedIndex === i" class="bookings-list">
+        <div class="bookings-list">
 
           <div class="bookings-label">
             <ion-icon name="people-outline"></ion-icon>
-            {{ service.Bookings?.length || 0 }} Booking(s)
+            {{ service.Bookings?.length || 0 }} {{ t.bookings }}
           </div>
 
           <!-- Empty bookings -->
           <div *ngIf="!service.Bookings?.length" class="no-bookings">
             <span>🙏</span>
-            <p>No bookings yet for this service</p>
+            <p>{{ t.noBookings }}</p>
           </div>
 
           <div class="booking-card" *ngFor="let booking of service.Bookings">
@@ -108,10 +108,10 @@
                 <h4 class="bhakt-name">{{ booking.BhaktProfile?.FullName }}</h4>
                 <p class="bhakt-phone">
                   <ion-icon name="call-outline"></ion-icon>
-                  {{ booking.BhaktProfile?.PhoneNumber 
-    ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4) 
-    : '' 
-}}
+                  {{ booking.BhaktProfile?.PhoneNumber
+                  ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4)
+                  : ''
+                  }}
                 </p>
               </div>
               <div class="booking-status-wrap">
@@ -142,12 +142,12 @@
 
               <button class="action-btn upload" (click)="uploadBookingPhotos(booking); $event.stopPropagation()">
                 <ion-icon name="cloud-upload-outline"></ion-icon>
-                Upload Photos
+                <span>{{ t.uploadPhotos }}</span>
               </button>
 
               <button class="action-btn feedback" (click)="viewFeedback(booking); $event.stopPropagation()">
                 <ion-icon name="star-outline"></ion-icon>
-                View Reviews
+                <span>{{ t.viewReviews }}</span>
               </button>
 
             </div>
@@ -160,8 +160,8 @@
     <!-- EMPTY STATE -->
     <div *ngIf="!PanditServicesList?.length" class="empty-state">
       <div class="empty-icon">📜</div>
-      <h3 class="empty-title">No Services Found</h3>
-      <p class="empty-sub">Add services first to start receiving bookings</p>
+      <h3 class="empty-title">{{ t.noServices }}</h3>
+      <p class="empty-sub">{{ t.noServicesSub }}</p>
     </div>
 
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
@@ -173,8 +173,8 @@
 <app-panditjibottomtabs></app-panditjibottomtabs>
 
 <!-- REVIEWS MODAL -->
-<ion-modal [isOpen]="isReviewsModalOpen" (didDismiss)="isReviewsModalOpen = false"
-  [breakpoints]="[0, 0.75, 1]" [initialBreakpoint]="0.75">
+<ion-modal [isOpen]="isReviewsModalOpen" (didDismiss)="isReviewsModalOpen = false" [breakpoints]="[0, 0.75, 1]"
+  [initialBreakpoint]="0.75">
   <ng-template>
 
     <ion-header>
@@ -184,8 +184,8 @@
             <ion-icon name="close-outline"></ion-icon>
           </button>
           <div class="inner-title-block">
-            <div class="inner-title">Reviews</div>
-            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+            <div class="inner-title">{{ t.reviews }}</div>
+              <div class="inner-title-sub">{{t.appTitle}}</div> 
           </div>
           <div style="width:38px"></div>
         </div>
@@ -207,14 +207,14 @@
         <!-- Empty -->
         <div class="reviews-empty" *ngIf="!reviewsLoading && reviewsList.length === 0">
           <div class="reviews-empty-icon">⭐</div>
-          <p class="reviews-empty-title">No Reviews Yet</p>
-          <p class="reviews-empty-sub">Be the first to review this seva</p>
+          <p class="reviews-empty-title">{{ t.noReviews }}</p>
+          <p class="reviews-empty-sub">{{ t.noReviewsSub }}</p>
         </div>
 
         <!-- Reviews list -->
         <div class="reviews-list" *ngIf="!reviewsLoading && reviewsList.length > 0">
 
-          <p class="reviews-count">{{ reviewsList.length }} Review{{ reviewsList.length > 1 ? 's' : '' }}</p>
+          <p class="reviews-count">{{ reviewsList.length }} {{ t.reviews }}</p>
 
           <div class="review-card" *ngFor="let review of reviewsList">
 
@@ -225,8 +225,7 @@
                 <p class="review-date">{{ review.DateAdded | date:'dd MMM yyyy' }}</p>
               </div>
               <div class="review-stars">
-                <ion-icon
-                  *ngFor="let star of getStarArray(review.Ratings)"
+                <ion-icon *ngFor="let star of getStarArray(review.Ratings)"
                   [name]="(+review.Ratings) >= star ? 'star' : 'star-outline'"
                   [style.color]="(+review.Ratings) >= star ? '#FFB800' : 'rgba(255,184,0,0.25)'">
                 </ion-icon>
@@ -245,8 +244,8 @@
 </ion-modal>
 
 <!-- ===== BOOKING PHOTOS UPLOAD MODAL ===== -->
-<ion-modal [isOpen]="isUploadModalOpen" (didDismiss)="closeUploadModal()"
-  [breakpoints]="[0, 0.92, 1]" [initialBreakpoint]="0.92">
+<ion-modal [isOpen]="isUploadModalOpen" (didDismiss)="closeUploadModal()" [breakpoints]="[0, 0.92, 1]"
+  [initialBreakpoint]="0.92">
   <ng-template>
 
     <ion-header>
@@ -256,8 +255,8 @@
             <ion-icon name="close-outline"></ion-icon>
           </button>
           <div class="inner-title-block">
-            <div class="inner-title">Seva Photos</div>
-            <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+            <div class="inner-title">{{ t.uploadTitle }}</div>
+            <div class="inner-title-sub">{{t.appTitle}}</div> 
           </div>
           <div class="inner-logo">
             <img src="../../assets/mangalbhavlogo1.jpeg" />
@@ -271,33 +270,30 @@
 
         <!-- UPLOAD ZONE -->
         <div class="upload-zone" (click)="fileInput.click()">
-          <input #fileInput type="file" accept="image/*"
-            (change)="onFileSelected($event)" style="display:none" />
+          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none" />
           <div class="upload-zone-inner">
             <div class="upload-icon-wrap">
               <ion-icon name="camera-outline"></ion-icon>
             </div>
-            <p class="upload-zone-title">Tap to Upload Photo</p>
-            <p class="upload-zone-sub">JPG, PNG supported</p>
+            <p class="upload-zone-title">{{ t.tapUpload }}</p>
+            <p class="upload-zone-sub">{{ t.imgSupport }}</p>
           </div>
         </div>
 
         <!-- Confirm upload button -->
         <button class="upload-confirm-btn" *ngIf="selectedFile" (click)="uploadImage()">
           <ion-icon name="cloud-upload-outline"></ion-icon>
-          Upload Selected Photo
+          {{ t.uploadSelected }}
         </button>
 
         <!-- GALLERY -->
         <div class="gallery-section" *ngIf="serviceImages && serviceImages.length > 0">
           <div class="gallery-header">
-            <span class="gallery-label">📸 Booking Photos</span>
+            <span class="gallery-label">📸 {{ t.bookingPhotos }}</span>
             <span class="gallery-count">{{ serviceImages.length }} photos</span>
           </div>
           <div class="photo-grid">
-            <div class="photo-tile"
-              *ngFor="let photo of serviceImages; let i = index"
-              (click)="previewPhoto(photo)">
+            <div class="photo-tile" *ngFor="let photo of serviceImages; let i = index" (click)="previewPhoto(photo)">
               <img [src]="photo.imageUrl" class="photo-img" (error)="onImgError($event)" />
               <div class="photo-tile-overlay">
                 <ion-icon name="expand-outline"></ion-icon>
@@ -310,8 +306,8 @@
         <!-- Empty state -->
         <div class="gallery-empty" *ngIf="!serviceImages || serviceImages.length === 0">
           <div class="empty-img-icon">🖼️</div>
-          <p class="empty-img-title">No Photos Yet</p>
-          <p class="empty-img-sub">Upload photos from this booking to preserve sacred memories</p>
+          <p class="empty-img-title">{{ t.noPhotos }}</p>
+          <p class="empty-img-sub">{{ t.noPhotosSub }}</p>
         </div>
 
       </div>

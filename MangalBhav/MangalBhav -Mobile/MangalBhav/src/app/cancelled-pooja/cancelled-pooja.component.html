@@ -7,8 +7,8 @@
       </button>
 
       <div class="inner-title-block">
-        <div class="inner-title">Bookings</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+       <div class="inner-title">{{ t.pageTitle }}</div>
+         <div class="inner-title-sub">{{t.appTitle}}</div> 
       </div>
 
       <div class="inner-logo">
@@ -25,29 +25,29 @@
     <!-- TOP BANNER -->
     <div class="page-banner">
       <div class="banner-text">
-        <p class="banner-sub">Cancelled</p>
-        <h2 class="banner-title">Seva Bookings</h2>
+      <p class="banner-sub">{{ t.bannerSubCancelled }}</p>
+<h2 class="banner-title">{{ t.bannerTitle }}</h2>
       </div>
       <div class="banner-om">ॐ</div>
     </div>
 
-     <div class="filter-tabs-wrap">
+    <div class="filter-tabs-wrap">
       <div class="filter-tabs">
-        <button class="filter-tab " (click)="openPage('yajman-booking')">Requested</button>
-        <button class="filter-tab" (click)="openPage('pending-pooja')" >Accepted</button>
-        <button class="filter-tab"(click)="openPage('completed-pooja')"  >Completed</button>
-        <button class="filter-tab active" (click)="openPage('Cancelled-pooja')">Cancelled</button>
+         <button class="filter-tab " (click)="openPage('yajman-booking')">{{ t.requested }}</button>
+        <button class="filter-tab" (click)="openPage('pending-pooja')">{{ t.accepted }}</button>
+        <button class="filter-tab" (click)="openPage('completed-pooja')">{{ t.completed }}</button>
+        <button class="filter-tab active" (click)="openPage('Cancelled-pooja')">{{ t.cancelled }}</button>
       </div>
     </div>
 
-    <div class="section-label">Your Services</div>
+   <div class="section-label">{{ t.yourServices }}</div>
 
     <!-- SERVICE + BOOKING CARDS -->
     <div class="cards-container">
       <ng-container *ngFor="let service of PanditServicesList; let i = index">
 
         <!-- ===== SERVICE CARD ===== -->
-        <div class="service-card" (click)="toggleService(i)" [class.expanded]="expandedIndex === i">
+        <div class="service-card expanded" (click)="toggleService(i)" >
 
           <!-- SERVICE IMAGE BANNER -->
           <div class="service-image-wrap">
@@ -60,7 +60,7 @@
             </div>
             <div class="image-badge">
               <span>{{ service.Bookings?.length || 0 }}</span>
-              <p>Bookings</p>
+              <p>{{ t.bookings }}</p>
             </div>
           </div>
 
@@ -84,17 +84,17 @@
         </div>
 
         <!-- ===== BOOKING CARDS (expanded) ===== -->
-        <div *ngIf="expandedIndex === i" class="bookings-list">
+        <div class="bookings-list">
 
           <div class="bookings-label">
             <ion-icon name="people-outline"></ion-icon>
-            {{ service.Bookings?.length || 0 }} Booking(s)
+           {{ service.Bookings?.length || 0 }} {{ t.bookings }}
           </div>
 
           <!-- Empty bookings -->
           <div *ngIf="!service.Bookings?.length" class="no-bookings">
             <span>🙏</span>
-            <p>No bookings yet for this service</p>
+            <p>{{ t.noBookings }}</p>
           </div>
 
           <div class="booking-card" *ngFor="let booking of service.Bookings">
@@ -108,10 +108,10 @@
                 <h4 class="bhakt-name">{{ booking.BhaktProfile?.FullName }}</h4>
                 <p class="bhakt-phone">
                   <ion-icon name="call-outline"></ion-icon>
-                  {{ booking.BhaktProfile?.PhoneNumber 
-    ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4) 
-    : '' 
-}}
+                  {{ booking.BhaktProfile?.PhoneNumber
+                  ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) + booking.BhaktProfile.PhoneNumber.slice(-4)
+                  : ''
+                  }}
                 </p>
               </div>
               <div class="booking-status-wrap">
@@ -147,8 +147,8 @@
     <!-- EMPTY STATE -->
     <div *ngIf="!PanditServicesList?.length" class="empty-state">
       <div class="empty-icon">📜</div>
-      <h3 class="empty-title">No Services Found</h3>
-      <p class="empty-sub">Add services first to start receiving bookings</p>
+     <h3 class="empty-title">{{ t.noServices }}</h3>
+<p class="empty-sub">{{ t.noServicesSub }}</p>
     </div>
 
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>

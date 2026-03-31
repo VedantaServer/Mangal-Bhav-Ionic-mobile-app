@@ -14,7 +14,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './jajman-completed-pooja.component.html',
   styleUrls: ['./jajman-completed-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class JajmanCompletedPoojaComponent implements OnInit {
 
@@ -52,6 +52,124 @@ export class JajmanCompletedPoojaComponent implements OnInit {
 
   // selectedFile: any = null;
   Language: any;
+  language: any;
+
+  labels = {
+    en: {
+       appTitle: '✦ Mangal.Bhav ✦',
+      pageTitle: 'My Bookings',
+      bannerSub: 'Track Your',
+      bannerTitle: 'Seva Journey',
+
+      all: 'All',
+      requested: 'Requested',
+      confirmed: 'Confirmed',
+      completed: 'Completed',
+
+      completedBookings: 'Completed Bookings',
+
+      dakshina: 'Dakshina',
+      mins: 'mins',
+
+      payment: 'Payment',
+      paid: 'Paid',
+      pending: 'Pending',
+
+      makePayment: 'Make Payment',
+      uploadPhoto: 'Upload Photo',
+      feedback: 'Feedback',
+
+      noBookings: 'No Bookings Yet',
+      noBookingsSub: 'Book a puja to see your seva journey here',
+
+      explore: 'Explore Life',
+      me: 'Me',
+
+      // Feedback modal
+      rateExperience: 'Rate Your Experience',
+      checkingFeedback: 'Checking feedback...',
+      feedbackSubmitted: 'Feedback Submitted',
+      submittedOn: 'Submitted on',
+
+      rateQuestion: 'How would you rate this seva?',
+      shareExperience: 'Share your experience',
+      feedbackPlaceholder: 'Tell us about your experience with the pandit and seva...',
+      submitFeedback: 'Submit Feedback',
+
+      // Upload modal
+      sevaPhotos: 'Seva Photos',
+      tapUpload: 'Tap to Upload Photo',
+      imgSupport: 'JPG, PNG supported',
+      uploadSelected: 'Upload Selected Photo',
+
+      bookingPhotos: 'Booking Photos',
+      noPhotos: 'No Photos Yet',
+      noPhotosSub: 'Preserve the memories of this sacred seva',
+      status_requested: '⏳ Awaiting Pandit Ji',
+      status_confirmed: '✅ Pandit Ji Confirmed',
+      status_cancelled: '❌ Cancelled',
+      status_completed: '🪔 Seva Completed',
+      status_progress: '📿 In Progress'
+    },
+
+    hi: {
+      pageTitle: 'मेरी बुकिंग्स',
+
+        appTitle: '✦ मंगल भाव ✦',
+      bannerSub: 'ट्रैक करें',
+      bannerTitle: 'सेवा यात्रा',
+      status_requested: '⏳ पंडित जी की प्रतीक्षा',
+      status_confirmed: '✅ पंडित जी ने पुष्टि की',
+      status_cancelled: '❌ रद्द',
+      status_completed: '🪔 सेवा पूर्ण',
+      status_progress: '📿 प्रगति में',
+
+      all: 'सभी',
+      requested: 'अनुरोधित',
+      confirmed: 'पुष्ट',
+      completed: 'पूर्ण',
+
+      completedBookings: 'पूर्ण बुकिंग्स',
+
+      dakshina: 'दक्षिणा',
+      mins: 'मिनट',
+
+      payment: 'भुगतान',
+      paid: 'भुगतान किया गया',
+      pending: 'लंबित',
+
+      makePayment: 'भुगतान करें',
+      uploadPhoto: 'फोटो अपलोड करें',
+      feedback: 'फीडबैक',
+
+      noBookings: 'अभी कोई बुकिंग नहीं',
+      noBookingsSub: 'अपनी सेवा यात्रा देखने के लिए पूजा बुक करें',
+
+      explore: 'जीवन देखें',
+      me: 'मैं',
+
+      // Feedback modal
+      rateExperience: 'अपने अनुभव को रेट करें',
+      checkingFeedback: 'फीडबैक जांच रहे हैं...',
+      feedbackSubmitted: 'फीडबैक सबमिट हो चुका है',
+      submittedOn: 'सबमिट किया गया',
+
+      rateQuestion: 'आप इस सेवा को कैसे रेट करेंगे?',
+      shareExperience: 'अपना अनुभव साझा करें',
+      feedbackPlaceholder: 'पंडित और सेवा के बारे में अपना अनुभव बताएं...',
+      submitFeedback: 'फीडबैक सबमिट करें',
+
+      // Upload modal
+      sevaPhotos: 'सेवा फोटो',
+      tapUpload: 'फोटो अपलोड करने के लिए टैप करें',
+      imgSupport: 'JPG, PNG समर्थित',
+      uploadSelected: 'चयनित फोटो अपलोड करें',
+
+      bookingPhotos: 'बुकिंग फोटो',
+      noPhotos: 'अभी कोई फोटो नहीं',
+      noPhotosSub: 'इस सेवा की यादों को सहेजें'
+    }
+  };
 
   constructor(
     public routerCtrl: NavController,
@@ -64,7 +182,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.Language = await this.storage.get("Language");
+    this.language = this.userDetails.Languages;
 
 
 
@@ -93,15 +211,23 @@ export class JajmanCompletedPoojaComponent implements OnInit {
     }
   }
 
+
+    get t() {
+  return this.language === 'Hindi'
+    ? this.labels.hi
+    : this.labels.en;
+}
   getStatusEmoji(status: string): string {
-    switch (status?.toUpperCase()) {
-      case 'REQUESTED': return '⏳';
-      case 'CONFIRMED': return '✅';
-      case 'CANCELLED': return '❌';
-      case 'COMPLETED': return '🪔';
-      default: return '📿';
-    }
+  const key = status?.toUpperCase();
+
+  switch (key) {
+    case 'REQUESTED': return this.t.status_requested;
+    case 'CONFIRMED': return this.t.status_confirmed;
+    case 'CANCELLED': return this.t.status_cancelled;
+    case 'COMPLETED': return this.t.status_completed;
+    default: return this.t.status_progress;
   }
+}
   // -----------------------------
   // Load List
   // -----------------------------
@@ -467,7 +593,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
-  
+
   getRatingLabel(): string {
     switch (this.feedbackRating) {
       case 1: return '😞 Poor';

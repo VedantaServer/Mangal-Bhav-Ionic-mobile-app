@@ -23,6 +23,53 @@ export class YajmanBookingComponent implements OnInit {
   language: any;
   paramID: any;
   query!: string;
+  labels = {
+  en: {
+    pageTitle: 'Bookings',
+    bannerSub: 'Manage Your',
+    appTitle: '✦ Mangal.Bhav ✦',
+    bannerTitle: 'Seva Bookings',
+
+    requested: 'Requested',
+    accepted: 'Accepted',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+
+    yourServices: 'Your Services',
+
+    bookings: 'Bookings',
+    noBookings: 'No bookings yet for this service',
+
+    acceptPooja: 'Accept Pooja',
+    reject: 'Reject',
+
+    noServices: 'No Services Found',
+    noServicesSub: 'Add services first to start receiving bookings'
+  },
+
+  hi: {
+    pageTitle: 'बुकिंग्स',
+    bannerSub: 'अपनी',
+    bannerTitle: 'सेवा बुकिंग्स प्रबंधित करें',
+
+    requested: 'अनुरोधित',
+     appTitle: '✦ मंगल भाव ✦',
+    accepted: 'स्वीकृत',
+    completed: 'पूर्ण',
+    cancelled: 'रद्द',
+
+    yourServices: 'आपकी सेवाएँ',
+
+    bookings: 'बुकिंग्स',
+    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+
+    acceptPooja: 'पूजा स्वीकार करें',
+    reject: 'अस्वीकार करें',
+
+    noServices: 'कोई सेवा नहीं मिली',
+    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
+  }
+};
 
   constructor(
     public routerCtrl: NavController,
@@ -42,7 +89,7 @@ export class YajmanBookingComponent implements OnInit {
 
 
     this.userDetails = await this.storage.get("account");
-    this.language = await this.storage.get("Language");
+    this.language = this.userDetails.Languages;
 
 
     if (this.paramID > 0) {
@@ -57,6 +104,12 @@ export class YajmanBookingComponent implements OnInit {
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
+
+  get t() {
+  return this.language === 'Hindi'
+    ? this.labels.hi
+    : this.labels.en;
+}
 
   loadList() {
 

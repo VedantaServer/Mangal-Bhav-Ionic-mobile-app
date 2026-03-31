@@ -28,6 +28,37 @@ export class JajmanDashboardComponent implements OnInit {
   pendingPanditCategoryID: any;
   sloganName!: any;
   pendingPanditServiceID: any;
+  labels = {
+  en: {
+    greeting: 'Namaste 🙏',
+    greetingTitle: "Let's Plan Your Next Puja",
+
+    quickActions: 'Quick Actions',
+logoTitle: 'Mangal.Bhav',
+    myBookings: 'My Bookings',
+    profile: 'Profile',
+    festivals: 'Festivals',
+ logoSub: '✦ Peace · Prosperity · Protection ✦',
+    explore: 'Explore Life',
+    me: 'Me'
+  },
+
+  hi: {
+    greeting: 'नमस्ते 🙏',
+    greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
+  logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+    quickActions: 'त्वरित कार्य',
+
+    myBookings: 'मेरी बुकिंग्स',
+    profile: 'प्रोफ़ाइल',
+    logoTitle: 'मंगल.भाव',
+    festivals: 'त्योहार',
+
+    explore: 'जीवन देखें',
+    me: 'मैं'
+  }
+};
+  language: any;
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) { }
@@ -35,6 +66,7 @@ export class JajmanDashboardComponent implements OnInit {
   async ngOnInit() {
 
     this.userDetails = await this.storage.get("account");
+    this.language = this.userDetails.Languages;
     // console.log(this.userDetails);
     if (
       await this.storage.get("IsUserLoggedIn") &&
@@ -70,6 +102,12 @@ export class JajmanDashboardComponent implements OnInit {
 
     this.getSlogan();
 
+  }
+
+    get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
   }
 
   @ViewChild(IonContent) content!: IonContent;
