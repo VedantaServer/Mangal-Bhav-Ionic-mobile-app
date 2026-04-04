@@ -116,7 +116,7 @@ export class PanditServicesComponent implements OnInit {
 
       pageTitle: 'सेवा सेवाएँ',
       bannerSub: 'अपनी',
-      bannerTitle: 'पंडित सेवाएँ प्रबंधित करें',
+      bannerTitle: 'पंडित जी सेवाएँ प्रबंधित करें',
       sevaList: 'आपकी सेवा सूची',
 
       active: 'सक्रिय',

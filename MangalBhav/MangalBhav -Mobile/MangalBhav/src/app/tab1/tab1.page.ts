@@ -64,7 +64,7 @@ export class Tab1Page {
 
       addSeva: 'सेवा जोड़ें',
       bookings: 'यजमान बुकिंग',
-      profile: 'पंडित प्रोफाइल',
+      profile: 'पंडित जी प्रोफाइल',
 
       mySeva: 'मेरी सेवा',
       bookedSeva: 'बुक की गई सेवा',

@@ -32,6 +32,12 @@ import { OpenCommunityPageComponent } from './open-community-page/open-community
 import { JajmanRequestedPoojaComponent } from './jajman-requested-pooja/jajman-requested-pooja.component';
 
 const routes: Routes = [
+  
+  {
+    path: '',
+    component: LoginPage
+  },
+  
   {
     path: 'login',
     component: LoginPage
