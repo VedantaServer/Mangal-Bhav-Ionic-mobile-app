@@ -436,7 +436,7 @@
               <div class="for-card-avatar pandit-avatar">🧘</div>
               <div>
                 <div class="for-card-title">Pandit Ji</div>
-                <div class="for-card-subtitle">The Priest · पंडित</div>
+                <div class="for-card-subtitle">The Priest · पंडित जी</div>
               </div>
               <div class="for-card-badge pandit-badge">Join Us</div>
             </div>
@@ -732,7 +732,7 @@
 
       <!-- OTP sent message -->
       <p class="otp-sent-msg" *ngIf="loginOtpSent">
-        ✅ OTP sent to +91 {{ loginUsername }}
+        ✅ OTP sent to +91 {{ loginUsername }} <span *ngIf="showPasswordOnScreen" style="font-size: small;">({{loginGeneratedOtp}})</span>
       </p>
 
       <button class="auth-btn" (click)="verifyLoginOtp()" *ngIf="loginOtpSent">
@@ -860,7 +860,7 @@
 
         <div class="otp-hint">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
-          OTP sent successfully
+          OTP sent successfully  <span *ngIf="showPasswordOnScreen" style="font-size: small;">({{generatedOTP}})</span>
         </div>
 
         <div class="auth-field">

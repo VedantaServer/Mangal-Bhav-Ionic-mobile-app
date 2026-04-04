@@ -92,7 +92,7 @@ export class BookPoojaComponent implements OnInit {
       forYou: 'For You',
 
       pandit: 'Pandit Ji',
-      panditSubtitle: 'The Priest · पंडित',
+      panditSubtitle: 'The Priest · पंडित जी',
       joinUs: 'Join Us',
 
       // Yajman features
@@ -262,22 +262,22 @@ export class BookPoojaComponent implements OnInit {
       veryGood: 'बहुत अच्छा',
       reviews: 'समीक्षाएँ',
 
-      heroTagline: 'भारत का सबसे विश्वसनीय प्लेटफॉर्म पंडित बुक करने के लिए — जन्म से अंतिम संस्कार तक',
+      heroTagline: 'भारत का सबसे विश्वसनीय प्लेटफॉर्म पंडित जी बुक करने के लिए — जन्म से अंतिम संस्कार तक',
 
       samskaras: '16 संस्कार शामिल',
-      verified: 'सत्यापित पंडित',
+      verified: 'सत्यापित पंडित जी',
       doorstep: 'घर तक सेवा',
       trusted: 'परिवारों का भरोसा',
 
       statsRituals: 'अनुष्ठान',
-      statsPandits: 'पंडित',
+      statsPandits: 'पंडित जी',
       statsFamilies: 'परिवार',
       statsCities: 'शहर',
 
       // ── How It Works ──────────────────────────────
       simpleProcess: 'सरल प्रक्रिया',
       howWorks: 'मंगल.भाव कैसे काम करता है',
-      howSub: '3 आसान चरणों में पंडित से जुड़ें',
+      howSub: '3 आसान चरणों में पंडित जी से जुड़ें',
 
       step1: 'चरण 1',
       step2: 'चरण 2',
@@ -286,8 +286,8 @@ export class BookPoojaComponent implements OnInit {
       how1Title: 'अनुष्ठान चुनें',
       how1Desc: '30+ पवित्र हवन और पूजा समारोहों में से चुनें — जन्म से पितृ अनुष्ठान तक। अपनी आवश्यकता के अनुसार चुनें।',
 
-      how2Title: 'पंडित चुनें',
-      how2Desc: 'अपने क्षेत्र के सत्यापित और अनुभवी पंडित से मिलें। प्रोफ़ाइल, विशेषज्ञता, भाषा और रेटिंग देखें।',
+      how2Title: 'पंडित जी चुनें',
+      how2Desc: 'अपने क्षेत्र के सत्यापित और अनुभवी पंडित जी से मिलें। प्रोफ़ाइल, विशेषज्ञता, भाषा और रेटिंग देखें।',
 
       how3Title: 'घर पर अनुष्ठान',
       how3Desc: 'पंडित जी सभी आवश्यक सामग्री के साथ आपके घर आएंगे। अपने घर में ही प्रामाणिक वैदिक अनुष्ठान का अनुभव करें।',
@@ -295,19 +295,19 @@ export class BookPoojaComponent implements OnInit {
       // ── For Whom ──────────────────────────────────
       builtFor: 'किसके लिए',
       twoSides: 'दो पक्ष, एक पवित्र सेतु',
-      twoSidesSub: 'भक्त हों या पंडित — मंगल.भाव आपका घर है',
+      twoSidesSub: 'भक्त हों या पंडित जी — मंगल.भाव आपका घर है',
 
       yajman: 'यजमान',
       yajmanSubtitle: 'भक्त · The Devotee',
       forYou: 'आपके लिए',
 
       pandit: 'पंडित जी',
-      panditSubtitle: 'पंडित · The Priest',
+      panditSubtitle: 'पंडित जी · The Priest',
       joinUs: 'जुड़ें',
 
       // Yajman features
       yFeature1: 'जीवन चरण के अनुसार 30+ अनुष्ठान देखें',
-      yFeature2: 'सत्यापित पंडित प्रोफ़ाइल और रेटिंग देखें',
+      yFeature2: 'सत्यापित पंडित जी प्रोफ़ाइल और रेटिंग देखें',
       yFeature3: 'कुछ मिनटों में घर पर पूजा बुक करें',
       yFeature4: 'मुहूर्त (शुभ समय) सुझाव पाएं',
       yFeature5: 'अनुष्ठान की प्रगति और इतिहास ट्रैक करें',
@@ -356,9 +356,9 @@ export class BookPoojaComponent implements OnInit {
       infoValueBestTime: 'प्रातः मुहूर्त',
 
       // Loading / empty
-      loadingPandits: 'आपके लिए पंडित खोज रहे हैं...',
-      noPanditsTitle: 'कोई पंडित नहीं मिला',
-      noPanditsDesc: 'इस समय इस पूजा के लिए कोई पंडित उपलब्ध नहीं है।',
+      loadingPandits: 'आपके लिए पंडित जी खोज रहे हैं...',
+      noPanditsTitle: 'कोई पंडित जी नहीं मिला',
+      noPanditsDesc: 'इस समय इस पूजा के लिए कोई पंडित जी उपलब्ध नहीं है।',
 
       // Pandit card
       verifiedBadge: '✓ सत्यापित',
@@ -379,8 +379,8 @@ export class BookPoojaComponent implements OnInit {
       included5: 'घर पर अनुष्ठान',
 
       // Pandit modal
-      panditProfile: 'पंडित प्रोफ़ाइल',
-      verifiedPanditBadge: '✓ सत्यापित पंडित',
+      panditProfile: 'पंडित जी प्रोफ़ाइल',
+      verifiedPanditBadge: '✓ सत्यापित पंडित जी',
       pendingPanditBadge: '⏳ सत्यापन लंबित',
       infoLabelExperience: 'अनुभव',
       infoLabelGender: 'लिंग',
@@ -393,9 +393,9 @@ export class BookPoojaComponent implements OnInit {
       spec4: 'विवाह संस्कार',
 
       // ── Book Pandit Page ──────────────────────────
-      bookPanditTitle: 'पंडित बुक करें',
+      bookPanditTitle: 'पंडित जी बुक करें',
       bannerSub: 'खोजें और बुक करें',
-      bannerTitle: 'अपने सेवा पंडित',
+      bannerTitle: 'अपने सेवा पंडित जी',
       searchPlaceholder: 'नाम, भाषा से खोजें...',
 
       scanQrTitle: 'QR कोड स्कैन करें',
@@ -417,11 +417,11 @@ export class BookPoojaComponent implements OnInit {
       notAvailable: 'उपलब्ध नहीं',
 
       emptyTitle: 'कोई सेवा नहीं मिली',
-      emptySub: 'जल्द ही आपके पास उपलब्ध पंडितों की जाँच करें',
+      emptySub: 'जल्द ही आपके पास उपलब्ध पंडित जी की जाँच करें',
 
       // Booking modal
       confirmBooking: '✅ बुकिंग की पुष्टि करें',
-      summaryLabelPandit: 'पंडित',
+      summaryLabelPandit: 'पंडित जी',
       summaryLabelLocation: 'स्थान',
       summaryLabelDakshina: 'दक्षिणा',
       summaryLabelAboutSeva: 'इस सेवा के बारे में',
@@ -439,9 +439,9 @@ export class BookPoojaComponent implements OnInit {
       footerAllRituals: 'सभी अनुष्ठान',
       footerCities: 'हम किन शहरों में हैं',
 
-      footerForPandits: '🧘 पंडितों के लिए',
-      footerJoinPandit: 'पंडित के रूप में जुड़ें',
-      footerDashboard: 'पंडित डैशबोर्ड',
+      footerForPandits: '🧘 पंडित जी के लिए',
+      footerJoinPandit: 'पंडित जी के रूप में जुड़ें',
+      footerDashboard: 'पंडित जी डैशबोर्ड',
       footerManageBookings: 'बुकिंग प्रबंधित करें',
       footerSupport: 'सहायता',
 

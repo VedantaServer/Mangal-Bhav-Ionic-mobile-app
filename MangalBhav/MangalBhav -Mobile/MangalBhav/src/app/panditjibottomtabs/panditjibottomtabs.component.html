@@ -11,7 +11,8 @@
 
 
   <ion-tab-button class="mb-tab-btn" (click)="openPage('tabs/tab1')">
-    <span style="font-size: 24px; line-height: 1;">🛕</span>
+    <!-- <span style="font-size: 24px; line-height: 1;">🛕</span> -->
+     <ion-icon name="person"></ion-icon>
     <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
   </ion-tab-button>
 

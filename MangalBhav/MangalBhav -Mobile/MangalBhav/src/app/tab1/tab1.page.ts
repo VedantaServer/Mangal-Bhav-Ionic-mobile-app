@@ -27,62 +27,65 @@ export class Tab1Page {
   userDetails!: any;
   showIdCard = false;
   profileImageUrl: string | null = null;
- 
+
   labels = {
-  en: {
-    appTitle: '🕉️ Mangal Bhav',
-    logoTitle: 'Mangal.Bhav',
-    logoSub: '✦ Peace · Prosperity · Protection ✦',
+    en: {
+      appTitle: '🕉️ Mangal Bhav',
+      logoTitle: 'Mangal.Bhav',
+      logoSub: '✦ Peace · Prosperity · Protection ✦',
 
-    greetingTitle: 'Namaste 🙏, ',
-    greetingSubtitle: 'Ready for today’s seva?',
+      greetingTitle: 'Namaste 🙏, ',
+      greetingSubtitle: 'Ready for today’s seva?',
 
-    addSeva: 'Add Service',
-    bookings: 'Yajman Bookings',
-    profile: 'Pandit Profile',
+      addSeva: 'Add Service',
+      bookings: 'Yajman Bookings',
+      profile: 'Pandit Profile',
 
-    mySeva: 'My Seva',
-    bookedSeva: 'Booked Seva',
-    myBookings: 'My Bookings',
-    status: 'Status',
+      mySeva: 'My Seva',
+      bookedSeva: 'Booked Seva',
+      myBookings: 'My Bookings',
+      status: 'Status',
 
-    scanToBook: 'Scan to Book',
+      scanToBook: 'Scan to Book',
 
-    currentLocation: 'Current Location',
-    available: 'Available',
+      currentLocation: 'Current Location',
+      available: 'Available',
 
-    changeLang: 'Change Language'
-  },
+      changeLang: 'Change Language'
+    },
 
-  hi: {
-    appTitle: '🕉️ मंगल भाव',
-    logoTitle: 'मंगल.भाव',
-    logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+    hi: {
+      appTitle: '🕉️ मंगल भाव',
+      logoTitle: 'मंगल.भाव',
+      logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
 
-    greetingTitle: 'नमस्ते 🙏, ',
-    greetingSubtitle: 'क्या आप आज की सेवा के लिए तैयार हैं?',
+      greetingTitle: 'नमस्ते 🙏, ',
+      greetingSubtitle: 'क्या आप आज की सेवा के लिए तैयार हैं?',
 
-    addSeva: 'सेवा जोड़ें',
-    bookings: 'यजमान बुकिंग',
-    profile: 'पंडित प्रोफाइल',
+      addSeva: 'सेवा जोड़ें',
+      bookings: 'यजमान बुकिंग',
+      profile: 'पंडित जी प्रोफाइल',
 
-    mySeva: 'मेरी सेवा',
-    bookedSeva: 'बुक की गई सेवा',
-    myBookings: 'मेरी बुकिंग्स',
-    status: 'स्थिति',
+      mySeva: 'मेरी सेवा',
+      bookedSeva: 'बुक की गई सेवा',
+      myBookings: 'मेरी बुकिंग्स',
+      status: 'स्थिति',
 
-    scanToBook: 'बुक करने के लिए स्कैन करें',
+      scanToBook: 'बुक करने के लिए स्कैन करें',
 
-    currentLocation: 'वर्तमान स्थान',
-    available: 'उपलब्ध',
+      currentLocation: 'वर्तमान स्थान',
+      available: 'उपलब्ध',
 
-    changeLang: 'भाषा बदलें'
-  }
-};
+      changeLang: 'भाषा बदलें'
+    }
+  };
 
   language: any;
   FullName: any;
   sloganName: any;
+  pendingPanditUserID: any;
+  pendingPanditCategoryID: any;
+  pendingPanditServiceID: any;
   constructor(private alertCtrl: AlertController, private storage: Storage, public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider,
     private datePipe: DatePipe, public routerCtrl: NavController, private http: HttpClient
@@ -93,12 +96,12 @@ export class Tab1Page {
 
   }
 
-  
+
 
 
   async ngOnInit() {
     this.getSlogan();
-    
+
     this.userDetails = await this.storage.get("account");
 
     this.language = this.userDetails.Languages;
@@ -133,6 +136,37 @@ export class Tab1Page {
     ) {
       this.routerCtrl.navigateRoot('/login');
     }
+
+
+
+
+
+    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+
+
+    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+
+    if (Number(this.pendingPanditServiceID) > 0) {
+      this.router.navigate(['/book-pooja'], {
+        queryParams: { id: this.pendingPanditServiceID }
+      });
+    }
+
+
+
+    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+      // await this.storage.remove('pendingPanditUserID');
+      // await this.storage.remove('pendingPanditCategoryID');
+      this.router.navigate(['/book-pooja'], {
+        queryParams: { id: -1 }
+      });
+    }
+
+
+
+
   }
 
 

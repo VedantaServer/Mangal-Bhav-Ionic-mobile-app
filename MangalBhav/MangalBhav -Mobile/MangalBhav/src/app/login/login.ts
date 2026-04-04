@@ -109,6 +109,7 @@ export class LoginPage {
   pendingPanditServiceID: any;
   sloganName!: string[] | null;
   upiId: any;
+  showPasswordOnScreen: boolean = false;
   constructor(public routerCtrl: NavController,
     public api: Api,
     private storage: Storage,
@@ -172,6 +173,14 @@ export class LoginPage {
 
     //  this.sendWhatsApp();
 
+    this.api.post(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='ShowPassword' and identifier='ShowPassword'`}`, null)
+      .subscribe((res: any) => {
+        console.log(res.MasterDataList[0].Description)
+
+        this.showPasswordOnScreen = res.MasterDataList[0].Description === 'true';
+      //  alert(this.showPasswordOnScreen)
+      //  alert(typeof(this.showPasswordOnScreen))
+      })
 
     this.getSlogan();
     const savedLang = this.storage.get('language');
@@ -200,11 +209,11 @@ export class LoginPage {
 
 
     if (Number(this.pendingPanditServiceID) > 0) {
-      this.openRegisterSection();
+      this.openLoginSection();
     }
 
     if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
-      this.openRegisterSection();
+      this.openLoginSection();
     }
 
     this.userDetails = await this.storage.get("account");
@@ -410,7 +419,7 @@ export class LoginPage {
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
           // this.loginOtpSent = true;
-             alert(this.loginGeneratedOtp)
+          // alert(this.loginGeneratedOtp)
           this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe((res: any) => {
             console.log(res);
             this.loginOtpSent = true;
