@@ -98,9 +98,9 @@
 
         <div class="comm-chalisa-strip">
           <p class="comm-chalisa-verse">
-            भीम रूप धरि असुर सँहारे।<br/>
-            रामचंद्र के काज सँवारे॥<br/><br/>
-            नासै रोग हरै सब पीरा।<br/>
+            भीम रूप धरि असुर सँहारे।<br />
+            रामचंद्र के काज सँवारे॥<br /><br />
+            नासै रोग हरै सब पीरा।<br />
             जपत निरंतर हनुमत बीरा॥
           </p>
         </div>
@@ -207,3 +207,49 @@
 
   </div>
 </ion-content>
+
+
+<ion-tab-bar *ngIf="userLoggedIn" slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('loggedin-home')">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('jajmandashboard')">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
+
+<ion-tab-bar *ngIf="!userLoggedIn" slot="bottom" class="mb-tab-bar">
+
+  <ion-tab-button class="mb-tab-btn" (click)="goBack()">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+
+  <ion-tab-button class="mb-tab-btn" (click)="goBack()">
+    <ion-icon name="person-outline"></ion-icon>
+    <ion-label>Signup / Login</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>

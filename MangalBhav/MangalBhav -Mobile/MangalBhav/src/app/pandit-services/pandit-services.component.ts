@@ -24,6 +24,8 @@ export class PanditServicesComponent implements OnInit {
   isUploadModalOpen = false;
   selectedServiceID: number | null = null;
 
+  selectedServiceIDs: number[] = [];
+
   selectedFile: File | null = null;
 
   isPreviewOpen = false;
@@ -55,7 +57,7 @@ export class PanditServicesComponent implements OnInit {
   labels = {
     en: {
       serviceTitle: '🪔 Service',
-       appTitle: '✦ Mangal.Bhav ✦',
+      appTitle: '✦ Mangal.Bhav ✦',
 
       pageTitle: 'Seva Services',
       bannerSub: 'Manage Your',
@@ -112,7 +114,7 @@ export class PanditServicesComponent implements OnInit {
 
     hi: {
       serviceTitle: '🪔 सेवा',
-        appTitle: '✦ मंगल भाव ✦',
+      appTitle: '✦ मंगल भाव ✦',
 
       pageTitle: 'सेवा सेवाएँ',
       bannerSub: 'अपनी',
@@ -448,7 +450,7 @@ export class PanditServicesComponent implements OnInit {
     const cleanName = this.getCleanName(serviceName);
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];
@@ -583,6 +585,7 @@ export class PanditServicesComponent implements OnInit {
   // -----------------------------
   openModal() {
     this.isEditMode = false;
+    this.selectedServiceIDs = [];
 
     this.panditServices = {
       PanditServiceID: 0,
@@ -614,6 +617,8 @@ export class PanditServicesComponent implements OnInit {
   // -----------------------------
   editItem(item: any) {
     this.isEditMode = true;
+
+    this.selectedServiceIDs = [item.ServiceID];
 
     console.log(item)
     this.panditServices = {
@@ -675,31 +680,108 @@ export class PanditServicesComponent implements OnInit {
   // -----------------------------
   // Save (Insert / Update)
   // -----------------------------
+  // save() {
+
+  //   const payload = this.preparePayload();
+
+  //   console.log(payload)
+
+  //   const DBAction = this.isEditMode
+  //     ? 'PanditServicesUpdate'
+  //     : 'PanditServicesInsert';
+
+  //   this.api.post(DBAction, payload)
+  //     .subscribe((res: any) => {
+
+  //       if (res?.PanditServiceID > 0) {
+
+  //         alert("Saved successfully ✅");
+
+  //         this.closeModal();
+  //         this.loadList();
+
+  //       } else {
+  //         alert("Something went wrong ❌");
+  //       }
+
+  //     });
+  // }
+
   save() {
-
-    const payload = this.preparePayload();
-
-    console.log(payload)
-
     const DBAction = this.isEditMode
       ? 'PanditServicesUpdate'
       : 'PanditServicesInsert';
 
-    this.api.post(DBAction, payload)
-      .subscribe((res: any) => {
-
+    if (this.isEditMode) {
+      // Edit mode — single update as before
+      const payload = this.preparePayload();
+      this.api.post(DBAction, payload).subscribe((res: any) => {
         if (res?.PanditServiceID > 0) {
-
-          alert("Saved successfully ✅");
-
+          alert('Updated successfully ✅');
           this.closeModal();
           this.loadList();
-
         } else {
-          alert("Something went wrong ❌");
+          alert('Something went wrong ❌');
         }
-
       });
+
+    } else {
+      // Add mode — insert one record per selected service
+      if (!this.selectedServiceIDs.length) {
+        alert('Please select at least one service.');
+        return;
+      }
+
+      let completed = 0;
+      let failed = 0;
+      const total = this.selectedServiceIDs.length;
+
+      this.selectedServiceIDs.forEach((serviceID) => {
+        const payload = {
+          panditServiceID: 0,
+          tenantID: Number(this.userDetails.TenantID),
+          profileID: Number(this.userDetails.UserID),
+          serviceID: Number(serviceID),
+          locationID: this.panditServices.LocationID ? Number(this.panditServices.LocationID) : 0,
+          price: this.panditServices.Price
+            ? Math.round(Number(this.panditServices.Price) * 100) / 100
+            : 0,
+          isActive: Boolean(this.panditServices.IsActive),
+          dateAdded: new Date().toISOString(),
+          dateModified: new Date().toISOString(),
+          updatedByUser: String(this.userDetails.UserID),
+        };
+
+        this.api.post('PanditServicesInsert', payload).subscribe({
+          next: (res: any) => {
+            if (res?.PanditServiceID > 0) {
+              completed++;
+            } else {
+              failed++;
+            }
+
+            // When all done
+            if (completed + failed === total) {
+              if (failed === 0) {
+                alert(`${completed} service(s) saved successfully ✅`);
+              } else {
+                alert(`${completed} saved, ${failed} failed ❌`);
+              }
+              this.closeModal();
+              this.loadList();
+            }
+          },
+          error: () => {
+            failed++;
+            if (completed + failed === total) {
+              alert(`${completed} saved, ${failed} failed ❌`);
+              this.closeModal();
+              this.loadList();
+            }
+          }
+        });
+      });
+    }
   }
 
   get t() {

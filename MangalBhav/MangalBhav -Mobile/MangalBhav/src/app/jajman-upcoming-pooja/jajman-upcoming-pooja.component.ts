@@ -36,7 +36,7 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
 
   labels = {
     en: {
-         appTitle: '✦ Mangal.Bhav ✦',
+      appTitle: '✦ Mangal.Bhav ✦',
       pageTitle: 'My Bookings',
       bannerSub: 'Track Your',
       bannerTitle: 'Seva Journey',
@@ -120,7 +120,7 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
       noBookingsSub: 'अपनी सेवा यात्रा देखने के लिए पूजा बुक करें',
 
       explore: 'जीवन देखें',
-        appTitle: '✦ मंगल भाव ✦',
+      appTitle: '✦ मंगल भाव ✦',
       me: 'मैं'
     }
   };
@@ -430,35 +430,51 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
 
 
   whatsappFamily(item: any) {
-    const pandit = item.profile;
-    const services = item.panditServices;
+    console.log(item);
 
-    // Build service list text
-    const serviceLines = services?.map((ps: any) =>
-      `  🔸 ${this.getLocalizedText(ps.ServiceDetails?.[0]?.Name)} — ₹${ps.Price}`
-    ).join('\n') || '  🔸 Services available on request';
+    const pandit = item.Profile;
+    const service = item.Service;
+    const location = item.Location;
 
-    // Build the message
+    // Format date
+    const poojaDate = item.PoojaDate
+      ? new Date(item.PoojaDate).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      })
+      : '—';
+
+    const bookingDate = item.DateAdded
+      ? new Date(item.DateAdded).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      })
+      : '—';
+
+    // Build message
     const message =
-      `🙏 *Mangal Bhav — Pandit Ji Details* 🙏\n` +
+      `🙏 *Mangal Bhav — Pooja Booking Details* 🙏\n` +
       `━━━━━━━━━━━━━━━━━━\n` +
-      `👤 *Name:* ${pandit?.FullName || '—'}\n` +
+      
+      `📅 *Booked On:* ${bookingDate}\n` +
+      `📍 *Location:* ${location?.Name || '—'}\n` +
+      `━━━━━━━━━━━━━━━━━━\n` +
+      `🛕 *Pooja:* ${service?.Name || '—'}\n` +
+      `📆 *Pooja Date:* ${poojaDate}\n` +
+      `💰 *Amount:* ₹${item.TotalAmount || '—'}\n` +
+      `💳 *Payment:* ${item.PaymentStatus}\n` +
+      `📌 *Status:* ${item.Status}\n` +
+      `━━━━━━━━━━━━━━━━━━\n` +
+      `👤 *Pandit Ji:* ${pandit?.FullName || '—'}\n` +
       `📞 *Contact:* ${pandit?.PhoneNumber || pandit?.LoginID || '—'}\n` +
-      `🏙️ *City:* ${pandit?.City || '—'}\n` +
-      `🕉️ *Experience:* ${pandit?.ExperienceYears || '—'} Years\n` +
-      `🗣️ *Languages:* ${pandit?.Languages || '—'}\n` +
       `━━━━━━━━━━━━━━━━━━\n` +
-      `📿 *Available Sevas:*\n${serviceLines}\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `📲 Book via Mangal Bhav App\n` +
-      `🔗 Scan QR: pandituserid=${pandit?.UserID}`;
+      `📲 Book via Mangal Bhav App`;
 
-    // Encode for URL
+    // Encode message
     const encoded = encodeURIComponent(message);
 
-    // Opens WhatsApp — user can pick any contact or broadcast list
+    // Open WhatsApp
     const url = `https://wa.me/?text=${encoded}`;
-
     window.open(url, '_blank');
   }
 

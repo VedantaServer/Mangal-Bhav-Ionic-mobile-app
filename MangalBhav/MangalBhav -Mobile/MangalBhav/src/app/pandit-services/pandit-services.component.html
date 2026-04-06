@@ -8,8 +8,8 @@
 
       <div class="inner-title-block">
         <div class="inner-title">{{ t.pageTitle }}</div>
-        <div class="inner-title-sub">{{t.appTitle}}</div> 
-      
+        <div class="inner-title-sub">{{t.appTitle}}</div>
+
       </div>
 
       <div class="inner-logo">
@@ -81,7 +81,7 @@
           </div>
 
           <div class="detail-row">
-           <span class="detail-label">📍 {{ t.location }}</span>
+            <span class="detail-label">📍 {{ t.location }}</span>
             <span class="detail-value">
               {{ getLocationName(item.LocationID) }}
             </span>
@@ -186,14 +186,30 @@
             </div>
 
             <!-- Service Select -->
+            <!-- <div class="select-group">
+              <div class="select-icon">
+                <ion-icon name="flame-outline"></ion-icon>
+              </div>
+              <div class="select-inner">
+                <p class="select-label">{{ t.selectService }}</p>
+                <ion-select [placeholder]="t.chooseService" interface="action-sheet" [multiple]="true"
+                  [(ngModel)]="panditServices.ServiceID">
+                  <ion-select-option *ngFor="let service of FilteredServiceList" [value]="service.ServiceID">
+                    {{ getServiceNameHindiEnglish(service) }}
+                  </ion-select-option>
+                </ion-select>
+              </div>
+            </div> -->
+
+            <!-- Service Select -->
             <div class="select-group">
               <div class="select-icon">
                 <ion-icon name="flame-outline"></ion-icon>
               </div>
               <div class="select-inner">
                 <p class="select-label">{{ t.selectService }}</p>
-                <ion-select [placeholder]="t.chooseService" interface="action-sheet"
-                  [(ngModel)]="panditServices.ServiceID">
+                <ion-select [placeholder]="t.chooseService" interface="alert" [multiple]="true"
+                  [(ngModel)]="selectedServiceIDs">
                   <ion-select-option *ngFor="let service of FilteredServiceList" [value]="service.ServiceID">
                     {{ getServiceNameHindiEnglish(service) }}
                   </ion-select-option>
@@ -263,7 +279,7 @@
             <ion-button expand="block" class="save-btn" (click)="save()">
               <ion-icon [name]="isEditMode ? 'checkmark-circle-outline' : 'add-circle-outline'" slot="start">
               </ion-icon>
-             {{ isEditMode ? t.updateService : t.createService }}
+              {{ isEditMode ? t.updateService : t.createService }}
             </ion-button>
           </div>
 
@@ -291,7 +307,7 @@
             <ion-icon name="close-outline"></ion-icon>
           </button>
           <div class="inner-title-block">
-           <div class="inner-title">{{ t.sevaPhotos }}</div>
+            <div class="inner-title">{{ t.sevaPhotos }}</div>
             <div class="inner-title-sub">{{t.appTitle}}</div>
           </div>
           <div class="inner-logo">
@@ -313,14 +329,14 @@
               <ion-icon name="camera-outline"></ion-icon>
             </div>
             <p class="upload-zone-title">{{ t.tapUpload }}</p>
-           <p class="upload-zone-sub">{{ t.imgSupport }}</p>
+            <p class="upload-zone-sub">{{ t.imgSupport }}</p>
           </div>
         </div>
 
         <!-- Upload button — shows only when file selected -->
         <button class="upload-confirm-btn" *ngIf="selectedFile" (click)="uploadImage()">
           <ion-icon name="cloud-upload-outline"></ion-icon>
-         {{ t.uploadSelected }}
+          {{ t.uploadSelected }}
         </button>
 
         <!-- ===== GALLERY ===== -->

@@ -73,8 +73,37 @@
       <div class="empty-icon">🙏</div>
       <h3>{{ t.noPanditsTitle }}</h3>
       <p>{{ t.noPanditsDesc }}</p>
+      <button class="notify-btn" (click)="openNotifyModal()">
+        {{ t.notifyMeBtn }}
+      </button>
     </div>
 
+    <div class="modal-overlay" *ngIf="showNotifyModal" (click)="closeNotifyModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeNotifyModal()">✕</button>
+        <div class="modal-icon">🔔</div>
+        <h3>{{ t.notifyTitle }}</h3>
+        <p>{{ t.notifySubtitle }}</p>
+
+        <div class="form-group">
+          <label>{{ t.notifyNameLabel }}</label>
+          <input type="text" [(ngModel)]="notifyForm.name" [placeholder]="t.notifyNamePlaceholder"
+            [class.error]="formSubmitted && !notifyForm.name" />
+          <span class="error-msg" *ngIf="formSubmitted && !notifyForm.name">{{ t.notifyNameError }}</span>
+        </div>
+
+        <div class="form-group">
+          <label>{{ t.notifyPhoneLabel }}</label>
+          <input type="tel" [(ngModel)]="notifyForm.phone" [placeholder]="t.notifyPhonePlaceholder" maxlength="10"
+            [class.error]="formSubmitted && !notifyForm.phone" />
+          <span class="error-msg" *ngIf="formSubmitted && !notifyForm.phone">{{ t.notifyPhoneError }}</span>
+        </div>
+
+        <button class="submit-btn" (click)="submitNotifyForm()">
+          {{ t.notifySubmit }}
+        </button>
+      </div>
+    </div>
     <!-- PANDIT LIST -->
     <div class="pandit-list" *ngIf="!isLoading && panditProfiles.length > 0">
 
@@ -164,8 +193,8 @@
 <!-- ================================================
      POOJA DETAIL MODAL
 ================================================ -->
-<ion-modal [isOpen]="isPoojaModalOpen" (didDismiss)="isPoojaModalOpen = false"
-  [breakpoints]="[0, 0.85, 1]" [initialBreakpoint]="0.85">
+<ion-modal [isOpen]="isPoojaModalOpen" (didDismiss)="isPoojaModalOpen = false" [breakpoints]="[0, 0.85, 1]"
+  [initialBreakpoint]="0.85">
   <ng-template>
 
     <ion-header>
@@ -235,11 +264,16 @@
         <div class="detail-section">
           <h4 class="detail-section-title">{{ t.whatsIncluded }}</h4>
           <div class="detail-checklist">
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included1 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included2 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included3 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included4 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included5 }}</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included1 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included2 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included3 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included4 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.included5 }}</span>
+            </div>
           </div>
         </div>
 
@@ -253,8 +287,8 @@
 <!-- ================================================
      PANDIT DETAIL MODAL
 ================================================ -->
-<ion-modal [isOpen]="isPanditModalOpen" (didDismiss)="isPanditModalOpen = false"
-  [breakpoints]="[0, 0.9, 1]" [initialBreakpoint]="0.9">
+<ion-modal [isOpen]="isPanditModalOpen" (didDismiss)="isPanditModalOpen = false" [breakpoints]="[0, 0.9, 1]"
+  [initialBreakpoint]="0.9">
   <ng-template>
 
     <ion-header>
@@ -331,10 +365,14 @@
         <div class="detail-section">
           <h4 class="detail-section-title">{{ t.specializations }}</h4>
           <div class="detail-checklist">
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec1 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec2 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec3 }}</span></div>
-            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec4 }}</span></div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec1 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec2 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec3 }}</span>
+            </div>
+            <div class="check-item"><ion-icon name="checkmark-circle-outline"></ion-icon><span>{{ t.spec4 }}</span>
+            </div>
           </div>
         </div>
 

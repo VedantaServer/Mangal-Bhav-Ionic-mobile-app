@@ -44,7 +44,7 @@ export class LoggedinPanditsearchComponent implements OnInit {
       veryGood: 'Very Good',
       reviews: 'Reviews',
 
-      heroTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+      heroTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
 
       samskaras: '16 Samskaras Covered',
       verified: 'Verified Pandits',
@@ -175,9 +175,19 @@ export class LoggedinPanditsearchComponent implements OnInit {
       spec2: 'Jyotish & Muhurat',
       spec3: 'Griha Pravesh & Vastu',
       spec4: 'Marriage Ceremonies',
+      notifyMeBtn: '🔔 Notify Me When Available',
+notifyTitle: 'Get Notified',
+notifySubtitle: "We'll let you know when a pandit becomes available.",
+notifyNameLabel: 'Full Name',
+notifyNamePlaceholder: 'Enter your name',
+notifyNameError: 'Name is required',
+notifyPhoneLabel: 'Phone Number',
+notifyPhonePlaceholder: 'Enter your phone number',
+notifyPhoneError: 'Phone number is required',
+notifySubmit: 'Submit',
 
       // ── Footer ────────────────────────────────────
-      footerTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+      footerTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
       footerOm: 'ॐ नमः शिवाय',
 
       footerPlatform: '🙏 Platform',
@@ -219,7 +229,7 @@ export class LoggedinPanditsearchComponent implements OnInit {
       veryGood: 'बहुत अच्छा',
       reviews: 'समीक्षाएँ',
 
-      heroTagline: 'भारत का सबसे विश्वसनीय प्लेटफॉर्म पंडित जी बुक करने के लिए — जन्म से अंतिम संस्कार तक',
+      heroTagline: 'सत्यापित पंडितों को बुक करने के लिए एक प्लेटफ़ॉर्म  — जन्म से अंतिम संस्कार तक',
 
       samskaras: '16 संस्कार शामिल',
       verified: 'सत्यापित पंडित जी',
@@ -239,6 +249,16 @@ export class LoggedinPanditsearchComponent implements OnInit {
       step1: 'चरण 1',
       step2: 'चरण 2',
       step3: 'चरण 3',
+      notifyMeBtn: '🔔 उपलब्ध होने पर सूचित करें',
+notifyTitle: 'सूचना पाएं',
+notifySubtitle: 'पंडित जी उपलब्ध होते ही हम आपको बताएंगे।',
+notifyNameLabel: 'पूरा नाम',
+notifyNamePlaceholder: 'अपना नाम दर्ज करें',
+notifyNameError: 'नाम आवश्यक है',
+notifyPhoneLabel: 'फ़ोन नंबर',
+notifyPhonePlaceholder: 'अपना फ़ोन नंबर दर्ज करें',
+notifyPhoneError: 'फ़ोन नंबर आवश्यक है',
+notifySubmit: 'जमा करें',
 
       how1Title: 'अनुष्ठान चुनें',
       how1Desc: '30+ पवित्र हवन और पूजा समारोहों में से चुनें — जन्म से पितृ अनुष्ठान तक। अपनी आवश्यकता के अनुसार चुनें।',
@@ -523,6 +543,74 @@ export class LoggedinPanditsearchComponent implements OnInit {
 
   goBack() {
     this.routerCtrl.back();
+  }
+
+   showNotifyModal = false;
+  formSubmitted = false;
+
+  notifyForm = {
+    name: '',
+    phone: ''
+  };
+
+  openNotifyModal() {
+    this.showNotifyModal = true;
+    this.formSubmitted = false;
+    this.notifyForm = { name: '', phone: '' };
+  }
+
+  closeNotifyModal() {
+    this.showNotifyModal = false;
+  }
+
+  submitNotifyForm() {
+    this.formSubmitted = true;
+
+    if (!this.notifyForm.name || !this.notifyForm.phone) return;
+
+    // ✅ Call your API here
+    this.yourApiCall(this.notifyForm.name, this.notifyForm.phone);
+
+    this.closeNotifyModal();
+  }
+
+  yourApiCall(name: string, phone: string) {
+    const now = new Date().toISOString();
+
+    const body = {
+      ContactID: -1,
+      OrganizationID: "4022",
+      Name: name,
+      Phone: phone,
+      Email: "",
+      OrganizationName: "",
+      WebSite: "",
+      Address: "",
+      City: "",
+      State: "",
+      ZipCode: "",
+      Country: "",
+      Source: "MangalBhav",
+      IsContacted: true,
+      LeadCount: "0",
+      Probability: "0",
+      IsLeadGeneratedBO: true,
+      DateAdded: now,
+      DateModified: now,
+      UpdatedByUser: ""
+    };
+
+    this.http.post('https://capsai.vedantaerpserver.com/ContactInsert', body)
+      .subscribe({
+        next: (res) => {
+          console.log('Contact submitted successfully:', res);
+          // show success toast/message if needed
+        },
+        error: (err) => {
+          console.error('Error submitting contact:', err);
+          // handle error if needed
+        }
+      });
   }
 
 }

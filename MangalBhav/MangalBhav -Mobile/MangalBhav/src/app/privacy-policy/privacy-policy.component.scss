@@ -1,0 +1,468 @@
+// ─────────────────────────────────────────────
+// MangalBhav — Privacy Policy Styles
+// All color/size values are hardcoded (no CSS vars)
+// ─────────────────────────────────────────────
+
+// ── Reset
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+// ── Base
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  background: #FDF8F0;
+  color: #1A0A0A;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow: scroll;
+}
+
+// ── Header
+header {
+  background: #8B0000;
+  color: #fff;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(139, 0, 0, 0.35);
+
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    .dot {
+      color: #E8B84B;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+  }
+
+  .meta {
+    font-size: 0.78rem;
+    opacity: 0.75;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+// ── Hero
+.hero {
+  background: linear-gradient(135deg, #8B0000 0%, #5C0000 100%);
+  color: #fff;
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(255, 255, 255, 0.03) 30px,
+      rgba(255, 255, 255, 0.03) 31px
+    );
+  }
+
+  .badge {
+    display: inline-block;
+    border: 1px solid #C9922A;
+    color: #E8B84B;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.35rem 1.2rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    position: relative;
+
+    em {
+      font-style: normal;
+      color: #E8B84B;
+    }
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    position: relative;
+    letter-spacing: 0.03em;
+  }
+
+  .dates {
+    margin-top: 1.6rem;
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    position: relative;
+
+    span {
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.65;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      b {
+        color: #E8B84B;
+        font-weight: 500;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: none;
+      }
+    }
+  }
+}
+
+// ── Layout
+.wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Table of Contents
+.toc-wrap {
+  background: #F5EDE0;
+  border-left: 4px solid #C9922A;
+  border-radius: 0 12px 12px 0;
+  padding: 2rem 2rem 2rem 2.2rem;
+  margin: 3rem 0 2.5rem;
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #8B0000;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  ol {
+    list-style: none;
+    counter-reset: toc;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem 0.5rem;
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+    }
+
+    li {
+      counter-increment: toc;
+
+      a {
+        font-size: 0.88rem;
+        color: #6B5050;
+        text-decoration: none;
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+        transition: color 0.2s;
+
+        &::before {
+          content: counter(toc, decimal-leading-zero);
+          font-size: 0.7rem;
+          color: #C9922A;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+
+        &:hover {
+          color: #8B0000;
+        }
+      }
+    }
+  }
+}
+
+// ── Content
+.content {
+  padding: 1rem 0 5rem;
+}
+
+// ── Sections
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section {
+  padding-top: 1rem;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.5s ease both;
+
+  @for $i from 1 through 14 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+// ── Section title
+h2.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #8B0000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #DDD0C0;
+
+  .num {
+    background: #8B0000;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+}
+
+// ── Sub title
+h3.sub-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: #B22222;
+  margin: 1.4rem 0 0.5rem;
+  font-weight: 600;
+}
+
+// ── Paragraph
+p {
+  margin-bottom: 0.85rem;
+  color: #2C1A1A;
+}
+
+// ── Policy list
+ul.policy-list {
+  list-style: none;
+  margin: 0.6rem 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  li {
+    padding-left: 1.6rem;
+    position: relative;
+    font-size: 0.95rem;
+    color: #2C1A1A;
+
+    &::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: #C9922A;
+      font-size: 0.55rem;
+      top: 0.55rem;
+    }
+
+    strong {
+      color: #1A0A0A;
+      font-weight: 500;
+    }
+  }
+}
+
+// ── Highlight box
+.highlight {
+  background: linear-gradient(135deg, #FFF5E0, #FDF8F0);
+  border: 1px solid #C9922A;
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin: 1.2rem 0;
+  font-size: 0.93rem;
+  color: #6B5050;
+
+  strong {
+    color: #8B0000;
+  }
+}
+
+// ── Platform grid
+.platform-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.platform-card {
+  border: 1px solid #DDD0C0;
+  border-radius: 12px;
+  padding: 1.2rem;
+  background: #fff;
+
+  .icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: #8B0000;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    margin: 0;
+  }
+}
+
+// ── Contact box
+.contact-box {
+  background: #8B0000;
+  color: #fff;
+  border-radius: 14px;
+  padding: 2rem 2.2rem;
+  margin-top: 1.2rem;
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #E8B84B;
+  }
+
+  a {
+    color: #E8B84B;
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+
+    li {
+      font-size: 0.92rem;
+      opacity: 0.9;
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+
+      .ci {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .grievance {
+    color: #E8B84B;
+  }
+}
+
+// ── Divider
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 2.2rem 0 1.8rem;
+  color: #C9922A;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #DDD0C0;
+  }
+}
+
+// ── Footer
+footer {
+  background: #1A0A0A;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  padding: 2rem 1.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+
+  a {
+    color: #E8B84B;
+    text-decoration: none;
+  }
+
+  strong {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .footer-sub {
+    margin-top: 0.4rem;
+  }
+}
+
+// ── Print
+@media print {
+  header {
+    position: relative;
+  }
+
+  section {
+    animation: none;
+    page-break-inside: avoid;
+  }
+
+  .toc-wrap {
+    page-break-after: always;
+  }
+}

@@ -208,7 +208,7 @@ export class TodayPoojaComponent implements OnInit {
     const cleanName = this.getCleanName(serviceName);
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];
@@ -250,7 +250,7 @@ export class TodayPoojaComponent implements OnInit {
 
     //   console.log(cleanName);
 
-    return `assets/img/${cleanName}.jfif`;
+    return `assets/img/${cleanName}.png`;
   }
   // Fallback if image fails to load
   onImgError(event: Event) {

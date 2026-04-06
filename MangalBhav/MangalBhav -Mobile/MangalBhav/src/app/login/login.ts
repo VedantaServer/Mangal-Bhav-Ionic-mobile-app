@@ -178,8 +178,8 @@ export class LoginPage {
         console.log(res.MasterDataList[0].Description)
 
         this.showPasswordOnScreen = res.MasterDataList[0].Description === 'true';
-      //  alert(this.showPasswordOnScreen)
-      //  alert(typeof(this.showPasswordOnScreen))
+        //  alert(this.showPasswordOnScreen)
+        //  alert(typeof(this.showPasswordOnScreen))
       })
 
     this.getSlogan();
@@ -236,7 +236,7 @@ export class LoginPage {
   getServiceImagePath(serviceName: string): string {
     const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
     // console.log(englishName)
-    return `assets/img/${englishName}.jfif`;
+    return `assets/img/${englishName}.png`;
   }
 
   loadPujaSection() {
@@ -418,7 +418,7 @@ export class LoginPage {
           // Generate OTP
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-          // this.loginOtpSent = true;
+         //  this.loginOtpSent = true;
           // alert(this.loginGeneratedOtp)
           this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe((res: any) => {
             console.log(res);
@@ -558,7 +558,7 @@ export class LoginPage {
     const cleanName = serviceName;
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];
@@ -644,6 +644,7 @@ export class LoginPage {
           alert('Otp sent on whatsapp');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
+         // alert(this.generatedOTP)
           this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.mobileNumber}&otp=${this.generatedOTP}`, null).subscribe((res: any) => {
             this.registerStep = 'otp';
           });
@@ -681,12 +682,12 @@ export class LoginPage {
     if (role === 'PANDIT') {
 
       const upiAlert = await this.alertCtrl.create({
-        header: 'Enter UPI ID',
+        header: 'Give UPI for dakshina',
         inputs: [
           {
             name: 'upi',
             type: 'text',
-            placeholder: 'Enter your UPI ID (e.g. name@upi)'
+            placeholder: 'Give UPI for dakshina (e.g. name@upi)'
           }
         ],
         buttons: [
@@ -822,7 +823,7 @@ export class LoginPage {
           languages: String(this.UserLanguage) || '',
           basePrice: 0,
           profilePhotoUrl: '',
-          verificationStatus: 'PENDING',
+          verificationStatus: 'APPROVED',
           isActive: Boolean(1),
           dateAdded: new Date().toISOString(),
           dateModified: new Date().toISOString(),
@@ -958,7 +959,7 @@ export class LoginPage {
 
   shareReferCode() {
     const code = `MANGAL${this.userReferCode}`;
-    const msg = `🪔 Join me on Mangal.Bhav — India's most trusted Pandit booking app!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
+    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
 
     if (navigator.share) {
       navigator.share({ title: 'Mangal.Bhav Referral', text: msg });

@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
 import { Api } from '../../providers/api/api';
 import { CommonProvider } from 'src/providers/common/common';
@@ -7,12 +7,14 @@ import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
 import { Storage } from '@ionic/storage-angular';
 import { firstValueFrom } from 'rxjs';
+import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { FormsModule } from '@angular/forms';
+
 
 
 @Component({
@@ -28,6 +30,8 @@ export class Tab1Page {
   showIdCard = false;
   profileImageUrl: string | null = null;
 
+  @ViewChild('qrCode', { read: ElementRef }) qrCodeRef!: ElementRef;
+  
   labels = {
     en: {
       appTitle: '🕉️ Mangal Bhav',
@@ -225,6 +229,40 @@ export class Tab1Page {
     await this.storage.clear();
     this.routerCtrl.navigateRoot('/login');
   }
+
+
+  // ✅ Share QR as image on WhatsApp
+async shareQROnWhatsApp() {
+  try {
+    const canvas = this.qrCodeRef.nativeElement.querySelector('canvas');
+    if (!canvas) return;
+
+    const dataUrl = canvas.toDataURL('image/png');
+
+    await Share.share({
+      title: `Book ${this.FullName} on Mangal Bhav`,
+      text: `🙏 Book Pandit Ji directly via Mangal Bhav App!\nScan the QR or use this link: ${this.APP_DOWNLOAD_LINK}`,
+      url: dataUrl,          // shares image on native share sheet
+      dialogTitle: 'Share via WhatsApp',
+    });
+
+  } catch (err) {
+    console.error('Share failed', err);
+  }
+}
+APP_DOWNLOAD_LINK = 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'; 
+
+
+// ✅ Share App download link directly on WhatsApp (web fallback)
+shareAppLinkOnWhatsApp() {
+  const message = encodeURIComponent(
+    `🙏 Book *${this.FullName}* (Verified Pandit Ji) on *Mangal Bhav App*!\n\n` +
+    `📲 Download here: ${this.APP_DOWNLOAD_LINK}\n\n` +
+    `✦ Easy booking | Trusted Pandits ✦`
+  );
+  const whatsappUrl = `https://wa.me/?text=${message}`;
+  window.open(whatsappUrl, '_blank');
+}
 
 
 }
