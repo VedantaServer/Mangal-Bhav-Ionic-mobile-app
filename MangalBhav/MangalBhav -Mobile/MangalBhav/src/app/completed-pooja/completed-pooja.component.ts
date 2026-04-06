@@ -289,7 +289,7 @@ export class CompletedPoojaComponent implements OnInit {
     const cleanName = this.getCleanName(serviceName);
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];

@@ -30,12 +30,19 @@ import { LoggedinPanditsearchComponent } from './loggedin-panditsearch/loggedin-
 import { OpenFindPanditComponent } from './open-find-pandit/open-find-pandit.component';
 import { OpenCommunityPageComponent } from './open-community-page/open-community-page.component';
 import { JajmanRequestedPoojaComponent } from './jajman-requested-pooja/jajman-requested-pooja.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   
   {
     path: '',
     component: LoginPage
+  },
+
+   
+  {
+    path: 'privacypolicy',
+    component: PrivacyPolicyComponent
   },
   
   {

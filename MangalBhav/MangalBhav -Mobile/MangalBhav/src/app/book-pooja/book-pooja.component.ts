@@ -50,7 +50,7 @@ export class BookPoojaComponent implements OnInit {
       veryGood: 'Very Good',
       reviews: 'Reviews',
 
-      heroTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+      heroTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
 
       samskaras: '16 Samskaras Covered',
       verified: 'Verified Pandits',
@@ -220,7 +220,7 @@ export class BookPoojaComponent implements OnInit {
       confirmBtn: 'Confirm Booking',
 
       // ── Footer ────────────────────────────────────
-      footerTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+      footerTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
       footerOm: 'ॐ नमः शिवाय',
 
       footerPlatform: '🙏 Platform',
@@ -262,7 +262,7 @@ export class BookPoojaComponent implements OnInit {
       veryGood: 'बहुत अच्छा',
       reviews: 'समीक्षाएँ',
 
-      heroTagline: 'भारत का सबसे विश्वसनीय प्लेटफॉर्म पंडित जी बुक करने के लिए — जन्म से अंतिम संस्कार तक',
+      heroTagline: 'सत्यापित पंडितों को बुक करने के लिए एक प्लेटफ़ॉर्म  — जन्म से अंतिम संस्कार तक',
 
       samskaras: '16 संस्कार शामिल',
       verified: 'सत्यापित पंडित जी',
@@ -772,7 +772,7 @@ export class BookPoojaComponent implements OnInit {
     const cleanName = this.getCleanName(serviceName);
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];

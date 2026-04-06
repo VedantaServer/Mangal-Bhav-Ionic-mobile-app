@@ -84,6 +84,37 @@
       <div class="empty-icon">🙏</div>
       <h3>No Pandits Found</h3>
       <p>No pandits available for this pooja right now.</p>
+      <button class="notify-btn" (click)="openNotifyModal()">
+        🔔 Notify Me When Available
+      </button>
+    </div>
+
+    <!-- Notify Me Modal -->
+    <div class="modal-overlay" *ngIf="showNotifyModal" (click)="closeNotifyModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeNotifyModal()">✕</button>
+        <div class="modal-icon">🔔</div>
+        <h3>Get Notified</h3>
+        <p>We'll let you know when a pandit becomes available.</p>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="notifyForm.name" placeholder="Enter your name"
+            [class.error]="formSubmitted && !notifyForm.name" />
+          <span class="error-msg" *ngIf="formSubmitted && !notifyForm.name">Name is required</span>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" [(ngModel)]="notifyForm.phone" placeholder="Enter your phone number" maxlength="10"
+            [class.error]="formSubmitted && !notifyForm.phone" />
+          <span class="error-msg" *ngIf="formSubmitted && !notifyForm.phone">Phone number is required</span>
+        </div>
+
+        <button class="submit-btn" (click)="submitNotifyForm()">
+          Submit
+        </button>
+      </div>
     </div>
 
     <!-- PANDIT LIST -->
@@ -137,7 +168,7 @@
           <div class="pandit-details">
             <div class="detail-item" *ngIf="pandit.BasePrice">
               <span class="detail-label">Dakshina</span>
-              <span class="detail-value price">₹{{ pandit.BasePrice }}</span>
+              <span class="detail-value price">₹{{ pandit.ServicePrice }}</span>
             </div>
           </div>
           <button class="book-now-btn" (click)="bookNow(pandit)">
@@ -170,7 +201,7 @@
   <!-- Empty spacer in center -->
   <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
 
-    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
     <div class="custom-tab-icon"></div>
   </ion-tab-button>
 

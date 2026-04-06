@@ -28,8 +28,8 @@
     <div class="greeting">
       <div class="greeting-text">
         <p class="greeting-sub">{{ t.greetingSubtitle }}</p>
-        <h2 class="greeting-title">{{ t.greetingTitle }}
-          <span class="name-clickable" (click)="showIdCard = true">{{FullName}}</span>
+        <h2 class="greeting-title">{{ t.greetingTitle }}{{FullName}} <br> <span (click)="showIdCard = true"
+            style="font-size: x-small;"><ion-icon name="qr-code-outline"></ion-icon> Show my QR</span>
         </h2>
       </div>
       <div class="greeting-om">ॐ</div>
@@ -59,17 +59,11 @@
         <div class="idcard-body">
 
           <!-- Profile Photo -->
-          <!-- Profile Photo -->
           <div class="idcard-photo-wrap">
-
-            <!-- ✅ Show loaded photo -->
             <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="idcard-photo" (error)="onImgError($event)" />
-
-            <!-- ✅ Fallback avatar while loading or if no photo -->
             <div class="idcard-avatar-fallback" *ngIf="!profileImageUrl">
               {{ FullName?.charAt(0) || '🙏' }}
             </div>
-
             <div class="idcard-photo-ring"></div>
             <div class="idcard-verified-badge">
               <ion-icon name="checkmark-circle"></ion-icon>
@@ -79,19 +73,36 @@
           <!-- Name -->
           <h2 class="idcard-name">{{ FullName }}</h2>
 
-
-
           <!-- QR Code -->
-          <div class="idcard-qr-wrap">
+          <div class="idcard-qr-wrap" #qrSection>
             <div class="idcard-qr-label">Scan to Book</div>
-            <qrcode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="150" errorCorrectionLevel="M">
+            <qrcode #qrCode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="150" errorCorrectionLevel="M">
             </qrcode>
+          </div>
+
+          <!-- ✅ Share Section -->
+          <div class="idcard-share-section">
+            
+            <div class="idcard-share-buttons">
+
+              <!-- Share QR Image on WhatsApp -->
+              <button class="share-btn whatsapp" (click)="shareQROnWhatsApp()">
+                <ion-icon name="qr-code-outline"></ion-icon>
+                <span>Share QR</span>
+              </button>
+
+              <!-- Share App Download Link on WhatsApp -->
+              <button class="share-btn whatsapp-app" (click)="shareAppLinkOnWhatsApp()">
+                <ion-icon name="download-outline"></ion-icon>
+                <span>Share App</span>
+              </button>
+
+            </div>
           </div>
 
         </div>
       </div>
     </div>
-
     <!-- ===== SECTION LABEL ===== -->
     <div class="section-label">{{ t.mySeva }}</div>
 

@@ -114,7 +114,7 @@ export class LoggedinHomeComponent implements OnInit {
     veryGood: 'Very Good',
     reviews: 'Reviews',
 
-    heroTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+    heroTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
 
     samskaras: '16 Samskaras Covered',
     verified: 'Verified Pandits',
@@ -197,7 +197,7 @@ export class LoggedinHomeComponent implements OnInit {
     me: 'Me',
 
     // ── Footer ────────────────────────────────────
-    footerTagline: "India's most trusted platform for booking verified Pandits for every sacred ritual — from the first breath to the final farewell.",
+    footerTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
     footerOm: 'ॐ नमः शिवाय',
 
     footerPlatform: '🙏 Platform',
@@ -438,7 +438,7 @@ export class LoggedinHomeComponent implements OnInit {
 
   getServiceImagePath(serviceName: string): string {
     const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
-    return `assets/img/${englishName}.jfif`;
+    return `assets/img/${englishName}.png`;
   }
 
   loadPujaSection() {
@@ -768,7 +768,7 @@ export class LoggedinHomeComponent implements OnInit {
     const cleanName = serviceName;
 
     return [
-      `assets/img/${cleanName}.jfif`,
+      `assets/img/${cleanName}.png`,
       `assets/img/${cleanName}2.jfif`,
       `assets/img/${cleanName}3.jfif`
     ];
@@ -1085,7 +1085,7 @@ export class LoggedinHomeComponent implements OnInit {
 
   shareReferCode() {
     const code = `MANGAL${this.userReferCode}`;
-    const msg = `🪔 Join me on Mangal.Bhav — India's most trusted Pandit booking app!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
+    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
 
     if (navigator.share) {
       navigator.share({ title: 'Mangal.Bhav Referral', text: msg });
