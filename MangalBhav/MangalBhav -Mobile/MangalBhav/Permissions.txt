@@ -10,10 +10,55 @@
 
 
 
-// <- ADD THIS BLOCK (exactly)
-    packagingOptions {
-        jniLibs {
-            excludes += ["*/libbarhopper_v3.so", "*/libimage_processing_util_jni.so"]
-        }
+// <- ADD THIS BLOCK (exactly) in androidmanifext.xml
+    
+  packagingOptions {
+    // Make sure we exclude any occurrence under lib/** (all ABIs) and any other nested path
+    jniLibs {
+      excludes += ["**/libbarhopper_v3.so", "**/libimage_processing_util_jni.so", "lib/**/libbarhopper_v3.so", "lib/**/libimage_processing_util_jni.so"]
     }
+    // Older AGP also supports plain excludes (keeps compatibility)
+    excludes += ["lib/**/libbarhopper_v3.so", "lib/**/libimage_processing_util_jni.so", "**/libbarhopper_v3.so", "**/libimage_processing_util_jni.so"]
+  }
     // <- end added block
+
+
+
+ <key>NSSpeechRecognitionUsageDescription</key>
+<string>This app requires speech recognition access to convert your voice into text for app features.</string>
+
+
+
+    <key>NSCameraUsageDescription</key>
+<string>This app requires camera access to scan QR codes and take photos.</string>
+
+<key>NSPhotoLibraryUsageDescription</key>
+<string>This app needs access to your photo library to select photos.</string>
+
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>This app needs permission to save photos to your photo library.</string>
+
+<key>NSMicrophoneUsageDescription</key>
+<string>This app needs microphone access for recording audio.</string>
+
+<!-- Optional: if you use Face ID for auth -->
+<key>NSFaceIDUsageDescription</key>
+<string>This app uses Face ID to authenticate you.</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app requires your location to provide accurate nearby services.</string>
+
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app requires your location to provide accurate nearby services.</string>
+
+
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs access to your location even in the background to provide continuous location tracking.</string>
+
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app uses your location in the background for continuous tracking.</string>
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoads</key>
+  <true/>
+</dict>
