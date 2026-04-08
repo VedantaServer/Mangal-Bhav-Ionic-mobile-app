@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -398,6 +398,7 @@ notifySubmit: 'जमा करें',
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -434,7 +435,7 @@ notifySubmit: 'जमा करें',
 
   loadServiceName() {
     if (!this.serviceid) return;
-    this.api.post(`ServiceSelect?serviceID=${this.serviceid}&tenantId=1`, null)
+    this.apinu.postUrlData(`ServiceSelect?serviceID=${this.serviceid}&tenantId=1`, null)
       .subscribe((res: any) => {
         const svc = res?.ServiceList?.[0];
         if (svc) {
@@ -469,7 +470,7 @@ notifySubmit: 'जमा करें',
   loadPandits() {
     this.isLoading = true;
 
-    this.api.post(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
+    this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
       .subscribe((res: any) => {
 
         const profileIDs = res.PanditServiceList?.map((x: any) => x.ProfileID) || [];
@@ -482,7 +483,7 @@ notifySubmit: 'जमा करें',
         }
 
         const profileCalls = uniqueProfileIDs.map((id: any) =>
-          this.api.post(`ProfilesSelectAllByUserID?userID=${id}`, null)
+          this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
         );
 
         forkJoin(profileCalls).subscribe((profiles: any[]) => {
@@ -531,7 +532,7 @@ notifySubmit: 'जमा करें',
 
   // Book Now — store panditUserID, go to login
   async bookNow(pandit: any) {
-    this.api.post(`PanditServicesNUSelectByQuery?Query=ProfileID = ${pandit.UserID} and ServiceID = ${this.serviceid}`, null)
+    this.apinu.postUrlData(`PanditServicesNUSelectByQuery?Query=ProfileID = ${pandit.UserID} and ServiceID = ${this.serviceid}`, null)
       .subscribe((res: any) => {
         console.log(res?.PanditServiceList?.[0].PanditServiceID)
 

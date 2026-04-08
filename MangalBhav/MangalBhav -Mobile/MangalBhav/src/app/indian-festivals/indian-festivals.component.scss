@@ -387,7 +387,7 @@ selectedMonth: number | null = null;
 availableMonths: { label: string, value: number }[] = [];
 
 ngOnInit() {
-  this.api.post(`FestivalSelectAll?tenantID=1`, null)
+  this.apinu.postUrlData(`FestivalSelectAll?tenantID=1`, null)
     .subscribe((res: any) => {
       this.festivalList = res.FestivalList
         .sort((a: any, b: any) =>

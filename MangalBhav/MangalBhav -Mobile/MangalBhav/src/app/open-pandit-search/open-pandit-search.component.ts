@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -28,6 +28,7 @@ export class OpenPanditSearchComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -48,7 +49,7 @@ export class OpenPanditSearchComponent implements OnInit {
 
   loadServiceName() {
     if (!this.serviceid) return;
-    this.api.post(`ServiceSelect?serviceID=${this.serviceid}&tenantId=1`, null)
+    this.apinu.postUrlData(`ServiceSelect?serviceID=${this.serviceid}&tenantId=1`, null)
       .subscribe((res: any) => {
         const svc = res?.ServiceList?.[0];
         if (svc) {
@@ -74,7 +75,7 @@ export class OpenPanditSearchComponent implements OnInit {
   // loadPandits() {
   //   this.isLoading = true;
 
-  //   this.api.post(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
+  //   this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
   //     .subscribe((res: any) => {
 
   //       const profileIDs = res.PanditServiceList?.map((x: any) => x.ProfileID) || [];
@@ -87,7 +88,7 @@ export class OpenPanditSearchComponent implements OnInit {
   //       }
 
   //       const profileCalls = uniqueProfileIDs.map((id: any) =>
-  //         this.api.post(`ProfilesSelectAllByUserID?userID=${id}`, null)
+  //         this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
   //       );
 
   //       forkJoin(profileCalls).subscribe((profiles: any[]) => {
@@ -180,7 +181,7 @@ export class OpenPanditSearchComponent implements OnInit {
   loadPandits() {
     this.isLoading = true;
 
-    this.api.post(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
+    this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
       .subscribe((res: any) => {
 
         const serviceList = res.PanditServiceList || [];
@@ -195,7 +196,7 @@ export class OpenPanditSearchComponent implements OnInit {
         }
 
         const profileCalls = uniqueProfileIDs.map((id: any) =>
-          this.api.post(`ProfilesSelectAllByUserID?userID=${id}`, null)
+          this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
         );
 
         forkJoin(profileCalls).subscribe((profiles: any[]) => {

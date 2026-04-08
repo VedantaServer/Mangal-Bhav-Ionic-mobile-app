@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicModule, NavController } from '@ionic/angular';   
-import { Api } from '../../providers';
+import { Api,ApiNU } from '../../providers';
 import { LoginPage } from '../login/login';
 import { Storage } from '@ionic/storage';
 import { CommonProvider } from '../../providers/common/common';
@@ -38,6 +38,7 @@ export class LoginOtpPage {
   constructor(
     public routerCtrl: NavController,
     private router: Router,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private common: CommonProvider,

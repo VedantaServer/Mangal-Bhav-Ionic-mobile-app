@@ -1,5 +1,5 @@
 import { Input, Component } from '@angular/core';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 
 @Component({
   selector: 'value-look-up',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -33,6 +33,7 @@ export class FindPanditComponent implements OnInit {
 
   formats = [BarcodeFormat.QR_CODE];
   constructor(public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage, private router: Router,
     private plt: Platform,
@@ -205,7 +206,7 @@ export class FindPanditComponent implements OnInit {
     if (match) {
       const userId = Number(match[1]);
       //   alert(userId)
-      this.api.post(
+      this.apinu.postUrlData(
         `UsersNUSelectByQuery?Query=Role='PANDIT' and UserID = ${userId} `,
         null
       ).subscribe((userRes: any) => {
@@ -219,7 +220,7 @@ export class FindPanditComponent implements OnInit {
           .pipe(
             // 2️⃣ Get Profile using UserID
             mergeMap((user: any) =>
-              this.api.post(
+              this.apinu.postUrlData(
                 `ProfilesSelectAllByUserID?userID=${user.UserID}`,
                 null
               ).pipe(
@@ -231,7 +232,7 @@ export class FindPanditComponent implements OnInit {
             ),
             // 3️⃣ Get Pandit Services using UserID
             mergeMap((data: any) =>
-              this.api.post(
+              this.apinu.postUrlData(
                 `PanditServicesSelectAllByProfileID?profileID=${data.user.UserID}`,
                 null
               ).pipe(
@@ -256,19 +257,19 @@ export class FindPanditComponent implements OnInit {
                   forkJoin({
 
                     // 1️⃣ Service Details
-                    serviceDetail: this.api.post(
+                    serviceDetail: this.apinu.postUrlData(
                       `ServiceSelect?serviceID=${ps.ServiceID}&tenantID=${this.userDetails.TenantID}`,
                       null
                     ),
 
                     // 2️⃣ Location Details
-                    locationDetail: this.api.post(
+                    locationDetail: this.apinu.postUrlData(
                       `LocationSelect?locationID=${ps.LocationID}&tenantID=${this.userDetails.TenantID}`,
                       null
                     ),
 
                     // 3️⃣ Category Mapping
-                    categoryMapping: this.api.post(
+                    categoryMapping: this.apinu.postUrlData(
                       `ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`,
                       null
                     )
@@ -292,7 +293,7 @@ export class FindPanditComponent implements OnInit {
                       return from(mappings).pipe(
 
                         mergeMap((mapItem: any) =>
-                          this.api.post(
+                          this.apinu.postUrlData(
                             `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=${this.userDetails.TenantID}`,
                             null
                           ).pipe(
@@ -366,7 +367,7 @@ export class FindPanditComponent implements OnInit {
 
         this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
 
-        this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
+        this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
           .subscribe((res: any) => {
             this.panditServiceBookingMap[String(ps.PanditServiceID)] =
               (res?.BookingList?.length || 0) + 10;

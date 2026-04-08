@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -482,6 +482,7 @@ export class BookPoojaComponent implements OnInit {
   pendingServiceID: any;
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage, private route: ActivatedRoute,
     private plt: Platform,
@@ -550,7 +551,7 @@ export class BookPoojaComponent implements OnInit {
     }
     // alert(this.Language)
 
-    // this.api.post(`PanditServiceSelectAll?tenantID=${this.userDetails.TenantID}`,null)
+    // this.apinu.postUrlData(`PanditServiceSelectAll?tenantID=${this.userDetails.TenantID}`,null)
     // .subscribe((res:any)=>{
     //   console.log(res.PanditServiceList)
     //   this.PanditServiceList = res.PanditServiceList;
@@ -563,7 +564,7 @@ export class BookPoojaComponent implements OnInit {
   // Call this after PanditServicesList is set
   loadAllBookingCounts() {
     this.PanditServicesList.forEach((item: any) => {
-      this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${item.PanditServiceID}`, null)
+      this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${item.PanditServiceID}`, null)
         .subscribe((res: any) => {
           this.bookingCountMap[String(item.PanditServiceID)] = res.BookingList?.length || 0;
           console.log(`Service ${item.PanditServiceID} count:`, this.bookingCountMap[String(item.PanditServiceID)]);
@@ -576,7 +577,7 @@ export class BookPoojaComponent implements OnInit {
     const key = String(panditServiceID);
     if (this.bookingCountMap[key] !== undefined) return; // already loaded
 
-    this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${panditServiceID}`, null)
+    this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${panditServiceID}`, null)
       .subscribe((res: any) => {
         this.bookingCountMap[key] = res.BookingList?.length || 0;
         console.log(`Service ${panditServiceID} count:`, this.bookingCountMap[key]);
@@ -597,7 +598,7 @@ export class BookPoojaComponent implements OnInit {
   loadList() {
     //alert('bjhhvgh')
 
-    this.api.post(
+    this.apinu.postUrlData(
       this.query,
       null
     ).pipe(
@@ -611,17 +612,17 @@ export class BookPoojaComponent implements OnInit {
         // Create forkJoin call for each item
         const enrichedCalls = list.map((item: any) => {
 
-          const service$ = this.api.post(
+          const service$ = this.apinu.postUrlData(
             `ServiceSelect?serviceID=${item.ServiceID}&tenantId=${item.TenantID}`,
             null
           );
 
-          const location$ = this.api.post(
+          const location$ = this.apinu.postUrlData(
             `LocationSelect?locationID=${item.LocationID}&tenantID=${item.TenantID}`,
             null
           );
 
-          const user$ = this.api.post(
+          const user$ = this.apinu.postUrlData(
             `ProfilesSelectAllByUserID?userId=${item.ProfileID}`,
             null
           );
@@ -664,7 +665,7 @@ export class BookPoojaComponent implements OnInit {
         console.log('Final Enriched List:', this.PanditServicesList);
       },
 
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading data:', err);
       }
 
@@ -708,7 +709,7 @@ export class BookPoojaComponent implements OnInit {
     nextDate.setDate(nextDate.getDate() + 1);
     const nextDateStr = nextDate.toISOString().split('T')[0];
 
-    this.api.post(`BookingsSelectByQuery?Query=PanditServiceID=${payload.panditServiceID} AND BhaktProfileID=${payload.bhaktProfileID} AND PoojaDate >= '${date}' AND PoojaDate < '${nextDateStr}'`,
+    this.apinu.postUrlData(`BookingsSelectByQuery?Query=PanditServiceID=${payload.panditServiceID} AND BhaktProfileID=${payload.bhaktProfileID} AND PoojaDate >= '${date}' AND PoojaDate < '${nextDateStr}'`,
       null
     )
       .subscribe((res: any) => {
@@ -717,7 +718,7 @@ export class BookPoojaComponent implements OnInit {
           alert('You have already booked');
         } else {
           const DBAction = 'BookingsInsert';
-          this.api.post(DBAction, payload)
+          this.apinu.postUrlData(DBAction, payload)
             .subscribe((res: any) => {
               if (res?.BookingID > 0) {
                 alert('Booking Confirmed 🎉');
@@ -849,7 +850,7 @@ export class BookPoojaComponent implements OnInit {
 
     const query = `DocumentType = 'PanditService' and EntityType = 'PanditService' and EntityRefKey = ${this.viewingServiceID}`;
 
-    this.api.post(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
+    this.apinu.postUrlData(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
       next: (res: any) => {
         const documentList = res?.DocumentList || [];
 
@@ -882,7 +883,7 @@ export class BookPoojaComponent implements OnInit {
           }
         });
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error fetching documents:', err);
         this.photosLoading = false;
       }

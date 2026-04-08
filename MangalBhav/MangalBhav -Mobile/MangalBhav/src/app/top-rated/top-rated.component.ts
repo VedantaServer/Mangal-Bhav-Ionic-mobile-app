@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -68,6 +68,7 @@ export class TopRatedComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private route: ActivatedRoute,
@@ -82,7 +83,7 @@ export class TopRatedComponent implements OnInit {
 
 
 
-    // this.api.post(`GenerateGeminiResponse?prompt=What is diwali in indian festival ?`,null)
+    // this.apinu.postUrlData(`GenerateGeminiResponse?prompt=What is diwali in indian festival ?`,null)
     // .subscribe((res:any)=>{
     //   console.log(res)
     // })
@@ -96,7 +97,7 @@ export class TopRatedComponent implements OnInit {
     this.userDetails = await this.storage.get("account");
     this.Language = await this.storage.get("Language");
 
-    this.api.post(`BookingSelectAll?tenantID=${this.userDetails.TenantID}`, null)
+    this.apinu.postUrlData(`BookingSelectAll?tenantID=${this.userDetails.TenantID}`, null)
       .subscribe((res: any) => {
 
         const bookings = res.BookingList;
@@ -161,7 +162,7 @@ export class TopRatedComponent implements OnInit {
 
 
   loadList() {
-    this.api.post(this.query, null).pipe(
+    this.apinu.postUrlData(this.query, null).pipe(
 
       concatMap((res: any) => {
 
@@ -171,15 +172,15 @@ export class TopRatedComponent implements OnInit {
 
         const enrichedCalls = list.map((item: any) => {
 
-          const service$ = this.api.post(
+          const service$ = this.apinu.postUrlData(
             `ServiceSelect?serviceID=${item.ServiceID}&tenantId=${item.TenantID}`, null
           );
 
-          const location$ = this.api.post(
+          const location$ = this.apinu.postUrlData(
             `LocationSelect?locationID=${item.LocationID}&tenantID=${item.TenantID}`, null
           );
 
-          const user$ = this.api.post(
+          const user$ = this.apinu.postUrlData(
             `ProfilesSelectAllByUserID?userId=${item.ProfileID}`, null
           );
 
@@ -218,7 +219,7 @@ export class TopRatedComponent implements OnInit {
         this.PanditServicesList = finalList;
         console.log('Final Enriched List:', this.PanditServicesList);
       },
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading data:', err);
       }
     });
@@ -253,14 +254,14 @@ export class TopRatedComponent implements OnInit {
     nextDate.setDate(nextDate.getDate() + 1);
     const nextDateStr = nextDate.toISOString().split('T')[0];
 
-    this.api.post(
+    this.apinu.postUrlData(
       `BookingsSelectByQuery?Query=PanditServiceID=${payload.panditServiceID} AND BhaktProfileID=${payload.bhaktProfileID} AND PoojaDate >= '${date}' AND PoojaDate < '${nextDateStr}'`,
       null
     ).subscribe((res: any) => {
       if (res.BookingList.length > 0) {
         alert('You have already booked');
       } else {
-        this.api.post('BookingsInsert', payload)
+        this.apinu.postUrlData('BookingsInsert', payload)
           .subscribe((res: any) => {
             if (res?.BookingID > 0) {
               alert('Booking Confirmed 🎉');
@@ -373,7 +374,7 @@ export class TopRatedComponent implements OnInit {
 
     const query = `DocumentType = 'PanditService' and EntityType = 'PanditService' and EntityRefKey = ${this.viewingServiceID}`;
 
-    this.api.post(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
+    this.apinu.postUrlData(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
       next: (res: any) => {
         const documentList = res?.DocumentList || [];
 
@@ -406,7 +407,7 @@ export class TopRatedComponent implements OnInit {
           }
         });
       },
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error fetching documents:', err);
         this.photosLoading = false;
       }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -68,6 +68,7 @@ export class PendingPoojaComponent implements OnInit {
   }
 };
   constructor(public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -196,7 +197,7 @@ export class PendingPoojaComponent implements OnInit {
             console.log('Payload being sent:', payload);
 
             // 🔥 Call API here
-            this.api.post('BookingsUpdate', payload)
+            this.apinu.postUrlData('BookingsUpdate', payload)
               .subscribe((res: any) => {
 
                 console.log(res)
@@ -222,7 +223,7 @@ export class PendingPoojaComponent implements OnInit {
   }
   loadList() {
 
-    this.api.post(
+    this.apinu.postUrlData(
       `PanditServicesSelectAllByProfileID?profileID=${this.userDetails.UserID}`,
       null
     ).pipe(
@@ -235,17 +236,17 @@ export class PendingPoojaComponent implements OnInit {
         const serviceCalls = panditServices.map((service: any) => {
 
           // 🔹 Fetch Service & Location in parallel
-          const service$ = this.api.post(
+          const service$ = this.apinu.postUrlData(
             `ServiceSelect?serviceID=${service.ServiceID}&tenantId=${service.TenantID}`,
             null
           );
 
-          const location$ = this.api.post(
+          const location$ = this.apinu.postUrlData(
             `LocationSelect?locationID=${service.LocationID}&tenantID=${service.TenantID}`,
             null
           );
 
-          const bookings$ = this.api.post(
+          const bookings$ = this.apinu.postUrlData(
             `BookingsSelectByQuery?Query=panditServiceID=${service.PanditServiceID} and Status = 'CONFIRMED'`,
             null
           );
@@ -274,7 +275,7 @@ export class PendingPoojaComponent implements OnInit {
               // 🔥 Enrich each booking with BhaktProfile
               const bookingCalls = bookings.map((booking: any) => {
 
-                return this.api.post(
+                return this.apinu.postUrlData(
                   `ProfilesSelectAllByUserID?userID=${booking.BhaktProfileID}`,
                   null
                 ).pipe(
@@ -326,7 +327,7 @@ export class PendingPoojaComponent implements OnInit {
         this.PanditServicesList = finalList;
       },
 
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading data:', err);
       }
 

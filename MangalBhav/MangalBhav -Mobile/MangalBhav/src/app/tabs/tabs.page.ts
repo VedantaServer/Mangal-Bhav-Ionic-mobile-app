@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonContent, IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
@@ -24,7 +24,8 @@ import { Router } from '@angular/router';
 export class TabsPage {
   userDetails: any;
 
- constructor(private alertCtrl: AlertController, private storage: Storage, public api: Api, private router: Router,
+ constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
+    public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient){
    
   }

@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
@@ -90,7 +90,8 @@ export class Tab1Page {
   pendingPanditUserID: any;
   pendingPanditCategoryID: any;
   pendingPanditServiceID: any;
-  constructor(private alertCtrl: AlertController, private storage: Storage, public api: Api, private router: Router,
+  constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
+    public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider,
     private datePipe: DatePipe, public routerCtrl: NavController, private http: HttpClient
   ) { }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -178,6 +178,7 @@ export class PanditServicesComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform, private router: Router,
@@ -201,24 +202,24 @@ export class PanditServicesComponent implements OnInit {
 
     // alert(this.language)
     // 1. Categories
-    this.api.post(`ServiceCategorySelectAll?tenantID=${this.userDetails.TenantID}`, null)
+    this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=${this.userDetails.TenantID}`, null)
       .subscribe((res: any) => {
         this.ServiceCategoryList = res.ServiceCategoryList;
       });
 
     // 2. Mapping
-    this.api.post(`ServiceCategoryMappingSelectAll?tenantID=${this.userDetails.TenantID}`, null)
+    this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=${this.userDetails.TenantID}`, null)
       .subscribe((res: any) => {
         this.ServiceCategoryMappingList = res.ServiceCategoryMappingList;
       });
 
     // 3. Services
-    this.api.post(`ServiceSelectAll?tenantID=${this.userDetails.TenantID}`, null)
+    this.apinu.postUrlData(`ServiceSelectAll?tenantID=${this.userDetails.TenantID}`, null)
       .subscribe((res: any) => {
         this.ServiceList = res.ServiceList;
       });
 
-    this.api.post(`LocationsNUSelectByQuery?Query=UserID=${this.userDetails.UserID}`, null)
+    this.apinu.postUrlData(`LocationsNUSelectByQuery?Query=UserID=${this.userDetails.UserID}`, null)
       .subscribe((res: any) => {
         //  console.log(res.LocationList);
         this.LocationList = res.LocationList;
@@ -237,7 +238,7 @@ export class PanditServicesComponent implements OnInit {
   // Load List
   // -----------------------------
   loadList() {
-    this.api.post(
+    this.apinu.postUrlData(
       `PanditServicesNUSelectByQuery?Query= ProfileId=${this.userDetails.UserID}`,
       null
     ).subscribe((res: any) => {
@@ -309,7 +310,7 @@ export class PanditServicesComponent implements OnInit {
             DateModified: new Date(),
             UpdatedByUser: this.userDetails.LoginID
           };
-          this.api.post(`DocumentInsert`, body).subscribe((resp: any) => {
+          this.apinu.postUrlData(`DocumentInsert`, body).subscribe((resp: any) => {
             alert('Success');
             this.selectedFile = null;
           })
@@ -325,7 +326,7 @@ export class PanditServicesComponent implements OnInit {
 
     const query = `DocumentType = 'PanditService' and EntityType = 'PanditService' and EntityRefKey = ${this.selectedServiceID}`;
 
-    this.api.post(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
+    this.apinu.postUrlData(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
       next: (res: any) => {
 
         const documentList = res?.DocumentList || [];
@@ -377,7 +378,7 @@ export class PanditServicesComponent implements OnInit {
 
       },
 
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error fetching document list:', err);
       }
     });
@@ -690,7 +691,7 @@ export class PanditServicesComponent implements OnInit {
   //     ? 'PanditServicesUpdate'
   //     : 'PanditServicesInsert';
 
-  //   this.api.post(DBAction, payload)
+  //   this.apinu.postUrlData(DBAction, payload)
   //     .subscribe((res: any) => {
 
   //       if (res?.PanditServiceID > 0) {
@@ -715,7 +716,7 @@ export class PanditServicesComponent implements OnInit {
     if (this.isEditMode) {
       // Edit mode — single update as before
       const payload = this.preparePayload();
-      this.api.post(DBAction, payload).subscribe((res: any) => {
+      this.apinu.postUrlData(DBAction, payload).subscribe((res: any) => {
         if (res?.PanditServiceID > 0) {
           alert('Updated successfully ✅');
           this.closeModal();
@@ -752,7 +753,7 @@ export class PanditServicesComponent implements OnInit {
           updatedByUser: String(this.userDetails.UserID),
         };
 
-        this.api.post('PanditServicesInsert', payload).subscribe({
+        this.apinu.postUrlData('PanditServicesInsert', payload).subscribe({
           next: (res: any) => {
             if (res?.PanditServiceID > 0) {
               completed++;

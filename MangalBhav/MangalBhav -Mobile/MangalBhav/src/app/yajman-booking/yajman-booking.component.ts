@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -73,6 +73,7 @@ export class YajmanBookingComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform, private route: ActivatedRoute,
@@ -113,7 +114,7 @@ export class YajmanBookingComponent implements OnInit {
 
   loadList() {
 
-    this.api.post(
+    this.apinu.postUrlData(
       this.query,
       null
     ).pipe(
@@ -126,17 +127,17 @@ export class YajmanBookingComponent implements OnInit {
         const serviceCalls = panditServices.map((service: any) => {
 
           // 🔹 Fetch Service & Location in parallel
-          const service$ = this.api.post(
+          const service$ = this.apinu.postUrlData(
             `ServiceSelect?serviceID=${service.ServiceID}&tenantId=${service.TenantID}`,
             null
           );
 
-          const location$ = this.api.post(
+          const location$ = this.apinu.postUrlData(
             `LocationSelect?locationID=${service.LocationID}&tenantID=${service.TenantID}`,
             null
           );
 
-          const bookings$ = this.api.post(
+          const bookings$ = this.apinu.postUrlData(
             `BookingsSelectByQuery?Query=panditServiceID=${service.PanditServiceID} and Status = 'REQUESTED'`,
             null
           );
@@ -165,7 +166,7 @@ export class YajmanBookingComponent implements OnInit {
               // 🔥 Enrich each booking with BhaktProfile
               const bookingCalls = bookings.map((booking: any) => {
 
-                return this.api.post(
+                return this.apinu.postUrlData(
                   `ProfilesSelectAllByUserID?userID=${booking.BhaktProfileID}`,
                   null
                 ).pipe(
@@ -218,7 +219,7 @@ export class YajmanBookingComponent implements OnInit {
         this.PanditServicesList.forEach((_: any, i: number) => this.expandedIndices.add(i));
       },
 
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading data:', err);
       }
 
@@ -280,7 +281,7 @@ export class YajmanBookingComponent implements OnInit {
             console.log('Payload being sent:', payload);
 
             // 🔥 Call API here
-            this.api.post('BookingsUpdate', payload)
+            this.apinu.postUrlData('BookingsUpdate', payload)
               .subscribe((res: any) => {
 
                 console.log(res)

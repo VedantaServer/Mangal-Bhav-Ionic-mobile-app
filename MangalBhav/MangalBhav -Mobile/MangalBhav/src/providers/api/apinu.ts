@@ -1,7 +1,8 @@
 import { HttpClient,HttpHeaders, HttpParams } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
-
+import { Capacitor } from "@capacitor/core";
+import { BehaviorSubject, from, Observable } from "rxjs";
+import { Http } from "@capacitor-community/http";
 
 @Injectable({
   providedIn: 'root'   // ✅ Add this line
@@ -17,7 +18,7 @@ export class ApiNU {
 
 
   //public baseURL: string='https://nu.vedantaerpserver.com/';
-   public baseURL: string='https://faceupai.vedantaerpserver.com/';
+   public baseURL: string='https://mangalbhav.com/';
   // public baseURL: string='https://localhost:44305/';
 
   httpClient: any;
@@ -35,12 +36,55 @@ export class ApiNU {
     return this.baseURL + componentType; 
   }
 
-  postUrlData(urlextension: any, body: any): any {
-    console.log(this.baseURL + urlextension, body);
-    return this.httpClient.post(this.baseURL + urlextension, body, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  // postUrlData(urlextension: any, body: any): any {
+  //   console.log(this.baseURL + urlextension, body);
+  //   return this.httpClient.post(this.baseURL + urlextension, body, {
+  //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  //   });
+  // }
+
+
+
+    postUrlData(urlExtension: string, body: any) {
+    const fullUrl = this.baseURL + urlExtension;
+
+    
+    if (Capacitor.isNativePlatform()) {
+      let url = fullUrl;
+      let params: any = {};
+
+      
+      if (fullUrl.includes('?')) {
+        const [base, qs] = fullUrl.split('?');
+        url = base;
+
+        const sp = new URLSearchParams(qs);
+        sp.forEach((v, k) => {
+          params[k] = v;
+        });
+      }
+
+      
+      const dataToSend = body ?? {};
+
+      return from(
+        Http.post({
+          url,
+          params,
+          data: dataToSend,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then((res : any) => res.data),
+      );
+    }
+
+    
+    return this.httpClient.post(fullUrl, body, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     });
   }
+
 
   postEmail(urlextension: string, body: any): Observable<any> {
     return this.httpClient.post(this.baseURL + urlextension, body, {

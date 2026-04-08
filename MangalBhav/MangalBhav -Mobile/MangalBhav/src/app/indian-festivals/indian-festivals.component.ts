@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,7 @@ export class IndianFestivalsComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage, private route: ActivatedRoute,
     private plt: Platform,
@@ -38,7 +39,7 @@ export class IndianFestivalsComponent implements OnInit {
   availableMonths: { label: string, value: number }[] = [];
 upcomingFestival: any = null;
   ngOnInit() {
-    this.api.post(`FestivalSelectAll?tenantID=1`, null)
+    this.apinu.postUrlData(`FestivalSelectAll?tenantID=1`, null)
       .subscribe((res: any) => {
         this.festivalList = res.FestivalList
           .sort((a: any, b: any) =>

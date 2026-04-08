@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import { Api } from '../../providers/api/api'; // adjust path
+import { Api, ApiNU } from '../../providers'; // adjust path
 
 @Component({
   selector: 'app-change-password',

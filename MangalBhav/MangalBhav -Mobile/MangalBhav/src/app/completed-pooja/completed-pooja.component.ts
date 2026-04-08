@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -112,6 +112,7 @@ export class CompletedPoojaComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -140,7 +141,7 @@ export class CompletedPoojaComponent implements OnInit {
 
   loadList() {
 
-    this.api.post(
+    this.apinu.postUrlData(
       `PanditServicesSelectAllByProfileID?profileID=${this.userDetails.UserID}`,
       null
     ).pipe(
@@ -153,17 +154,17 @@ export class CompletedPoojaComponent implements OnInit {
         const serviceCalls = panditServices.map((service: any) => {
 
           // 🔹 Fetch Service & Location in parallel
-          const service$ = this.api.post(
+          const service$ = this.apinu.postUrlData(
             `ServiceSelect?serviceID=${service.ServiceID}&tenantId=${service.TenantID}`,
             null
           );
 
-          const location$ = this.api.post(
+          const location$ = this.apinu.postUrlData(
             `LocationSelect?locationID=${service.LocationID}&tenantID=${service.TenantID}`,
             null
           );
 
-          const bookings$ = this.api.post(
+          const bookings$ = this.apinu.postUrlData(
             `BookingsSelectByQuery?Query=panditServiceID=${service.PanditServiceID} and Status = 'COMPLETED'`,
             null
           );
@@ -192,7 +193,7 @@ export class CompletedPoojaComponent implements OnInit {
               // 🔥 Enrich each booking with BhaktProfile
               const bookingCalls = bookings.map((booking: any) => {
 
-                return this.api.post(
+                return this.apinu.postUrlData(
                   `ProfilesSelectAllByUserID?userID=${booking.BhaktProfileID}`,
                   null
                 ).pipe(
@@ -244,7 +245,7 @@ export class CompletedPoojaComponent implements OnInit {
         this.PanditServicesList = finalList;
       },
 
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading data:', err);
       }
 
@@ -389,7 +390,7 @@ export class CompletedPoojaComponent implements OnInit {
           UpdatedByUser: this.userDetails.LoginID
         };
 
-        this.api.post('DocumentInsert', body).subscribe(() => {
+        this.apinu.postUrlData('DocumentInsert', body).subscribe(() => {
           this.selectedFile = null;
           alert('Success');
           this.getBookingPhotos();   // ← refresh gallery after upload
@@ -402,7 +403,7 @@ export class CompletedPoojaComponent implements OnInit {
   getBookingPhotos() {
     const query = `DocumentType = 'BookingPhoto' and EntityType = 'BookingPhoto' and EntityRefKey = ${this.selectedBookingID}`;
 
-    this.api.post(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
+    this.apinu.postUrlData(`DocumentSelectByQuery?Query=${query}`, null).subscribe({
       next: (res: any) => {
         const documentList = res?.DocumentList || [];
 
@@ -430,7 +431,7 @@ export class CompletedPoojaComponent implements OnInit {
           error: (err) => console.error('Error loading images:', err)
         });
       },
-      error: (err) => console.error('Error fetching documents:', err)
+      error: (err:any) => console.error('Error fetching documents:', err)
     });
   }
 
@@ -451,7 +452,7 @@ export class CompletedPoojaComponent implements OnInit {
     this.reviewsLoading = true;
     this.reviewsList = [];
 
-    this.api.post(`FeedbackSelectByQuery?Query=BookingID=${booking.BookingID}`, null)
+    this.apinu.postUrlData(`FeedbackSelectByQuery?Query=BookingID=${booking.BookingID}`, null)
       .subscribe((res: any) => {
         this.reviewsList = res?.FeedbackList || [];
         this.reviewsLoading = false;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -51,6 +51,7 @@ export class LocationsComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -64,7 +65,7 @@ export class LocationsComponent implements OnInit {
     this.locations.TenantID = this.userDetails.TenantID;
     this.locations.UserID = this.userDetails.UserID;
 
-    this.api.post(
+    this.apinu.postUrlData(
       `LocationsNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
       null
     ).subscribe((res: any) => {
@@ -200,7 +201,7 @@ export class LocationsComponent implements OnInit {
       ? 'LocationsUpdate'
       : 'LocationsInsert';
 
-    this.api.post(DBAction, payload)
+    this.apinu.postUrlData(DBAction, payload)
       .subscribe((res: any) => {
 
         if (res.LocationID > 0) {

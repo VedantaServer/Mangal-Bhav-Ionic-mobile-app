@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
@@ -149,6 +149,7 @@ labels = {
   }
 };
   constructor(public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -165,7 +166,7 @@ labels = {
     // console.log(this.userDetails.Role === 'PANDIT')
 
 
-    this.api.post(
+    this.apinu.postUrlData(
       `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
       null
     ).subscribe((res: any) => {
@@ -235,7 +236,7 @@ labels = {
       if (res.Status === 'Success') {
         this.selectedProfileFile = null;
         this.profileObject.ProfilePhotoUrl = res.FileName;
-        this.api.post('ProfilesUpdate', this.profileObject).subscribe(async (res: any) => {
+        this.apinu.postUrlData('ProfilesUpdate', this.profileObject).subscribe(async (res: any) => {
           console.log(res.FileName)
           if (res.ProfileID > 0) {
             const account = await this.storage.get('account');
@@ -290,7 +291,7 @@ labels = {
   }
 
   loadProfile() {
-    this.api.post(
+    this.apinu.postUrlData(
       `ProfilesNUSelectByQuery?Query= UserID = ${this.profile.UserID}`,
       null
     ).subscribe((res: any) => {
@@ -317,7 +318,7 @@ labels = {
     const payload = this.prepareProfileForSubmit();
     // console.log("Submitting Profile:", payload);
     const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
-    this.api.post(DBAction, payload)
+    this.apinu.postUrlData(DBAction, payload)
       .subscribe(async (res: any) => {
         //console.log(res);
         if (res.ProfileID > 0) {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
-import { Api } from '../../providers/api/api';
+import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -126,6 +126,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -230,7 +231,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
 
   loadList() {
 
-    this.api.post(
+    this.apinu.postUrlData(
       `BookingsSelectByQuery?Query=BhaktProfileID=${this.userDetails.UserID} and Status = 'REQUESTED'`,
       null
     ).pipe(
@@ -243,7 +244,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
         // Create API call for each booking
         const bookingCalls = bookings.map((booking: any) => {
 
-          return this.api.post(
+          return this.apinu.postUrlData(
             `PanditServiceSelect?panditServiceID=${booking.PanditServiceID}&tenantID=${this.userDetails.TenantID}`,
             null
           ).pipe(
@@ -253,17 +254,17 @@ export class JajmanRequestedPoojaComponent implements OnInit {
               const panditService = psRes?.PanditServiceList?.[0];
               if (!panditService) return of({ ...booking });
 
-              const service$ = this.api.post(
+              const service$ = this.apinu.postUrlData(
                 `ServiceSelect?serviceID=${panditService.ServiceID}&tenantId=${panditService.TenantID}`,
                 null
               );
 
-              const location$ = this.api.post(
+              const location$ = this.apinu.postUrlData(
                 `LocationSelect?locationID=${panditService.LocationID}&tenantID=${panditService.TenantID}`,
                 null
               );
 
-              const user$ = this.api.post(
+              const user$ = this.apinu.postUrlData(
                 `ProfilesSelectAllByUserID?userId=${panditService.ProfileID}`,
                 null
               );
@@ -310,7 +311,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
         console.log('Final Enriched Bookings:', this.BookingsList);
       },
 
-      error: (err) => {
+      error: (err:any) => {
         console.error('Error loading data:', err);
       }
 
@@ -428,7 +429,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
       ? 'BookingsUpdate'
       : 'BookingsInsert';
 
-    this.api.post(DBAction, payload)
+    this.apinu.postUrlData(DBAction, payload)
       .subscribe((res: any) => {
 
         if (res?.BookingID > 0) {

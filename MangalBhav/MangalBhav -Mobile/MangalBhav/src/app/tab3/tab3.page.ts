@@ -348,12 +348,12 @@ export class Tab3Page {
 
   serviceBookingCountMap: { [key: string]: number } = {};
   constructor(public routerCtrl: NavController,
+    public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient,
-    public apinu: ApiNU,
     private alertCtrl: AlertController
   ) {
     // this.lblSchoolName = this.api.SchoolName;
@@ -443,9 +443,9 @@ export class Tab3Page {
 
   loadPujaSection() {
     forkJoin({
-      categories: this.api.post(`ServiceCategorySelectAll?tenantID=1`, null),
-      services: this.api.post(`ServiceSelectAll?tenantID=1`, null),
-      mapping: this.api.post(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+      categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
+      services: this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null),
+      mapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
     }).subscribe((res: any) => {
 
       const categories = res.categories.ServiceCategoryList;
@@ -497,7 +497,7 @@ export class Tab3Page {
 
 
   getAllCategories() {
-    this.api.post(`ServiceCategorySelectAll?tenantID=1`, null)
+    this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null)
       .subscribe((res: any) => {
         this.categoryList = res.ServiceCategoryList;
 
@@ -505,7 +505,7 @@ export class Tab3Page {
       })
   }
   getAllServices() {
-    this.api.post(`ServiceSelectAll?tenantID=1`, null)
+    this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null)
       .subscribe((res: any) => {
         this.serviceList = res.ServiceList;
         //  console.log(res.ServiceList)
@@ -513,7 +513,7 @@ export class Tab3Page {
   }
 
   getAllCategoryMap() {
-    this.api.post(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+    this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
       .subscribe((res: any) => {
         this.servicecategoryMapList = res.ServiceCategoryMappingList;
         //console.log(res.ServiceCategoryMappingList)
@@ -607,7 +607,7 @@ export class Tab3Page {
       return;
     }
 
-    this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
+    this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
       .subscribe((res: any) => {
         console.log(res);
         if (res.UserList.length === 0) {
@@ -664,7 +664,7 @@ export class Tab3Page {
 
   userLogin() {
 
-    this.api.post(`VedantaLogin?UserName=${this.loginUsername}`, null)
+    this.apinu.postUrlData(`VedantaLogin?UserName=${this.loginUsername}`, null)
       .subscribe(async (res: any) => {
         console.log(res)
         if (res) {
@@ -809,7 +809,7 @@ export class Tab3Page {
   // goToOtp() {
   //   // call API to send OTP here
 
-  //   this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
+  //   this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
   //     .subscribe((res: any) => {
   //       console.log(res.UserList);
 
@@ -828,7 +828,7 @@ export class Tab3Page {
 
 
   //   if (this.otp == '123') {
-  //     // this.api.post('')
+  //     // this.apinu.postUrlData('')
   //     this.registerStep = 'role';
   //   } else {
   //     alert('Otp did not matched.Please try again.')
@@ -840,7 +840,7 @@ export class Tab3Page {
   goToOtp() {
     // call API to send OTP here
 
-    this.api.post(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
+    this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
       .subscribe((res: any) => {
         console.log(res.UserList);
 
@@ -936,7 +936,7 @@ export class Tab3Page {
       "DateModified": new Date(),
       "UpdatedByUser": String(this.mobileNumber)
     }
-    this.api.post('UsersInsert', body)
+    this.apinu.postUrlData('UsersInsert', body)
       .subscribe((res: any) => {
         // console.log(res);
 
@@ -963,8 +963,8 @@ export class Tab3Page {
           dateModified: new Date().toISOString(),
           updatedByUser: ''
         }
-        this.api.post('ProfilesInsert', body).subscribe((res: any) => {
-          this.api.post(`VedantaLogin?UserName=${this.mobileNumber}`, null)
+        this.apinu.postUrlData('ProfilesInsert', body).subscribe((res: any) => {
+          this.apinu.postUrlData(`VedantaLogin?UserName=${this.mobileNumber}`, null)
             .subscribe(async (res: any) => {
               console.log(res)
               if (res) {
@@ -1030,7 +1030,7 @@ export class Tab3Page {
 
         this.serviceBookingCountMap[String(svc.ServiceID)] = 10; // ← default 10
 
-        this.api.post(`PanditServicesSelectAllByServiceID?serviceID=${svc.ServiceID}`, null)
+        this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${svc.ServiceID}`, null)
           .subscribe({
             next: (res: any) => {
 
@@ -1042,7 +1042,7 @@ export class Tab3Page {
               }
 
               const bookingCalls = panditServiceIDs.map((psid: any) =>
-                this.api.post(`BookingsSelectAllByPanditServiceID?panditServiceID=${psid}`, null)
+                this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${psid}`, null)
               );
 
               forkJoin(bookingCalls).subscribe({
