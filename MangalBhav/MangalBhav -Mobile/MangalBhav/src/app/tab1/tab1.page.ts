@@ -60,7 +60,7 @@ export class Tab1Page {
 
     hi: {
       appTitle: '🕉️ मंगल भाव',
-      logoTitle: 'मंगल.भाव',
+      logoTitle: 'मंगल.भाव:',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
 
       greetingTitle: 'नमस्ते 🙏, ',

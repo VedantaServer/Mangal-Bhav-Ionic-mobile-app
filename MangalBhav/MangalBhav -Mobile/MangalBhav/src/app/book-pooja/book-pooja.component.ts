@@ -250,7 +250,7 @@ export class BookPoojaComponent implements OnInit {
 
       rituals: 'अनुष्ठान',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
-      logoTitle: 'मंगल.भाव',
+      logoTitle: 'मंगल.भाव:',
       mins: 'मिनट',
       atHome: 'आपके घर पर',
 
@@ -276,7 +276,7 @@ export class BookPoojaComponent implements OnInit {
 
       // ── How It Works ──────────────────────────────
       simpleProcess: 'सरल प्रक्रिया',
-      howWorks: 'मंगल.भाव कैसे काम करता है',
+      howWorks: 'मंगल.भाव: कैसे काम करता है',
       howSub: '3 आसान चरणों में पंडित जी से जुड़ें',
 
       step1: 'चरण 1',
@@ -295,7 +295,7 @@ export class BookPoojaComponent implements OnInit {
       // ── For Whom ──────────────────────────────────
       builtFor: 'किसके लिए',
       twoSides: 'दो पक्ष, एक पवित्र सेतु',
-      twoSidesSub: 'भक्त हों या पंडित जी — मंगल.भाव आपका घर है',
+      twoSidesSub: 'भक्त हों या पंडित जी — मंगल.भाव: आपका घर है',
 
       yajman: 'यजमान',
       yajmanSubtitle: 'भक्त · The Devotee',
@@ -399,7 +399,7 @@ export class BookPoojaComponent implements OnInit {
       searchPlaceholder: 'नाम, भाषा से खोजें...',
 
       scanQrTitle: 'QR कोड स्कैन करें',
-      qrHint: 'मंगल.भाव QR कोड पर कैमरा रखें',
+      qrHint: 'मंगल.भाव: QR कोड पर कैमरा रखें',
 
       availableServices: 'उपलब्ध सेवाएँ',
 
@@ -451,7 +451,7 @@ export class BookPoojaComponent implements OnInit {
       footerRefund: 'धन-वापसी नीति',
       footerContact: 'संपर्क करें',
 
-      footerCopy: '© 2026 मंगल.भाव . सर्वाधिकार सुरक्षित।',
+      footerCopy: '© 2026 मंगल.भाव: . सर्वाधिकार सुरक्षित।',
     }
   };
   photosLoading = false;

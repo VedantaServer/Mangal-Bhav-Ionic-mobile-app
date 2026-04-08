@@ -51,7 +51,7 @@ logoTitle: 'Mangal.Bhav',
 
     myBookings: 'मेरी बुकिंग्स',
     profile: 'प्रोफ़ाइल',
-    logoTitle: 'मंगल.भाव',
+    logoTitle: 'मंगल.भाव:',
     festivals: 'त्योहार',
 
     explore: 'जीवन देखें',
