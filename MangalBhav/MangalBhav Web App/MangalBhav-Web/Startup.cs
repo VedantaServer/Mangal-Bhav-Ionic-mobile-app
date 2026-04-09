@@ -23,10 +23,18 @@ namespace FaceUPAI
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins("http://localhost:8100", "http://localhost", "https://localhost", "https://localhost:8100") // Avngular app URL
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials();
+                   
+
+                    builder.WithOrigins(
+                      "http://localhost:8100",
+                      "http://localhost",
+                      "https://localhost",
+                      "https://localhost:8100",
+                      "capacitor://localhost",
+                      "ionic://localhost")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
                 });
             });
             services.AddHttpClient();
