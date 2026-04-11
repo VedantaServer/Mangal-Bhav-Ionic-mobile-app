@@ -118,12 +118,12 @@ export class LoginPage {
     private plt: Platform,
     private http: HttpClient,
     private toastCtrl: ToastController,
-    
+
     private alertCtrl: AlertController
   ) {
-   // this.lblSchoolName = this.api.SchoolName;
-   // this.forgetPassword = this.api.getForgetPasswordLink();
-   // this.schoolLogo = this.api.getSchoolLogo();
+    // this.lblSchoolName = this.api.SchoolName;
+    // this.forgetPassword = this.api.getForgetPasswordLink();
+    // this.schoolLogo = this.api.getSchoolLogo();
 
   }
 
@@ -419,15 +419,21 @@ export class LoginPage {
           // Generate OTP
 
           if (this.loginUsername.toString() == "9899252291") {
-           
+
             this.loginGeneratedOtp = '111111';
           } else {
             this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           }
 
-           this.loginOtpSent = true;
-          alert(this.loginGeneratedOtp)
-          // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe((res: any) => {
+          // this.loginOtpSent = true;
+          // alert(this.loginGeneratedOtp)
+
+          this.apinu.postUrlData(`sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null)
+            .subscribe((res: any) => {
+              console.log(res);
+              this.loginOtpSent = true;
+            });
+          // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno='${this.loginUsername}'&otp='${this.loginGeneratedOtp}'`, null).subscribe((res: any) => {
           //   console.log(res);
           //   this.loginOtpSent = true;
           // });

@@ -427,6 +427,108 @@ namespace FaceUPAI.Controllers
                 });
             }
         }
+
+
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("sendWhatsAppOtp")]
+        public async Task<IActionResult> SendWhatsAppOtp(string phoneno, string otp)
+        {
+            try
+            {
+                string apiUrl = "https://icpaas.in/v23.0/1141759089009405/messages";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    // ✅ Header (changed from apikey → Authorization)
+                    client.DefaultRequestHeaders.Add("Authorization", "6170f1a7-2a2c-4a4a-84d1-1deaebe8277c");
+
+                    // ✅ New request body (matching Postman)
+                    var requestBody = new
+                    {
+                        messaging_product = "whatsapp",
+                        recipient_type = "individual",
+                        to = phoneno,
+                        type = "template",
+                        template = new
+                        {
+                            name = "vedantaotpverification",
+                            language = new
+                            {
+                                code = "en"
+                            },
+                            components = new object[]
+                            {
+                        new
+                        {
+                            type = "body",
+                            parameters = new object[]
+                            {
+                                new
+                                {
+                                    type = "text",
+                                    text = otp
+                                }
+                            }
+                        },
+                        new
+                        {
+                            type = "button",
+                            sub_type = "url",
+                            index = "0",
+                            parameters = new object[]
+                            {
+                                new
+                                {
+                                    type = "text",
+                                    text = otp
+                                }
+                            }
+                        }
+                            }
+                        },
+                        biz_opaque_callback_data = "OTP_CALLBACK"
+                    };
+
+                    var json = System.Text.Json.JsonSerializer.Serialize(requestBody);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(apiUrl, content);
+                    var responseData = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(new
+                        {
+                            success = false,
+                            error = responseData
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "WhatsApp OTP sent successfully",
+                        response = responseData
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+
+
         [HttpPost]
         [EnableCors("AllowAll")]
         [Route("GenerateGeminiResponse")]

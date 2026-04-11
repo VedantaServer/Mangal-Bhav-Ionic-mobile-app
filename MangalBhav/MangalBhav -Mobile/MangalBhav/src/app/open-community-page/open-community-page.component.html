@@ -198,6 +198,278 @@
     </section>
 
 
+
+    <!-- ═══ INSERT THIS ENTIRE BLOCK BEFORE .comm-footer-strip ═══ -->
+
+
+    <!-- ═══ MANDIR DIRECTORY ═══ -->
+    <section class="comm-section mandir-dir-section">
+      <p class="comm-eyebrow">🛕 Sacred Places</p>
+      <h2 class="comm-heading">Mandir Directory</h2>
+      <p class="comm-sub">Discover and add mandirs near you — open to every devotee</p>
+
+      <!-- Search + Add Bar -->
+      <div class="mandir-toolbar">
+        <!-- <div class="mandir-search-wrap">
+          <span class="mandir-search-icon">🔍</span>
+          <input class="mandir-search-input" type="text" placeholder="Search by name, city or deity..."
+            [(ngModel)]="mandirSearchQuery" (input)="onMandirSearch()" />
+        </div> -->
+        <button class="mandir-add-btn" (click)="openAddMandir()">
+          <span>+</span> Want to add a Mandir
+        </button>
+      </div>
+
+      <!-- Mandir Cards Grid -->
+      <!-- <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
+        <div class="mandir-card" *ngFor="let m of filteredMandirs">
+          <div class="mandir-card-img-wrap">
+            <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
+
+            <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
+              🛕
+            </div>
+            <span class="mandir-verified-badge" *ngIf="m.IsVerified">✔ Verified</span>
+          </div>
+          <div class="mandir-card-body">
+            <div class="mandir-card-name">{{ m.MandirName }}</div>
+            <div class="mandir-card-god">🌸 {{ m.GodName }}</div>
+            <div class="mandir-card-location">📍 {{ m.City }}, {{ m.State }}</div>
+            <div class="mandir-card-pujari" *ngIf="m.PujariName">🙏 {{ m.PujariName }}</div>
+            <p class="mandir-card-history" *ngIf="m.History">
+              {{ m.History | slice:0:100 }}{{ m.History.length > 100 ? '…' : '' }}
+            </p>
+            <div class="mandir-card-footer">
+              <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
+                [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank">🗺️ View on
+                Map</a>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
+        <div class="mandir-card" *ngFor="let m of filteredMandirs">
+          <div class="card-top-border"></div>
+          <div class="mandir-card-img-wrap">
+            <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
+            <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
+              <span class="temple-glyph">🛕</span>
+              <span class="temple-label">मंदिर</span>
+            </div>
+            <span class="mandir-verified-badge" *ngIf="m.IsVerified">✦ Verified</span>
+          </div>
+          <div class="mandir-card-body">
+            <div class="mandir-card-name">{{ m.MandirName }}</div>
+            <div class="card-divider"></div>
+            <div class="mandir-card-god">✦ {{ m.GodName }}</div>
+            <div class="mandir-card-location">📍 {{ m.City }}, {{ m.State }}</div>
+            <div class="mandir-card-pujari" *ngIf="m.PujariName">🙏 {{ m.PujariName }}</div>
+            <p class="mandir-card-history" *ngIf="m.History">
+              {{ m.History | slice:0:120 }}{{ m.History.length > 120 ? '…' : '' }}
+            </p>
+            <div class="mandir-card-footer">
+              <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
+                [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank">
+                🗺️ View on Map
+              </a>
+              <span class="lotus-deco">✿ ✿ ✿</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noMandirs>
+        <div class="mandir-empty">
+          <div class="mandir-empty-icon">🛕</div>
+          <p>No mandirs found</p>
+        </div>
+      </ng-template>
+
+
+      <ng-template #noMandirs>
+        <div class="mandir-empty">
+          <div class="mandir-empty-icon">🛕</div>
+          <p>No mandirs found. Be the first to add one!</p>
+          <button class="mandir-add-btn" (click)="openAddMandir()">+ Add Mandir</button>
+        </div>
+      </ng-template>
+    </section>
+    <!-- ═══ MODAL BACKDROP ═══ -->
+    <div class="mandir-modal-backdrop" [class.active]="showAddMandirForm" (click)="closeAddMandir()"></div>
+    <!-- ═══ ADD MANDIR BOTTOM SHEET ═══ -->
+    <div class="mandir-modal" [class.active]="showAddMandirForm">
+
+      <div class="mandir-modal-header">
+        <div class="mandir-modal-title">🛕 Add a Mandir</div>
+        <div class="mandir-modal-sub">Anyone can add — our team will verify</div>
+        <button class="mandir-modal-close" (click)="closeAddMandir()">✕</button>
+      </div>
+
+      <div class="mandir-modal-body">
+
+        <!-- Basic Info -->
+        <div class="mandir-form-section-label">Basic Information</div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Mandir Name *</label>
+            <input type="text" [(ngModel)]="Mandir.MandirName" placeholder="e.g. Shri Ram Mandir" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Presiding Deity *</label>
+            <input type="text" [(ngModel)]="Mandir.GodName" placeholder="e.g. Shri Ram, Hanuman Ji, Durga Maa" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row two-col">
+          <div class="mandir-form-group">
+            <label>Pujari / Pandit Name</label>
+            <input type="text" [(ngModel)]="Mandir.PujariName" placeholder="Pandit ji's name" />
+          </div>
+          <div class="mandir-form-group">
+            <label>Pujari Phone</label>
+            <input type="tel" [(ngModel)]="Mandir.PujariPhoneNumber" placeholder="+91 xxxxxxxxxx" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>History / About</label>
+            <textarea [(ngModel)]="Mandir.History" rows="3" placeholder="Brief history or significance..."></textarea>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="mandir-form-section-label">Address</div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Street Address *</label>
+            <input type="text" [(ngModel)]="Mandir.Address" placeholder="Street / Mohalla / Locality" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row two-col">
+          <div class="mandir-form-group">
+            <label>City *</label>
+            <input type="text" [(ngModel)]="Mandir.City" placeholder="City" />
+          </div>
+          <div class="mandir-form-group">
+            <label>State *</label>
+            <input type="text" [(ngModel)]="Mandir.State" placeholder="State" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row two-col">
+          <div class="mandir-form-group">
+            <label>Pincode</label>
+            <input type="text" [(ngModel)]="Mandir.Pincode" placeholder="e.g. 110001" maxlength="6" />
+          </div>
+          <div class="mandir-form-group">
+            <label>Latitude</label>
+            <input type="number" [(ngModel)]="Mandir.Latitude" placeholder="e.g. 28.6139" />
+          </div>
+        </div>
+
+        <div class="mandir-form-row two-col">
+          <div class="mandir-form-group">
+            <label>Longitude</label>
+            <input type="number" [(ngModel)]="Mandir.Longitude" placeholder="e.g. 77.2090" />
+          </div>
+          <div class="mandir-form-group">
+            <label></label>
+            <button class="mandir-location-btn " (click)="getCurrentLocation()">📍 Use Current Location</button>
+          </div>
+
+        </div>
+
+
+        <!-- Added By -->
+        <div class="mandir-form-section-label">Your Info (Optional)</div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Your Name</label>
+            <input type="text" [(ngModel)]="Mandir.AddedByName" placeholder="So we can credit you" />
+          </div>
+        </div>
+
+        <!-- ── Photos ── -->
+        <div class="mandir-form-section-label">Photos (Optional)</div>
+
+        <!-- Front Image -->
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Front / Outside Photo</label>
+
+            <div class="mandir-upload-box" (click)="frontImageInput.click()">
+              <img *ngIf="frontImagePreview" [src]="frontImagePreview" class="mandir-upload-preview" />
+              <div *ngIf="!frontImagePreview && !Mandir.FrontImage" class="mandir-upload-placeholder">
+                <span class="mandir-upload-icon">📷</span>
+                <span>Tap to choose photo</span>
+              </div>
+              <div *ngIf="Mandir.FrontImage && !frontImagePreview" class="mandir-upload-saved">
+                ✅ Uploaded: {{ Mandir.FrontImage }}
+              </div>
+            </div>
+
+            <!-- hidden file input -->
+            <input #frontImageInput type="file" accept="image/*" style="display:none"
+              (change)="onFrontImageSelected($event)" />
+
+            <!-- show after file picked, before upload -->
+            <div class="mandir-upload-actions" *ngIf="selectedFrontImageFile && !Mandir.FrontImage">
+              <span class="mandir-file-name">📄 {{ selectedFrontImageFile.name }}</span>
+              <button class="mandir-upload-btn" (click)="uploadFrontImage()" [disabled]="isUploadingFront">{{
+                isUploadingFront ? 'Uploading…' : '⬆ Upload' }}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inside Image -->
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>Inside / Garbhagriha Photo</label>
+
+            <div class="mandir-upload-box" (click)="insideImageInput.click()">
+              <img *ngIf="insideImagePreview" [src]="insideImagePreview" class="mandir-upload-preview" />
+              <div *ngIf="!insideImagePreview && !Mandir.InsideImage" class="mandir-upload-placeholder">
+                <span class="mandir-upload-icon">🛕</span>
+                <span>Tap to choose photo</span>
+              </div>
+              <div *ngIf="Mandir.InsideImage && !insideImagePreview" class="mandir-upload-saved">
+                ✅ Uploaded: {{ Mandir.InsideImage }}
+              </div>
+            </div>
+
+            <input #insideImageInput type="file" accept="image/*" style="display:none"
+              (change)="onInsideImageSelected($event)" />
+
+            <div class="mandir-upload-actions" *ngIf="selectedInsideImageFile && !Mandir.InsideImage">
+              <span class="mandir-file-name">📄 {{ selectedInsideImageFile.name }}</span>
+              <button class="mandir-upload-btn" (click)="uploadInsideImage()" [disabled]="isUploadingInside">{{
+                isUploadingInside ? 'Uploading…' : '⬆ Upload' }}</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="mandir-modal-footer">
+        <button class="mandir-cancel-btn" (click)="closeAddMandir()">Cancel</button>
+        <button class="mandir-submit-btn" (click)="submitMandir()"
+          [disabled]="isSubmittingMandir || isUploadingFront || isUploadingInside">
+          <span *ngIf="!isSubmittingMandir">🙏 Submit Mandir</span>
+          <span *ngIf="isSubmittingMandir">Submitting…</span>
+        </button>
+      </div>
+
+    </div><!-- /mandir-modal -->
+
     <!-- ═══ FOOTER STRIP ═══ -->
     <div class="comm-footer-strip">
       <div class="comm-footer-logo">🔥 Mangal.Bhav</div>
