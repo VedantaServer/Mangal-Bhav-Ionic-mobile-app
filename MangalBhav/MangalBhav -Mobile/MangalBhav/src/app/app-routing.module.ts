@@ -31,6 +31,10 @@ import { OpenFindPanditComponent } from './open-find-pandit/open-find-pandit.com
 import { OpenCommunityPageComponent } from './open-community-page/open-community-page.component';
 import { JajmanRequestedPoojaComponent } from './jajman-requested-pooja/jajman-requested-pooja.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { AllChatsComponent } from './all-chats/all-chats.component';
+import { ChatBoxComponent } from './chat-box/chat-box.component';
+import { LanguageChangeComponent } from './language-change/language-change.component';
+import { OpenfindmandirComponent } from './openfindmandir/openfindmandir.component';
 
 const routes: Routes = [
   
@@ -186,6 +190,32 @@ const routes: Routes = [
   {
     path: 'completed-booking',
     component: JajmanCompletedPoojaComponent  // directly use the standalone component
+  }
+   ,
+  {
+    path: 'allchats',
+    component: AllChatsComponent  // directly use the standalone component
+  }
+  ,
+  {
+    path: 'chatbox',
+    component: ChatBoxComponent  // directly use the standalone component
+  }
+    ,
+  {
+    path: 'appnotificatio',
+    component: ChatBoxComponent  // directly use the standalone component
+  }
+  ,
+  {
+    path: 'languagechange',
+    component: LanguageChangeComponent  // directly use the standalone component
+  }
+
+    ,
+  {
+    path: 'openfindmandir',
+    component: OpenfindmandirComponent // directly use the standalone component
   }
 ];
 @NgModule({

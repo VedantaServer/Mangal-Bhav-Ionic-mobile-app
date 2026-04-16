@@ -29,35 +29,35 @@ export class JajmanDashboardComponent implements OnInit {
   sloganName!: any;
   pendingPanditServiceID: any;
   labels = {
-  en: {
-    greeting: 'Namaste 🙏',
-    greetingTitle: "Let's Plan Your Next Puja",
+    en: {
+      greeting: 'Namaste 🙏',
+      greetingTitle: "Let's Plan Your Next Puja",
 
-    quickActions: 'Quick Actions',
-logoTitle: 'Mangal.Bhav',
-    myBookings: 'My Bookings',
-    profile: 'Profile',
-    festivals: 'Festivals',
- logoSub: '✦ Peace · Prosperity · Protection ✦',
-    explore: 'Explore Life',
-    me: 'Me'
-  },
+      quickActions: 'Quick Actions',
+      logoTitle: 'Mangal.Bhav',
+      myBookings: 'My Bookings',
+      profile: 'Profile',
+      festivals: 'Festivals',
+      logoSub: '✦ Peace · Prosperity · Protection ✦',
+      explore: 'Explore Life',
+      me: 'Me'
+    },
 
-  hi: {
-    greeting: 'नमस्ते 🙏',
-    greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
-  logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
-    quickActions: 'त्वरित कार्य',
+    hi: {
+      greeting: 'नमस्ते 🙏',
+      greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
+      logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+      quickActions: 'त्वरित कार्य',
 
-    myBookings: 'मेरी बुकिंग्स',
-    profile: 'प्रोफ़ाइल',
-    logoTitle: 'मंगल.भाव:',
-    festivals: 'त्योहार',
+      myBookings: 'मेरी बुकिंग्स',
+      profile: 'प्रोफ़ाइल',
+      logoTitle: 'मंगल.भाव:',
+      festivals: 'त्योहार',
 
-    explore: 'जीवन देखें',
-    me: 'मैं'
-  }
-};
+      explore: 'जीवन देखें',
+      me: 'मैं'
+    }
+  };
   language: any;
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
@@ -105,7 +105,7 @@ logoTitle: 'Mangal.Bhav',
 
   }
 
-    get t() {
+  get t() {
     return this.language === 'Hindi'
       ? this.labels.hi
       : this.labels.en;
@@ -145,6 +145,23 @@ logoTitle: 'Mangal.Bhav',
 
     await this.storage.clear();
     this.routerCtrl.navigateRoot('/login');
+  }
+
+
+  action1() {
+    console.log('Call clicked');
+  }
+
+  action2() {
+    console.log('Chat clicked');
+  }
+
+  action3() {
+    console.log('Mail clicked');
+  }
+
+  action4() {
+    console.log('Location clicked');
   }
 
 

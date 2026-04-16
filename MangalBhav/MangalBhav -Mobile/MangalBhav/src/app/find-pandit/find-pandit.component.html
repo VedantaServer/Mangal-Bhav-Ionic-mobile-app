@@ -77,10 +77,8 @@
             <div class="avatar" *ngIf="!profileImages[item.profile?.UserID]">
               {{ item.profile?.FullName?.charAt(0) || '🙏' }}
             </div>
-            <img *ngIf="profileImages[item.profile?.UserID]"
-              [src]="getProfileImage(item.profile?.UserID)"
-              [alt]="item.profile?.FullName"
-              class="pandit-modal-photo" />
+            <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
+              [alt]="item.profile?.FullName" class="pandit-modal-photo" />
           </div>
           <h2 class="pandit-modal-name">{{ item.profile?.FullName }}</h2>
           <span class="verified-pill" *ngIf="item.profile?.VerificationStatus === 'VERIFIED'">
@@ -128,10 +126,10 @@
           <div class="contact-chip" *ngIf="item.profile?.PhoneNumber">
             <ion-icon name="call-outline"></ion-icon>
             {{
-    item.Profile?.PhoneNumber
-      ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
-      : ''
-  }}
+            item.profile?.PhoneNumber
+            ? '*'.repeat(item.profile.PhoneNumber.length - 4) + item.profile.PhoneNumber.slice(-4)
+            : ''
+            }}
           </div>
           <div class="contact-chip" *ngIf="item.profile?.Email">
             <ion-icon name="mail-outline"></ion-icon>
@@ -250,14 +248,14 @@
     <ion-label>Explore Life</ion-label>
   </ion-tab-button>
 
-<!-- 
+  <!-- 
   <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
 
-    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
     <div class="custom-tab-icon"></div>
   </ion-tab-button>
 
-  
+
 
   <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
     <ion-icon name="person"></ion-icon>

@@ -17,8 +17,8 @@
       <button class="header-logout-btn" (click)="openPage('find-pandit')">
         <ion-icon name="qr-code-outline"></ion-icon>
       </button>
-   
-      
+
+
     </div>
   </ion-toolbar>
 </ion-header>
@@ -30,7 +30,7 @@
     <div class="greeting">
       <div class="greeting-text">
         <p class="greeting-sub">{{ t.greeting }} {{userDetails?.FullName?.split(' ')?.[0]}} ji</p>
-       <h2 class="greeting-title">{{ t.greetingTitle }}</h2>
+        <h2 class="greeting-title">{{ t.greetingTitle }}</h2>
       </div>
       <div class="greeting-om">ॐ</div>
     </div>
@@ -65,10 +65,10 @@
 
     <div class="summary-row">
 
- 
+
     </div>
 
-   
+
 
     <!-- ===== DIVIDER ===== -->
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
@@ -82,6 +82,35 @@
 
 
 
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 9vh;">
+
+  <!-- Main FAB Button -->
+  <ion-fab-button class="fab-main">
+    <ion-icon name="ellipsis-vertical"></ion-icon>
+  </ion-fab-button>
+
+  <!-- Expanding Options -->
+  <ion-fab-list side="top">
+
+    <ion-fab-button class="fab-item" (click)="openPage('allchats')" title="Chats">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+    </ion-fab-button>
+
+    <ion-fab-button class="fab-item" (click)="action2()" title="Call">
+      <ion-icon name="call-outline"></ion-icon>
+    </ion-fab-button>
+
+    <ion-fab-button class="fab-item" (click)="action3()" title="Mail">
+      <ion-icon name="mail-outline"></ion-icon>
+    </ion-fab-button>
+
+    <ion-fab-button class="fab-item" (click)="action4()" title="Location">
+      <ion-icon name="location-outline"></ion-icon>
+    </ion-fab-button>
+
+  </ion-fab-list>
+
+</ion-fab>
 <ion-tab-bar slot="bottom" class="mb-tab-bar">
 
   <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
@@ -89,10 +118,10 @@
     <ion-label>Explore Life</ion-label>
   </ion-tab-button>
 
-<!-- 
+  <!-- 
   <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
 
-    <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
     <div class="custom-tab-icon"></div>
   </ion-tab-button>
 

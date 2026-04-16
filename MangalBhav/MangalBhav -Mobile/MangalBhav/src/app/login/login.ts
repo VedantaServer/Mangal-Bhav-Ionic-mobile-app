@@ -428,15 +428,53 @@ export class LoginPage {
           // this.loginOtpSent = true;
           // alert(this.loginGeneratedOtp)
 
-          this.apinu.postUrlData(`sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null)
-            .subscribe((res: any) => {
-              console.log(res);
-              this.loginOtpSent = true;
-            });
+          // this.apinu.postUrlData(`sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null)
+          //   .subscribe((res: any) => {
+          //     console.log(res);
+          //     this.loginOtpSent = true;
+          //   });
           // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno='${this.loginUsername}'&otp='${this.loginGeneratedOtp}'`, null).subscribe((res: any) => {
           //   console.log(res);
           //   this.loginOtpSent = true;
           // });
+
+          const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg` +
+            `?username=Vedanta` +
+            `&dest=${this.loginUsername}` +
+            `&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN` +
+            `&signature=MNGLBV` +
+            `&msgtype=PM` +
+            `&msgtxt=${encodeURIComponent(`Your OTP is ${this.loginGeneratedOtp}. It is valid for 10 minutes. Do not share it.`)}` +
+            `&entityid=1201159703513437045` +
+            `&templateid=1207177614549864835`;
+
+
+
+          this.apinu.postUrlData(
+            `sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`,
+            null
+          ).subscribe({
+            next: (res: any) => {
+              console.log('WhatsApp OTP sent', res);
+              this.loginOtpSent = true;
+            },
+            error: (err: any) => {
+              console.error('WhatsApp OTP failed:', err);
+
+              // 👉 Call SMS API AND SUBSCRIBE
+              this.http.get(smsUrl).subscribe({
+                next: (smsRes: any) => {
+                  console.log('SMS OTP sent', smsRes);
+                  this.loginOtpSent = true;
+                },
+                error: (smsErr: any) => {
+                  console.error('SMS also failed:', smsErr);
+                }
+              });
+            }
+          });
+
+
         }
       })
   }

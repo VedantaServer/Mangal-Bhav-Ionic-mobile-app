@@ -223,8 +223,8 @@ namespace FaceUPAI.API
 		/// Selects all records from the Messages table by a foreign key.
 		/// </summary>
 	[HttpPost]
-	[Authorize]
-	[Route("MessagesSelectAllByReceiverID")]
+		[EnableCors("AllowAll")]
+		[Route("MessagesSelectAllByReceiverID")]
 		public  IActionResult MessagesSelectAllByReceiverID(int receiverID)
 	{
 			return ApiHandler.Handle(() =>
@@ -253,8 +253,8 @@ namespace FaceUPAI.API
 		/// Selects all query records from the Messages table by a ak=ll query.
 		/// </summary>
 	[HttpPost]
-	[Authorize]
-	[Route("MessagesSelectByQuery")]
+		[EnableCors("AllowAll")]
+		[Route("MessagesSelectByQuery")]
 		public  IActionResult MessagesSelectByQuery(int tenantID,int schoolID,string Query)
 		{
 			return ApiHandler.Handle(() =>

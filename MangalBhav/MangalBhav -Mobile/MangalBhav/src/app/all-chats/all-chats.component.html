@@ -1,0 +1,183 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="header-inner">
+      <div class="nav-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">Mangal Bhav</div>
+          <div class="nav-logo-sub">Sacred Conversations</div>
+        </div>
+      </div>
+      <button class="nav-icon-btn" title="Search">🔍</button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="page-wrapper">
+
+    <div class="section-label">💬 My Chats (<span *ngIf="isSupportPerson">🛡️ Support Admin</span> <span  *ngIf="isAskPandit">🕉️ Ask Pandit Admin</span>)</div> 
+
+    <!-- ══════════════════════════════════════
+         SUPPORT PERSON — sees user inbox
+    ══════════════════════════════════════ -->
+    <ng-container *ngIf="isSupportPerson">
+      <!-- <div class="section-label">🛡️ Support Admin</div> -->
+
+      <div class="loading-row" *ngIf="inboxLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Loading users…</span>
+      </div>
+
+      <div class="empty-state" *ngIf="!inboxLoading && supportInbox.length === 0">
+        <div class="empty-icon">🛡️</div>
+        <p>No support requests yet.</p>
+      </div>
+
+      <div class="chat-list" *ngIf="!inboxLoading && supportInbox.length > 0">
+        <div class="chat-card" *ngFor="let u of supportInbox"
+          (click)="openSupportChat(u.UserID)">
+          <div class="chat-avatar support">
+            <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
+          </div>
+          <div class="chat-info">
+            <div class="chat-top-row">
+              <span class="chat-name">{{ u.DisplayName }}</span>
+              <span class="chat-time">{{ u.LastMessageTime | date: 'hh:mm a' }}</span>
+            </div>
+            <div class="chat-bottom-row">
+              <span class="chat-preview">{{ u.LastMessage || 'Tap to open' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ══════════════════════════════════════
+         ASK PANDIT PERSON — sees user inbox
+    ══════════════════════════════════════ -->
+    <ng-container *ngIf="isAskPandit">
+      <!-- <div class="section-label">🕉️ Ask Pandit Admin</div> -->
+
+      <div class="loading-row" *ngIf="inboxLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Loading users…</span>
+      </div>
+
+      <div class="empty-state" *ngIf="!inboxLoading && askPanditInbox.length === 0">
+        <div class="empty-icon">🕉️</div>
+        <p>No questions received yet.</p>
+      </div>
+
+      <div class="chat-list" *ngIf="!inboxLoading && askPanditInbox.length > 0">
+        <div class="chat-card" *ngFor="let u of askPanditInbox"
+          (click)="openAskPanditChat(u.UserID)">
+          <div class="chat-avatar pandit">
+            <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
+          </div>
+          <div class="chat-info">
+            <div class="chat-top-row">
+              <span class="chat-name">{{ u.DisplayName }}</span>
+              <span class="chat-time">{{ u.LastMessageTime | date: 'hh:mm a' }}</span>
+            </div>
+            <div class="chat-bottom-row">
+              <span class="chat-preview">{{ u.LastMessage || 'Tap to open' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ══════════════════════════════════════
+         NORMAL USER — sees pinned + groups
+    ══════════════════════════════════════ -->
+    <div class="chat-list">
+
+      <!-- Support card — hidden for support staff -->
+      <div class="chat-card pinned" (click)="openChat(-1)" *ngIf="!isSupportPerson">
+        <div class="chat-avatar support"><span>🛡️</span></div>
+        <div class="chat-info">
+          <div class="chat-top-row">
+            <span class="chat-name">Support</span>
+            <span class="chat-time">Always On</span>
+          </div>
+          <div class="chat-bottom-row">
+            <span class="chat-preview">Need help? We're here for you 🙏</span>
+            <span class="chat-badge online-dot"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AskPandit card — hidden for pandit staff -->
+      <div class="chat-card pinned" (click)="openChat(-2)" *ngIf="!isAskPandit">
+        <div class="chat-avatar pandit"><span>🕉️</span></div>
+        <div class="chat-info">
+          <div class="chat-top-row">
+            <span class="chat-name">Ask Pandit Ji</span>
+            <span class="chat-time">Anytime</span>
+          </div>
+          <div class="chat-bottom-row">
+            <span class="chat-preview">Ask your spiritual questions here</span>
+            <span class="chat-badge online-dot"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Groups -->
+    <div class="loading-row" *ngIf="loading">
+      <ion-spinner name="crescent" color="warning"></ion-spinner>
+      <span>Loading chats…</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && groups.length === 0 && !isSupportPerson && !isAskPandit">
+      <div class="empty-icon">🙏</div>
+      <p>No groups yet.<br>Book a seva to start a conversation.</p>
+    </div>
+
+    <div class="chat-list" *ngIf="!loading && groups.length > 0">
+      <div class="chat-card" *ngFor="let g of groups" (click)="openChat(g.ChatGroupID)">
+        <div class="chat-avatar group">
+          <span>{{ g.GroupName?.charAt(0) || '🙏' }}</span>
+        </div>
+        <div class="chat-info">
+          <div class="chat-top-row">
+            <span class="chat-name">{{ g.GroupName || 'Group Chat' }}</span>
+            <span class="chat-time">{{ g.LastMessageTime | date: 'hh:mm a' }}</span>
+          </div>
+          <div class="chat-bottom-row">
+            <span class="chat-preview">{{ g.LastMessage || 'Tap to open chat' }}</span>
+            <span class="chat-unread" *ngIf="g.UnreadCount > 0">{{ g.UnreadCount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+  </div>
+</ion-content>
+
+
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>explore</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
