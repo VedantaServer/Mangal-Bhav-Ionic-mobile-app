@@ -1,0 +1,1 @@
+https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=9899252291&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=121212 is your OTP to access Mangal Bhav.OTP is confidential and valid for 10 minutes.For security reasons, DO NOT share this OTP with anyone.MangalBhav Connect Icon&entityid=1201159703513437045&templateid=1207177614549864835
