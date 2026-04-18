@@ -399,7 +399,6 @@ export class LoginPage {
 
 
 
-
   getLoginOtp() {
     if (!this.loginUsername || this.loginUsername.toString().length !== 10) {
       alert('Please enter a valid 10-digit mobile number');
@@ -409,6 +408,7 @@ export class LoginPage {
     this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
       .subscribe((res: any) => {
         console.log(res);
+
         if (res.UserList.length === 0) {
           alert('Please register..');
           this.openRegisterSection();
@@ -416,40 +416,16 @@ export class LoginPage {
           this.goToOtp();
           return;
         } else {
+
           // Generate OTP
-
           if (this.loginUsername.toString() == "9899252291") {
-
             this.loginGeneratedOtp = '111111';
           } else {
             this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           }
 
-          // this.loginOtpSent = true;
-          // alert(this.loginGeneratedOtp)
-
-          // this.apinu.postUrlData(`sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null)
-          //   .subscribe((res: any) => {
-          //     console.log(res);
-          //     this.loginOtpSent = true;
-          //   });
-          // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno='${this.loginUsername}'&otp='${this.loginGeneratedOtp}'`, null).subscribe((res: any) => {
-          //   console.log(res);
-          //   this.loginOtpSent = true;
-          // });
-
-          const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg` +
-            `?username=Vedanta` +
-            `&dest=${this.loginUsername}` +
-            `&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN` +
-            `&signature=MNGLBV` +
-            `&msgtype=PM` +
-            `&msgtxt=${encodeURIComponent(`Your OTP is ${this.loginGeneratedOtp}. It is valid for 10 minutes. Do not share it.`)}` +
-            `&entityid=1201159703513437045` +
-            `&templateid=1207177614549864835`;
-
-
-
+       
+          /*
           this.apinu.postUrlData(
             `sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`,
             null
@@ -460,24 +436,27 @@ export class LoginPage {
             },
             error: (err: any) => {
               console.error('WhatsApp OTP failed:', err);
+            }
+          });
+          */
 
-              // 👉 Call SMS API AND SUBSCRIBE
-              this.http.get(smsUrl).subscribe({
-                next: (smsRes: any) => {
-                  console.log('SMS OTP sent', smsRes);
-                  this.loginOtpSent = true;
-                },
-                error: (smsErr: any) => {
-                  console.error('SMS also failed:', smsErr);
-                }
-              });
+          const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=${this.loginUsername}&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=${this.loginGeneratedOtp} is your OTP to access Mangal Bhav. OTP is confidential and valid for 10 minutes. Do NOT share this OTP.&entityid=1201159703513437045&templateid=1207177614549864835`;
+
+          this.http.get(smsUrl).subscribe({
+            next: (smsRes: any) => {
+              console.log('SMS OTP sent', smsRes);
+              this.loginOtpSent = true;
+            },
+            error: (smsErr: any) => {
+              console.error('SMS OTP failed:', smsErr);
             }
           });
 
-
         }
-      })
+      });
   }
+
+
 
   resendLoginOtp() {
     this.loginOtp = '';
