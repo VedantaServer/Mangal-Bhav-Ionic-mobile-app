@@ -246,7 +246,7 @@ labels = {
           }
         })
       } else {
-        console.log("Upload failed");
+        alert("Profile photo Upload failed");
       }
     });
   }

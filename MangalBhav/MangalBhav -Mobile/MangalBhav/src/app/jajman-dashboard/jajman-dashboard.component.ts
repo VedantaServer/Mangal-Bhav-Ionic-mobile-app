@@ -77,6 +77,14 @@ export class JajmanDashboardComponent implements OnInit {
     }
 
 
+    if (
+      await this.storage.get("languageChange")
+    ) {
+      await this.storage.remove('languageChange');
+      this.routerCtrl.navigateRoot('/languagechange');
+    }
+
+
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
 

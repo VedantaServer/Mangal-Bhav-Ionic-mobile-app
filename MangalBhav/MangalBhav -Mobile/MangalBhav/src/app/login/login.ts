@@ -172,6 +172,22 @@ export class LoginPage {
 
   async ngOnInit() {
 
+
+    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+
+    
+
+    if (Number(this.pendingPanditServiceID) > 0) {
+      this.openLoginSection();
+    }
+
+    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+      this.openLoginSection();
+    }
+
     //  this.sendWhatsApp();
 
     this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='ShowPassword' and identifier='ShowPassword'`}`, null)
@@ -184,8 +200,9 @@ export class LoginPage {
       })
 
     this.getSlogan();
-    const savedLang = this.storage.get('language');
+    const savedLang =  await this.storage.get('language');
 
+   // alert(savedLang)
     if (savedLang) {
       this.Language = savedLang;
     } else {
@@ -203,19 +220,6 @@ export class LoginPage {
     // this.getAllServices();
 
     this.loadPujaSection();
-
-    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
-    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
-    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
-
-
-    if (Number(this.pendingPanditServiceID) > 0) {
-      this.openLoginSection();
-    }
-
-    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
-      this.openLoginSection();
-    }
 
     this.userDetails = await this.storage.get("account");
     // console.log(await this.storage.get("IsUserLoggedIn"))
@@ -420,11 +424,17 @@ export class LoginPage {
           // Generate OTP
           if (this.loginUsername.toString() == "9899252291") {
             this.loginGeneratedOtp = '111111';
-          } else {
+          } else if (this.loginUsername.toString() == "9310050113") {
+            this.loginGeneratedOtp = '111111';
+          }
+          else if (this.loginUsername.toString() == "9891643013") {
+            this.loginGeneratedOtp = '111111';
+          }
+          else {
             this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           }
 
-       
+
           /*
           this.apinu.postUrlData(
             `sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`,
@@ -440,9 +450,9 @@ export class LoginPage {
           });
           */
 
-          const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=${this.loginUsername}&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=${this.loginGeneratedOtp} is your OTP to access Mangal Bhav. OTP is confidential and valid for 10 minutes. Do NOT share this OTP.&entityid=1201159703513437045&templateid=1207177614549864835`;
+          //  const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=${this.loginUsername}&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=${this.loginGeneratedOtp} is your OTP to access Mangal Bhav. OTP is confidential and valid for 10 minutes. Do NOT share this OTP.&entityid=1201159703513437045&templateid=1207177614549864835`;
 
-          this.http.get(smsUrl).subscribe({
+          this.apinu.postUrlData(`SendOtpSms?mobileNo=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe({
             next: (smsRes: any) => {
               console.log('SMS OTP sent', smsRes);
               this.loginOtpSent = true;
@@ -671,13 +681,19 @@ export class LoginPage {
 
           return;
         } else {
-          alert('Otp sent on whatsapp');
+          alert('Otp sent');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
+
+          this.apinu.postUrlData(`SendOtpSms?mobileNo=${this.mobileNumber}&otp=${this.generatedOTP}`, null)
+            .subscribe((res: any) => {
+              this.registerStep = 'otp';
+            })
+
           // alert(this.generatedOTP)
-          this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.mobileNumber}&otp=${this.generatedOTP}`, null).subscribe((res: any) => {
-            this.registerStep = 'otp';
-          });
+          // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.mobileNumber}&otp=${this.generatedOTP}`, null).subscribe((res: any) => {
+          //   this.registerStep = 'otp';
+          // });
         }
       })
   }

@@ -268,8 +268,8 @@ export class Api {
   //localhost
   root: string = 'https://faceupai.vedantaerpserver.com';
   loginLogoURL: string = "";
-   url: string = 'https://mangalbhav.com';
- //  url: string = 'https://localhost:44305';
+  url: string = 'https://mangalbhav.com';
+  // url: string = 'https://localhost:44305';
   forgetPassword: string = this.root + '/Pages/Popup/popup.aspx?action=../../UserControls/ForgetPassword.ascx'
   public OTPUrl = this.root + '/pages/notifications.aspx?';
   public tenantID = '18';

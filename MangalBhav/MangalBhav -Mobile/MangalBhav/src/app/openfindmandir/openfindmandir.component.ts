@@ -6,14 +6,13 @@ import { Storage } from '@ionic/storage-angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 @Component({
   selector: 'app-openfindmandir',
   templateUrl: './openfindmandir.component.html',
   styleUrls: ['./openfindmandir.component.scss'],
    standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class OpenfindmandirComponent  implements OnInit {
 
@@ -266,8 +265,7 @@ async getCurrentLocation() {
       return this.showToast('Please enter the Mandir name 🛕', 'warning');
     if (!this.Mandir.GodName?.trim())
       return this.showToast('Please enter the presiding deity 🌸', 'warning');
-    if (!this.Mandir.City?.trim() || !this.Mandir.State?.trim())
-      return this.showToast('Please enter city and state 📍', 'warning');
+    
 
     // Warn if photo was chosen but not yet uploaded
     if (this.selectedFrontImageFile && !this.Mandir.FrontImage)

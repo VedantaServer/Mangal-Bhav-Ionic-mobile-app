@@ -16,7 +16,7 @@
       </div>
 
       <div class="nav-actions">
-        <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button>
+        <!-- <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button> -->
         <!-- <button class="nav-icon-btn login" (click)="openLoginSection()" title="Login">👤</button> -->
         <button class="header-logout-btn" (click)="openPage('open-find-pandit')">
           <ion-icon name="qr-code-outline"></ion-icon>
@@ -256,14 +256,15 @@
 
                   <!-- Price + CTA row -->
                   <div class="puja-price-row">
+                    <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
+                      🧘 Find Pandit ji →
+                    </a>
                     <div class="puja-price-block">
                       <span class="puja-price-label"></span>
                       <!-- <span class="puja-price-original">₹1,499</span> -->
                       <span class="puja-price-final"></span>
                     </div>
-                    <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
-                      🧘 Find Pandit ji →
-                    </a>
+
                   </div>
                 </div>
               </div>
@@ -634,7 +635,7 @@
 
           <div class="footer-col">
             <h4 class="footer-col-title">📜 Legal</h4>
-            <a class="footer-link" (click)="openPage('privacypolicy')" >Privacy Policy</a>
+            <a class="footer-link" (click)="openPage('privacypolicy')">Privacy Policy</a>
             <a class="footer-link">Terms of Service</a>
             <a class="footer-link">Refund Policy</a>
             <a class="footer-link">Contact Us</a>
@@ -732,7 +733,8 @@
 
       <!-- OTP sent message -->
       <p class="otp-sent-msg" *ngIf="loginOtpSent">
-        ✅ OTP sent to +91 {{ loginUsername }} <span *ngIf="showPasswordOnScreen" style="font-size: small;">({{loginGeneratedOtp}})</span>
+        ✅ OTP sent to +91 {{ loginUsername }} <span *ngIf="showPasswordOnScreen"
+          style="font-size: small;">({{loginGeneratedOtp}})</span>
       </p>
 
       <button class="auth-btn" (click)="verifyLoginOtp()" *ngIf="loginOtpSent">
@@ -860,7 +862,7 @@
 
         <div class="otp-hint">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
-          OTP sent successfully  <span *ngIf="showPasswordOnScreen" style="font-size: small;">({{generatedOTP}})</span>
+          OTP sent successfully <span *ngIf="showPasswordOnScreen" style="font-size: small;">({{generatedOTP}})</span>
         </div>
 
         <div class="auth-field">

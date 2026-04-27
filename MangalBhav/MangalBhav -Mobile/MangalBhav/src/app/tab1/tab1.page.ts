@@ -135,6 +135,16 @@ export class Tab1Page {
       return;
     }
     console.log(this.userDetails);
+
+
+    
+      if (
+      await this.storage.get("languageChange")
+    ) {
+        await this.storage.remove('languageChange');
+      this.routerCtrl.navigateRoot('/languagechange');
+    }
+
     if (
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'PANDIT'

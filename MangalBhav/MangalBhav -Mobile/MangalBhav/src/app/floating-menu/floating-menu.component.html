@@ -1,0 +1,56 @@
+<div class="custom-fab-wrap" >
+  <div class="fab-backdrop" *ngIf="fabOpen" (click)="closeFab()"></div>
+
+  <!-- Pill card container -->
+  <div class="fab-menu" [class.open]="fabOpen">
+
+    <!-- NEW: Card header -->
+    <div class="fab-card-header">
+      <img src="../../assets/swastik.png" class="fab-card-logo" alt="">
+      <span>Quick Access</span>
+    </div>
+
+    <button class="fab-pill" (click)="openPage('allchats'); closeFab()" *ngIf="floatingMenuVisible">
+      <div class="fab-pill-icon"><ion-icon name="chatbubbles-outline"></ion-icon></div>
+      <span>Ask Pandit Ji</span>
+    </button>
+    <button class="fab-pill" (click)="openPage('openfindmandir'); closeFab()">
+      <div class="fab-pill-icon"><ion-icon name="library-outline"></ion-icon></div>
+      <span>Find Mandir</span>
+    </button>
+
+    <button class="fab-pill" (click)="action4(); closeFab()" *ngIf="floatingMenuVisible">
+      <div class="fab-pill-icon"><ion-icon name="search-outline"></ion-icon></div>
+      <span>Search Pandit Ji</span>
+    </button>
+    <button class="fab-pill" (click)="action5(); closeFab()" *ngIf="!floatingMenuVisible">
+      <div class="fab-pill-icon"><ion-icon name="search-outline"></ion-icon></div>
+      <span>Search Pandit Ji</span>
+    </button>
+    <button class="fab-pill" (click)="openPage('india-festival'); closeFab()">
+      <div class="fab-pill-icon"><ion-icon name="flame-outline"></ion-icon></div>
+      <span>Festivals</span>
+    </button>
+    <button class="fab-pill" (click)="openPage('mangalmart'); closeFab()">
+      <div class="fab-pill-icon"><ion-icon name="storefront-outline"></ion-icon></div>
+      <span>Mangal Mart</span>
+    </button>
+    <button class="fab-pill" (click)="openPage('languagechange'); closeFab()" *ngIf="floatingMenuVisible">
+      <div class="fab-pill-icon"><ion-icon name="language-outline"></ion-icon></div>
+      <span>Language</span>
+    </button>
+    <button class="fab-pill" (click)="openPage('openlanguagechange'); closeFab()" *ngIf="!floatingMenuVisible">
+      <div class="fab-pill-icon"><ion-icon name="language-outline"></ion-icon></div>
+      <span>Language</span>
+    </button>
+  </div>
+
+ <!-- wrap your button like this -->
+<div class="fab-ripple-wrap">
+  <div class="ripple"></div>
+  <div class="ripple2"></div>
+  <button class="fab-main-btn" (click)="toggleFab()">
+    <img src="../../assets/swastik.png" alt="">
+  </button>
+</div>
+</div>

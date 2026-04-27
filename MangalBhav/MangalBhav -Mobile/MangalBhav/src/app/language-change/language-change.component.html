@@ -1,0 +1,101 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Mangal.Bhav</div>
+        <div class="inner-title-sub">✦ Peace · Prosperity · Protection ✦</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="lang-page-wrapper">
+
+    <!-- BANNER -->
+    <div class="lang-banner">
+      <div class="lang-banner-text">
+        <p class="lang-banner-sub">Choose Your</p>
+        <h2 class="lang-banner-title">Language</h2>
+      </div>
+      <div class="lang-banner-om">भाषा</div>
+    </div>
+
+    <!-- SUBTITLE -->
+    <p class="lang-subtitle">
+      Select the language you are most comfortable with.<br />
+      More languages coming soon 🙏
+    </p>
+
+    <!-- LANGUAGE GRID -->
+    <div class="lang-grid">
+
+      <div
+        *ngFor="let lang of languages"
+        class="lang-card"
+        [class.selected]="selectedLanguage === lang.code"
+        [class.disabled]="!lang.active"
+        (click)="selectLanguage(lang)"
+      >
+        <!-- Coming Soon ribbon -->
+        <div class="coming-soon-ribbon" *ngIf="!lang.active">Coming Soon</div>
+
+        <!-- Selected tick -->
+        <div class="selected-tick" *ngIf="selectedLanguage === lang.code && lang.active">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+
+        <div class="lang-script">{{ lang.script }}</div>
+        <div class="lang-native">{{ lang.native }}</div>
+        <div class="lang-label">{{ lang.label }}</div>
+        <div class="lang-region">{{ lang.region }}</div>
+      </div>
+
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <!-- <div class="lang-save-wrap">
+      <button class="lang-save-btn" [class.success]="saveSuccess" (click)="saveLanguage()">
+        <ion-icon [name]="saveSuccess ? 'checkmark-circle-outline' : 'save-outline'"></ion-icon>
+        {{ saveSuccess ? 'Saved!' : 'Save Language' }}
+      </button>
+    </div> -->
+
+    <div class="lang-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>

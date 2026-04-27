@@ -42,8 +42,8 @@
             </span>
             <span class="category-select-text">
               {{ selectedCategory
-                ? (Language === 'Hindi' ? selectedCategory.CategoryName_HI : selectedCategory.CategoryName)
-                : t.chooseStage }}
+              ? (Language === 'Hindi' ? selectedCategory.CategoryName_HI : selectedCategory.CategoryName)
+              : t.chooseStage }}
             </span>
           </div>
           <ion-icon [name]="isCategoryDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'"
@@ -60,8 +60,8 @@
               </span>
               <span class="category-item-desc">
                 {{ Language === 'Hindi'
-                  ? cat.Description_HI?.split('।')?.[0]
-                  : cat.Description?.split('.')?.[0] }}
+                ? cat.Description_HI?.split('।')?.[0]
+                : cat.Description?.split('.')?.[0] }}
               </span>
             </div>
             <ion-icon name="chevron-forward-outline" class="category-item-arrow"></ion-icon>
@@ -122,8 +122,8 @@
 
                   <h4 class="puja-name">
                     {{ Language === 'Hindi'
-                      ? (svc.Name?.split('/')?.[1]?.trim() || svc.Name)
-                      : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
+                    ? (svc.Name?.split('/')?.[1]?.trim() || svc.Name)
+                    : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
                   </h4>
 
                   <p class="puja-location-row">
@@ -135,8 +135,8 @@
 
                   <p class="puja-subtitle">
                     {{ Language === 'Hindi'
-                      ? (svc.Description?.split('/')?.[1]?.trim() || svc.Description)
-                      : (svc.Description?.split('/')?.[0]?.trim() || svc.Description) }}
+                    ? (svc.Description?.split('/')?.[1]?.trim() || svc.Description)
+                    : (svc.Description?.split('/')?.[0]?.trim() || svc.Description) }}
                   </p>
 
                   <div class="puja-features">
@@ -151,13 +151,10 @@
                   </div>
 
                   <div class="puja-price-row">
-                    <div class="puja-price-block">
-                      <span class="puja-price-label"></span>
-                      <span class="puja-price-final"></span>
-                    </div>
                     <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
                       🧘 {{ t.findPandit }} →
                     </a>
+                 
                   </div>
 
                 </div>

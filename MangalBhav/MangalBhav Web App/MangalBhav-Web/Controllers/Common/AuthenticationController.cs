@@ -324,6 +324,75 @@ namespace FaceUPAI.Controllers
 
 
 
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("SendOtpSms")]
+        public async Task<IActionResult> SendOtpSms(string mobileNo, string otp)
+        {
+            try
+            {
+                string message = $"{otp} is your OTP to access. OTP is confidential and valid for 10 minutes. For security reasons, DO NOT share this OTP with anyone. MangalBhav Connect Icon";
+
+                string encodedMsg = System.Net.WebUtility.UrlEncode(message)
+                                                      .Replace("+", "%20");
+
+                string apiUrl = $"https://smsapp.wocom365.com/pushapi/sendbulkmsg" +
+                                $"?username=Vedanta" +
+                                $"&dest={mobileNo}" +
+                                $"&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN" +
+                                $"&signature=MNGLBV" +
+                                $"&msgtype=PM" +
+                                $"&msgtxt={encodedMsg}" +
+                                $"&entityid=1201159703513437045" +
+                                $"&templateid=1207177614549864835";
+
+                HttpClientHandler handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    var response = await client.GetAsync(apiUrl);
+                    var responseData = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(new
+                        {
+                            success = false,
+                            message = "SMS API failed",
+                            response = responseData
+                        });
+                    }
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "OTP sent successfully",
+                        response = responseData
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+
+
+
+
+
         [HttpPost]
         [EnableCors("AllowAll")]
         [Route("ImportFestivalsByYear")]

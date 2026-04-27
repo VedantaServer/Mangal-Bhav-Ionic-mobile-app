@@ -1,0 +1,233 @@
+<ion-header>
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <div class="nav-logo" (click)="goHome()">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">मंगल<span class="logo-dot">.</span>भाव:</div>
+          <div class="nav-logo-sub">सेवा · सम्मान · सुरक्षा</div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="share-btn" (click)="shareProduct()">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </button>
+        <button class="header-cart-btn" (click)="openCart()">
+          <ion-icon name="cart-outline"></ion-icon>
+          <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+        </button>
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollEvents]="true">
+  <div class="page-wrapper">
+
+    <!-- ── IMAGE CAROUSEL ── -->
+    <div class="carousel-wrap">
+      <div class="carousel-track" [style.transform]="'translateX(-' + (activeSlide * 100) + '%)'">
+        <div class="carousel-slide" *ngFor="let img of carpetImages">
+          <img [src]="img" class="carousel-img" alt="Mangal Pooja Carpet" />
+        </div>
+      </div>
+
+      <button class="carousel-arrow left" (click)="prevSlide()" *ngIf="activeSlide > 0">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <button class="carousel-arrow right" (click)="nextSlide()" *ngIf="activeSlide < carpetImages.length - 1">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+
+      <div class="carousel-dots">
+        <span
+          class="dot"
+          *ngFor="let img of carpetImages; let i = index"
+          [class.active]="activeSlide === i"
+          (click)="goToSlide(i)"
+        ></span>
+      </div>
+
+      <div class="carousel-badge">✦ Best Seller</div>
+    </div>
+
+    <!-- ── PRODUCT HEADER ── -->
+    <div class="product-header">
+      <div class="product-category">पूजा कालीन · Puja Carpet</div>
+      <h1 class="product-title">मंगल पूजा कालीन</h1>
+      <p class="product-tagline">Handwoven Pooja Aasan — Traditional Design, Divine Comfort</p>
+
+      <div class="rating-row">
+        <div class="stars">
+          <ion-icon name="star" *ngFor="let s of [1,2,3,4]" class="star-filled"></ion-icon>
+          <ion-icon name="star-half-outline" class="star-filled"></ion-icon>
+        </div>
+        <span class="rating-text">4.5</span>
+        <span class="rating-count">(1,248 ratings)</span>
+        <span class="in-stock">✔ In Stock</span>
+      </div>
+    </div>
+
+    <!-- ── PRICE BLOCK ── -->
+    <div class="price-block">
+      <div class="price-row">
+        <span class="price-current">₹350</span>
+        <span class="price-orig">₹700</span>
+        <span class="price-save">50% OFF</span>
+      </div>
+      <div class="price-note">Inclusive of all taxes · Free delivery</div>
+    </div>
+
+    <!-- ── BUY NOW ── -->
+    <div class="cta-wrap">
+      <button class="btn-buy" (click)="buyNow()">
+        <ion-icon name="bag-check-outline"></ion-icon>
+        Buy Now on Amazon
+      </button>
+      <button class="btn-wishlist" (click)="toggleWishlist()">
+        <ion-icon [name]="wishlisted ? 'heart' : 'heart-outline'"
+          [style.color]="wishlisted ? '#E05050' : ''">
+        </ion-icon>
+      </button>
+    </div>
+
+    <!-- ── TRUST BADGES ── -->
+    <div class="trust-row">
+      <div class="trust-item">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Original Product</span>
+      </div>
+      <div class="trust-item">
+        <ion-icon name="repeat-outline"></ion-icon>
+        <span>Easy Returns</span>
+      </div>
+      <div class="trust-item">
+        <ion-icon name="rocket-outline"></ion-icon>
+        <span>Fast Delivery</span>
+      </div>
+    </div>
+
+    <!-- ── DIVIDER ── -->
+    <div class="om-divider">✦ ॐ ✦</div>
+
+    <!-- ── ABOUT PRODUCT ── -->
+    <div class="section-label">उत्पाद के बारे में</div>
+    <div class="about-card">
+      <p class="about-para">
+        हमारा <strong>मंगल पूजा कालीन</strong> विशेष रूप से घर की पूजा, यज्ञ, हवन और अन्य
+        धार्मिक अनुष्ठानों के लिए तैयार किया गया है। पारंपरिक भारतीय डिज़ाइन और
+        उच्च गुणवत्ता वाले कपास से बना यह कालीन आपकी पूजा को और भी पवित्र
+        और सुखद बनाता है।
+      </p>
+      <p class="about-para">
+        Our <strong>Mangal Pooja Carpet</strong> is crafted with pure cotton threads using traditional
+        Indian weaving techniques. The intricate mandala and lotus patterns are inspired by
+        ancient temple art, bringing an aura of sanctity and calm to your prayer space.
+        Soft yet durable, it provides a comfortable aasan for long pooja sessions and
+        meditation.
+      </p>
+    </div>
+
+    <!-- ── HIGHLIGHTS ── -->
+    <div class="section-label">Highlights</div>
+    <div class="highlights-grid">
+      <div class="highlight-item">
+        <div class="highlight-icon">🧶</div>
+        <div class="highlight-text">
+          <div class="highlight-title">100% Pure Cotton</div>
+          <div class="highlight-sub">Soft, skin-friendly & breathable</div>
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">🪷</div>
+        <div class="highlight-text">
+          <div class="highlight-title">Traditional Motifs</div>
+          <div class="highlight-sub">Lotus & mandala handwoven designs</div>
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">📐</div>
+        <div class="highlight-text">
+          <div class="highlight-title">Size: 36" × 60"</div>
+          <div class="highlight-sub">Ideal for pooja & meditation aasan</div>
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">🎨</div>
+        <div class="highlight-text">
+          <div class="highlight-title">Vibrant Colors</div>
+          <div class="highlight-sub">Colour-fast & non-fading dyes</div>
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">🛡️</div>
+        <div class="highlight-text">
+          <div class="highlight-title">Anti-Slip Base</div>
+          <div class="highlight-sub">Stays firmly in place during prayers</div>
+        </div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-icon">✨</div>
+        <div class="highlight-text">
+          <div class="highlight-title">Easy to Clean</div>
+          <div class="highlight-sub">Machine washable, quick drying</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── USAGE CHIPS ── -->
+    <div class="section-label">Best Suited For</div>
+    <div class="chip-row">
+      <div class="chip">🙏 दैनिक पूजा</div>
+      <div class="chip">🔥 हवन / यज्ञ</div>
+      <div class="chip">🧘 Meditation</div>
+      <div class="chip">🎉 Festivals</div>
+      <div class="chip">🎁 Gifting</div>
+    </div>
+
+    <!-- ── BOTTOM STICKY CTA ── -->
+    <!-- <div class="bottom-cta">
+      <div class="bottom-cta-info">
+        <div class="bottom-cta-price">₹1,299</div>
+        <div class="bottom-cta-sub">Free delivery · Amazon</div>
+      </div>
+      <button class="btn-buy-bottom" (click)="buyNow()">
+        <ion-icon name="bag-check-outline"></ion-icon>
+        Buy Now
+      </button>
+    </div> -->
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+
+<ion-tab-bar slot="bottom" class="mb-tab-bar" *ngIf="userDetails?.Role == 'BHAKT'">
+
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
+    <ion-icon name="sparkles-outline"></ion-icon>
+    <ion-label>Explore Life</ion-label>
+  </ion-tab-button>
+
+  <!-- Empty spacer in center -->
+  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
+    <ion-icon name="person"></ion-icon>
+    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>
+
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>

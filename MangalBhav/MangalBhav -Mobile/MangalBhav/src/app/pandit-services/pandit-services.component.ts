@@ -198,7 +198,8 @@ export class PanditServicesComponent implements OnInit {
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
 
-    this.language = await this.storage.get("Language");
+ //   this.language = await this.storage.get("Language");
+     this.language = this.userDetails.Languages;
 
     // alert(this.language)
     // 1. Categories

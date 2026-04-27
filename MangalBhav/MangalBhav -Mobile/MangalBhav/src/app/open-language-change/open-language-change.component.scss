@@ -1,0 +1,422 @@
+/* ================================================
+   LANGUAGE SELECTION PAGE — Mangal.Bhav
+   ================================================ */
+
+/* ===== HEADER ===== */
+ion-header {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  box-shadow: 0 4px 20px rgba(224, 123, 0, 0.35);
+
+  &::after { display: none; }
+}
+
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.inner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  gap: 10px;
+}
+
+.inner-back-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  &:active { background: rgba(255, 255, 255, 0.28); }
+}
+
+.inner-title-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.inner-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(255, 180, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.inner-title-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  line-height: 1;
+  background: linear-gradient(90deg,
+    rgba(255, 240, 180, 0.7),
+    rgba(255, 255, 220, 1),
+    rgba(255, 240, 180, 0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: shimmerText 4s linear infinite;
+}
+
+.inner-logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    padding: 3px;
+    background: radial-gradient(circle at 40% 35%,
+        rgba(255, 255, 255, 0.35),
+        rgba(255, 220, 100, 0.15));
+    border: 1.5px solid rgba(255, 235, 150, 0.6);
+    box-shadow:
+      0 0 0 3px rgba(255, 220, 80, 0.2),
+      0 0 14px rgba(255, 200, 50, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+    animation: divaGlow 3s ease-in-out infinite;
+  }
+}
+
+/* ===== CONTENT ===== */
+ion-content {
+  --background: #FFFBF0;
+}
+
+/* ===== PAGE WRAPPER ===== */
+.lang-page-wrapper {
+  padding: 0 0 48px;
+  background: #FFFBF0;
+  min-height: 100%;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: 'ॐ';
+    position: fixed;
+    bottom: 80px;
+    right: -20px;
+    font-size: 220px;
+    color: #FF9500;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/* ===== BANNER (mirrors .greeting) ===== */
+.lang-banner {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  padding: 28px 24px 32px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #FFFBF0;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+}
+
+.lang-banner-text {
+  position: relative;
+  z-index: 2;
+}
+
+.lang-banner-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.lang-banner-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin: 0;
+}
+
+.lang-banner-om {
+  font-family: 'Poppins', sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.18);
+  line-height: 1;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== SUBTITLE ===== */
+.lang-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: #7A4D00;
+  text-align: center;
+  line-height: 1.7;
+  padding: 18px 24px 4px;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+/* ===== LANGUAGE GRID ===== */
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px 16px 8px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== LANGUAGE CARD ===== */
+.lang-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 12px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  cursor: pointer;
+  border: 1.5px solid rgba(255, 184, 0, 0.22);
+  box-shadow:
+    0 2px 10px rgba(255, 149, 0, 0.07),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+
+  /* Gold top line (hidden by default) */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF9500, #FFB800);
+    transform: scaleX(0);
+    transition: transform 0.22s ease;
+    transform-origin: left;
+  }
+
+  &:active {
+    transform: scale(0.94);
+    border-color: rgba(255, 149, 0, 0.5);
+    box-shadow: 0 6px 20px rgba(255, 149, 0, 0.2);
+  }
+
+  /* ── Selected state ── */
+  &.selected {
+    background: linear-gradient(160deg, #FFF5D6, #FFE8A0);
+    border-color: rgba(255, 149, 0, 0.55);
+    box-shadow:
+      0 6px 24px rgba(255, 149, 0, 0.22),
+      0 1px 4px rgba(0, 0, 0, 0.06);
+    transform: translateY(-3px);
+
+    &::before { transform: scaleX(1); }
+
+    .lang-script { color: #E07B00; }
+    .lang-native { color: #2B1A00; }
+    .lang-region {
+      background: rgba(255, 149, 0, 0.14);
+      color: #E07B00;
+      border-color: rgba(255, 149, 0, 0.4);
+    }
+  }
+
+  /* ── Disabled / coming soon ── */
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* ===== SELECTED TICK ===== */
+.selected-tick {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  ion-icon {
+    font-size: 20px;
+    color: #FF9500;
+    filter: drop-shadow(0 1px 4px rgba(255, 149, 0, 0.4));
+  }
+}
+
+/* ===== COMING SOON RIBBON ===== */
+.coming-soon-ribbon {
+  position: absolute;
+  top: 12px;
+  right: -22px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 28px;
+  transform: rotate(35deg);
+  box-shadow: 0 2px 6px rgba(224, 123, 0, 0.3);
+}
+
+/* ===== CARD INTERNALS ===== */
+.lang-script {
+  font-family: 'Poppins', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #C45E00;
+  line-height: 1.1;
+  transition: color 0.2s;
+}
+
+.lang-native {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2B1A00;
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+
+.lang-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #7A4D00;
+  letter-spacing: 0.3px;
+}
+
+.lang-region {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #B08050;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.25);
+  border-radius: 50px;
+  padding: 3px 10px;
+  transition: all 0.2s;
+}
+
+/* ===== SAVE BUTTON WRAP ===== */
+.lang-save-wrap {
+  padding: 20px 16px 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.lang-save-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: #ffffff;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(224, 123, 0, 0.4);
+  transition: all 0.22s ease;
+
+  ion-icon { font-size: 20px; }
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 10px rgba(224, 123, 0, 0.3);
+  }
+
+  /* ── Success state ── */
+  &.success {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    box-shadow: 0 4px 18px rgba(56, 142, 60, 0.4);
+  }
+}
+
+/* ===== DIVIDER ===== */
+.lang-divider {
+  text-align: center;
+  padding: 24px 0 12px;
+  font-size: 16px;
+  color: #FFB800;
+  letter-spacing: 10px;
+  opacity: 0.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== SHARED ANIMATIONS ===== */
+@keyframes shimmerText {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes divaGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(255, 220, 80, 0.2),
+      0 0 14px rgba(255, 200, 50, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(255, 220, 80, 0.15),
+      0 0 22px rgba(255, 200, 50, 0.45),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}

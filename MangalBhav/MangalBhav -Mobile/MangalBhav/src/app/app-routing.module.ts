@@ -35,6 +35,8 @@ import { AllChatsComponent } from './all-chats/all-chats.component';
 import { ChatBoxComponent } from './chat-box/chat-box.component';
 import { LanguageChangeComponent } from './language-change/language-change.component';
 import { OpenfindmandirComponent } from './openfindmandir/openfindmandir.component';
+import { MangalMartComponent } from './mangal-mart/mangal-mart.component';
+import { OpenLanguageChangeComponent } from './open-language-change/open-language-change.component';
 
 const routes: Routes = [
   
@@ -139,6 +141,11 @@ const routes: Routes = [
     path: 'loggedin-home',
     component: LoggedinHomeComponent  // directly use the standalone component
   }
+   ,
+  {
+    path: 'mangalmart',
+    component: MangalMartComponent  // directly use the standalone component
+  }
   ,
   {
     path: 'loggedin-panditsearch',
@@ -210,6 +217,12 @@ const routes: Routes = [
   {
     path: 'languagechange',
     component: LanguageChangeComponent  // directly use the standalone component
+  }
+
+   ,
+  {
+    path: 'openlanguagechange',
+    component: OpenLanguageChangeComponent  // directly use the standalone component
   }
 
     ,

@@ -1,0 +1,278 @@
+.custom-fab-wrap {
+  position: fixed;
+  right: 16px;
+  bottom: 80px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: auto; /* default */
+}
+
+.fab-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0,0,0,0.15);
+
+  pointer-events: none;
+  opacity: 0;
+}
+
+.fab-backdrop.open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ===== CARD CONTAINER ===== */
+.fab-menu {
+  width: 190px;
+  margin-bottom: 10px;
+
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 149, 0, 0.35);
+  box-shadow:
+    0 8px 32px rgba(200, 100, 0, 0.25),
+    0 2px 8px rgba(200, 100, 0, 0.12);
+  overflow: hidden;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.96);
+  transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.open {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===== CARD HEADER ===== */
+.fab-card-header {
+  background: linear-gradient(135deg, #FF9500, #E07000);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .fab-card-logo {
+    width: 16px;
+    height: 16px;
+
+  }
+
+  span {
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+/* ===== PILL ROWS ===== */
+.fab-pill {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-top: 0.5px solid rgba(255, 149, 0, 0.12);
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+
+  // stagger animation
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.1s;
+
+  .fab-menu.open & {
+    opacity: 1;
+    transform: translateX(0);
+
+    &:nth-child(2) {
+      transition-delay: 0.04s;
+    }
+
+    &:nth-child(3) {
+      transition-delay: 0.08s;
+    }
+
+    &:nth-child(4) {
+      transition-delay: 0.12s;
+    }
+
+    &:nth-child(5) {
+      transition-delay: 0.16s;
+    }
+
+    &:nth-child(6) {
+      transition-delay: 0.20s;
+    }
+  }
+
+  &:active {
+    background: #FFF3D6;
+  }
+}
+
+.fab-menu.open {
+  opacity: 1;
+  pointer-events: auto;
+  /* already here — keep it */
+  transform: translateY(0) scale(1);
+}
+
+/* Square icon box per pill */
+.fab-pill-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #FFF0D0, #FFE0A0);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 16px;
+    color: #C45E00;
+  }
+}
+
+.fab-pill span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a05000;
+  white-space: nowrap;
+}
+
+
+/* ===== MAIN FAB ===== */
+.fab-main-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  outline: none;
+  cursor: pointer;
+
+  // background: linear-gradient(135deg, #FF9500, #E07B00);
+  background: transparent;
+  // box-shadow:
+  //   0 4px 16px rgba(224, 123, 0, 0.5),
+  //   inset 0 1px 0 rgba(255,255,255,0.2);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+
+  &.active {
+    box-shadow: 0 6px 22px rgba(224, 123, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: rotate(180deg);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+
+.fab-ripple-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  /* ADD THIS */
+}
+
+.ripple,
+.ripple2 {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 220, 80, 0.7);
+  animation: rippleOut 2.2s ease-out infinite;
+  pointer-events: none;
+}
+
+.ripple2 {
+  animation-delay: 0.7s;
+  border-color: rgba(255, 220, 80, 0.4);
+}
+
+@keyframes rippleOut {
+  0% {
+    inset: -2px;
+    opacity: 0.85;
+  }
+
+  100% {
+    inset: -18px;
+    opacity: 0;
+  }
+}
+
+.fab-card-logo {
+  width: 16px;
+  height: 16px;
+  mix-blend-mode: multiply; // ← same fix here
+  // remove filter: brightness(0) invert(1);
+}
+
+.fab-main-btn,
+.fab-pill,
+.fab-ripple-wrap {
+  pointer-events: auto;
+}
+
+/* Change this */
+.custom-fab-wrap {
+  position: fixed;
+  right: 16px;
+  bottom: 80px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none; /* ✅ CHANGE: was 'auto' — wrapper itself never needs clicks */
+}
+
+
+.fab-menu {
+  width: 190px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 149, 0, 0.35);
+  box-shadow:
+    0 8px 32px rgba(200, 100, 0, 0.25),
+    0 2px 8px rgba(200, 100, 0, 0.12);
+  overflow: hidden;
+
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;            /* ✅ ADD THIS */
+  transform: translateY(12px) scale(0.96);
+  transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s; /* ✅ add visibility */
+
+  &.open {
+    opacity: 1;
+    pointer-events: all;
+    visibility: visible;         /* ✅ ADD THIS */
+    transform: translateY(0) scale(1);
+  }
+}
