@@ -10,12 +10,14 @@ import { concatMap, forkJoin, from, map, mergeMap, of, toArray } from 'rxjs';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 @Component({
   selector: 'app-find-pandit',
   templateUrl: './find-pandit.component.html',
   styleUrls: ['./find-pandit.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule]
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class FindPanditComponent implements OnInit {
   userDetails: any;
@@ -32,6 +34,7 @@ export class FindPanditComponent implements OnInit {
   language: any;
 
   formats = [BarcodeFormat.QR_CODE];
+  selectedLanguage: any;
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
@@ -41,6 +44,12 @@ export class FindPanditComponent implements OnInit {
     private alertCtrl: AlertController) { }
 
   async ngOnInit() {
+
+    const account = await this.storage.get('account');
+    if (account?.Languages) {
+      this.selectedLanguage = account.Languages;
+    }
+
     this.userDetails = await this.storage.get("account");
     this.language = await this.storage.get("Language");
     this.panditList = [];

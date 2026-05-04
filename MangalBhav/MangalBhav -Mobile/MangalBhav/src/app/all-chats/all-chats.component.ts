@@ -8,13 +8,14 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 @Component({
   selector: 'app-all-chats',
   templateUrl: './all-chats.component.html',
   styleUrls: ['./all-chats.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class AllChatsComponent implements OnInit {
 
@@ -29,6 +30,7 @@ export class AllChatsComponent implements OnInit {
   supportInbox: any[] = [];      // unique users who texted Support
   askPanditInbox: any[] = [];    // unique users who texted AskPandit
   inboxLoading = false;
+  showpanditbottomtab: boolean = false;
 
   constructor(
     private routerCtrl: NavController,
@@ -40,6 +42,11 @@ export class AllChatsComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+
+    if (this.router.url === '/allchats') {
+      this.showpanditbottomtab = true;
+    }
+
     this.userDetails = await this.storage.get('account');
 
     // Check Support role

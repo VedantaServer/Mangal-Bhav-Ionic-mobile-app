@@ -16,12 +16,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: 'tabs.page.html',
-  styleUrls: ['tabs.page.scss'],
-  standalone: false,
+  selector: 'app-jajmanbottomtabs',
+  templateUrl: './jajmanbottomtabs.component.html',
+  styleUrls: ['./jajmanbottomtabs.component.scss'],
+
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule]
 })
-export class TabsPage {
+export class JajmanbottomtabsComponent implements OnInit {
   userDetails: any;
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
@@ -32,8 +34,8 @@ export class TabsPage {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-
   }
+
 
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);

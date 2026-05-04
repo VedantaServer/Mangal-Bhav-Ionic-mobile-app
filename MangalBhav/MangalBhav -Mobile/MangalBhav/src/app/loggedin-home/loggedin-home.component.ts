@@ -16,6 +16,7 @@ import { AlertController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 
 
@@ -24,7 +25,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './loggedin-home.component.html',
   styleUrls: ['./loggedin-home.component.scss'],
   //standalone: true,  // 👈 makes it standalone
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule , JajmanbottomtabsComponent]
 })
 export class LoggedinHomeComponent implements OnInit {
 

@@ -16,13 +16,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: 'tabs.page.html',
-  styleUrls: ['tabs.page.scss'],
-  standalone: false,
+  selector: 'app-loggedoutbottomtabs',
+  templateUrl: './loggedoutbottomtabs.component.html',
+  styleUrls: ['./loggedoutbottomtabs.component.scss'],
+
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule]
 })
-export class TabsPage {
-  userDetails: any;
+export class LoggedoutbottomtabsComponent implements OnInit {
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
@@ -30,10 +31,8 @@ export class TabsPage {
 
   }
 
-  async ngOnInit() {
-    this.userDetails = await this.storage.get("account");
 
-  }
+  ngOnInit() { }
 
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);

@@ -13,6 +13,7 @@ import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,7 +21,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;

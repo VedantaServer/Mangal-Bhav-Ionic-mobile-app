@@ -51,10 +51,40 @@ namespace FaceUPAI.API
 			}, this);
 		}
 
+
+		[HttpPost]
+		[EnableCors("AllowAll")]
+		[Route("MasterDataUpdate")]
+		public IActionResult MasterDataUpdate([FromBody] MasterData masterData)
+		{
+			return ApiHandler.Handle(() =>
+			{
+
+				SqlParameter[] parameters = new SqlParameter[]
+				{
+				new SqlParameter("@MasterDataID", masterData.MasterDataID == 0 ? SqlInt32.Null : masterData.MasterDataID ),
+				new SqlParameter("@TenantID", masterData.TenantID == 0 ? SqlInt32.Null : masterData.TenantID ),
+				new SqlParameter("@ParentItemID", masterData.ParentItemID == 0 ? SqlInt32.Null : masterData.ParentItemID ),
+				new SqlParameter("@Description", masterData.Description),
+				new SqlParameter("@Domain", masterData.Domain),
+				new SqlParameter("@Identifier", masterData.Identifier),
+				new SqlParameter("@DateAdded", masterData.DateAdded == DateTime.MinValue ? SqlDateTime.Null : masterData.DateAdded ),
+				new SqlParameter("@DateModified", masterData.DateModified == DateTime.MinValue ? SqlDateTime.Null : masterData.DateModified ),
+				new SqlParameter("@UpdatedByUser", masterData.UpdatedByUser),
+				new SqlParameter("@MasterDataLevel", masterData.MasterDataLevel)
+				};
+
+				var MasterDataID = Convert.ToInt32(DataAccess.ExecuteNonQuery(CommandType.StoredProcedure, "MasterDataUpdate", parameters));
+				return Ok(new { MasterDataID = MasterDataID });
+			}, this);
+		}
+
+
+
 		/// <summary>
 		/// Selects all records from the MasterData table by a foreign key.
 		/// </summary>
-	[HttpPost]
+		[HttpPost]
 		[EnableCors("AllowAll")]
 		[Route("MasterDataSelectAllByTenantID")]
 		public  IActionResult MasterDataSelectAllByTenantID(int tenantID)
@@ -88,6 +118,7 @@ namespace FaceUPAI.API
 		[EnableCors("AllowAll")]
 		[Route("MasterDataSelectByQuery")]
 		public  IActionResult MasterDataSelectByQuery(int tenantID,string Query)
+		
 		{
 			return ApiHandler.Handle(() =>
 	{

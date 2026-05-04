@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 @Component({
   selector: 'app-language-change',
   templateUrl: './language-change.component.html',
   styleUrls: ['./language-change.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class LanguageChangeComponent implements OnInit {
 
@@ -91,7 +92,7 @@ export class LanguageChangeComponent implements OnInit {
 
   async ngOnInit() {
 
- 
+
 
     const account = await this.storage.get('account');
     if (account?.Languages) {

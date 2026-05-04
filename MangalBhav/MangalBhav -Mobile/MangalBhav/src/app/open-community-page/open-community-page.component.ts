@@ -6,6 +6,9 @@ import { Storage } from '@ionic/storage-angular';
 import { ToastController } from '@ionic/angular';
 import { Api, ApiNU } from 'src/providers';
 import { Geolocation } from '@capacitor/geolocation';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 
 @Component({
@@ -13,7 +16,7 @@ import { Geolocation } from '@capacitor/geolocation';
   templateUrl: './open-community-page.component.html',
   styleUrls: ['./open-community-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,LoggedoutbottomtabsComponent,PanditjibottomtabsComponent]
 })
 export class OpenCommunityPageComponent implements OnInit {
   userDetails: any;

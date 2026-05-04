@@ -6,17 +6,21 @@ import { Storage } from '@ionic/storage-angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-openfindmandir',
   templateUrl: './openfindmandir.component.html',
   styleUrls: ['./openfindmandir.component.scss'],
-   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,PanditjibottomtabsComponent,LoggedoutbottomtabsComponent]
 })
-export class OpenfindmandirComponent  implements OnInit {
+export class OpenfindmandirComponent implements OnInit {
 
-   Mandir = {
+  Mandir = {
     //loop all columns here.
     TenantID: Number(1),
     MandirID: "-1",
@@ -58,35 +62,53 @@ export class OpenfindmandirComponent  implements OnInit {
   selectedInsideImageFile: File | null = null;
   insideImagePreview: string | null = null;
   isUploadingInside = false;
+  userLoggedIn: boolean = false;
+  userDetails: any;
+  showbottomtab: boolean = true;
 
 
 
-  constructor(public api: Api, public routerCtrl: NavController, public apinu: ApiNU, private storage: Storage, public toastController: ToastController) { }
-  
+  constructor(  private router: Router,public api: Api, public routerCtrl: NavController, public apinu: ApiNU, private storage: Storage, public toastController: ToastController) { }
 
-  ngOnInit() {  this.loadMandirs();}
 
-  
-async getCurrentLocation() {
-  try {
-    const permission = await Geolocation.requestPermissions();
+  async ngOnInit() {
 
-    if (permission.location === 'granted') {
-      const position = await Geolocation.getCurrentPosition();
-
-      this.Mandir.Latitude = String(position.coords.latitude);
-      this.Mandir.Longitude = String(position.coords.longitude);
-
-      console.log('Lat:', this.Mandir.Latitude);
-      console.log('Lng:', this.Mandir.Longitude);
-    } else {
-      alert('Location permission denied');
+      if (this.router.url === '/tabs/openfindmandir') {
+      this.showbottomtab = false;
     }
 
-  } catch (error) {
-    console.error('Error getting location:', error);
+    
+
+
+    this.userDetails = await this.storage.get("account");
+    if (this.userDetails?.LoginID) {
+      this.userLoggedIn = true;
+    }
+    this.loadMandirs();
+
   }
-}
+
+
+  async getCurrentLocation() {
+    try {
+      const permission = await Geolocation.requestPermissions();
+
+      if (permission.location === 'granted') {
+        const position = await Geolocation.getCurrentPosition();
+
+        this.Mandir.Latitude = String(position.coords.latitude);
+        this.Mandir.Longitude = String(position.coords.longitude);
+
+        console.log('Lat:', this.Mandir.Latitude);
+        console.log('Lng:', this.Mandir.Longitude);
+      } else {
+        alert('Location permission denied');
+      }
+
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  }
 
   loadMandirs() {
     this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1  ORDER BY DateAdded DESC`, null).subscribe({
@@ -265,7 +287,7 @@ async getCurrentLocation() {
       return this.showToast('Please enter the Mandir name 🛕', 'warning');
     if (!this.Mandir.GodName?.trim())
       return this.showToast('Please enter the presiding deity 🌸', 'warning');
-    
+
 
     // Warn if photo was chosen but not yet uploaded
     if (this.selectedFrontImageFile && !this.Mandir.FrontImage)
@@ -301,6 +323,8 @@ async getCurrentLocation() {
     toast.present();
   }
 
-
+  openMandirDetails(mandirID: number) {
+    this.routerCtrl.navigateForward(`/mandirfulldetails/${mandirID}`);
+  }
 
 }

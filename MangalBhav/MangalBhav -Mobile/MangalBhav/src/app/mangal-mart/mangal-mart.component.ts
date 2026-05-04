@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 
 export interface Product {
@@ -33,7 +34,7 @@ export interface Category {
   templateUrl: './mangal-mart.component.html',
   styleUrls: ['./mangal-mart.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, IonicModule, FormsModule,PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class MangalMartComponent implements OnInit {
 

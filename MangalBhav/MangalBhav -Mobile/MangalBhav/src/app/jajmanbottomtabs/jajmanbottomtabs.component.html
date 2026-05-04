@@ -1,6 +1,6 @@
 <ion-tab-bar slot="bottom" class="mb-tab-bar">
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('tabs/tab3')">
+  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <path fill="#662113" d="M2 34h32l-1-1H3z" />
       <circle cx="5" cy="28" r="2.3" fill="#c7521e" />
@@ -23,7 +23,7 @@
     <ion-label>Pooja & Pandit Ji</ion-label>
   </ion-tab-button>
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('tabs/openfindmandir')">
+  <ion-tab-button (click)="openPage('openfindmandir')" class="mb-tab-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <path fill="#ff8044" d="M25 2.875L18 2v5.25l7-.875l-2.8-1.75z" />
       <path fill="#c7521e" d="M0 36h36l-2-2H2z" />
@@ -44,12 +44,21 @@
     <ion-label>Temple</ion-label>
   </ion-tab-button>
 
+  <!-- 
+  <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
+  <!-- 
+  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
+    <div class="custom-tab-icon"></div>
+  </ion-tab-button>
+   -->
 
   <ion-tab-button class="mb-tab-btn mb-tab-center" (click)="openPage('open-community-page')">
-    <img src="/assets/yagna2.png" class="mb-center-fab-img" />
+    <img src="/assets/yagna2.png" class="mb-center-fab-img"  />
   </ion-tab-button>
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('tabs/allchats')">
+
+
+  <ion-tab-button (click)="openPage('allchats')" class="mb-tab-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <path fill="#662113" d="M3 1Q1 1 1 3v19Q1 23 3 23H7v7l8-7H33Q35 23 35 21V3Q35 1 33 1z" />
       <path fill="#c7521e" d="M3.5 1.5Q2 1.5 2 3v18Q2 22.5 3.5 22.5H7.5v6l7-6H32.5Q34 22.5 34 21V3Q34 1.5 32.5 1.5z" />
@@ -69,10 +78,7 @@
     <ion-label>Ask Pandit</ion-label>
   </ion-tab-button>
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('tabs/tab1')">
-    <!-- <div class="mb-tab-avatar">
-      {{ userDetails?.FullName?.split(' ')?.[0]?.[0]?.toUpperCase() || 'M' }}
-    </div> -->
+  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <path fill="#662113" d="M2 34h32l-1-1H3z" />
       <path fill="#662113" d="M6 35V28Q6 20 10 18H26Q30 20 30 28V35z" />

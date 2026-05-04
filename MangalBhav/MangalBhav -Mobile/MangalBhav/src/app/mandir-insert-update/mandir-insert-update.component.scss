@@ -11,6 +11,7 @@ ion-content {
 }
 
 
+
 // ================================================
 // global.scss — paste all below
 // ================================================
@@ -1336,6 +1337,171 @@ ion-back-button {
   cursor: not-allowed;
 }
 
+// ── Slider ────────────────────────────────────────────────────
+.mandir-slider-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f5f0e8;
+
+  .mandir-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.3s ease;
+  }
+}
+
+.slider-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 3;
+}
+
+.slider-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #E07B00;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  &:active { background: #FFE8A0; }
+}
+
+.slider-dots {
+  display: flex; gap: 5px;
+}
+
+.slider-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transition: background 0.2s;
+  &.active { background: #FF9500; }
+}
+
+.slide-label {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
+  z-index: 3;
+}
+
+// ── Card badges ───────────────────────────────────────────────
+.card-badges {
+  position: absolute;
+  top: 10px; right: 10px;
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-end;
+  z-index: 3;
+}
+
+.mandir-status-badge {
+  background: rgba(255,255,255,0.9);
+  color: #2B8A3E;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
+  &.pending { color: #E07B00; }
+}
+
+// ── Edit FAB on image ─────────────────────────────────────────
+.mandir-edit-fab {
+  position: absolute;
+  bottom: 44px; right: 10px;
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.9);
+  border: 1.5px solid rgba(255,149,0,0.35);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 4;
+  transition: all 0.2s;
+  &:active { background: #FFE8A0; transform: scale(0.9); }
+}
+
+// ── Card meta rows ────────────────────────────────────────────
+.mandir-card-meta {
+  margin: 8px 0;
+  display: flex; flex-direction: column; gap: 5px;
+}
+
+.meta-row {
+  display: flex; align-items: flex-start; gap: 6px;
+}
+
+.meta-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+.meta-text {
+  font-size: 12px;
+  color: #5A3A00;
+  line-height: 1.4;
+}
+
+// ── Edit button in footer ─────────────────────────────────────
+.mandir-edit-btn {
+  background: linear-gradient(135deg, #FFF5D6, #FFE8A0);
+  border: 1.5px solid rgba(255,149,0,0.4);
+  color: #E07B00;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:active { background: #FFD580; transform: scale(0.95); }
+}
+
+// ── Added info ────────────────────────────────────────────────
+.card-added-info {
+  font-size: 10px;
+  color: #B08050;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255,184,0,0.3);
+}
+
+// ── Verify toggles in form ────────────────────────────────────
+.verify-toggle {
+  .toggle-row {
+    display: flex; align-items: center; gap: 10px;
+    padding-top: 8px;
+    span { font-size: 13px; color: #5A3A00; font-weight: 600; }
+  }
+}
+
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid rgba(255,184,0,0.35);
+  border-radius: 10px;
+  background: #FFFBF0;
+  color: #2B1A00;
+  font-size: 14px;
+  outline: none;
+  &:focus { border-color: #FF9500; }
+}
+
 // ── Modal bottom sheet ────────────────────────────────────────
 .mandir-modal {
   position: fixed;
@@ -1582,191 +1748,4 @@ select {
   box-shadow: 0 4px 16px rgba(255, 149, 0, 0.35);
   &:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 149, 0, 0.45); }
   &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-}
-
-
-// ── Improved Card ─────────────────────────────────────────────
-.mandir-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 18px;
-  margin-top: 12px;
-}
-
-.mandir-card {
-  background: #ffffff;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1.5px solid rgba(255, 184, 0, 0.22);
-  box-shadow:
-    0 4px 16px rgba(255, 149, 0, 0.08),
-    0 1px 4px rgba(0, 0, 0, 0.04);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  cursor: pointer;
-
-  &:active {
-    transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.12);
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(255, 149, 0, 0.16);
-      border-color: rgba(255, 149, 0, 0.45);
-    }
-  }
-}
-
-.card-top-border {
-  height: 3px;
-  background: linear-gradient(90deg, #B22222, #E8691A, #F5C842, #E8691A, #B22222);
-}
-
-// ── Image wrap with overlay ───────────────────────────────────
-.mandir-card-img-wrap {
-  position: relative;
-  height: 175px;
-  background: linear-gradient(160deg, #2d1507, #5c2a0e);
-  overflow: hidden;
-
-  .mandir-card-img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  .mandir-card-img-placeholder {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 6px;
-
-    .temple-glyph {
-      font-size: 48px;
-      filter: drop-shadow(0 2px 10px rgba(200, 150, 12, 0.5));
-    }
-    .temple-label {
-      font-size: 13px;
-      color: rgba(245, 200, 66, 0.65);
-      letter-spacing: 3px;
-    }
-  }
-}
-
-// Gradient overlay so name is readable on any image
-.mandir-img-overlay {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 70%;
-  background: linear-gradient(to top, rgba(30, 12, 0, 0.78), transparent);
-  pointer-events: none;
-}
-
-// Mandir name floating on image
-.mandir-img-name {
-  position: absolute;
-  bottom: 12px; left: 14px; right: 44px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.3;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
-  z-index: 2;
-  letter-spacing: 0.2px;
-}
-
-.mandir-verified-badge {
-  position: absolute;
-  top: 10px; right: 10px;
-  background: rgba(139, 26, 26, 0.88);
-  color: #fff7e6;
-  font-size: 9px; font-weight: 700;
-  padding: 4px 10px; border-radius: 20px;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  border: 1px solid rgba(255,255,255,0.2);
-  z-index: 2;
-}
-
-// ── Card Body ─────────────────────────────────────────────────
-.mandir-card-body {
-  padding: 14px 16px 14px;
-
-  .mandir-card-god {
-    font-size: 13px; font-weight: 700;
-    color: #E07B00;
-    margin-bottom: 10px;
-    display: flex; align-items: center; gap: 5px;
-
-    .god-dot { color: #FFB800; font-size: 10px; }
-  }
-
-  .mandir-card-meta-row {
-    display: flex; align-items: flex-start; gap: 6px;
-    font-size: 12px; color: #5C3D1E;
-    margin-bottom: 5px; line-height: 1.4;
-
-    span:first-child { flex-shrink: 0; font-size: 13px; }
-  }
-
-  .mandir-card-history {
-    font-size: 12px; color: #8B6B4A;
-    line-height: 1.6; font-style: italic;
-    border-left: 2px solid rgba(255, 149, 0, 0.4);
-    background: rgba(255, 184, 0, 0.05);
-    border-radius: 0 6px 6px 0;
-    padding: 6px 10px;
-    margin: 10px 0 12px;
-  }
-
-  .mandir-card-footer {
-    border-top: 1px solid rgba(255, 184, 0, 0.18);
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .mandir-map-link {
-    font-size: 12px; color: #E07B00;
-    text-decoration: none; font-weight: 600;
-    padding: 4px 10px;
-    background: rgba(255, 184, 0, 0.1);
-    border-radius: 50px;
-    border: 1px solid rgba(255, 149, 0, 0.25);
-    transition: all 0.15s;
-    &:hover { background: rgba(255, 184, 0, 0.2); }
-  }
-}
-
-// Status chip
-.mandir-status-chip {
-  font-size: 10px; font-weight: 700;
-  padding: 3px 9px; border-radius: 50px;
-  letter-spacing: 0.3px;
-
-  &.verified {
-    background: rgba(43, 138, 62, 0.1);
-    color: #2B8A3E;
-    border: 1px solid rgba(43, 138, 62, 0.25);
-  }
-  &.pending {
-    background: rgba(224, 123, 0, 0.1);
-    color: #E07B00;
-    border: 1px solid rgba(224, 123, 0, 0.25);
-  }
-}
-
-// Arrow hint
-.mandir-arrow {
-  margin-left: auto;
-  color: #FF9500;
-  font-size: 16px;
-  font-weight: 700;
-  opacity: 0.6;
-  transition: opacity 0.2s, transform 0.2s;
-
-  .mandir-card:hover & {
-    opacity: 1;
-    transform: translateX(3px);
-  }
 }

@@ -1,0 +1,237 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">{{ mandir?.MandirName || 'Mandir' }}</div>
+        <div class="inner-title-sub">Sacred Place</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- ── LOADING ── -->
+  <div class="mfd-loading" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <p>Loading mandir details…</p>
+  </div>
+
+  <div *ngIf="!isLoading && mandir" class="mfd-wrap">
+
+    <!-- ══════════════════════════════════
+         IMAGE SLIDER HERO
+    ══════════════════════════════════ -->
+    <div class="mfd-hero">
+
+      <ng-container *ngIf="slideImages.length > 0; else heroPlaceholder">
+        <img [src]="slideImages[activeSlide].url" class="mfd-hero-img" [alt]="mandir.MandirName" />
+
+        <!-- Gradient overlay -->
+        <div class="mfd-hero-overlay"></div>
+
+        <!-- Slide label -->
+        <div class="mfd-slide-label">{{ slideImages[activeSlide].label }}</div>
+
+        <!-- Slider controls -->
+        <div class="mfd-slider-controls" *ngIf="slideImages.length > 1">
+          <button class="mfd-slider-btn" (click)="prevSlide()">‹</button>
+          <div class="mfd-slider-dots">
+            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index" [class.active]="i === activeSlide">
+            </span>
+          </div>
+          <button class="mfd-slider-btn" (click)="nextSlide()">›</button>
+        </div>
+
+        <!-- Verified badge -->
+        <div class="mfd-verified" *ngIf="mandir.IsVerified">✦ Verified</div>
+      </ng-container>
+
+      <ng-template #heroPlaceholder>
+        <div class="mfd-hero-placeholder">
+          <span class="mfd-placeholder-om">🛕</span>
+          <span class="mfd-placeholder-label">मंदिर</span>
+        </div>
+      </ng-template>
+
+      <!-- Name + God floating at bottom -->
+      <div class="mfd-hero-bottom">
+        <h1 class="mfd-hero-name">{{ mandir.MandirName }}</h1>
+        <p class="mfd-hero-god">✦ {{ mandir.GodName }}</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         DONATE BANNER
+    ══════════════════════════════════ -->
+    <div class="mfd-donate-banner" (click)="openDonate()">
+      <div class="mfd-donate-banner-left">
+        <span class="mfd-donate-icon">🪔</span>
+        <div>
+          <div class="mfd-donate-title">Donate to this Mandir</div>
+          <div class="mfd-donate-sub">Support the sacred upkeep & seva</div>
+        </div>
+      </div>
+      <button class="mfd-donate-cta">Donate ₹</button>
+    </div>
+
+    <!-- ══════════════════════════════════
+         INFO CARDS
+    ══════════════════════════════════ -->
+    <div class="mfd-section-label">About</div>
+
+    <!-- Deity -->
+    <div class="mfd-info-card">
+      <div class="mfd-info-icon">🌸</div>
+      <div class="mfd-info-body">
+        <div class="mfd-info-label">Presiding Deity</div>
+        <div class="mfd-info-value">{{ mandir.GodName }}</div>
+      </div>
+    </div>
+
+    <!-- Pujari -->
+    <div class="mfd-info-card" *ngIf="mandir.PujariName">
+      <div class="mfd-info-icon">🙏</div>
+      <div class="mfd-info-body">
+        <div class="mfd-info-label">Pujari / Pandit</div>
+        <div class="mfd-info-value">{{ mandir.PujariName }}</div>
+        <div class="mfd-info-sub" *ngIf="mandir.PujariPhoneNumber">
+          <a [href]="'tel:' + mandir.PujariPhoneNumber" class="mfd-phone-link">
+            📞 {{ mandir.PujariPhoneNumber }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="mfd-info-card mfd-info-card--clickable" *ngIf="mandir.Address" (click)="openMaps()">
+      <div class="mfd-info-icon">📍</div>
+      <div class="mfd-info-body">
+        <div class="mfd-info-label">Address</div>
+        <div class="mfd-info-value">{{ mandir.Address }}</div>
+        <div class="mfd-info-sub" *ngIf="mandir.City || mandir.State">
+          {{ mandir.City }}{{ mandir.City && mandir.State ? ', ' : '' }}{{ mandir.State }}
+          {{ mandir.Pincode ? ' – ' + mandir.Pincode : '' }}
+        </div>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="mfd-info-arrow"></ion-icon>
+    </div>
+
+    <!-- Map button -->
+    <div class="mfd-map-btn-wrap" *ngIf="mandir.Latitude && mandir.Longitude">
+      <button class="mfd-map-btn" (click)="openMaps()">
+        🗺️ Open in Google Maps
+      </button>
+    </div>
+
+    <!-- History -->
+    <ng-container *ngIf="mandir.History">
+      <div class="mfd-section-label">History & Significance</div>
+      <div class="mfd-history-card">
+        <div class="mfd-history-om">ॐ</div>
+        <p class="mfd-history-text">{{ mandir.History }}</p>
+      </div>
+    </ng-container>
+
+    <!-- Status -->
+    <div class="mfd-section-label">Details</div>
+    <div class="mfd-details-row">
+      <div class="mfd-detail-box">
+        <div class="mfd-detail-icon">{{ mandir.IsVerified ? '✅' : '⏳' }}</div>
+        <div class="mfd-detail-label">Status</div>
+        <div class="mfd-detail-value" [class.green]="mandir.IsVerified" [class.orange]="!mandir.IsVerified">
+          {{ mandir.IsVerified ? 'Verified' : 'Pending' }}
+        </div>
+      </div>
+      <div class="mfd-detail-box" *ngIf="mandir.AddedByName">
+        <div class="mfd-detail-icon">👤</div>
+        <div class="mfd-detail-label">Added By</div>
+        <div class="mfd-detail-value">{{ mandir.AddedByName }}</div>
+      </div>
+      <div class="mfd-detail-box">
+        <div class="mfd-detail-icon">📅</div>
+        <div class="mfd-detail-label">Added On</div>
+        <div class="mfd-detail-value">{{ mandir.DateAdded | date:'dd MMM yyyy' }}</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="mfd-divider">✦ ॐ ✦ ॐ ✦</div>
+
+    <div class="mfd-slogan">
+      <p>हर हर महादेव · जय श्री राम · जय माता दी</p>
+    </div>
+
+  </div><!-- /mfd-wrap -->
+
+  <!-- ══════════════════════════════════
+       DONATE BOTTOM SHEET
+  ══════════════════════════════════ -->
+  <div class="mfd-backdrop" [class.active]="showDonateSheet" (click)="closeDonate()"></div>
+
+  <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
+
+    <div class="mfd-sheet-header">
+      <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
+      <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
+      <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
+    </div>
+
+    <div class="mfd-sheet-body">
+
+      <!-- Preset amounts -->
+      <div class="mfd-donate-label">Select Amount</div>
+      <div class="mfd-preset-grid">
+        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
+          (click)="selectPreset(amt)">
+          ₹{{ amt }}
+        </button>
+      </div>
+
+      <!-- Custom amount -->
+      <div class="mfd-donate-label" style="margin-top: 18px;">Or Enter Custom Amount</div>
+      <div class="mfd-amount-input-wrap">
+        <span class="mfd-rupee">₹</span>
+        <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount" placeholder="e.g. 750"
+          (input)="donateAmount = ''" />
+      </div>
+
+      <!-- Donor name -->
+      <div class="mfd-donate-label" style="margin-top: 16px;">Your Name </div>
+      <input class="mfd-text-input" type="text" [(ngModel)]="donateName"
+        placeholder="So we can acknowledge your seva" />
+
+      <div class="mfd-donate-label" style="margin-top: 16px;">Mobile No. </div>
+      <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile"
+        placeholder="So we can acknowledge your seva" />
+
+      <!-- Message -->
+      <div class="mfd-donate-label" style="margin-top: 16px;">Message (Optional)</div>
+      <textarea class="mfd-text-input" rows="2" [(ngModel)]="donateMessage"
+        placeholder="e.g. Jay Shri Ram 🙏"></textarea>
+
+      <!-- Summary -->
+      <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
+        <span>🙏 You are donating</span>
+        <strong>₹{{ finalAmount }}</strong>
+      </div>
+
+    </div>
+
+    <div class="mfd-sheet-footer">
+      <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
+      <button class="mfd-donate-submit-btn" (click)="initiatePayment()" [disabled]="isDonating || finalAmount < 1">
+        <span *ngIf="!isDonating">🪔 Proceed to Donate</span>
+        <span *ngIf="isDonating">Processing…</span>
+      </button>
+    </div>
+
+  </div>
+
+</ion-content>

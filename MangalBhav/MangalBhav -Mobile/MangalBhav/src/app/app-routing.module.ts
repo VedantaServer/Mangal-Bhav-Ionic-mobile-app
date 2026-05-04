@@ -37,20 +37,23 @@ import { LanguageChangeComponent } from './language-change/language-change.compo
 import { OpenfindmandirComponent } from './openfindmandir/openfindmandir.component';
 import { MangalMartComponent } from './mangal-mart/mangal-mart.component';
 import { OpenLanguageChangeComponent } from './open-language-change/open-language-change.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { MandirInsertUpdateComponent } from './mandir-insert-update/mandir-insert-update.component';
+import { MandirfulldetailsComponent } from './mandirfulldetails/mandirfulldetails.component';
 
 const routes: Routes = [
-  
+
   {
     path: '',
     component: LoginPage
   },
 
-   
+
   {
     path: 'privacypolicy',
     component: PrivacyPolicyComponent
   },
-  
+
   {
     path: 'login',
     component: LoginPage
@@ -112,7 +115,7 @@ const routes: Routes = [
     component: FindPanditComponent  // directly use the standalone component
   }
 
- ,
+  ,
   {
     path: 'open-find-pandit',
     component: OpenFindPanditComponent  // directly use the standalone component
@@ -125,7 +128,7 @@ const routes: Routes = [
   }
 
 
- 
+
   ,
   {
     path: 'pandit-list',
@@ -141,7 +144,7 @@ const routes: Routes = [
     path: 'loggedin-home',
     component: LoggedinHomeComponent  // directly use the standalone component
   }
-   ,
+  ,
   {
     path: 'mangalmart',
     component: MangalMartComponent  // directly use the standalone component
@@ -198,7 +201,7 @@ const routes: Routes = [
     path: 'completed-booking',
     component: JajmanCompletedPoojaComponent  // directly use the standalone component
   }
-   ,
+  ,
   {
     path: 'allchats',
     component: AllChatsComponent  // directly use the standalone component
@@ -208,7 +211,7 @@ const routes: Routes = [
     path: 'chatbox',
     component: ChatBoxComponent  // directly use the standalone component
   }
-    ,
+  ,
   {
     path: 'appnotificatio',
     component: ChatBoxComponent  // directly use the standalone component
@@ -219,16 +222,31 @@ const routes: Routes = [
     component: LanguageChangeComponent  // directly use the standalone component
   }
 
-   ,
+  ,
   {
     path: 'openlanguagechange',
     component: OpenLanguageChangeComponent  // directly use the standalone component
   }
 
-    ,
+  ,
   {
     path: 'openfindmandir',
     component: OpenfindmandirComponent // directly use the standalone component
+  }
+  ,
+  {
+    path: 'admindashboard',
+    component: AdminDashboardComponent // directly use the standalone component
+  }
+  ,
+  {
+    path: 'mandirinsertupdate',
+    component: MandirInsertUpdateComponent // directly use the standalone component
+  }
+  ,
+  {
+    path: 'mandirfulldetails/:id',
+    component: MandirfulldetailsComponent // directly use the standalone component
   }
 ];
 @NgModule({

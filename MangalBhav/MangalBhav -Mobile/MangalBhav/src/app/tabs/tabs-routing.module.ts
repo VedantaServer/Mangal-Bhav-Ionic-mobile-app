@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { OpenfindmandirComponent } from '../openfindmandir/openfindmandir.component';
+import { FindPanditComponent } from '../find-pandit/find-pandit.component';
+import { AllChatsComponent } from '../all-chats/all-chats.component';
 //import { CommunityPage } from '../community/community';
 //import { HelpPage } from '../help/help';
 
@@ -14,10 +17,18 @@ const routes: Routes = [
         loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
       },
       {
+        path: 'openfindmandir',
+        component: OpenfindmandirComponent
+      },
+       {
+        path: 'allchats',
+        component: AllChatsComponent
+      },
+      {
         path: 'tab2',
         loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
       },
-       {
+      {
         path: 'tab3',
         loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
       },
@@ -42,4 +53,4 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)]
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }

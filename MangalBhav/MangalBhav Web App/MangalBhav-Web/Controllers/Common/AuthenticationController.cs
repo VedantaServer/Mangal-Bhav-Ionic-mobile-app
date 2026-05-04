@@ -23,6 +23,9 @@ using static FaceUPAI.CommonServices;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Syntizen.Aadhaar.AuaKua;
 using System.Net;
+using FaceUPAI.Models;
+using System.Security.Cryptography;
+using System.Data.SqlTypes;
 
 namespace FaceUPAI.Controllers
 {
@@ -390,7 +393,270 @@ namespace FaceUPAI.Controllers
 
 
 
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("getRazorPayUniqueOrderID")]
+        public async Task<IActionResult> GetRazorPayUniqueOrderID(int amount)
+        {
+            try
+            {
+                string apiUrl = "https://api.razorpay.com/v1/orders";
 
+
+                string query = "Domain = 'RazorPay' ";
+
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@TenantID", 1),
+            new SqlParameter("@Query", query),
+                };
+
+                List<MasterData> masterDataList = new List<MasterData>();
+
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure, "MasterDataSelectByQuery", parameters))
+                {
+                    while (dataReader.Read())
+                    {
+                        MasterData data = MakeMasterData(dataReader);
+                        masterDataList.Add(data);
+                    }
+                }
+
+                // 🔥 STEP 2: Extract refresh_token
+                var refreshTokenData = masterDataList
+                    .FirstOrDefault(x => x.Identifier == "access_token");
+
+                if (refreshTokenData == null)
+                    return BadRequest("Refresh token not found");
+
+                string refreshToken = refreshTokenData.Description;
+
+
+
+
+
+
+                // Fixed Bearer Token
+                //  string razorpayToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJhdWQiOiJTTlNJd0dmT2kwV2JaYSIsImp0aSI6IlNWa3NlVXkzekFYUmN5IiwiaWF0IjoxNzc0NTA2NDY1LCJuYmYiOjE3NzQ1MDY0NjUsInN1YiI6IiIsImV4cCI6MTc4MjQ1NTI2NSwidXNlcl9pZCI6Iks4ZXZPWVZHUTdMdTZPIiwibWVyY2hhbnRfaWQiOiJLOGV2T2dMakJ0ZUU0SyIsInNjb3BlcyI6WyJyZWFkX3dyaXRlIl0sImNvdW50cnlfY29kZSI6IklOIn0.h_gmw-_VTILPvLx7maqBLPxobxjfjn9N60TowIUubwkzVCyJP5qqTOsC1AalGn-rh3EnuIgwOqyj4gqOMfmgaA";
+
+                string razorpayToken = refreshToken;
+
+                HttpClientHandler handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    // Authorization Header
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", razorpayToken);
+
+                    var requestBody = new
+                    {
+                        amount = amount,
+                        currency = "INR",
+                        receipt = "receipt#1",
+                        notes = new
+                        {
+                            key1 = "value3",
+                            key2 = "value2"
+                        }
+                    };
+
+                    var json = System.Text.Json.JsonSerializer.Serialize(requestBody);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(apiUrl, content);
+
+                    var responseData = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(responseData);
+
+                    var razorResponse = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(responseData);
+
+                    string orderId = razorResponse.GetProperty("id").GetString();
+
+                    return Ok(new
+                    {
+                        success = true,
+                        orderID = orderId,
+                        fullResponse = razorResponse
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("verifyRazorPayPayment")]
+        public IActionResult VerifyRazorPayPayment(
+    string paymentId,
+    string orderId,
+    string signature
+)
+        {
+            try
+            {
+                string razorpaySecret = "fvGn5d4RGD87Qq43LcVEOKYj";
+
+                bool isValid = VerifySignature(orderId, paymentId, signature, razorpaySecret);
+
+                return Ok(new
+                {
+                    success = isValid,
+                    message = isValid ? "Payment verified" : "Invalid signature"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+        private bool VerifySignature(string orderId, string paymentId, string signature, string secret)
+        {
+            string payload = orderId + "|" + paymentId;
+
+            var keyBytes = Encoding.UTF8.GetBytes(secret);
+
+            using (var hmac = new HMACSHA256(keyBytes))
+            {
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
+                var generatedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
+
+                return generatedSignature == signature;
+            }
+        }
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("refreshRazorPaySchoolCredentials")]
+        public async Task<IActionResult> RefreshRazorPaySchoolCredentials()
+        {
+            try
+            {
+                string apiUrl = "https://auth.razorpay.com/token";
+
+                // 🔥 STEP 1: Get existing RazorPay data from DB
+                string query = "Domain = 'RazorPay'";
+
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@TenantID", 1),
+            new SqlParameter("@Query", query),
+                };
+
+                List<MasterData> masterDataList = new List<MasterData>();
+
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure, "MasterDataSelectByQuery", parameters))
+                {
+                    while (dataReader.Read())
+                    {
+                        MasterData data = MakeMasterData(dataReader);
+                        masterDataList.Add(data);
+                    }
+                }
+
+                // 🔥 STEP 2: Extract refresh_token
+                var refreshTokenData = masterDataList
+                    .FirstOrDefault(x => x.Identifier == "refresh_token");
+
+                if (refreshTokenData == null)
+                    return BadRequest("Refresh token not found");
+
+                string refreshToken = refreshTokenData.Description;
+
+                // 🔥 STEP 3: Call Razorpay refresh API
+                HttpClientHandler handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    var requestBody = new
+                    {
+                        client_id = "SNSIwGfOi0WbZa",
+                        client_secret = "fvGn5d4RGD87Qq43LcVEOKYj",
+                        grant_type = "refresh_token",
+                        refresh_token = refreshToken
+                    };
+
+                    var json = System.Text.Json.JsonSerializer.Serialize(requestBody);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(apiUrl, content);
+                    var responseData = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                        return BadRequest(responseData);
+
+                    var razorResponse = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(responseData);
+
+                  
+
+                    return Ok(new
+                    {
+                        success = true,
+                        message = "RazorPay credentials fetched successfully",
+                        data = razorResponse
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
+
+
+
+
+        public MasterData MakeMasterData(SqlDataReader dataReader)
+        {
+            MasterData masterData = new MasterData();
+            masterData.MasterDataID = DataAccess.GetInt32(dataReader, "MasterDataID", 0);
+            masterData.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
+            masterData.ParentItemID = DataAccess.GetInt32(dataReader, "ParentItemID", 0);
+            masterData.Description = DataAccess.GetString(dataReader, "Description", String.Empty);
+            masterData.Domain = DataAccess.GetString(dataReader, "Domain", String.Empty);
+            masterData.Identifier = DataAccess.GetString(dataReader, "Identifier", String.Empty);
+            masterData.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
+            masterData.DateModified = DataAccess.GetDateTime(dataReader, "DateModified", DateTime.MinValue);
+            masterData.UpdatedByUser = DataAccess.GetString(dataReader, "UpdatedByUser", String.Empty);
+            masterData.MasterDataLevel = DataAccess.GetString(dataReader, "MasterDataLevel", String.Empty);
+
+            return masterData;
+        }
 
 
         [HttpPost]

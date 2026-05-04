@@ -16,27 +16,34 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: 'tabs.page.html',
-  styleUrls: ['tabs.page.scss'],
-  standalone: false,
+  selector: 'app-admin-dashboard',
+  templateUrl: './admin-dashboard.component.html',
+  styleUrls: ['./admin-dashboard.component.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, FormsModule]
 })
-export class TabsPage {
-  userDetails: any;
+export class AdminDashboardComponent implements OnInit {
+  isloggedin: boolean = false;
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
-    public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) {
-
-  }
+    public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) { }
 
   async ngOnInit() {
-    this.userDetails = await this.storage.get("account");
 
+    this.isloggedin = await this.storage.get('adminloggedin') == 'true';
+
+    if (!this.isloggedin) {
+      this.routerCtrl.navigateRoot('/login');
+    }
   }
 
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
+  logout(){
+    this.storage.remove('adminloggedin')
+     this.routerCtrl.navigateRoot('/login');
+  }
 }

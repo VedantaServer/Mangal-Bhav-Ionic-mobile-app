@@ -201,100 +201,6 @@
 
     <!-- ═══ INSERT THIS ENTIRE BLOCK BEFORE .comm-footer-strip ═══ -->
 
-
-    <!-- ═══ MANDIR DIRECTORY ═══ -->
-    <section class="comm-section mandir-dir-section">
-      <p class="comm-eyebrow">🛕 Sacred Places</p>
-      <h2 class="comm-heading">Mandir Directory</h2>
-      <p class="comm-sub">Discover and add mandirs near you — open to every devotee</p>
-
-      <!-- Search + Add Bar -->
-
-        <!-- <div class="mandir-search-wrap">
-          <span class="mandir-search-icon">🔍</span>
-          <input class="mandir-search-input" type="text" placeholder="Search by name, city or deity..."
-            [(ngModel)]="mandirSearchQuery" (input)="onMandirSearch()" />
-        </div> -->
-        <!-- <button class="mandir-add-btn" (click)="openAddMandir()">
-          <span>+</span> Want to add a Mandir
-        </button> -->
-     
-
-      <!-- Mandir Cards Grid -->
-      <!-- <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
-        <div class="mandir-card" *ngFor="let m of filteredMandirs">
-          <div class="mandir-card-img-wrap">
-            <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
-
-            <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
-              🛕
-            </div>
-            <span class="mandir-verified-badge" *ngIf="m.IsVerified">✔ Verified</span>
-          </div>
-          <div class="mandir-card-body">
-            <div class="mandir-card-name">{{ m.MandirName }}</div>
-            <div class="mandir-card-god">🌸 {{ m.GodName }}</div>
-            <div class="mandir-card-location">📍 {{ m.City }}, {{ m.State }}</div>
-            <div class="mandir-card-pujari" *ngIf="m.PujariName">🙏 {{ m.PujariName }}</div>
-            <p class="mandir-card-history" *ngIf="m.History">
-              {{ m.History | slice:0:100 }}{{ m.History.length > 100 ? '…' : '' }}
-            </p>
-            <div class="mandir-card-footer">
-              <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
-                [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank">🗺️ View on
-                Map</a>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
-        <div class="mandir-card" *ngFor="let m of filteredMandirs">
-          <div class="card-top-border"></div>
-          <div class="mandir-card-img-wrap">
-            <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
-            <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
-              <span class="temple-glyph">🛕</span>
-              <span class="temple-label">मंदिर</span>
-            </div>
-            <span class="mandir-verified-badge" *ngIf="m.IsVerified">✦ Verified</span>
-          </div>
-          <div class="mandir-card-body">
-            <div class="mandir-card-name">{{ m.MandirName }}</div>
-            <div class="card-divider"></div>
-            <div class="mandir-card-god">✦ {{ m.GodName }}</div>
-            <div class="mandir-card-location">📍 {{ m.City }}, {{ m.State }}</div>
-            <div class="mandir-card-pujari" *ngIf="m.PujariName">🙏 {{ m.PujariName }}</div>
-            <p class="mandir-card-history" *ngIf="m.History">
-              {{ m.History | slice:0:120 }}{{ m.History.length > 120 ? '…' : '' }}
-            </p>
-            <div class="mandir-card-footer">
-              <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
-                [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank">
-                🗺️ View on Map
-              </a>
-              <span class="lotus-deco">✿ ✿ ✿</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ng-template #noMandirs>
-        <div class="mandir-empty">
-          <div class="mandir-empty-icon">🛕</div>
-          <p>No mandirs found</p>
-        </div>
-      </ng-template>
-
-
-      <ng-template #noMandirs>
-        <div class="mandir-empty">
-          <div class="mandir-empty-icon">🛕</div>
-          <p>No mandirs found. Be the first to add one!</p>
-          <button class="mandir-add-btn" (click)="openAddMandir()">+ Add Mandir</button>
-        </div>
-      </ng-template>
-    </section>
     <!-- ═══ MODAL BACKDROP ═══ -->
     <div class="mandir-modal-backdrop" [class.active]="showAddMandirForm" (click)="closeAddMandir()"></div>
     <!-- ═══ ADD MANDIR BOTTOM SHEET ═══ -->
@@ -481,47 +387,9 @@
 </ion-content>
 
 
-<ion-tab-bar *ngIf="userLoggedIn" slot="bottom" class="mb-tab-bar">
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('loggedin-home')">
-    <ion-icon name="sparkles-outline"></ion-icon>
-    <ion-label>Explore Life</ion-label>
-  </ion-tab-button>
-
-  <!-- Empty spacer in center -->
-  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
-
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
-    <div class="custom-tab-icon"></div>
-  </ion-tab-button>
+<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 
 
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('jajmandashboard')">
-    <ion-icon name="person"></ion-icon>
-    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
-  </ion-tab-button>
-
-</ion-tab-bar>
-
-
-<ion-tab-bar *ngIf="!userLoggedIn" slot="bottom" class="mb-tab-bar">
-
-  <ion-tab-button class="mb-tab-btn" (click)="goBack()">
-    <ion-icon name="sparkles-outline"></ion-icon>
-    <ion-label>Explore Life</ion-label>
-  </ion-tab-button>
-
-  <!-- Empty spacer in center -->
-  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
-
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
-    <div class="custom-tab-icon"></div>
-  </ion-tab-button>
-
-
-  <ion-tab-button class="mb-tab-btn" (click)="goBack()">
-    <ion-icon name="person-outline"></ion-icon>
-    <ion-label>Signup / Login</ion-label>
-  </ion-tab-button>
-
-</ion-tab-bar>
+<app-loggedoutbottomtabs *ngIf="!userLoggedIn" ></app-loggedoutbottomtabs>

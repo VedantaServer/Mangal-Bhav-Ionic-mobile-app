@@ -67,7 +67,7 @@
         </div>
       </div> -->
 
-    <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
+    <!-- <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
       <div class="mandir-card" *ngFor="let m of filteredMandirs">
         <div class="card-top-border"></div>
         <div class="mandir-card-img-wrap">
@@ -96,8 +96,70 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
+    <div class="mandir-grid" *ngIf="filteredMandirs.length > 0; else noMandirs">
+      <div class="mandir-card" *ngFor="let m of filteredMandirs" (click)="openMandirDetails(m.MandirID)">
+
+        <!-- Saffron top stripe -->
+        <div class="card-top-border"></div>
+
+        <!-- Image -->
+        <div class="mandir-card-img-wrap">
+          <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
+          <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
+            <span class="temple-glyph">🛕</span>
+            <span class="temple-label">मंदिर</span>
+          </div>
+
+          <!-- Overlay gradient at bottom of image -->
+          <div class="mandir-img-overlay"></div>
+
+          <!-- Mandir name on image -->
+          <div class="mandir-img-name">{{ m.MandirName }}</div>
+
+          <!-- Verified badge -->
+          <span class="mandir-verified-badge" *ngIf="m.IsVerified">✦ Verified</span>
+        </div>
+
+        <!-- Card Body -->
+        <div class="mandir-card-body">
+
+          <div class="mandir-card-god">
+            <span class="god-dot">✦</span> {{ m.GodName }}
+          </div>
+
+          <div class="mandir-card-meta-row" *ngIf="m.Address">
+            <span>📍</span>
+            <span>{{ m.Address | slice:0:60 }}{{ m.Address?.length > 60 ? '…' : '' }}</span>
+          </div>
+
+          <div class="mandir-card-meta-row" *ngIf="m.PujariName">
+            <span>🙏</span>
+            <span>{{ m.PujariName }}</span>
+          </div>
+
+          <p class="mandir-card-history" *ngIf="m.History">
+            {{ m.History | slice:0:100 }}{{ m.History.length > 100 ? '…' : '' }}
+          </p>
+
+          <div class="mandir-card-footer">
+            <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
+              [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
+              (click)="$event.stopPropagation()">
+              🗺️ Map
+            </a>
+
+            <span class="mandir-status-chip" [class.verified]="m.IsVerified" [class.pending]="!m.IsVerified">
+              {{ m.IsVerified ? '✔ Active' : '⏳ Pending' }}
+            </span>
+
+            <span class="mandir-arrow">→</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
     <ng-template #noMandirs>
       <div class="mandir-empty">
         <div class="mandir-empty-icon">🛕</div>
@@ -291,3 +353,14 @@
   </div><!-- /mandir-modal -->
 
 </ion-content>
+
+
+
+<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomtab"></app-panditjibottomtabs>
+
+
+
+<app-loggedoutbottomtabs *ngIf="!userLoggedIn" ></app-loggedoutbottomtabs>

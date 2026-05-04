@@ -1,4 +1,4 @@
-import { HttpClient,HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { Capacitor } from "@capacitor/core";
 import { BehaviorSubject, from, Observable } from "rxjs";
@@ -8,32 +8,32 @@ import { Http } from "@capacitor-community/http";
   providedIn: 'root'   // ✅ Add this line
 })
 export class ApiNU {
-  
-      
+
+
   systemInfoID: any = '1';
-   objectArr:any = []
+  objectArr: any = []
   prepareImagePath(imageName: string, imagePurpose: string) {
     return this.baseURL + "api/VedantaLogin/DownloadImages?imageName=" + imageName + "&imagePurpose=" + imagePurpose;
   }
 
 
   //public baseURL: string='https://nu.vedantaerpserver.com/';
-  public baseURL: string='https://mangalbhav.com/';
-   //public baseURL: string='https://localhost:44305/';
+  public baseURL: string = 'https://mangalbhav.com/';
+  // public baseURL: string = 'https://localhost:44305/';
 
   httpClient: any;
   constructor(http: HttpClient) {
     this.httpClient = http;
   }
   getQRCode(entityType: string, entityName: string, entityID: string): any {
-    
-     //explain.. for purchase self by customer this will build as http://216.48.181.17/customerselfpurchase/5 .. ID=5 is block ID
+
+    //explain.. for purchase self by customer this will build as http://216.48.181.17/customerselfpurchase/5 .. ID=5 is block ID
     // http://216.48.181.17/ViewDetails/Block/Canteen/5 - 3 params tell us about, EntiryType (Object name), Entity Name : Canteen, EntityID. RowID in DB
-     
+
     var componentType = entityType == 'Block' ? 'customerselfpurchase/' + entityID
       : 'ViewDetails/' + entityType + '/' + entityName + '/' + entityID; //here we can preprare how do we want to handle the QR code URL
 
-    return this.baseURL + componentType; 
+    return this.baseURL + componentType;
   }
 
   // postUrlData(urlextension: any, body: any): any {
@@ -45,15 +45,15 @@ export class ApiNU {
 
 
 
-    postUrlData(urlExtension: string, body: any) {
+  postUrlData(urlExtension: string, body: any) {
     const fullUrl = this.baseURL + urlExtension;
 
-    
+
     if (Capacitor.isNativePlatform()) {
       let url = fullUrl;
       let params: any = {};
 
-      
+
       if (fullUrl.includes('?')) {
         const [base, qs] = fullUrl.split('?');
         url = base;
@@ -64,7 +64,7 @@ export class ApiNU {
         });
       }
 
-      
+
       const dataToSend = body ?? {};
 
       return from(
@@ -75,11 +75,11 @@ export class ApiNU {
           headers: {
             'Content-Type': 'application/json',
           },
-        }).then((res : any) => res.data),
+        }).then((res: any) => res.data),
       );
     }
 
-    
+
     return this.httpClient.post(fullUrl, body, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     });
@@ -132,7 +132,7 @@ export class ApiNU {
     formData.append('entityID', entityID.toString());
     formData.append('filePurpose', filePurpose);
 
-    return this.httpClient.post(this.baseURL +'UploadFile', formData);
+    return this.httpClient.post(this.baseURL + 'UploadFile', formData);
   }
 
   downloadFile(filePurpose: string, fileName: string): Observable<Blob> {
@@ -173,16 +173,16 @@ export class ApiNU {
     return this.httpClient.get(this.baseURL + "CommonMappingKeyData", { params });
   }
 
-  
 
-  SetObjectValueArray(objectname: any, cvalue: any, cname: any): any { 
+
+  SetObjectValueArray(objectname: any, cvalue: any, cname: any): any {
     var indexOfObject: any;
     var itemFound = this.objectArr.length > 0 ? this.objectArr.filter((ad: { objectname: any; }) => ad.objectname == objectname).length : 0;
     if (itemFound != 0) {
       indexOfObject = this.objectArr.findIndex((item: { objectname: any; }) => item.objectname === objectname);
       this.objectArr.splice(indexOfObject, 1);
     }
-    this.objectArr.push({ 'objectname': objectname, 'cvalue': cvalue,'cname':cname });
+    this.objectArr.push({ 'objectname': objectname, 'cvalue': cvalue, 'cname': cname });
   }
 
   getObjectID(objectname: any): any {
@@ -217,7 +217,7 @@ export class GlobalKeys {
   public currentFYIdentifier = "currentFYIdentifier";
 
 }
- 
+
 export class LocalStorage {
 
   constructor() { }

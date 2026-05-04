@@ -1881,3 +1881,252 @@ ion-tab-bar.mb-tab-bar::part(native) {
   margin: 0;
   text-align: center;
 }
+
+
+// ── Modal bottom sheet ────────────────────────────────────────
+.mandir-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: calc(85vh - 56px);
+  background: #FFFBF0;                          // ← warm cream
+  border-top: 2px solid rgba(255, 149, 0, 0.35);
+  border-radius: 24px 24px 0 0;
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 32px rgba(224, 123, 0, 0.15);
+
+  &.active { transform: translateY(0); }
+
+  @media (min-width: 768px) {
+    max-width: 640px;
+    left: 50%;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(100%);
+    &.active { transform: translateX(-50%) translateY(0); }
+  }
+}
+
+.mandir-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 184, 0, 0.2);
+  flex-shrink: 0;
+  position: relative;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border-radius: 22px 22px 0 0;
+
+  .mandir-modal-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+
+  .mandir-modal-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 3px;
+  }
+
+  .mandir-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    &:hover { background: rgba(255, 255, 255, 0.3); }
+    &:active { background: rgba(255, 255, 255, 0.4); }
+  }
+}
+
+.mandir-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 20px 24px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: #FFFBF0;
+}
+
+// ── Form section label ────────────────────────────────────────
+.mandir-form-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #FF9500;
+  margin: 20px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 149, 0, 0.2);
+  &:first-child { margin-top: 0; }
+}
+
+// ── Form groups ───────────────────────────────────────────────
+.mandir-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  &.full { width: 100%; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7A4D00;
+    letter-spacing: 0.3px;
+  }
+
+  input, textarea {
+    background: #ffffff;
+    border: 1.5px solid rgba(255, 184, 0, 0.35);
+    border-radius: 12px;
+    color: #2B1A00;
+    font-size: 14px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+
+    &::placeholder { color: #C4A882; }
+
+    &:focus {
+      border-color: #FF9500;
+      box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+      background: #ffffff;
+    }
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+}
+
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #2B1A00;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  &:focus {
+    border-color: #FF9500;
+    box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+  }
+}
+
+// ── Verify toggles ────────────────────────────────────────────
+.verify-toggle {
+  .toggle-row {
+    display: flex; align-items: center; gap: 10px;
+    padding-top: 8px;
+    span { font-size: 13px; color: #5A3A00; font-weight: 600; }
+  }
+}
+
+// ── Upload box ────────────────────────────────────────────────
+.mandir-upload-box {
+  width: 100%;
+  min-height: 130px;
+  border: 2px dashed rgba(255, 149, 0, 0.35);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF5D6;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: #FF9500;
+    background: #FFE8A0;
+  }
+
+  .mandir-upload-preview {
+    width: 100%; height: 160px;
+    object-fit: cover; display: block;
+  }
+
+  .mandir-upload-placeholder {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    color: #C4934A;
+    font-size: 13px; padding: 20px;
+    .mandir-upload-icon { font-size: 28px; }
+  }
+
+  .mandir-upload-saved {
+    font-size: 12px; color: #2B8A3E;
+    padding: 16px; text-align: center;
+    word-break: break-all;
+  }
+}
+
+.mandir-upload-actions {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+
+  .mandir-file-name {
+    flex: 1; font-size: 12px; color: #7A4D00;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .mandir-upload-btn {
+    padding: 7px 16px;
+    background: linear-gradient(135deg, #FFF5D6, #FFE8A0);
+    border: 1.5px solid rgba(255, 149, 0, 0.4);
+    border-radius: 10px;
+    color: #E07B00;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
+    &:hover { background: #FFD580; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+}
+
+// ── Modal footer ──────────────────────────────────────────────
+.mandir-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 184, 0, 0.2);
+  display: flex; gap: 12px; flex-shrink: 0;
+  background: #FFFBF0;
+}
+
+.mandir-cancel-btn {
+  flex: 1; padding: 14px;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  border-radius: 14px;
+  color: #7A4D00;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  &:hover { background: #FFF5D6; border-color: #FF9500; }
+}
+
+.mandir-submit-btn {
+  flex: 2; padding: 14px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border: none; border-radius: 14px;
+  color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(255, 149, 0, 0.35);
+  &:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 149, 0, 0.45); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+}

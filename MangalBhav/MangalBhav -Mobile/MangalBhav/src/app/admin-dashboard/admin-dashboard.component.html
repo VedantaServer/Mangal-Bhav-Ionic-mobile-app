@@ -1,0 +1,52 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <div class="nav-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">Mangal<span class="logo-dot">.</span>Bhav</div>
+          <div class="nav-logo-sub">Admin Panel</div>
+        </div>
+      </div>
+
+      <button class="header-logout-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </button>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="page-wrapper">
+
+    <!-- ===== GREETING ===== -->
+    <div class="greeting">
+      <div class="greeting-text">
+        <p class="greeting-sub">Welcome back, Admin ji</p>
+        <h2 class="greeting-title">🙏 Jai Shri Ram</h2>
+      </div>
+      <div class="greeting-om">ॐ</div>
+    </div>
+
+    <!-- ===== SECTION LABEL ===== -->
+    <div class="section-label">Manage</div>
+
+    <!-- ===== SINGLE CARD ===== -->
+    <div class="dashboard-grid">
+      <div class="dash-card" (click)="openPage('mandirinsertupdate')">
+        <div class="dash-icon">🛕</div>
+        <span>Mandir</span>
+      </div>
+    </div>
+
+    <!-- ===== DIVIDER ===== -->
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+    <div class="chalisa-slogan">
+      <p>यत्र विश्वं भवत्येकनीडम्<br/>Where the world becomes one nest</p>
+    </div>
+
+  </div>
+</ion-content>
