@@ -21,8 +21,8 @@ const routes: Routes = [
         component: OpenfindmandirComponent
       },
        {
-        path: 'allchats',
-        component: AllChatsComponent
+        path: 'find-pandit',
+        component: FindPanditComponent
       },
       {
         path: 'tab2',

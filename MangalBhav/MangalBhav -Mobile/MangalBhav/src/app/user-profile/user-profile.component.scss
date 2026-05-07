@@ -11,6 +11,20 @@ ion-toolbar {
   --padding-bottom: 0;
 }
 
+.update-photo-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.update-photo-btn:hover {
+  text-decoration: underline;
+}
+
+
 ion-header {
   background: linear-gradient(135deg, #FF9500, #E07B00);
   box-shadow: 0 4px 20px rgba(224, 123, 0, 0.35);
@@ -494,7 +508,7 @@ ion-back-button { --color: #ffffff; }
   ion-icon { font-size: 20px; }
 
   ion-label {
-    font-family: 'Poppins', sans-serif;
+    
     font-size: 10px;
     font-weight: 600;
   }
@@ -532,7 +546,7 @@ ion-back-button { --color: #ffffff; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
@@ -627,7 +641,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   }
 
   ion-label {
-    font-family: 'Poppins', sans-serif;
+    
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -698,7 +712,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
@@ -810,7 +824,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
 }
 
 .mb-scanner-label {
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 9px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
@@ -830,4 +844,146 @@ ion-tab-bar.mb-tab-bar::part(native) {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+
+.not-interested-btn {
+  width: 100%;
+  margin-top: 0.8rem;
+  padding: 0.7rem;
+  background: transparent;
+  border: 1px dashed #c0392b55;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  opacity: 0.7;
+
+  ion-icon { font-size: 1rem; }
+
+  &:active { opacity: 0.5; }
+}
+
+/* Backdrop */
+.ni-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Modal sheet */
+.ni-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: var(--ion-background-color, #fff);
+  border-radius: 20px 20px 0 0;
+  padding: 1.5rem 1.2rem 2.5rem;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+
+  &.active {
+    transform: translateY(0);
+  }
+
+  .ni-modal-icon {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .ni-modal-title {
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ion-text-color);
+    margin: 0 0 0.3rem;
+  }
+
+  .ni-modal-sub {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--ion-color-medium);
+    margin: 0 0 1.2rem;
+  }
+}
+
+/* Option buttons */
+.ni-option-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 0.7rem;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity 0.15s;
+
+  &:active { opacity: 0.75; }
+
+  .ni-option-icon { font-size: 1.4rem; }
+
+  .ni-option-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .ni-option-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .ni-option-sub {
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+  }
+
+  ion-icon {
+    font-size: 1rem;
+    opacity: 0.5;
+  }
+
+  &.support {
+    background: #e8f8f0;
+    .ni-option-label { color: #1a7a45; }
+    .ni-option-sub   { color: #2e9e5b; }
+  }
+
+  &.delete {
+    background: #fdf0ef;
+    .ni-option-label { color: #c0392b; }
+    .ni-option-sub   { color: #e74c3c; }
+  }
+}
+
+/* Cancel */
+.ni-cancel-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.3rem;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  cursor: pointer;
+
+  &:active { opacity: 0.6; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

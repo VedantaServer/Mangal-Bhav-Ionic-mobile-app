@@ -621,6 +621,7 @@ ion-back-button { --color: #ffffff; }
 .svc-name {
   
   font-size: 14px;
+  font-weight: bold;
   color: #2B1A00;
   margin-bottom: 4px;
   white-space: nowrap;
@@ -1302,11 +1303,12 @@ ion-modal {
     color: #E07B00;
   }
 }
+
 .svc-booking-count {
  width: 50%;
   align-items: center;
   gap: 4px;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 10px;
   font-weight: 700;
   color: #ffffff;
@@ -1338,6 +1340,371 @@ ion-modal {
 @keyframes svcCountShimmer {
   0%   { left: -80%; }
   100% { left: 160%; }
+}
+
+
+
+.custom-tab-bar {
+  --background: #ffffff;
+  border-top: 1px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 -4px 20px rgba(255, 149, 0, 0.1);
+  height: 62px;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible !important;
+}
+
+.tab-btn-stretch {
+  flex: 1;
+  --color: #B08050;
+  --color-selected: #FF9500;
+
+  ion-icon { font-size: 20px; }
+
+  ion-label {
+    
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+.tab-home-btn {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+}
+
+.tab-center-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(224, 123, 0, 0.5);
+  margin-top: -20px;
+  border: 3px solid #ffffff;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.tab-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 3px;
+  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.35);
+}
+
+
+
+
+.tab-home-btn {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+  --ripple-color: transparent;
+  position: relative;
+}
+
+.tab-center-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;           // ← square-ish, not circle
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -24px;             // ← floats higher above bar
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 20px rgba(224, 123, 0, 0.45),
+    0 4px 16px rgba(224, 123, 0, 0.3);
+  position: relative;
+
+  // glowing ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 22px;
+    border: 2px solid rgba(255, 149, 0, 0.25);
+    animation: scanRing 2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+@keyframes scanRing {
+  0%, 100% { transform: scale(1);   opacity: 0.5; }
+  50%       { transform: scale(1.1); opacity: 0;   }
+}
+
+
+
+
+
+// ===== MANGAL BHAV BOTTOM TAB BAR =====
+
+.mb-tab-bar {
+  --background: #ffffff;
+  height: 64px;
+  border-top: 1.5px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 -6px 24px rgba(255, 149, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar {
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar::part(native) {
+  overflow: visible !important;
+}
+
+// Left + Right buttons
+.mb-tab-btn {
+  flex: 1;
+  --color: #C4934A;
+  --color-selected: #FF9500;
+  --ripple-color: rgba(255, 149, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  ion-label {
+    
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+}
+
+// Center scanner wrapper
+.mb-tab-center-wrap {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+  --ripple-color: transparent;
+  --background-focused: transparent;
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+// Scanner button
+.mb-tab-scanner {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -22px;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  // Pulsing outer ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+@keyframes mbScanPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.6; }
+  50%       { transform: scale(1.12); opacity: 0;   }
+}
+
+// User avatar circle
+.mb-tab-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.4);
+  margin-bottom: 2px;
+}
+
+.mb-scanner-float {
+  position: fixed;
+ bottom: 10px !important;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:active { transform: translateX(-50%) scale(0.92); }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  .mb-scanner-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+.mb-tab-spacer {
+  flex: 0 0 72px;
+  pointer-events: none;
+  --color: transparent;
+}
+
+
+.mb-scanner-float {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow:
+    0 8px 24px rgba(224, 123, 0, 0.5),
+    0 2px 8px rgba(224, 123, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  // outer glow ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(255, 149, 0, 0.35);
+    animation: mbScanPulse 2s ease-in-out infinite;
+  }
+
+  // top shine
+  &::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 8px; right: 8px;
+    height: 30%;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+.mb-scanner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.mb-scanner-label {
+  
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+@keyframes mbScanPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.5; }
+  50%       { transform: scale(1.1); opacity: 0;   }
+}
+
+
+.custom-tab-icon {
+  width: 100px;
+  height: 100px;
+  background-image: url('/assets/yagna2.png'); // your image path
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 
@@ -1513,4 +1880,480 @@ ion-modal {
   color: #2B1A00;
   margin: 0;
   text-align: center;
+}
+
+
+// ── Modal bottom sheet ────────────────────────────────────────
+.mandir-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: calc(85vh - 56px);
+  background: #FFFBF0;                          // ← warm cream
+  border-top: 2px solid rgba(255, 149, 0, 0.35);
+  border-radius: 24px 24px 0 0;
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 32px rgba(224, 123, 0, 0.15);
+
+  &.active { transform: translateY(0); }
+
+  @media (min-width: 768px) {
+    max-width: 640px;
+    left: 50%;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(100%);
+    &.active { transform: translateX(-50%) translateY(0); }
+  }
+}
+
+.mandir-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 184, 0, 0.2);
+  flex-shrink: 0;
+  position: relative;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border-radius: 22px 22px 0 0;
+
+  .mandir-modal-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+
+  .mandir-modal-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 3px;
+  }
+
+  .mandir-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    &:hover { background: rgba(255, 255, 255, 0.3); }
+    &:active { background: rgba(255, 255, 255, 0.4); }
+  }
+}
+
+.mandir-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 20px 24px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: #FFFBF0;
+}
+
+// ── Form section label ────────────────────────────────────────
+.mandir-form-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #FF9500;
+  margin: 20px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 149, 0, 0.2);
+  &:first-child { margin-top: 0; }
+}
+
+// ── Form groups ───────────────────────────────────────────────
+.mandir-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  &.full { width: 100%; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7A4D00;
+    letter-spacing: 0.3px;
+  }
+
+  input, textarea {
+    background: #ffffff;
+    border: 1.5px solid rgba(255, 184, 0, 0.35);
+    border-radius: 12px;
+    color: #2B1A00;
+    font-size: 14px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+
+    &::placeholder { color: #C4A882; }
+
+    &:focus {
+      border-color: #FF9500;
+      box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+      background: #ffffff;
+    }
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+}
+
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #2B1A00;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  &:focus {
+    border-color: #FF9500;
+    box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+  }
+}
+
+// ── Verify toggles ────────────────────────────────────────────
+.verify-toggle {
+  .toggle-row {
+    display: flex; align-items: center; gap: 10px;
+    padding-top: 8px;
+    span { font-size: 13px; color: #5A3A00; font-weight: 600; }
+  }
+}
+
+// ── Upload box ────────────────────────────────────────────────
+.mandir-upload-box {
+  width: 100%;
+  min-height: 130px;
+  border: 2px dashed rgba(255, 149, 0, 0.35);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFF5D6;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: #FF9500;
+    background: #FFE8A0;
+  }
+
+  .mandir-upload-preview {
+    width: 100%; height: 160px;
+    object-fit: cover; display: block;
+  }
+
+  .mandir-upload-placeholder {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    color: #C4934A;
+    font-size: 13px; padding: 20px;
+    .mandir-upload-icon { font-size: 28px; }
+  }
+
+  .mandir-upload-saved {
+    font-size: 12px; color: #2B8A3E;
+    padding: 16px; text-align: center;
+    word-break: break-all;
+  }
+}
+
+.mandir-upload-actions {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+
+  .mandir-file-name {
+    flex: 1; font-size: 12px; color: #7A4D00;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .mandir-upload-btn {
+    padding: 7px 16px;
+    background: linear-gradient(135deg, #FFF5D6, #FFE8A0);
+    border: 1.5px solid rgba(255, 149, 0, 0.4);
+    border-radius: 10px;
+    color: #E07B00;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
+    &:hover { background: #FFD580; }
+    &:disabled { opacity: 0.45; cursor: not-allowed; }
+  }
+}
+
+// ── Modal footer ──────────────────────────────────────────────
+.mandir-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 184, 0, 0.2);
+  display: flex; gap: 12px; flex-shrink: 0;
+  background: #FFFBF0;
+}
+
+.mandir-cancel-btn {
+  flex: 1; padding: 14px;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  border-radius: 14px;
+  color: #7A4D00;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  &:hover { background: #FFF5D6; border-color: #FF9500; }
+}
+
+.mandir-submit-btn {
+  flex: 2; padding: 14px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border: none; border-radius: 14px;
+  color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(255, 149, 0, 0.35);
+  &:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 149, 0, 0.45); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+}
+
+/* ─── Paste these into find-pandit.component.scss ─── */
+
+/* List wrapper */
+.pandit-list-wrap {
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Individual pandit row */
+.pandit-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:active {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: scale(0.99);
+  }
+}
+
+/* Avatar block */
+.pandit-row-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  .pr-initials {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8622a, #f5a623);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pr-photo {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0e0d0;
+  }
+
+  /* Verification status dot */
+  .pr-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #f59e0b;   /* pending = amber */
+
+    &.verified {
+      background: #10b981;  /* verified = green */
+    }
+  }
+}
+
+/* Text info */
+.pandit-row-info {
+  flex: 1;
+  min-width: 0;
+
+  .pr-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pr-meta {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    ion-icon {
+      font-size: 11px;
+      vertical-align: middle;
+    }
+
+    .pr-exp {
+      color: #aaa;
+    }
+  }
+
+  .pr-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+
+    &.verified {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    &.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+}
+
+/* Arrow icon */
+.pr-arrow {
+  color: #ccc;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Services loading spinner inside pandit modal */
+.services-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0;
+  gap: 12px;
+
+  ion-spinner {
+    color: #e8622a;
+    width: 36px;
+    height: 36px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #aaa;
+    margin: 0;
+  }
+}
+
+.explore-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #A05C00;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* Location detail card */
+.location-detail-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #FFF8EC 0%, #FFF3E0 100%);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(255, 160, 30, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 100, 0, 0.07);
+}
+
+.location-pin {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1;
+}
+
+.location-text {
+  flex: 1;
+  min-width: 0; // prevents overflow
+}
+
+.location-detail-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2B1A00;
+  margin: 0 0 5px 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-detail-addr {
+  font-size: 12px;
+  color: #7A4D00;
+  margin: 0;
+  line-height: 1.6;
+
+  &.muted {
+    color: #BBA070;  // softer tone for "not available"
+    font-style: italic;
+  }
+}
+
+/* Empty state */
+.location-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  background: #FFF8EC;
+  border-radius: 14px;
+  border: 1.5px dashed rgba(255, 160, 30, 0.4);
+
+  span { font-size: 28px; opacity: 0.5; }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #BBA070;
+    font-style: italic;
+  }
 }

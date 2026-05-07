@@ -1290,7 +1290,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   }
 
   ion-label {
-    font-family: 'Poppins', sans-serif;
+    
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -1361,7 +1361,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
@@ -1480,7 +1480,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
 }
 
 .mb-scanner-label {
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 9px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
@@ -1501,4 +1501,52 @@ ion-tab-bar.mb-tab-bar::part(native) {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.booking-input-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: #FF9500; display: block; margin-bottom: 6px;
+}
+
+.booking-text-input {
+  width: 100%; box-sizing: border-box;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 184, 0, 0.35);
+  border-radius: 12px; color: #2B1A00;
+  font-size: 14px; padding: 11px 14px;
+  outline: none; font-family: inherit;
+  &::placeholder { color: #C4A882; }
+  &:focus { border-color: #FF9500; box-shadow: 0 0 0 3px rgba(255,149,0,0.1); }
+}
+
+.advance-summary {
+  margin: 16px 0;
+  background: linear-gradient(135deg, #FFF5D6, #FFE8A0);
+  border: 1.5px solid rgba(255, 149, 0, 0.3);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.advance-row {
+  display: flex; justify-content: space-between; align-items: center;
+  span { font-size: 13px; color: #7A4D00; }
+  strong { font-size: 15px; color: #2B1A00; font-weight: 700; }
+
+  &.highlight {
+    span { font-weight: 700; color: #2B1A00; font-size: 14px; }
+    .advance-amt { font-size: 22px; color: #E07B00; font-weight: 800; }
+  }
+}
+
+.advance-divider {
+  height: 1px; background: rgba(255,149,0,0.2);
+}
+
+.advance-note {
+  font-size: 11px; color: #9A7A50;
+  margin: 0; line-height: 1.5;
+  border-top: 1px dashed rgba(255,149,0,0.25);
+  padding-top: 8px;
 }

@@ -1,23 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="inner-header">
-
       <button class="inner-back-btn" (click)="routerCtrl.back()">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
-
       <div class="inner-title-block">
         <div class="inner-title">Find Pandit</div>
         <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
       </div>
-
       <div class="inner-logo">
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
-
     </div>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content>
   <div class="page-wrapper">
@@ -35,8 +32,10 @@
     <div class="search-wrap">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Search by name, language..." class="search-input" [(ngModel)]="searchQuery" />
-        <ion-icon name="qr-code-outline" class="qr-scan-icon" (click)="openQrScanner()"></ion-icon>
+        <input type="text" placeholder="Search by name, language..."
+          class="search-input" [(ngModel)]="searchQuery" />
+        <ion-icon name="qr-code-outline" class="qr-scan-icon"
+          (click)="openQrScanner()"></ion-icon>
       </div>
     </div>
 
@@ -52,8 +51,10 @@
         </div>
       </div>
       <div class="qr-scanner-wrap">
-        <zxing-scanner #scanner [enable]="isScannerOpen" (scanSuccess)="onScanSuccess($event)"
-          (scanError)="onScanError($event)" [formats]="formats" class="qr-scanner">
+        <zxing-scanner #scanner [enable]="isScannerOpen"
+          (scanSuccess)="onScanSuccess($event)"
+          (scanError)="onScanError($event)"
+          [formats]="formats" class="qr-scanner">
         </zxing-scanner>
         <div class="scan-frame">
           <div class="scan-corner tl"></div>
@@ -66,85 +67,169 @@
       <p class="qr-hint">Point camera at a Mangal.Bhav QR code</p>
     </div>
 
-    <!-- ===== PANDIT DETAIL (modal design, shown inline) ===== -->
-    <ng-container *ngFor="let item of panditList">
-      <div class="detail-modal-wrap" *ngIf="item.profile">
+    <!-- ═══════════════════════════════════════════════════════════
+         PANDIT LIST — name + photo + basic info only
+    ════════════════════════════════════════════════════════════ -->
+    <div class="pandit-list-wrap">
 
-        <!-- Pandit Hero -->
+      <div class="pandit-row"
+        *ngFor="let item of filteredPanditList"
+        (click)="openPanditModal(item)">
+
+        <!-- Avatar -->
+        <div class="pandit-row-avatar">
+          <div class="pr-initials" *ngIf="!profileImages[item.profile?.UserID]">
+            {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+          </div>
+          <img *ngIf="profileImages[item.profile?.UserID]"
+            [src]="getProfileImage(item.profile?.UserID)"
+            class="pr-photo" (error)="onImgError($event)" />
+          <span class="pr-dot"
+            [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'">
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div class="pandit-row-info">
+          <p class="pr-name">{{ item.profile?.FullName || item.user?.Username }}</p>
+          <p class="pr-meta">
+            <span *ngIf="item.profile?.Languages">
+              <ion-icon name="language-outline"></ion-icon>
+              {{ item.profile?.Languages }}
+            </span>
+            <span *ngIf="item.profile?.ExperienceYears" class="pr-exp">
+              · {{ item.profile?.ExperienceYears }} yrs exp
+            </span>
+          </p>
+          <span class="pr-badge"
+            [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'"
+            [class.pending]="item.profile?.VerificationStatus !== 'VERIFIED'">
+            {{ item.profile?.VerificationStatus === 'APPROVED' ? '✓ Verified' : '⏳ Pending' }}
+          </span>
+        </div>
+
+        <!-- Arrow -->
+        <ion-icon name="chevron-forward-outline" class="pr-arrow"></ion-icon>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!filteredPanditList?.length" class="empty-state">
+      <div class="empty-icon">🙏</div>
+      <h3 class="empty-title">
+        {{ searchQuery ? 'No results for "' + searchQuery + '"' : 'No Pandits Found' }}
+      </h3>
+      <p class="empty-sub">
+        {{ searchQuery ? 'Try a different name or language' : 'Scan a Mangal.Bhav QR code to find a Pandit' }}
+      </p>
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PANDIT DETAIL MODAL
+════════════════════════════════════════════════════════════════ -->
+<ion-modal
+  [isOpen]="isPanditModalOpen"
+  (didDismiss)="isPanditModalOpen = false"
+  [breakpoints]="[0, 0.95, 1]"
+  [initialBreakpoint]="0.95">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="isPanditModalOpen = false">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="header-title">🙏 Pandit Profile</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="modal-wrapper" *ngIf="activePandit">
+
+        <!-- HERO -->
         <div class="pandit-modal-hero">
           <div class="pandit-modal-photo-wrap">
-            <div class="avatar" *ngIf="!profileImages[item.profile?.UserID]">
-              {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+            <div class="avatar" *ngIf="!profileImages[activePandit.profile?.UserID]">
+              {{ activePandit.profile?.FullName?.charAt(0) || '🙏' }}
             </div>
-            <img *ngIf="profileImages[item.profile?.UserID]"
-              [src]="getProfileImage(item.profile?.UserID)"
-              [alt]="item.profile?.FullName"
-              class="pandit-modal-photo" />
+            <img *ngIf="profileImages[activePandit.profile?.UserID]"
+              [src]="getProfileImage(activePandit.profile?.UserID)"
+              [alt]="activePandit.profile?.FullName"
+              class="pandit-modal-photo" (error)="onImgError($event)" />
           </div>
-          <h2 class="pandit-modal-name">{{ item.profile?.FullName }}</h2>
-          <span class="verified-pill" *ngIf="item.profile?.VerificationStatus === 'VERIFIED'">
+          <h2 class="pandit-modal-name">{{ activePandit.profile?.FullName }}</h2>
+          <span class="verified-pill"
+            *ngIf="activePandit.profile?.VerificationStatus === 'VERIFIED'">
             ✓ Verified Pandit
           </span>
-          <span class="unverified-pill" *ngIf="item.profile?.VerificationStatus !== 'VERIFIED'">
+          <span class="unverified-pill"
+            *ngIf="activePandit.profile?.VerificationStatus !== 'VERIFIED'">
             ⏳ Verification Pending
           </span>
         </div>
 
-        <!-- Quick Stats Grid -->
+        <!-- QUICK STATS -->
         <div class="detail-info-grid">
-          <div class="detail-info-item" *ngIf="item.profile?.ExperienceYears">
+          <div class="detail-info-item" *ngIf="activePandit.profile?.ExperienceYears">
             <ion-icon name="time-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Experience</p>
-              <p class="detail-info-value">{{ item.profile?.ExperienceYears }} Years</p>
+              <p class="detail-info-value">{{ activePandit.profile?.ExperienceYears }} Years</p>
             </div>
           </div>
-          <div class="detail-info-item" *ngIf="item.profile?.Gender">
+          <div class="detail-info-item" *ngIf="activePandit.profile?.Gender">
             <ion-icon name="person-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Gender</p>
-              <p class="detail-info-value">{{ item.profile?.Gender }}</p>
+              <p class="detail-info-value">{{ activePandit.profile?.Gender }}</p>
             </div>
           </div>
-          <div class="detail-info-item" *ngIf="item.profile?.Languages">
+          <div class="detail-info-item" *ngIf="activePandit.profile?.Languages">
             <ion-icon name="language-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Languages</p>
-              <p class="detail-info-value">{{ item.profile?.Languages }}</p>
+              <p class="detail-info-value">{{ activePandit.profile?.Languages }}</p>
             </div>
           </div>
-          <div class="detail-info-item" *ngIf="item.profile?.BasePrice">
+          <div class="detail-info-item" *ngIf="activePandit.profile?.BasePrice">
             <ion-icon name="cash-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Dakshina</p>
-              <p class="detail-info-value">₹{{ item.profile?.BasePrice }}</p>
+              <p class="detail-info-value">₹{{ activePandit.profile?.BasePrice }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Contact Row -->
+        <!-- CONTACT -->
         <div class="contact-row">
-          <div class="contact-chip" *ngIf="item.profile?.PhoneNumber">
+          <div class="contact-chip" *ngIf="activePandit.profile?.PhoneNumber">
             <ion-icon name="call-outline"></ion-icon>
-            {{
-    item.Profile?.PhoneNumber
-      ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
-      : ''
-  }}
+            {{ '*'.repeat(activePandit.profile.PhoneNumber.length - 4) +
+               activePandit.profile.PhoneNumber.slice(-4) }}
           </div>
-          <div class="contact-chip" *ngIf="item.profile?.Email">
+          <div class="contact-chip" *ngIf="activePandit.profile?.Email">
             <ion-icon name="mail-outline"></ion-icon>
-            {{ item.profile?.Email }}
+            {{ activePandit.profile?.Email }}
           </div>
         </div>
 
-        <!-- Bio -->
-        <div class="detail-section" *ngIf="item.profile?.Bio">
+        <!-- BIO -->
+        <div class="detail-section" *ngIf="activePandit.profile?.Bio">
           <h4 class="detail-section-title">🙏 About Pandit Ji</h4>
-          <p class="detail-section-text">{{ item.profile?.Bio }}</p>
+          <p class="detail-section-text">{{ activePandit.profile?.Bio }}</p>
         </div>
 
-        <!-- Specializations -->
+        <!-- SPECIALIZATIONS -->
         <div class="detail-section">
           <h4 class="detail-section-title">📿 Specializations</h4>
           <div class="detail-checklist">
@@ -167,25 +252,28 @@
           </div>
         </div>
 
-        <!-- ===== SERVICES (always expanded) ===== -->
+        <!-- SERVICES -->
         <div class="detail-section">
           <h4 class="detail-section-title">
             <ion-icon name="flame-outline"></ion-icon>
             Available Services
-            <span class="services-count">{{ item.panditServices?.length || 0 }}</span>
           </h4>
 
-          <div class="service-list">
-            <div class="service-item" *ngFor="let ps of item.panditServices">
+          <!-- Loading spinner -->
+          <div class="services-loading" *ngIf="isLoadingServices">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Loading services…</p>
+          </div>
 
-              <!-- Service image -->
+          <!-- Service cards -->
+          <div class="service-list" *ngIf="!isLoadingServices">
+
+            <div class="service-item" *ngFor="let ps of activePanditServices">
               <div class="svc-img-wrap">
-                <img [src]="getCurrentImage(ps.ServiceDetails?.[0]?.Name)" class="svc-img"
-                  (error)="onImgError($event)" />
+                <img [src]="getCurrentImage(ps.ServiceDetails?.[0]?.Name)"
+                  class="svc-img" (error)="onImgError($event)" />
                 <div class="svc-img-overlay"></div>
               </div>
-
-              <!-- Service info -->
               <div class="svc-body">
                 <h4 class="svc-name">
                   {{ getLocalizedText(ps.ServiceDetails?.[0]?.Name) }}
@@ -201,41 +289,38 @@
                 </p>
                 <div class="svc-footer">
                   <span class="svc-price">₹ {{ ps.Price }}</span>
-                  <button class="svc-explore-btn" (click)="exploreService(item, ps)">
+                  <button class="svc-explore-btn" (click)="exploreService(ps)">
                     <ion-icon name="information-circle-outline"></ion-icon>
                     Explore
                   </button>
                 </div>
               </div>
-
             </div>
 
             <!-- No services -->
-            <div *ngIf="!item.panditServices?.length" class="no-services">
+            <div *ngIf="!activePanditServices?.length" class="no-services">
               <span>🙏</span>
               <p>No services listed yet</p>
             </div>
+
           </div>
         </div>
 
       </div>
-    </ng-container>
+    </ion-content>
 
-    <!-- EMPTY STATE -->
-    <div *ngIf="!panditList?.length" class="empty-state">
-      <div class="empty-icon">🙏</div>
-      <h3 class="empty-title">No Pandits Found</h3>
-      <p class="empty-sub">Scan a Mangal.Bhav QR code to find a Pandit</p>
-    </div>
+  </ng-template>
+</ion-modal>
 
-    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
 
-  </div>
-</ion-content>
-
-<!-- ===== EXPLORE SERVICE MODAL ===== -->
-
-<ion-modal [isOpen]="isExploreModalOpen" (didDismiss)="isExploreModalOpen = false" [breakpoints]="[0, 0.92, 1]"
+<!-- ═══════════════════════════════════════════════════════════════
+     EXPLORE SERVICE MODAL — same as original
+     Only difference: "Book" → saves ID and redirects to /login
+════════════════════════════════════════════════════════════════ -->
+<ion-modal
+  [isOpen]="isExploreModalOpen"
+  (didDismiss)="isExploreModalOpen = false"
+  [breakpoints]="[0, 0.92, 1]"
   [initialBreakpoint]="0.92">
   <ng-template>
 
@@ -255,19 +340,18 @@
 
         <!-- SERVICE IMAGE -->
         <div class="explore-img-wrap">
-          <img [src]="getCurrentImage(selectedService?.ServiceDetails?.[0]?.Name)" class="explore-img"
-            (error)="onImgError($event)" />
+          <img [src]="getCurrentImage(selectedService?.ServiceDetails?.[0]?.Name)"
+            class="explore-img" (error)="onImgError($event)" />
           <div class="explore-img-overlay"></div>
 
-          <!-- Category badge — FIXED PATH -->
-          <div class="explore-category-badge" *ngIf="selectedService?.Categories?.[0]?.CategoryDetails">
+          <div class="explore-category-badge"
+            *ngIf="selectedService?.Categories?.[0]?.CategoryDetails">
             <ion-icon name="grid-outline"></ion-icon>
             {{ language === 'Hindi'
-            ? selectedService?.Categories?.[0]?.CategoryDetails?.CategoryName_HI
-            : selectedService?.Categories?.[0]?.CategoryDetails?.CategoryName }}
+              ? selectedService?.Categories?.[0]?.CategoryDetails?.CategoryName_HI
+              : selectedService?.Categories?.[0]?.CategoryDetails?.CategoryName }}
           </div>
 
-          <!-- Service name + price bottom -->
           <div class="explore-img-bottom">
             <h2 class="explore-img-title">
               {{ getLocalizedText(selectedService?.ServiceDetails?.[0]?.Name) }}
@@ -278,7 +362,7 @@
           </div>
         </div>
 
-        <!-- PANDIT INFO STRIP -->
+        <!-- PANDIT STRIP -->
         <div class="explore-pandit-strip">
           <div class="strip-avatar">
             {{ selectedPandit?.profile?.FullName?.charAt(0) || '🙏' }}
@@ -290,27 +374,27 @@
               {{ selectedPandit?.profile?.Languages }}
             </p>
           </div>
-          <div class="strip-verify" [class.verified]="selectedPandit?.profile?.VerificationStatus === 'VERIFIED'">
+          <div class="strip-verify"
+            [class.verified]="selectedPandit?.profile?.VerificationStatus === 'VERIFIED'">
             <ion-icon [name]="selectedPandit?.profile?.VerificationStatus === 'VERIFIED'
-                ? 'shield-checkmark-outline' : 'time-outline'">
+              ? 'shield-checkmark-outline' : 'time-outline'">
             </ion-icon>
           </div>
         </div>
 
-        <!-- ===== ABOUT SERVICE ===== -->
+        <!-- ABOUT -->
         <div class="explore-section">
           <div class="explore-section-title">📖 About this Seva</div>
           <p class="explore-description">
             {{ getLocalizedText(selectedService?.ServiceDetails?.[0]?.Description)
-            || 'This sacred seva connects you with the divine through ancient Vedic traditions.' }}
+              || 'This sacred seva connects you with the divine through ancient Vedic traditions.' }}
           </p>
         </div>
 
-        <!-- ===== SERVICE DETAILS GRID ===== -->
+        <!-- SERVICE DETAILS GRID -->
         <div class="explore-section">
           <div class="explore-section-title">📋 Service Details</div>
           <div class="details-grid">
-
             <div class="detail-tile">
               <div class="detail-tile-icon">⏱️</div>
               <p class="detail-tile-label">Duration</p>
@@ -318,7 +402,6 @@
                 {{ selectedService?.ServiceDetails?.[0]?.DurationMinutes || '—' }} min
               </p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">💰</div>
               <p class="detail-tile-label">Price</p>
@@ -326,7 +409,6 @@
                 ₹ {{ selectedService?.Price | number:'1.0-0' }}
               </p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">📍</div>
               <p class="detail-tile-label">City</p>
@@ -334,23 +416,21 @@
                 {{ selectedService?.LocationDetails?.[0]?.City || '—' }}
               </p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">✅</div>
               <p class="detail-tile-label">Status</p>
-              <p class="detail-tile-value" [style.color]="selectedService?.IsActive ? '#16a34a' : '#dc2626'">
+              <p class="detail-tile-value"
+                [style.color]="selectedService?.IsActive ? '#16a34a' : '#dc2626'">
                 {{ selectedService?.IsActive ? 'Available' : 'Unavailable' }}
               </p>
             </div>
-
           </div>
         </div>
 
-        <!-- ===== CATEGORY INFO (the missing section) ===== -->
-        <div class="explore-section" *ngIf="selectedService?.Categories?.[0]?.CategoryDetails as cat">
+        <!-- CATEGORY INFO -->
+        <div class="explore-section"
+          *ngIf="selectedService?.Categories?.[0]?.CategoryDetails as cat">
           <div class="explore-section-title">📂 Category Information</div>
-
-          <!-- Category name card -->
           <div class="category-name-card">
             <div class="category-name-icon">🕉️</div>
             <div>
@@ -360,64 +440,49 @@
               </p>
             </div>
           </div>
-
-          <!-- Category description -->
-          <p class="explore-description" style="margin-top: 12px;">
-            {{ language === 'Hindi' && cat.Description_HI
-            ? cat.Description_HI
-            : cat.Description }}
+          <p class="explore-description" style="margin-top:12px">
+            {{ language === 'Hindi' && cat.Description_HI ? cat.Description_HI : cat.Description }}
           </p>
-
-          <!-- Category attribute tiles -->
-          <div class="details-grid" style="margin-top: 12px;">
-
+          <div class="details-grid" style="margin-top:12px">
             <div class="detail-tile">
               <div class="detail-tile-icon">🔱</div>
               <p class="detail-tile-label">Ritual Type</p>
               <p class="detail-tile-value">{{ cat.RitualType || '—' }}</p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">🧬</div>
               <p class="detail-tile-label">Gender</p>
               <p class="detail-tile-value">{{ cat.Gender || 'Both' }}</p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">🌱</div>
               <p class="detail-tile-label">Life Stage</p>
               <p class="detail-tile-value">{{ cat.AgeText || '—' }}</p>
             </div>
-
             <div class="detail-tile">
               <div class="detail-tile-icon">🎉</div>
               <p class="detail-tile-label">Festival</p>
-              <p class="detail-tile-value" [style.color]="cat.IsFestivalRelated ? '#E07B00' : '#7A4D00'">
+              <p class="detail-tile-value"
+                [style.color]="cat.IsFestivalRelated ? '#E07B00' : '#7A4D00'">
                 {{ cat.IsFestivalRelated ? 'Yes' : 'No' }}
               </p>
             </div>
-
           </div>
-
-          <!-- Life event + age range tag row -->
           <div class="cat-tag-row">
             <span class="cat-tag" *ngIf="cat.IsLifeEvent">
-              <ion-icon name="heart-outline"></ion-icon>
-              Life Event
+              <ion-icon name="heart-outline"></ion-icon> Life Event
             </span>
             <span class="cat-tag" *ngIf="cat.IsFestivalRelated">
-              <ion-icon name="sparkles-outline"></ion-icon>
-              Festival Related
+              <ion-icon name="sparkles-outline"></ion-icon> Festival Related
             </span>
             <span class="cat-tag" *ngIf="cat.MinAge || cat.MaxAge">
               <ion-icon name="person-outline"></ion-icon>
               Age: {{ cat.MinAge || 0 }}–{{ cat.MaxAge || '∞' }} yrs
             </span>
           </div>
-
         </div>
 
-        <!-- ===== LOCATION DETAIL ===== -->
+        <!-- LOCATION -->
         <div class="explore-section">
           <div class="explore-section-title">🏠 Seva Location</div>
           <div class="location-detail-card">
@@ -435,16 +500,16 @@
           </div>
         </div>
 
-        <!-- BOOK BUTTON -->
+        <!-- BOOK BUTTON — redirects to login for open/unauthenticated page -->
         <div class="modal-footer">
-          <ion-button expand="block" class="goto-booking-btn" (click)="goToBooking(selectedService)">
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
-            Book this Seva
+          <ion-button expand="block" class="goto-booking-btn"
+            (click)="goToBooking(selectedService)">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Login to Book this Seva
           </ion-button>
         </div>
 
       </div>
     </ion-content>
-
   </ng-template>
 </ion-modal>

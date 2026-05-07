@@ -31,6 +31,11 @@ export class LoggedoutbottomtabsComponent implements OnInit {
 
   }
 
+  async action5() {
+    await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
+
+    this.routerCtrl.navigateForward(`/open-find-pandit`);
+  }
 
   ngOnInit() { }
 

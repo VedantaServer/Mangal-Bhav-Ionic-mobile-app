@@ -41,10 +41,12 @@ export class JajmanDashboardComponent implements OnInit {
       festivals: 'Festivals',
       logoSub: '✦ Peace · Prosperity · Protection ✦',
       explore: 'Explore Life',
-      me: 'Me'
+      me: 'Me',
+      myTransactions: 'My Transactions',
     },
 
     hi: {
+      myTransactions: 'मेरे लेन-देन',
       greeting: 'नमस्ते 🙏',
       greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
@@ -64,6 +66,13 @@ export class JajmanDashboardComponent implements OnInit {
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) { }
+
+
+  async openWhatsApp() {
+    await Browser.open({
+      url: 'https://wa.me/918796917944?text=' + encodeURIComponent('Need help')
+    });
+  }
 
   async ngOnInit() {
 

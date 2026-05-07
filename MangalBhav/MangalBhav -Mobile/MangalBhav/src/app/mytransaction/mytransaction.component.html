@@ -1,0 +1,276 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">{{ t.appTitle }}</div>
+        <div class="inner-title-sub">{{ t.appSub }}</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- TOP BANNER -->
+    <div class="page-banner">
+      <div class="banner-text">
+        <p class="banner-sub">{{ t.bannerSub }}</p>
+        <h2 class="banner-title">{{ t.bannerTitle }}</h2>
+      </div>
+      <div class="banner-om">ॐ</div>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="isLoading" class="txn-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>{{ t.loadingText }}</p>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!isLoading && transactions.length === 0" class="txn-empty">
+      <div class="txn-empty-icon">🪔</div>
+      <p class="txn-empty-title">{{ t.noTransactions }}</p>
+      <p class="txn-empty-sub">{{ t.noTransactionsSub }}</p>
+    </div>
+
+    <!-- TRANSACTION LIST -->
+    <div *ngIf="!isLoading && transactions.length > 0" class="txn-list">
+
+      <div *ngFor="let txn of transactions" class="txn-card" [class.txn-card--donation]="txn._type === 'donation'"
+        [class.txn-card--booking]="txn._type === 'booking'" (click)="openDetail(txn)">
+
+        <!-- LEFT ICON STRIP -->
+        <div class="txn-icon-strip">
+          <div class="txn-type-icon">
+            {{ txn._type === 'donation' ? '🛕' : '🙏' }}
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="txn-body">
+
+          <!-- TYPE BADGE + DATE -->
+          <div class="txn-meta-row">
+            <span class="txn-badge" [class.badge-donation]="txn._type === 'donation'"
+              [class.badge-booking]="txn._type === 'booking'">
+              {{ txn._type === 'donation' ? t.donation : t.booking }}
+            </span>
+            <span class="txn-date">{{ formatDate(txn.DateAdded) }}</span>
+          </div>
+
+          <!-- DONATION DETAILS -->
+          <ng-container *ngIf="txn._type === 'donation'">
+            <div class="txn-title">
+              {{ txn._mandir?.MandirName || ('Mandir #' + txn.MandirID) }}
+            </div>
+            <div class="txn-sub" *ngIf="txn._mandir?.City || txn._mandir?.State">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ txn._mandir?.City }}{{ txn._mandir?.State ? ', ' + txn._mandir?.State : '' }}
+            </div>
+          </ng-container>
+
+          <!-- BOOKING DETAILS -->
+          <ng-container *ngIf="txn._type === 'booking'">
+            <div class="txn-title">
+              {{ txn._booking?.PoojaName || txn._booking?.ServiceName || ('Booking #' + txn.UserID) }}
+            </div>
+            <div class="txn-sub" *ngIf="txn._booking?.PanditName || txn._booking?.FullName">
+              <ion-icon name="person-outline"></ion-icon>
+              {{ t.pandit }}: {{ txn._booking?.PanditName || txn._booking?.FullName }}
+            </div>
+            <div class="txn-sub" *ngIf="txn._booking?.BookingDate">
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ formatDate(txn._booking?.BookingDate) }}
+            </div>
+          </ng-container>
+
+          <!-- AMOUNT + STATUS ROW -->
+          <div class="txn-footer-row">
+            <div class="txn-amount">
+              ₹{{ txn.Amount || txn.TransactionAmount || '—' }}
+            </div>
+            <!-- <div class="txn-status" [ngClass]="getStatusClass(txn.Status || txn.TransactionStatus)">
+              {{ txn.Status || txn.TransactionStatus || 'Pending' }}
+            </div> -->
+          </div>
+
+          <!-- TXN ID -->
+          <div class="txn-id" *ngIf="txn.TransactionID || txn.MandirTransactionID">
+            {{ t.transactionId }}: #{{ txn.TransactionID || txn.MandirTransactionID }}
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>
+
+<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+
+
+
+<!-- ══════════════ DETAIL MODAL ══════════════ -->
+<div class="detail-backdrop" *ngIf="selectedTxn" (click)="closeDetail()"></div>
+
+<div class="detail-modal" [class.active]="selectedTxn">
+
+  <!-- HANDLE -->
+  <div class="detail-handle"></div>
+
+  <!-- CLOSE -->
+  <button class="detail-close" (click)="closeDetail()">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+
+  <!-- LOADING -->
+  <div *ngIf="modalLoading" class="modal-loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- ── BOOKING DETAIL ── -->
+  <ng-container *ngIf="!modalLoading && selectedTxn?._type === 'booking' && enrichedBooking">
+
+    <div class="modal-type-badge badge-booking">🙏 Pandit Booking</div>
+
+    <!-- Pandit profile -->
+    <div class="modal-pandit-row" *ngIf="enrichedBooking.Profile">
+      <div class="modal-avatar">
+        <img *ngIf="panditPhotoUrl" [src]="panditPhotoUrl" />
+        <div *ngIf="!panditPhotoUrl" class="modal-avatar-fallback">🙏</div>
+      </div>
+      <div>
+        <div class="modal-pandit-name">{{ enrichedBooking.Profile.FullName }}</div>
+        <div class="modal-pandit-exp" *ngIf="enrichedBooking.Profile.ExperienceYears">
+          {{ enrichedBooking.Profile.ExperienceYears }} yrs experience
+        </div>
+        <div class="modal-pandit-lang" *ngIf="enrichedBooking.Profile.Languages">
+          <ion-icon name="language-outline"></ion-icon> {{ enrichedBooking.Profile.Languages }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <!-- Pooja / service -->
+    <div class="modal-detail-row" *ngIf="enrichedBooking.Service">
+      <ion-icon name="flame-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Pooja</div>
+        <div class="modal-row-value">{{ enrichedBooking.Service.Name }}</div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="modal-detail-row" *ngIf="enrichedBooking.Location">
+      <ion-icon name="location-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Location</div>
+        <div class="modal-row-value">
+          {{
+          (enrichedBooking.Location.Name ? enrichedBooking.Location.Name : '') +
+          (enrichedBooking.Location.City ?
+          (enrichedBooking.Location.Name ? ', ' : '') + enrichedBooking.Location.City : '') +
+          (enrichedBooking.Location.State ?
+          ((enrichedBooking.Location.Name || enrichedBooking.Location.City) ? ', ' : '') +
+          enrichedBooking.Location.State : '')
+          }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking date -->
+    <div class="modal-detail-row" *ngIf="enrichedBooking.BookingDate">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Booking Date</div>
+        <div class="modal-row-value">{{ formatDate(enrichedBooking.BookingDate) }}</div>
+      </div>
+    </div>
+
+    <!-- Pooja date -->
+    <div class="modal-detail-row" *ngIf="enrichedBooking.PoojaDate">
+      <ion-icon name="today-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Pooja Date</div>
+        <div class="modal-row-value">{{ formatDate(enrichedBooking.PoojaDate) }}</div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <!-- Amount + status -->
+    <div class="modal-amount-row">
+      <div class="modal-amount">₹{{ selectedTxn.Amount || selectedTxn.TransactionAmount || '—' }}</div>
+      <!-- <div class="txn-status" [ngClass]="getStatusClass(selectedTxn.Status || selectedTxn.TransactionStatus)">
+        {{ selectedTxn.Status || selectedTxn.TransactionStatus || 'Pending' }}
+      </div> -->
+    </div>
+
+    <div class="modal-txn-id" *ngIf="selectedTxn.TransactionID || selectedTxn.MandirTransactionID">
+      Txn ID: #{{ selectedTxn.TransactionID || selectedTxn.MandirTransactionID }}
+    </div>
+
+  </ng-container>
+
+  <!-- ── DONATION DETAIL ── -->
+  <ng-container *ngIf="!modalLoading && selectedTxn?._type === 'donation' && selectedMandir">
+
+    <div class="modal-type-badge badge-donation">🛕 Mandir Donation</div>
+
+    <!-- Mandir images -->
+    <div class="modal-images-row">
+      <img *ngIf="mandirFrontImageUrl" [src]="mandirFrontImageUrl" class="modal-mandir-img" />
+      <img *ngIf="mandirInsideImageUrl" [src]="mandirInsideImageUrl" class="modal-mandir-img" />
+    </div>
+
+    <div class="modal-mandir-name">{{ selectedMandir.MandirName }}</div>
+
+    <div class="modal-detail-row" *ngIf="selectedMandir.City || selectedMandir.State">
+      <ion-icon name="location-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Location</div>
+        <div class="modal-row-value">
+          {{ selectedMandir.City }}{{ selectedMandir.State ? ', ' + selectedMandir.State : '' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-detail-row" *ngIf="selectedMandir.DeityName">
+      <ion-icon name="sparkles-outline"></ion-icon>
+      <div>
+        <div class="modal-row-label">Deity</div>
+        <div class="modal-row-value">{{ selectedMandir.DeityName }}</div>
+      </div>
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div class="modal-amount-row">
+      <div class="modal-amount">₹{{ selectedTxn.Amount || selectedTxn.TransactionAmount || '—' }}</div>
+      <!-- <div class="txn-status" [ngClass]="getStatusClass(selectedTxn.Status || selectedTxn.TransactionStatus)">
+        {{ selectedTxn.Status || selectedTxn.TransactionStatus || 'Pending' }}
+      </div> -->
+    </div>
+
+    <div class="modal-txn-id" *ngIf="selectedTxn.TransactionID || selectedTxn.MandirTransactionID">
+      Txn ID: #{{ selectedTxn.TransactionID || selectedTxn.MandirTransactionID }}
+    </div>
+
+  </ng-container>
+
+</div>

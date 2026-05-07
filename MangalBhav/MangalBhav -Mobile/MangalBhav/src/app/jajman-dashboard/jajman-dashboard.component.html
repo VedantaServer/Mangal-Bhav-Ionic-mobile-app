@@ -10,13 +10,16 @@
         </div>
       </div>
 
+      <div style="display: flex;gap: 4px;">
+        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
+            name="logo-whatsapp" style="color: white;"></ion-icon></button>
+
+        <button class="header-logout-btn" (click)="openPage('find-pandit')">
+          <ion-icon name="qr-code-outline"></ion-icon>
+        </button>
+      </div>
 
 
-      <!-- <button class="nav-icon-btn"  title="Change Language">🌐</button> -->
-
-      <button class="header-logout-btn" (click)="openPage('find-pandit')">
-        <ion-icon name="qr-code-outline"></ion-icon>
-      </button>
 
 
     </div>
@@ -55,6 +58,10 @@
       <div class="dash-card" (click)="openPage('india-festival')">
         <div class="dash-icon">🪔</div>
         <span>{{ t.festivals }}</span>
+      </div>
+      <div class="dash-card" (click)="openPage('mytransaction')">
+        <div class="dash-icon">💳</div>
+        <span>{{ t.myTransactions }}</span>
       </div>
 
 

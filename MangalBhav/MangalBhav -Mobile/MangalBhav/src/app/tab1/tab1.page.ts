@@ -137,11 +137,11 @@ export class Tab1Page {
     console.log(this.userDetails);
 
 
-    
-      if (
+
+    if (
       await this.storage.get("languageChange")
     ) {
-        await this.storage.remove('languageChange');
+      await this.storage.remove('languageChange');
       this.routerCtrl.navigateRoot('/languagechange');
     }
 
@@ -183,6 +183,106 @@ export class Tab1Page {
 
 
   }
+
+
+  // ── Share modal ───────────────────────────────────────────────
+  showShareModal = false;
+  selectedPlatform: 'android' | 'ios' | null = null;
+  copied = false;
+
+  // ✅ Replace these with your real store links
+  androidLink = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
+  iosLink = 'https://apps.apple.com/app/mangalbhav/id000000000';
+
+  openShare() {
+    this.selectedPlatform = null;
+    this.showShareModal = true;
+    this.copied = false;
+  }
+
+  closeShare() {
+    this.showShareModal = false;
+    this.selectedPlatform = null;
+    this.copied = false;
+  }
+
+  selectPlatform(platform: 'android' | 'ios') {
+    this.selectedPlatform = platform;
+    this.copied = false;
+  }
+
+  getAppLink(): string {
+    return this.selectedPlatform === 'android' ? this.androidLink : this.iosLink;
+  }
+
+  getQrUrl(): string {
+    const link = encodeURIComponent(this.getAppLink());
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${link}&color=E07B00&bgcolor=FFFBF0`;
+  }
+
+  copyLink() {
+    navigator.clipboard.writeText(this.getAppLink()).then(() => {
+      this.copied = true;
+      setTimeout(() => this.copied = false, 2500);
+    });
+  }
+  // ── Share message (beautiful, used by all share channels) ─────────────────
+  private getShareMessage(): string {
+    return (
+      `🙏 *Mangal Bhav* — Book Verified Pandits for Sacred Rituals\n\n` +
+      `✨ Find trusted Pandits for Puja, Havan, Vivah & more\n` +
+      `📿 Authentic Vedic rituals at your doorstep\n` +
+      `⭐ Verified, experienced & multilingual Pandits\n\n` +
+      `📱 Download now:\n` +
+      `🤖 Android: https://play.google.com/store/apps/details?id=com.mangalbhav.app\n` +
+      `🍎 iPhone: https://apps.apple.com/app/mangalbhav/id000000000\n\n` +
+      `✦ ॐ Mangal Bhav ✦`
+    );
+  }
+
+  // ── WhatsApp share ────────────────────────────────────────────────────────
+  shareOnWhatsApp() {
+    const message = encodeURIComponent(this.getShareMessage());
+    const url = `https://wa.me/?text=${message}`;
+    window.open(url, '_blank');
+  }
+
+  // ── Native share (mobile share sheet) ────────────────────────────────────
+  async shareNative() {
+    const shareData = {
+      title: '🙏 Mangal Bhav — Book Verified Pandits',
+      text: this.getShareMessage(),
+      url: 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User cancelled — do nothing
+      }
+    } else {
+      // Fallback: copy to clipboard if Web Share API not supported
+      try {
+        await navigator.clipboard.writeText(
+          `${shareData.text}\n\n${shareData.url}`
+        );
+        this.copied = true;
+        setTimeout(() => (this.copied = false), 2500);
+      } catch {
+        console.warn('Clipboard write failed');
+      }
+    }
+  }
+
+
+
+  async openWhatsApp() {
+    await Browser.open({
+      url: 'https://wa.me/918796917944?text=' + encodeURIComponent('Need help')
+    });
+  }
+
 
 
   loadProfilePhoto() {
@@ -288,9 +388,9 @@ export class Tab1Page {
 
   async action4() {
     console.log('Location clicked');
-    await localStorage.setItem('findPanditThroghtFloating' , 'findPanditThroghtFloating');
+    await localStorage.setItem('findPanditThroghtFloating', 'findPanditThroghtFloating');
 
-      this.routerCtrl.navigateForward(`/find-pandit`);
+    this.routerCtrl.navigateForward(`/find-pandit`);
 
   }
 

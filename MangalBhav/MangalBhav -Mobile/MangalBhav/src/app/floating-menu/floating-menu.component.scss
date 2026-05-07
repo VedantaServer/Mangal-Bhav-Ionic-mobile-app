@@ -276,3 +276,218 @@
     transform: translateY(0) scale(1);
   }
 }
+
+// ── Share backdrop ──────────────────────────────────────────
+.share-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+  backdrop-filter: blur(3px);
+}
+
+// ── Share modal ──────────────────────────────────────────────
+.share-modal {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #FFFBF0;
+  border-radius: 28px 28px 0 0;
+  z-index: 1101;
+  padding: 28px 24px 36px;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 40px rgba(224, 123, 0, 0.2);
+
+  &.active { transform: translateY(0); }
+}
+
+.share-close {
+  position: absolute; top: 18px; right: 20px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255, 149, 0, 0.12);
+  border: 1.5px solid rgba(255, 149, 0, 0.25);
+  color: #E07B00; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+.share-step {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 14px;
+}
+
+.share-modal-icon { font-size: 36px; }
+
+.share-modal-title {
+  font-size: 20px; font-weight: 800;
+  color: #2B1A00; margin: 0;
+}
+
+.share-modal-sub {
+  font-size: 13px; color: #9A7A50;
+  margin: 0; text-align: center;
+}
+
+// ── Platform grid ────────────────────────────────────────────
+.share-platform-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px; width: 100%;
+  margin-top: 6px;
+}
+
+.share-platform-btn {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+  padding: 20px 12px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.android {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-color: #a5d6a7;
+    &:active { transform: scale(0.96); }
+  }
+
+  &.ios {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-color: #90caf9;
+    &:active { transform: scale(0.96); }
+  }
+}
+
+.share-platform-icon { font-size: 32px; }
+
+.share-platform-label {
+  font-size: 15px; font-weight: 800; color: #2B1A00;
+}
+
+.share-platform-sub {
+  font-size: 11px; color: #7A6A50; font-weight: 500;
+}
+
+// ── QR screen ────────────────────────────────────────────────
+.share-back-btn {
+  align-self: flex-start;
+  background: none; border: none;
+  color: #E07B00; font-size: 14px; font-weight: 600;
+  cursor: pointer; padding: 0;
+}
+
+.share-qr-platform-badge {
+  font-size: 13px; font-weight: 700;
+  padding: 6px 20px; border-radius: 50px;
+
+  &.android { background: #e8f5e9; color: #2e7d32; }
+  &.ios     { background: #e3f2fd; color: #1565c0; }
+}
+
+.share-qr-wrap {
+  position: relative;
+  width: 200px; height: 200px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 3px solid rgba(255, 149, 0, 0.3);
+  box-shadow: 0 4px 24px rgba(255, 149, 0, 0.2);
+}
+
+.share-qr-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+
+.share-qr-hint {
+  font-size: 13px; color: #9A7A50; margin: 0;
+  text-align: center;
+}
+
+// ── Copy link row ────────────────────────────────────────────
+.share-link-row {
+  display: flex; align-items: center;
+  gap: 10px; width: 100%;
+  background: #ffffff;
+  border: 1.5px solid rgba(255, 184, 0, 0.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.share-link-text {
+  flex: 1; font-size: 11px; color: #9A7A50;
+  overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-copy-btn {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border: none; border-radius: 8px;
+  color: #ffffff; font-size: 12px; font-weight: 700;
+  padding: 6px 14px; cursor: pointer;
+  transition: all 0.2s;
+  &:active { transform: scale(0.95); }
+}
+
+.share-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;          // ✅ very high
+  backdrop-filter: blur(3px);
+  pointer-events: all;     // ✅ blocks clicks behind
+}
+
+.share-modal {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #FFFBF0;
+  border-radius: 28px 28px 0 0;
+  z-index: 100000;         // ✅ above backdrop
+  padding: 28px 24px 36px;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 40px rgba(224, 123, 0, 0.2);
+  pointer-events: all;     // ✅ modal itself is clickable
+
+  &.active { transform: translateY(0); }
+}
+
+.share-direct-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.2rem;
+  width: 100%;
+}
+
+.share-direct-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.7rem 0;
+  border-radius: 12px;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+
+  .share-direct-icon {
+    font-size: 1.1rem;
+  }
+
+  &.whatsapp {
+    background: #25D366;
+    color: #fff;
+  }
+
+  &.native {
+    background: #f0f0f0;
+    color: #333;
+  }
+}

@@ -243,6 +243,46 @@ namespace FaceUPAI.API
 			}, this);
 		}
 
+
+
+		[HttpPost]
+		[EnableCors("AllowAll")]
+		[Route("MandirSelectByQueryPaging")]
+		public IActionResult MandirSelectByQueryPaging(
+	int tenantID,
+	int schoolID,
+	string Query,
+	int pageNumber = 1,
+	int pageSize = 10)
+		{
+			return ApiHandler.Handle(() =>
+			{
+				SqlParameter[] parameters = new SqlParameter[]
+				{
+			new SqlParameter("@TenantID", tenantID),
+			new SqlParameter("@SchoolID", schoolID),
+			new SqlParameter("@Query", Query),
+			new SqlParameter("@PageNumber", pageNumber),
+			new SqlParameter("@PageSize", pageSize)
+				};
+
+				using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+					CommandType.StoredProcedure,
+					"MandirSelectByQueryPaging",
+					parameters))
+				{
+					List<Mandir> MandirList = new List<Mandir>();
+
+					while (dataReader.Read())
+					{
+						MandirList.Add(MakeMandir(dataReader));
+					}
+
+					return Ok(new { MandirList });
+				}
+			}, this);
+		}
+
 		/// <summary>
 		/// Creates a new instance of the Mandir class and populates it with data from the specified SqlDataReader.
 		/// </summary>

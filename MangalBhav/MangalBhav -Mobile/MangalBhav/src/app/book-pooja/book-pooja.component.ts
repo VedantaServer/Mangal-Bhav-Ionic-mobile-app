@@ -33,6 +33,35 @@ export class BookPoojaComponent implements OnInit {
   isPreviewOpen = false;
   serviceImages: any[] = [];
   previewUrl = '';
+
+  // ── Payment & Transaction ─────────────────────────────────────
+  amt: string = '';
+  orderID: any;
+  isProcessingPayment = false;
+
+  MandirTransaction = {
+    TenantID: 1,
+    MandirID: 0,                // always 0 for pooja bookings
+    UserID: 0,                  // will be set to BookingID after insert
+    TransactionType: 'Pooja',
+    ServiceName: '',
+    DonorName: '',
+    Phone: '',
+    Amount: '',
+    PaymentMode: 'Razorpay',
+    OrderID: '',
+    UniqueReferenceNo: '',
+    PaymentStatus: '',
+    PaymentGatewayResponse: '',
+    Remarks: '',
+    DateAdded: new Date(),
+    DateModified: new Date(),
+    UpdatedByUser: '',
+  };
+
+  // Donor info (collected in booking modal)
+  bookingDonorName: string = '';
+  bookingDonorPhone: string = '';
   labels = {
     en: {
       welcomeLine: '🪔 Sacred rituals for every event of life',
@@ -504,6 +533,14 @@ export class BookPoojaComponent implements OnInit {
 
   async ngOnInit() {
 
+    this.userDetails = await this.storage.get('account');
+
+    if (this.userDetails) {
+      this.bookingDonorName = this.userDetails.FullName;
+      this.bookingDonorPhone = this.userDetails.LoginID;
+    }
+
+
     this.route.queryParams.subscribe(params => {
       console.log('Received ID:', params['id']);
       this.paramID = params['id'];
@@ -681,62 +718,146 @@ export class BookPoojaComponent implements OnInit {
     this.isBookingModalOpen = true;
   }
 
+
+
   confirmBooking() {
-
-
-    // 🔥 Simple confirmation alert
-    var date = this.BookingDate.split('T')[0];
-
-    const isConfirmed = confirm(
-      "Please confirm your booking:\n\n" +
-      "🪔 Service: " + this.selectedBooking?.ServiceName + "\n" +
-      "📍 Location: " + this.selectedBooking?.LocationName + "\n" +
-      "📅 Date: " + date + "\n" +
-      "💰 Dakshina: ₹ " + this.selectedBooking?.Price + "\n\n" +
-      "Do you want to proceed?"
-    );
-
-    if (!isConfirmed) {
+    if (!this.BookingDate) {
+      alert('Please select a Pooja date 📅');
       return;
     }
 
-    const payload = this.preparePayload();
-    console.log(payload)
+    if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
+      alert('Please enter your name (min 3 characters) 🙏');
+      return;
+    }
 
-    date = this.BookingDate.split('T')[0]; // YYYY-MM-DD
+    if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
+      alert('Please enter a valid 10-digit mobile number 🙏');
+      return;
+    }
 
+    const date = this.BookingDate.split('T')[0];
     const nextDate = new Date(date);
     nextDate.setDate(nextDate.getDate() + 1);
     const nextDateStr = nextDate.toISOString().split('T')[0];
 
-    this.apinu.postUrlData(`BookingsSelectByQuery?Query=PanditServiceID=${payload.panditServiceID} AND BhaktProfileID=${payload.bhaktProfileID} AND PoojaDate >= '${date}' AND PoojaDate < '${nextDateStr}'`,
+    const payload = this.preparePayload();
+
+    // ✅ Step 1: Only check duplicate — do NOT insert yet
+    this.apinu.postUrlData(
+      `BookingsSelectByQuery?Query=PanditServiceID=${payload.panditServiceID} AND BhaktProfileID=${payload.bhaktProfileID} AND PoojaDate >= '${date}' AND PoojaDate < '${nextDateStr}'`,
       null
-    )
-      .subscribe((res: any) => {
-        console.log(res.BookingList.length > 0);
-        if (res.BookingList.length > 0) {
-          alert('You have already booked');
-        } else {
-          const DBAction = 'BookingsInsert';
-          this.apinu.postUrlData(DBAction, payload)
-            .subscribe((res: any) => {
-              if (res?.BookingID > 0) {
-                alert('Booking Confirmed 🎉');
-                this.isBookingModalOpen = false;
-                //this.loadList();
+    ).subscribe((res: any) => {
+      if (res.BookingList?.length > 0) {
+        alert('You have already booked this service for the selected date.');
+        return;
+      }
 
-
-
-                setTimeout(() => {
-                  this.routerCtrl.navigateForward('/booking');
-                }, 400); // delay in milliseconds
-              } else {
-                alert("Something went wrong ❌");
-              }
-            });
-        }
-      })
+      // ✅ Step 2: Go straight to payment — no booking insert yet
+      this.initiateBookingPayment(payload);
+    });
   }
+
+  initiateBookingPayment(payload: any) {
+    this.amt = String(this.advanceAmount) + '00';
+
+    this.apinu.postUrlData(`getRazorPayUniqueOrderID?amount=${this.amt}`, null)
+      .subscribe((res: any) => {
+        this.orderID = res.orderID;
+        this.processBookingPayment(res.orderID, payload);  // pass payload, not bookingID
+      });
+  }
+
+  processBookingPayment(or: any, payload: any) {
+    this.apinu.postUrlData(
+      `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='RazorPay' and identifier='publictoken'`}`,
+      null
+    ).subscribe((res: any) => {
+      const ckey = res.MasterDataList[0].Description;
+
+      const options: any = {
+        key: ckey,
+        amount: this.amt,
+        currency: 'INR',
+        name: 'Mangal Bhav',
+        description: `Advance for ${this.selectedBooking?.ServiceName?.split('/')[0]?.trim()}`,
+        image: 'https://mangalbhav.com/assets/mangalbhavlogo1.jpeg',
+        order_id: or,
+        webview_intent: true,
+
+        handler: (response: any) => {
+          const paymentId = response.razorpay_payment_id;
+          const orderId = response.razorpay_order_id;
+          const signature = response.razorpay_signature;
+
+          // ✅ Step 3: Verify payment
+          this.apinu.postUrlData(
+            `verifyRazorPayPayment?paymentId=${paymentId}&orderId=${orderId}&signature=${signature}`,
+            null
+          ).subscribe({
+            next: (verifyRes: any) => {
+              if (verifyRes.success) {
+
+                // ✅ Step 4: Payment confirmed → NOW insert booking
+                this.apinu.postUrlData('BookingsInsert', payload).subscribe((bookingRes: any) => {
+                  const bookingID = bookingRes?.BookingID;
+
+                  if (!bookingID || bookingID <= 0) {
+                    alert('Payment received but booking insert failed ❌\nPlease contact support with Payment ID: ' + paymentId);
+                    return;
+                  }
+
+                  // ✅ Step 5: Insert transaction record with bookingID
+                  this.MandirTransaction.MandirID = 0;
+                  this.MandirTransaction.UserID = bookingID;
+                  this.MandirTransaction.DonorName = this.bookingDonorName;
+                  this.MandirTransaction.UpdatedByUser = this.bookingDonorName;
+                  this.MandirTransaction.Phone = this.bookingDonorPhone;
+                  this.MandirTransaction.UniqueReferenceNo = paymentId;
+                  this.MandirTransaction.OrderID = orderId;
+                  this.MandirTransaction.PaymentStatus = 'Success';
+                  this.MandirTransaction.TransactionType = 'Pooja';
+                  this.MandirTransaction.ServiceName = this.selectedBooking?.ServiceName?.split('/')[0]?.trim() || '';
+                  this.MandirTransaction.Amount = String(this.advanceAmount);
+                  this.MandirTransaction.Remarks = `10% advance for BookingID: ${bookingID}`;
+                  this.MandirTransaction.DateAdded = new Date();
+                  this.MandirTransaction.DateModified = new Date();
+
+                  this.apinu.postUrlData('MandirTransactionsInsert', this.MandirTransaction)
+                    .subscribe(() => {
+                      this.isBookingModalOpen = false;
+                      this.isProcessingPayment = false;
+                      alert(`🎉 Booking Confirmed!\n\n✅ Advance of ₹${this.advanceAmount} paid successfully.`);
+                      setTimeout(() => this.routerCtrl.navigateForward('/booking'), 400);
+                    });
+                });
+
+              } else {
+                // Payment verified but failed — do NOT insert booking
+                this.isProcessingPayment = false;
+                alert('Payment verification failed ❌\nBooking was NOT created. Please try again.');
+              }
+            },
+            error: () => {
+              this.isProcessingPayment = false;
+              alert('Verification error ❌\nBooking was NOT created. Please contact support.');
+            }
+          });
+        },
+
+        prefill: {
+          name: this.bookingDonorName,
+          contact: this.bookingDonorPhone
+        },
+        notes: { service: this.selectedBooking?.ServiceName },
+        theme: { color: '#FF9500' }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    });
+  }
+
 
 
 
@@ -750,7 +871,7 @@ export class BookPoojaComponent implements OnInit {
       totalAmount: this.selectedBooking.Price
         ? Math.round(Number(this.selectedBooking.Price) * 100) / 100
         : 0,
-      paymentStatus: 'PENDING',
+      paymentStatus: 'BOOKING AMOUNT PAID',
       poojaDate: new Date(this.BookingDate).toISOString(),
       dateAdded: new Date().toISOString(),
       dateModified: new Date().toISOString(),
@@ -928,6 +1049,12 @@ export class BookPoojaComponent implements OnInit {
 
   onScanError(error: any) {
     console.error('Scan error:', error);
+  }
+
+
+
+  get advanceAmount(): number {
+    return Math.round((Number(this.selectedBooking?.Price || 0) * 0.10));
   }
 
 }

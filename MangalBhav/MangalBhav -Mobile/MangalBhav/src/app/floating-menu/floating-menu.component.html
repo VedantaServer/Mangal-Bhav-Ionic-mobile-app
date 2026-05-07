@@ -1,4 +1,4 @@
-<div class="custom-fab-wrap" >
+<div class="custom-fab-wrap">
   <div class="fab-backdrop" *ngIf="fabOpen" (click)="closeFab()"></div>
 
   <!-- Pill card container -->
@@ -14,19 +14,19 @@
       <div class="fab-pill-icon"><ion-icon name="chatbubbles-outline"></ion-icon></div>
       <span>Ask Pandit Ji</span>
     </button>
-    <button class="fab-pill" (click)="openPage('openfindmandir'); closeFab()">
+    <!-- <button class="fab-pill" (click)="openPage('openfindmandir'); closeFab()">
       <div class="fab-pill-icon"><ion-icon name="library-outline"></ion-icon></div>
       <span>Find Mandir</span>
-    </button>
+    </button> -->
 
-    <button class="fab-pill" (click)="action4(); closeFab()" *ngIf="floatingMenuVisible">
+    <!-- <button class="fab-pill" (click)="action4(); closeFab()" *ngIf="floatingMenuVisible">
       <div class="fab-pill-icon"><ion-icon name="search-outline"></ion-icon></div>
       <span>Search Pandit Ji</span>
-    </button>
-    <button class="fab-pill" (click)="action5(); closeFab()" *ngIf="!floatingMenuVisible">
+    </button> -->
+    <!-- <button class="fab-pill" (click)="action5(); closeFab()" *ngIf="!floatingMenuVisible">
       <div class="fab-pill-icon"><ion-icon name="search-outline"></ion-icon></div>
       <span>Search Pandit Ji</span>
-    </button>
+    </button> -->
     <button class="fab-pill" (click)="openPage('india-festival'); closeFab()">
       <div class="fab-pill-icon"><ion-icon name="flame-outline"></ion-icon></div>
       <span>Festivals</span>
@@ -43,14 +43,100 @@
       <div class="fab-pill-icon"><ion-icon name="language-outline"></ion-icon></div>
       <span>Language</span>
     </button>
+
+    <button class="fab-pill" (click)="openShare(); closeFab()">
+      <div class="fab-pill-icon"><ion-icon name="share-social-outline"></ion-icon></div>
+      <span>Share</span>
+    </button>
   </div>
 
- <!-- wrap your button like this -->
-<div class="fab-ripple-wrap">
-  <div class="ripple"></div>
-  <div class="ripple2"></div>
-  <button class="fab-main-btn" (click)="toggleFab()">
-    <img src="../../assets/swastik.png" alt="">
-  </button>
-</div>
+  <!-- wrap your button like this -->
+  <div class="fab-ripple-wrap">
+    <div class="ripple"></div>
+    <div class="ripple2"></div>
+    <button class="fab-main-btn" (click)="toggleFab()">
+      <img src="../../assets/swastik.png" alt="">
+    </button>
+  </div>
+
+  <!-- ── SHARE MODAL ── -->
+  <div class="share-backdrop" *ngIf="showShareModal" (click)="closeShare()"></div>
+
+  <div class="share-modal" [class.active]="showShareModal">
+
+    <button class="share-close" (click)="closeShare()">✕</button>
+
+    <!-- Step 1: Pick platform -->
+    <div *ngIf="!selectedPlatform" class="share-step">
+      <div class="share-modal-icon">🔗</div>
+      <h3 class="share-modal-title">Share Mangal Bhav</h3>
+      <p class="share-modal-sub">Select your platform to get the download QR</p>
+
+      <div class="share-platform-grid">
+        <button class="share-platform-btn android" (click)="selectPlatform('android')">
+          <div class="share-platform-icon">🤖</div>
+          <span class="share-platform-label">Android</span>
+          <span class="share-platform-sub">Google Play</span>
+        </button>
+        <button class="share-platform-btn ios" (click)="selectPlatform('ios')">
+          <div class="share-platform-icon">🍎</div>
+          <span class="share-platform-label">iPhone</span>
+          <span class="share-platform-sub">App Store</span>
+        </button>
+      </div>
+
+      <!-- ── NEW: Direct share buttons ── -->
+      <div class="share-direct-row">
+        <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
+          <span class="share-direct-icon">💬</span>
+          <span class="share-direct-label">WhatsApp</span>
+        </button>
+        <button class="share-direct-btn native" (click)="shareNative()">
+          <span class="share-direct-icon">↗️</span>
+          <span class="share-direct-label">More Apps</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Step 2: Show QR (unchanged) -->
+    <div *ngIf="selectedPlatform" class="share-step">
+      <button class="share-back-btn" (click)="selectedPlatform = null">← Back</button>
+
+      <div class="share-qr-platform-badge" [class.android]="selectedPlatform === 'android'"
+        [class.ios]="selectedPlatform === 'ios'">
+        {{ selectedPlatform === 'android' ? '🤖 Android — Google Play' : '🍎 iPhone — App Store' }}
+      </div>
+
+      <div class="share-qr-wrap">
+        <img [src]="getQrUrl()" class="share-qr-img" alt="QR Code" />
+        <div class="share-qr-glow"></div>
+      </div>
+
+      <p class="share-qr-hint">Scan with camera to download the app</p>
+
+      <div class="share-link-row">
+        <span class="share-link-text">{{ getAppLink() }}</span>
+        <button class="share-copy-btn" (click)="copyLink()">
+          {{ copied ? '✅ Copied!' : '📋 Copy' }}
+        </button>
+      </div>
+
+      <!-- ── NEW: Share QR step also has quick-share buttons ── -->
+      <div class="share-direct-row" style="margin-top: 1rem;">
+        <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
+          <span class="share-direct-icon">💬</span>
+          <span class="share-direct-label">WhatsApp</span>
+        </button>
+        <button class="share-direct-btn native" (click)="shareNative()">
+          <span class="share-direct-icon">↗️</span>
+          <span class="share-direct-label">More Apps</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+
 </div>

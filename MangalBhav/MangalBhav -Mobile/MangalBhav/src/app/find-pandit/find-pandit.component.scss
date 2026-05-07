@@ -1308,7 +1308,7 @@ ion-modal {
  width: 50%;
   align-items: center;
   gap: 4px;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 10px;
   font-weight: 700;
   color: #ffffff;
@@ -1361,7 +1361,7 @@ ion-modal {
   ion-icon { font-size: 20px; }
 
   ion-label {
-    font-family: 'Poppins', sans-serif;
+    
     font-size: 10px;
     font-weight: 600;
   }
@@ -1399,7 +1399,7 @@ ion-modal {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
@@ -1494,7 +1494,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   }
 
   ion-label {
-    font-family: 'Poppins', sans-serif;
+    
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -1565,7 +1565,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
@@ -1684,7 +1684,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
 }
 
 .mb-scanner-label {
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 9px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
@@ -2129,4 +2129,265 @@ select {
   box-shadow: 0 4px 16px rgba(255, 149, 0, 0.35);
   &:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 149, 0, 0.45); }
   &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+}
+
+/* ─── Paste these into find-pandit.component.scss ─── */
+
+/* List wrapper */
+.pandit-list-wrap {
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Individual pandit row */
+.pandit-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:active {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: scale(0.99);
+  }
+}
+
+/* Avatar block */
+.pandit-row-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  .pr-initials {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8622a, #f5a623);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pr-photo {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0e0d0;
+  }
+
+  /* Verification status dot */
+  .pr-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #f59e0b;   /* pending = amber */
+
+    &.verified {
+      background: #10b981;  /* verified = green */
+    }
+  }
+}
+
+/* Text info */
+.pandit-row-info {
+  flex: 1;
+  min-width: 0;
+
+  .pr-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pr-meta {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    ion-icon {
+      font-size: 11px;
+      vertical-align: middle;
+    }
+
+    .pr-exp {
+      color: #aaa;
+    }
+  }
+
+  .pr-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+
+    &.verified {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    &.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+}
+
+/* Arrow icon */
+.pr-arrow {
+  color: #ccc;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Services loading spinner inside pandit modal */
+.services-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0;
+  gap: 12px;
+
+  ion-spinner {
+    color: #e8622a;
+    width: 36px;
+    height: 36px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #aaa;
+    margin: 0;
+  }
+}
+
+.explore-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #A05C00;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* Location detail card */
+.location-detail-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #FFF8EC 0%, #FFF3E0 100%);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(255, 160, 30, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 100, 0, 0.07);
+}
+
+.location-pin {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  line-height: 1;
+}
+
+.location-text {
+  flex: 1;
+  min-width: 0; // prevents overflow
+}
+
+.location-detail-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2B1A00;
+  margin: 0 0 5px 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-detail-addr {
+  font-size: 12px;
+  color: #7A4D00;
+  margin: 0;
+  line-height: 1.6;
+
+  &.muted {
+    color: #BBA070;  // softer tone for "not available"
+    font-style: italic;
+  }
+}
+
+/* Empty state */
+.location-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px;
+  background: #FFF8EC;
+  border-radius: 14px;
+  border: 1.5px dashed rgba(255, 160, 30, 0.4);
+
+  span { font-size: 28px; opacity: 0.5; }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #BBA070;
+    font-style: italic;
+  }
+}
+
+/* 6-column grid on wider screens, 2-col on mobile */
+.detail-info-grid {
+  grid-template-columns: repeat(2, 1fr); /* keep your existing layout */
+}
+
+/* Combined contact box */
+.contact-combined-item {
+  grid-column: span 1; /* stays in normal grid flow */
+
+  .contact-phone {
+    margin-bottom: 2px;
+  }
+
+  .contact-email {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--ion-color-medium);
+    margin-top: 2px;
+
+    .contact-email-icon {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+/* Location sub-label (temple/venue name under city) */
+.location-sub {
+  font-size: 0.72rem !important;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
 }

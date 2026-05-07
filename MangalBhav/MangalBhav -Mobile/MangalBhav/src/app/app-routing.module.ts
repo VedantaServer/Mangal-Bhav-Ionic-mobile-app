@@ -40,6 +40,9 @@ import { OpenLanguageChangeComponent } from './open-language-change/open-languag
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { MandirInsertUpdateComponent } from './mandir-insert-update/mandir-insert-update.component';
 import { MandirfulldetailsComponent } from './mandirfulldetails/mandirfulldetails.component';
+import { PanditFulldetailsComponent } from './pandit-fulldetails/pandit-fulldetails.component';
+import { DeleteAccountComponent } from './delete-account/delete-account.component';
+import { MytransactionComponent } from './mytransaction/mytransaction.component';
 
 const routes: Routes = [
 
@@ -248,6 +251,25 @@ const routes: Routes = [
     path: 'mandirfulldetails/:id',
     component: MandirfulldetailsComponent // directly use the standalone component
   }
+
+  ,
+  {
+    path: 'panditfulldetails',
+    component: PanditFulldetailsComponent // directly use the standalone component
+  }
+  ,
+  {
+    path: 'deleteaccount',
+    component: DeleteAccountComponent // directly use the standalone component
+  }
+
+  ,
+  {
+    path: 'mytransaction',
+    component: MytransactionComponent // directly use the standalone component
+  }
+
+
 ];
 @NgModule({
   imports: [

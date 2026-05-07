@@ -1,0 +1,64 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/" color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <div class="header-title">
+        <span class="om">ॐ</span> Pandit Directory
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="top-banner">
+    <p class="shloka">॥ सेवा परमो धर्मः ॥</p>
+  </div>
+
+  <div class="card-list">
+    <ion-card class="pandit-card" *ngFor="let pandit of panditList; let i = index">
+      <div class="card-inner">
+
+        <div class="avatar-wrap">
+          <div class="avatar">
+            <span class="avatar-icon">🪔</span>
+          </div>
+          <div class="badge">{{ i + 1 }}</div>
+        </div>
+
+        <div class="pandit-info">
+          <h2 class="pandit-name">{{ pandit.FullName }}</h2>
+
+          <div class="info-row">
+            <ion-icon name="call-outline" class="info-icon"></ion-icon>
+            <span>{{ pandit.LoginID }}</span>
+          </div>
+
+          <div class="info-row" *ngIf="pandit.UPIId && pandit.UPIId !== pandit.LoginID">
+            <ion-icon name="wallet-outline" class="info-icon"></ion-icon>
+            <span class="upi">{{ pandit.UPIId }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="card-footer">
+        <ion-button fill="clear" size="small" class="contact-btn">
+          <ion-icon slot="start" name="call-outline"></ion-icon>
+          Call
+        </ion-button>
+        <ion-button fill="clear" size="small" class="contact-btn">
+          <ion-icon slot="start" name="cash-outline"></ion-icon>
+          Pay
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+  <div class="bottom-note">
+    <p>🌸 Jai Shri Ram 🌸</p>
+  </div>
+
+</ion-content>

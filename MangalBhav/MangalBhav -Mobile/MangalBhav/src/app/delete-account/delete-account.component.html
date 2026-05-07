@@ -1,0 +1,148 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="goBack()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Delete Account</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-wrapper">
+
+    <!-- ══ STEP INDICATOR ══ -->
+    <div class="step-indicator">
+      <div class="step-dot" [class.active]="step === 'confirm'" [class.done]="step === 'otp' || step === 'final'">1</div>
+      <div class="step-line" [class.done]="step === 'otp' || step === 'final'"></div>
+      <div class="step-dot" [class.active]="step === 'otp'" [class.done]="step === 'final'">2</div>
+      <div class="step-line" [class.done]="step === 'final'"></div>
+      <div class="step-dot" [class.active]="step === 'final'">3</div>
+    </div>
+
+    <!-- ══════════════════════════════
+         STEP 1 — WARNING
+    ══════════════════════════════ -->
+    <div class="step-card" *ngIf="step === 'confirm'">
+
+      <div class="del-icon">🗑️</div>
+      <h2 class="del-title">Delete Your Account</h2>
+      <p class="del-sub">Please read carefully before proceeding</p>
+
+      <div class="warning-box">
+        <div class="warning-row">
+          <span class="warning-bullet">❌</span>
+          <span>All your bookings will be permanently removed</span>
+        </div>
+        <div class="warning-row">
+          <span class="warning-bullet">❌</span>
+          <span>Your profile and personal data will be deleted</span>
+        </div>
+        <div class="warning-row">
+          <span class="warning-bullet">❌</span>
+          <span>You will lose access to all active sevas</span>
+        </div>
+        <div class="warning-row">
+          <span class="warning-bullet">❌</span>
+          <span>This action <strong>cannot be undone</strong></span>
+        </div>
+      </div>
+
+      <div class="account-chip">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <span>{{ userDetails?.FullName || userDetails?.LoginID }}</span>
+      </div>
+
+      <button class="del-proceed-btn" (click)="onProceedFromWarning()">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+        I understand, proceed
+      </button>
+
+      <button class="del-cancel-btn" (click)="goBack()">
+        ← Keep my account
+      </button>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         STEP 2 — OTP VERIFICATION
+    ══════════════════════════════ -->
+    <div class="step-card" *ngIf="step === 'otp'">
+
+      <div class="del-icon">📱</div>
+      <h2 class="del-title">Verify It's You</h2>
+      <p class="del-sub">
+        OTP sent to
+        <strong>+91 {{ userDetails?.LoginID }}</strong>
+      </p>
+
+      <div class="otp-wrap" *ngIf="otpSent">
+        <input
+          class="otp-input"
+          type="number"
+          maxlength="6"
+          [(ngModel)]="otp"
+          placeholder="Enter 6-digit OTP"
+        />
+      </div>
+
+      <div class="sending-row" *ngIf="!otpSent && isLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Sending OTP…</span>
+      </div>
+
+      <button class="del-proceed-btn" (click)="verifyOtp()" *ngIf="otpSent" [disabled]="isLoading">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Verify OTP
+      </button>
+
+      <button class="del-resend-btn" (click)="resendOtp()" *ngIf="otpSent">
+        Didn't receive? Resend OTP
+      </button>
+
+      <button class="del-cancel-btn" (click)="goBack()">
+        ← Cancel deletion
+      </button>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         STEP 3 — FINAL DELETION
+    ══════════════════════════════ -->
+    <div class="step-card danger-card" *ngIf="step === 'final'">
+
+      <div class="del-icon">⚠️</div>
+      <h2 class="del-title danger-title">Last Chance</h2>
+      <p class="del-sub">
+        Once deleted, your account <strong>cannot be recovered</strong>.
+        Tap below to permanently delete.
+      </p>
+
+      <div class="account-chip danger-chip">
+        <ion-icon name="trash-outline"></ion-icon>
+        <span>{{ userDetails?.LoginID }} will be deleted</span>
+      </div>
+
+      <button class="del-final-btn" (click)="onFinalDelete()" [disabled]="isLoading">
+        <ion-icon name="trash-outline"></ion-icon>
+        {{ isLoading ? 'Deleting…' : 'Permanently Delete Account' }}
+        <ion-spinner *ngIf="isLoading" name="crescent" color="light" style="width:18px;height:18px;margin-left:8px"></ion-spinner>
+      </button>
+
+      <button class="del-cancel-btn" (click)="goBack()">
+        ← No, keep my account
+      </button>
+
+    </div>
+
+    <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>

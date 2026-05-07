@@ -34,6 +34,13 @@
           <input class="mandir-search-input" type="text" placeholder="Search by name, city or deity..."
             [(ngModel)]="mandirSearchQuery" (input)="onMandirSearch()" />
         </div> -->
+
+      <div class="mandir-search-wrap">
+        <span class="mandir-search-icon">🔍</span>
+        <input class="mandir-search-input" type="text" placeholder="Search by name, deity or city..." style="color: black;"
+          [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)" />
+      </div>
+
       <button class="mandir-add-btn" (click)="openAddMandir()">
         <span>+</span> Want to add a Mandir
       </button>
@@ -158,7 +165,14 @@
           </div>
         </div>
 
+
       </div>
+
+      <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more pandits...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+
     </div>
     <ng-template #noMandirs>
       <div class="mandir-empty">
@@ -175,6 +189,7 @@
         <button class="mandir-add-btn" (click)="openAddMandir()">+ Add Mandir</button>
       </div>
     </ng-template>
+
   </section>
   <!-- ═══ MODAL BACKDROP ═══ -->
   <div class="mandir-modal-backdrop" [class.active]="showAddMandirForm" (click)="closeAddMandir()"></div>
@@ -363,4 +378,4 @@
 
 
 
-<app-loggedoutbottomtabs *ngIf="!userLoggedIn" ></app-loggedoutbottomtabs>
+<app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>

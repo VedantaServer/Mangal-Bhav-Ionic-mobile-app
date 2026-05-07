@@ -4,6 +4,7 @@ import { IonicModule, NavController, ToastController, ModalController } from '@i
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, ApiNU } from 'src/providers';
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-mandirfulldetails',
@@ -47,25 +48,36 @@ export class MandirfulldetailsComponent implements OnInit {
   // Donate sheet
   showDonateSheet = false;
   donateAmount = '';
-  donateCustomAmount = '';
+  donateCustomAmount: any;
   donateName = null;
   donateMobile = null;
   donateMessage = '';
   isDonating = false;
-  presetAmounts = [51, 101, 251, 501, 1001, 2100];
+  presetAmounts = [21, 51, 101];
   orderID: any;
   amt: string = '';
   isProcessingPayment: boolean = false;
+  userDetails: any;
 
   constructor(
     private route: ActivatedRoute,
     public routerCtrl: NavController,
     public api: Api,
-    public apinu: ApiNU,
+    public apinu: ApiNU, private storage: Storage,
     public toastController: ToastController, private zone: NgZone
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+
+
+    this.userDetails = await this.storage.get('account');
+
+    if (this.userDetails) {
+      this.donateMobile = this.userDetails.LoginID;
+      this.donateName = this.userDetails.FullName;
+    }
+
+
     this.mandirID = this.route.snapshot.paramMap.get('id');
     if (this.mandirID) this.loadMandir();
 
@@ -211,7 +223,7 @@ export class MandirfulldetailsComponent implements OnInit {
 
   selectPreset(amount: number) {
     this.donateAmount = String(amount);
-    this.donateCustomAmount = '';
+    this.donateCustomAmount = Number(amount);
   }
 
   get finalAmount(): number {
@@ -247,7 +259,7 @@ export class MandirfulldetailsComponent implements OnInit {
       return;
     }
 
-    this.amt = String(this.finalAmount) + '' + '00'
+    this.amt = String(this.finalAmount + 5) + '00'
 
     this.apinu.postUrlData(`getRazorPayUniqueOrderID?amount=${this.amt}`, null)
       .subscribe((res: any) => {

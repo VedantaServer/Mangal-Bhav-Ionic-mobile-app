@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
   templateUrl: './openfindmandir.component.html',
   styleUrls: ['./openfindmandir.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,PanditjibottomtabsComponent,LoggedoutbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent, LoggedoutbottomtabsComponent]
 })
 export class OpenfindmandirComponent implements OnInit {
 
@@ -47,7 +47,7 @@ export class OpenfindmandirComponent implements OnInit {
   }
 
 
-  allMandirs: any[] = [];
+  //allMandirs: any[] = [];
   filteredMandirs: any[] = [];
   mandirSearchQuery = '';
   showAddMandirForm = false;
@@ -68,16 +68,16 @@ export class OpenfindmandirComponent implements OnInit {
 
 
 
-  constructor(  private router: Router,public api: Api, public routerCtrl: NavController, public apinu: ApiNU, private storage: Storage, public toastController: ToastController) { }
+  constructor(private router: Router, public api: Api, public routerCtrl: NavController, public apinu: ApiNU, private storage: Storage, public toastController: ToastController) { }
 
 
   async ngOnInit() {
 
-      if (this.router.url === '/tabs/openfindmandir') {
+    if (this.router.url === '/tabs/openfindmandir') {
       this.showbottomtab = false;
     }
 
-    
+
 
 
     this.userDetails = await this.storage.get("account");
@@ -110,25 +110,140 @@ export class OpenfindmandirComponent implements OnInit {
     }
   }
 
-  loadMandirs() {
-    this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1  ORDER BY DateAdded DESC`, null).subscribe({
+  // loadMandirs() {
+  //   this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1  ORDER BY DateAdded DESC`, null).subscribe({
+  //     next: (res: any) => {
+  //       this.allMandirs = (res?.MandirList ?? []).map((m: any) => ({
+  //         ...m,
+  //         FrontImageUrl: null
+  //       }));
+
+  //       this.filteredMandirs = [...this.allMandirs];
+
+
+  //       this.filteredMandirs.forEach(m => {
+  //         this.loadMandirImage(m);
+  //       });
+
+  //     },
+  //     error: (err: any) => console.error('loadMandirs error', err),
+  //   });
+  // }
+
+  pageNumber = 1;
+  pageSize = 10;
+  allMandirs: any[] = [];
+
+
+  loadMore() {
+    this.pageNumber++;
+    this.loadMandirs(true);
+  }
+
+  onMandirSearchChange(value: string) {
+    clearTimeout(this.searchTimeout);
+    const q = value?.trim();
+
+    if (!q) {
+      this.pageNumber = 1;
+      this.allMandirs = [];
+      this.filteredMandirs = [];
+      this.query = `tenantID=1 ORDER BY DateAdded DESC`;
+      this.infiniteScrollEvent = null; // ✅ reset scroll state
+      this.loadMandirs();
+      return;
+    }
+
+    if (q.length < 3) return;
+
+    this.searchTimeout = setTimeout(() => {
+      this.pageNumber = 1;
+      this.allMandirs = [];
+      this.filteredMandirs = [];
+      this.infiniteScrollEvent = null; // ✅ reset scroll state
+
+      this.query = `
+      tenantID=1
+      AND (
+        MandirName LIKE '%${q}%'
+        OR GodName LIKE '%${q}%'
+        OR City LIKE '%${q}%'
+        OR State LIKE '%${q}%'
+        OR Address LIKE '%${q}%'
+      )
+      ORDER BY DateAdded DESC
+    `;
+      this.loadMandirs();
+    }, 500);
+  }
+
+  loadMandirs(loadMore = false) {
+    const query = this.query;
+
+    this.apinu.postUrlData(
+      `MandirSelectByQueryPaging?tenantID=1&schoolID=0&pageNumber=${this.pageNumber}&pageSize=${this.pageSize}&Query=${encodeURIComponent(query)}`,
+      null
+    ).subscribe({
       next: (res: any) => {
-        this.allMandirs = (res?.MandirList ?? []).map((m: any) => ({
+        const newMandirs = (res?.MandirList ?? []).map((m: any) => ({
           ...m,
           FrontImageUrl: null
         }));
 
+        // ✅ Bug 2 fix: no more data — stop & disable immediately
+        if (!newMandirs.length) {
+          if (this.infiniteScrollEvent) {
+            this.infiniteScrollEvent.target.complete();
+            this.infiniteScrollEvent.target.disabled = true;
+            this.infiniteScrollEvent = null;
+          }
+          return;
+        }
+
+        if (loadMore) {
+          this.allMandirs = [...this.allMandirs, ...newMandirs];
+        } else {
+          this.allMandirs = newMandirs;
+        }
+
         this.filteredMandirs = [...this.allMandirs];
 
-        // 👇 CALL HERE
-        this.filteredMandirs.forEach(m => {
-          this.loadMandirImage(m);
-        });
+        newMandirs.forEach((m: any) => this.loadMandirImage(m));
 
+        if (this.infiniteScrollEvent) {
+          this.infiniteScrollEvent.target.complete();
+          // ✅ Bug 1 fix: check newMandirs.length, not res.length
+          if (newMandirs.length < this.pageSize) {
+            this.infiniteScrollEvent.target.disabled = true;
+          }
+          this.infiniteScrollEvent = null;
+        }
       },
-      error: (err: any) => console.error('loadMandirs error', err),
+      error: (err: any) => {
+        console.error(err);
+        // ✅ Always complete on error too
+        if (this.infiniteScrollEvent) {
+          this.infiniteScrollEvent.target.complete();
+          this.infiniteScrollEvent = null;
+        }
+      }
     });
   }
+
+  searchTimeout: any;
+  query = `tenantID=1 ORDER BY DateAdded DESC`;
+
+
+  // Add this property
+  private infiniteScrollEvent: any = null;
+
+  onInfiniteScroll(event: any) {
+    this.infiniteScrollEvent = event;
+    this.pageNumber++;
+    this.loadMandirs(true);
+  }
+
+
 
   loadMandirImage(mandir: any) {
     if (!mandir.FrontImage) return;

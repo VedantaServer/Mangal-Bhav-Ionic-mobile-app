@@ -175,63 +175,76 @@
   ══════════════════════════════════ -->
   <div class="mfd-backdrop" [class.active]="showDonateSheet" (click)="closeDonate()"></div>
 
-  <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
+ <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
 
-    <div class="mfd-sheet-header">
-      <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
-      <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
-      <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
-    </div>
+  <div class="mfd-sheet-header">
+    <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
+    <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
+    <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
+  </div>
 
-    <div class="mfd-sheet-body">
+  <div class="mfd-sheet-body">
 
-      <!-- Preset amounts -->
-      <div class="mfd-donate-label">Select Amount</div>
-      <div class="mfd-preset-grid">
-        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
-          (click)="selectPreset(amt)">
-          ₹{{ amt }}
-        </button>
-      </div>
-
-      <!-- Custom amount -->
-      <div class="mfd-donate-label" style="margin-top: 18px;">Or Enter Custom Amount</div>
-      <div class="mfd-amount-input-wrap">
-        <span class="mfd-rupee">₹</span>
-        <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount" placeholder="e.g. 750"
-          (input)="donateAmount = ''" />
-      </div>
-
-      <!-- Donor name -->
-      <div class="mfd-donate-label" style="margin-top: 16px;">Your Name </div>
-      <input class="mfd-text-input" type="text" [(ngModel)]="donateName"
-        placeholder="So we can acknowledge your seva" />
-
-      <div class="mfd-donate-label" style="margin-top: 16px;">Mobile No. </div>
-      <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile"
-        placeholder="So we can acknowledge your seva" />
-
-      <!-- Message -->
-      <div class="mfd-donate-label" style="margin-top: 16px;">Message (Optional)</div>
-      <textarea class="mfd-text-input" rows="2" [(ngModel)]="donateMessage"
-        placeholder="e.g. Jay Shri Ram 🙏"></textarea>
-
-      <!-- Summary -->
-      <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
-        <span>🙏 You are donating</span>
-        <strong>₹{{ finalAmount }}</strong>
-      </div>
-
-    </div>
-
-    <div class="mfd-sheet-footer">
-      <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
-      <button class="mfd-donate-submit-btn" (click)="initiatePayment()" [disabled]="isDonating || finalAmount < 1">
-        <span *ngIf="!isDonating">🪔 Proceed to Donate</span>
-        <span *ngIf="isDonating">Processing…</span>
+    <!-- Preset amounts -->
+    <div class="mfd-donate-label">Select Amount</div>
+    <div class="mfd-preset-grid">
+      <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts"
+        [class.selected]="donateAmount === (amt + '')"
+        (click)="selectPreset(amt)">
+        ₹{{ amt }}
       </button>
     </div>
 
+    <!-- Custom amount + Name + Mobile in compact 2-col row -->
+    <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div>
+    <div class="mfd-amount-input-wrap">
+      <span class="mfd-rupee">₹</span>
+      <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount"
+        placeholder="e.g. 750" (input)="donateAmount = ''" />
+    </div>
+
+    <div class="mfd-two-col" style="margin-top: 12px;">
+      <div>
+        <div class="mfd-donate-label">Your Name</div>
+        <input class="mfd-text-input" type="text" [(ngModel)]="donateName"
+          placeholder="Name" />
+      </div>
+      <div>
+        <div class="mfd-donate-label">Mobile No.</div>
+        <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile"
+          placeholder="10-digit" maxlength="10" />
+      </div>
+    </div>
+
+    <!-- Summary with platform fee -->
+    <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
+      <div class="mfd-summary-row">
+        <span>🙏 Donation Amount : </span>
+        <strong>₹{{ finalAmount }}</strong>
+      </div>
+      <div class="mfd-summary-divider"></div>
+      <div class="mfd-summary-row platform">
+        <span>⚡ Platform Charges : </span>
+        <span class="platform-fee">₹5</span>
+      </div>
+      <div class="mfd-summary-divider"></div>
+      <div class="mfd-summary-row total">
+        <span>💰 Total Donation : </span>
+        <strong class="total-amt">₹{{ finalAmount + 5 }}</strong>
+      </div>
+    </div>
+
   </div>
+
+  <div class="mfd-sheet-footer">
+    <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
+    <button class="mfd-donate-submit-btn" (click)="initiatePayment()"
+      [disabled]="isDonating || finalAmount < 1">
+      <span *ngIf="!isDonating">🪔 Donate ₹{{ finalAmount > 0 ? finalAmount + 5 : 0 }}</span>
+      <span *ngIf="isDonating">Processing…</span>
+    </button>
+  </div>
+
+</div>
 
 </ion-content>

@@ -39,4 +39,12 @@ export class TabsPage {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
+   async action4() {
+    console.log('Location clicked');
+    await localStorage.setItem('findPanditThroghtFloating', 'findPanditThroghtFloating');
+
+    this.routerCtrl.navigateForward(`/find-pandit`);
+
+  }
+  
 }

@@ -21,7 +21,7 @@ export class ChatBoxComponent implements OnInit {
   supportUserID: number = 0;
   AskPanditUserID: number = 0;
   customGroupID: number = 0;
-  GroupName!: string;
+  GroupName: string = '';
   userDetails: any;
   allMessagesOfCurrentChatBox: any;
   withUserID: number = 0;

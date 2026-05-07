@@ -21,7 +21,7 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;
@@ -46,109 +46,140 @@ export class UserProfileComponent implements OnInit {
     UpdatedByUser: null
   };
 
+  showNotInterestedModal = false;
   isEditMode = false;
   profileObject: any;
   language: any;
+  bankDetails: any = null;
+  upiId: string = '';
+  showBankForm: boolean = false;
 
-labels = {
-  en: {
-    appTitle: 'Mangal.Bhav',
-    appSub: '✦ Peace · Prosperity · Protection ✦',
+  labels = {
+    en: {
+      appTitle: 'Mangal.Bhav',
+      appSub: '✦ Peace · Prosperity · Protection ✦',
 
-    bannerSub: 'Your Sacred',
-    bannerTitle: 'Profile',
+      bannerSub: 'Your Sacred',
+      bannerTitle: 'Profile',
 
-    changePhoto: 'Tap to change photo',
+      changePhoto: 'Tap to change photo',
 
-    personalDetails: 'Personal Details',
+      personalDetails: 'Personal Details',
 
-    fullName: 'Full Name',
-    enterFullName: 'Enter your full name',
+      notInterested: 'Not interested in using app',
+      sorryTitle: "We're sorry to see you go",
+      sorrySub: 'How can we help you before you leave?',
+      connectSupport: 'Connect with Support',
+      connectSupportSub: 'Chat with us on WhatsApp',
+      deleteAccount: 'Delete My Account',
+      deleteAccountSub: 'Permanently remove all your data',
+      cancelKeep: 'Cancel — Keep my account',
 
-    phone: 'Phone',
-    verified: 'Verified',
+      fullName: 'Full Name',
+      enterFullName: 'Enter your full name',
 
-    email: 'Email',
-    enterEmail: 'Enter your email',
+      phone: 'Phone',
+      verified: 'Verified',
 
-    gender: 'Gender',
-    selectGender: 'Select Gender',
+      email: 'Email',
+      enterEmail: 'Enter your email',
 
-    male: 'Male',
-    female: 'Female',
-    other: 'Other',
+      gender: 'Gender',
+      selectGender: 'Select Gender',
 
-    experience: 'Experience (Years)',
-    enterExperience: 'e.g. 10',
+      male: 'Male',
+      female: 'Female',
+      other: 'Other',
 
-    dob: 'Date of Birth',
+      experience: 'Experience (Years)',
+      enterExperience: 'e.g. 10',
 
-    bio: 'Bio',
-    bioPlaceholder: 'Tell devotees about yourself...',
+      dob: 'Date of Birth',
 
-    language: 'Language',
-    selectLanguage: 'Select Language',
+      bio: 'Bio',
+      bioPlaceholder: 'Tell devotees about yourself...',
 
-    basePrice: 'Base Price (₹)',
-    enterPrice: 'e.g. 1100',
+      language: 'Language',
+      selectLanguage: 'Select Language',
 
-    updateProfile: 'Update Profile',
-    createProfile: 'Create Profile',
+      basePrice: 'Base Price (₹)',
+      enterPrice: 'e.g. 1100',
 
-    logout: 'Logout',
-    explore: 'Explore Life',
-    me: 'Me'
-  },
+      updateProfile: 'Update Profile',
+      createProfile: 'Create Profile',
 
-  hi: {
-    appTitle: 'मंगल.भाव:',
-    appSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+      logout: 'Logout',
+      explore: 'Explore Life',
+      me: 'Me',
+      role: 'Role',
+      selectRole: 'Select Role',
+      pandit: 'Pandit (Priest)',
+      bhakt: 'Bhakt (Devotee)',
+    },
 
-    bannerSub: 'आपका पवित्र',
-    bannerTitle: 'प्रोफाइल',
+    hi: {
+      role: 'भूमिका',
+      selectRole: 'भूमिका चुनें',
+      pandit: 'पंडित (पुजारी)',
+      bhakt: 'भक्त (भक्त)',
+      appTitle: 'मंगल.भाव:',
+      appSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
 
-    changePhoto: 'फोटो बदलने के लिए टैप करें',
+      bannerSub: 'आपका पवित्र',
+      bannerTitle: 'प्रोफाइल',
 
-    personalDetails: 'व्यक्तिगत जानकारी',
+      changePhoto: 'फोटो बदलने के लिए टैप करें',
 
-    fullName: 'पूरा नाम',
-    enterFullName: 'अपना पूरा नाम दर्ज करें',
+      personalDetails: 'व्यक्तिगत जानकारी',
 
-    phone: 'फोन',
-    verified: 'सत्यापित',
+      fullName: 'पूरा नाम',
+      enterFullName: 'अपना पूरा नाम दर्ज करें',
 
-    email: 'ईमेल',
-    enterEmail: 'अपना ईमेल दर्ज करें',
+      phone: 'फोन',
+      verified: 'सत्यापित',
 
-    gender: 'लिंग',
-    selectGender: 'लिंग चुनें',
+      email: 'ईमेल',
+      enterEmail: 'अपना ईमेल दर्ज करें',
 
-    male: 'पुरुष',
-    female: 'महिला',
-    other: 'अन्य',
+      gender: 'लिंग',
+      selectGender: 'लिंग चुनें',
 
-    experience: 'अनुभव (वर्ष)',
-    enterExperience: 'जैसे 10',
+      male: 'पुरुष',
+      female: 'महिला',
+      other: 'अन्य',
 
-    dob: 'जन्म तिथि',
+      experience: 'अनुभव (वर्ष)',
+      enterExperience: 'जैसे 10',
 
-    bio: 'परिचय',
-    bioPlaceholder: 'अपने बारे में भक्तों को बताएं...',
+      dob: 'जन्म तिथि',
 
-    language: 'भाषा',
-    selectLanguage: 'भाषा चुनें',
+      notInterested: 'ऐप उपयोग करने में रुचि नहीं',
+      sorryTitle: 'आपको जाते देख दुख हुआ',
+      sorrySub: 'जाने से पहले हम आपकी कैसे मदद कर सकते हैं?',
+      connectSupport: 'सहायता से जुड़ें',
+      connectSupportSub: 'WhatsApp पर हमसे बात करें',
+      deleteAccount: 'मेरा अकाउंट हटाएं',
+      deleteAccountSub: 'आपका सारा डेटा स्थायी रूप से हटा दिया जाएगा',
+      cancelKeep: 'रद्द करें — अकाउंट रखें',
 
-    basePrice: 'मूल्य (₹)',
-    enterPrice: 'जैसे 1100',
+      bio: 'परिचय',
+      bioPlaceholder: 'अपने बारे में भक्तों को बताएं...',
 
-    updateProfile: 'प्रोफाइल अपडेट करें',
-    createProfile: 'प्रोफाइल बनाएं',
+      language: 'भाषा',
+      selectLanguage: 'भाषा चुनें',
 
-    logout: 'लॉगआउट',
-    explore: 'जीवन देखें',
-    me: 'मैं'
-  }
-};
+      basePrice: 'मूल्य (₹)',
+      enterPrice: 'जैसे 1100',
+
+      updateProfile: 'प्रोफाइल अपडेट करें',
+      createProfile: 'प्रोफाइल बनाएं',
+
+      logout: 'लॉगआउट',
+      explore: 'जीवन देखें',
+      me: 'मैं'
+    }
+  };
+  selectedRole: any = '';
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
@@ -159,12 +190,24 @@ labels = {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages; 
+    this.language = this.userDetails.Languages;
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
 
     // console.log(this.userDetails.Role === 'PANDIT')
+
+    this.apinu.postUrlData(
+      `UsersNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      console.log(res.UserList[0]);
+
+      this.userDetails = res.UserList[0];
+      this.selectedRole = this.userDetails.Role;
+
+      this.loadBankDetails();
+    })
 
 
     this.apinu.postUrlData(
@@ -185,11 +228,11 @@ labels = {
     });
   }
 
-    get t() {
-  return this.language === 'Hindi'
-    ? this.labels.hi
-    : this.labels.en;
-}
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
 
 
 
@@ -304,6 +347,55 @@ labels = {
     });
   }
 
+  loadBankDetails() {
+    if (this.userDetails?.Role !== 'PANDIT') return;
+
+    this.apinu.postUrlData(
+      `BankDetailsSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.BankDetailList && res.BankDetailList.length > 0) {
+        this.bankDetails = res.BankDetailList[0];
+        this.upiId = this.bankDetails.UPIId || '';
+        this.showBankForm = false;
+      } else {
+        this.bankDetails = null;
+        this.showBankForm = true;  // no record found, show add form
+      }
+    });
+  }
+
+  saveBankDetails() {
+    const body: any = {
+      TenantId: Number(this.userDetails.TenantID || 1),
+      UserID: Number(this.userDetails.UserID),
+      AccountHolderName: '',
+      BankName: '',
+      AccountNumber: '',
+      IFSCCode: '',
+      BranchName: '',
+      UPIId: String(this.upiId),
+      AccountType: '',
+      IsActive: true,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      UpdatedByUser: Number(this.userDetails.UserID)
+    };
+
+    const action = this.bankDetails
+      ? 'BankDetailsUpdate'
+      : 'BankDetailsInsert';
+
+    if (this.bankDetails) {
+      body['BankDetailID'] = this.bankDetails.BankDetailID;
+    }
+
+    this.apinu.postUrlData(action, body).subscribe((res: any) => {
+      console.log(res);
+      alert('UPI ID saved successfully ✅');
+      this.loadBankDetails();
+    });
+  }
 
   async logout() {
 
@@ -315,34 +407,62 @@ labels = {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
+
   saveProfile() {
     const payload = this.prepareProfileForSubmit();
-    // console.log("Submitting Profile:", payload);
     const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
-    this.apinu.postUrlData(DBAction, payload)
-      .subscribe(async (res: any) => {
-        //console.log(res);
-        if (res.ProfileID > 0) {
+    const previousRole = this.userDetails.Role; // ← capture before save
 
+    this.apinu.postUrlData(DBAction, payload).subscribe(async (res: any) => {
+      if (res.ProfileID > 0) {
 
+        const userPayload = {
+          ...this.userDetails,
+          Role: this.selectedRole
+        };
 
-
+        this.apinu.postUrlData('UsersUpdate', userPayload).subscribe(async (userRes: any) => {
+          if (userRes.UserID > 0) {
 
             const account = await this.storage.get('account');
             account.Languages = payload.languages;
+            account.Role = this.selectedRole;
             await this.storage.set('account', account);
 
+            this.userDetails.Role = this.selectedRole;
+            this.userDetails.Languages = payload.languages;
 
+            alert('Profile saved successfully ✅');
 
+            // ✅ Reload entire app if role changed
+            if (previousRole !== this.selectedRole) {
+              window.location.reload();
+            }
 
+          } else {
+            alert('Profile saved but role update failed ⚠️');
+          }
+        });
 
-
-          
-          alert("Profile saved successfully ✅");
-          this.uploadProfilePhoto();
-        } else {
-          alert("Something went wrong ❌");
-        }
-      });
+      } else {
+        alert('Something went wrong ❌');
+      }
+    });
   }
+
+  async contactSupport() {
+    this.showNotInterestedModal = false;
+    await Browser.open({
+      url: 'https://wa.me/918796917944?text=' +
+        encodeURIComponent(
+          `🙏 Namaste, I need help with my Mangal Bhav account.\n\nName: ${this.profile.FullName || ''}\nPhone: ${this.profile.PhoneNumber || ''}`
+        )
+    });
+  }
+
+  goToDeleteAccount() {
+    this.showNotInterestedModal = false;
+    this.routerCtrl.navigateForward('/deleteaccount');
+  }
+
 }

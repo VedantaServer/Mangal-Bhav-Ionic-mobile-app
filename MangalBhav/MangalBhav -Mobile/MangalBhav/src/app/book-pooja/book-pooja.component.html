@@ -108,8 +108,8 @@
             <div class="card-body-left">
               <h3 class="service-name">
                 {{ Language === 'Hindi'
-                  ? (item.ServiceName?.split('/')[1]?.trim() || item.ServiceName)
-                  : (item.ServiceName?.split('/')[0]?.trim() || item.ServiceName) }}
+                ? (item.ServiceName?.split('/')[1]?.trim() || item.ServiceName)
+                : (item.ServiceName?.split('/')[0]?.trim() || item.ServiceName) }}
               </h3>
               <div class="pandit-row">
                 <div class="pandit-avatar">
@@ -226,8 +226,8 @@
             <div class="modal-img-overlay"></div>
             <h3 class="modal-img-title">
               {{ Language === 'Hindi'
-                ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
-                : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
+              ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
+              : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
             </h3>
           </div>
 
@@ -281,11 +281,11 @@
                 <p class="summary-item-label">{{ t.summaryLabelAboutSeva }}</p>
                 <p class="summary-item-value description-text">
                   {{ Language === 'Hindi'
-                    ? (selectedBooking?.ServiceDescription?.split('/')[1]?.trim()
-                    || selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
-                    || t.noDescription)
-                    : (selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
-                    || t.noDescription) }}
+                  ? (selectedBooking?.ServiceDescription?.split('/')[1]?.trim()
+                  || selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
+                  || t.noDescription)
+                  : (selectedBooking?.ServiceDescription?.split('/')[0]?.trim()
+                  || t.noDescription) }}
                 </p>
               </div>
             </div>
@@ -304,13 +304,53 @@
           </div>
         </div>
 
+
+        <!-- Inside ion-modal booking modal, after the date picker section -->
+
+        <!-- DONOR INFO -->
+        <div class="form-section">
+          <div class="form-section-title">🙏 Your Details</div>
+
+          <div class="booking-input-wrap">
+            <label class="booking-input-label">Your Name *</label>
+            <input class="booking-text-input" type="text" [(ngModel)]="bookingDonorName"
+              placeholder="Enter your name" />
+          </div>
+
+          <div class="booking-input-wrap" style="margin-top: 10px;">
+            <label class="booking-input-label">Mobile Number *</label>
+            <input class="booking-text-input" type="tel" [(ngModel)]="bookingDonorPhone" placeholder="10-digit mobile"
+              maxlength="10" />
+          </div>
+        </div>
+
+        <!-- ADVANCE PAYMENT SUMMARY -->
+        <div class="advance-summary" *ngIf="selectedBooking">
+          <div class="advance-row">
+            <span>💰 Total Dakshina</span>
+            <strong>₹{{ selectedBooking?.Price | number:'1.0-0' }}</strong>
+          </div>
+          <div class="advance-divider"></div>
+          <div class="advance-row highlight">
+            <span>⚡ Advance to Pay (10%)</span>
+            <strong class="advance-amt">₹{{ advanceAmount }}</strong>
+          </div>
+          <p class="advance-note">
+            * Remaining ₹{{ (selectedBooking?.Price - advanceAmount) | number:'1.0-0' }} to be paid to Pandit Ji on the
+            day of seva
+          </p>
+        </div>
+
         <!-- CONFIRM BUTTON -->
         <div class="modal-footer">
-          <ion-button expand="block" class="confirm-btn" (click)="confirmBooking()">
-            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-            {{ t.confirmBtn }}
+          <ion-button expand="block" class="confirm-btn" (click)="confirmBooking()" [disabled]="isProcessingPayment">
+            <ion-icon name="card-outline" slot="start"></ion-icon>
+            {{ isProcessingPayment ? 'Processing…' : 'Pay ₹' + advanceAmount + ' & Confirm' }}
           </ion-button>
         </div>
+
+
+
 
       </div>
     </ion-content>

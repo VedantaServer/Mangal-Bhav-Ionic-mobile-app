@@ -1,0 +1,294 @@
+CREATE TABLE MandirTransactions (
+    TransactionID BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    TenantID INT NOT NULL,
+    MandirID INT NOT NULL,
+    UserID INT NULL,
+
+    TransactionType VARCHAR(50) NOT NULL,      
+    -- Donation / Pooja / Annadaan / Darshan / Service / Subscription
+
+    ServiceName NVARCHAR(200) NULL,            
+    -- Example: General Donation, Gau Seva, Hanuman Chalisa Path, etc.
+
+    DonorName NVARCHAR(150) NOT NULL,
+    Phone VARCHAR(20) NULL,
+
+    Amount NVARCHAR(200) NOT NULL,
+
+    PaymentMode VARCHAR(50) NULL,              
+    -- Razorpay / UPI / Cash / Card / NetBanking
+
+    OrderID VARCHAR(150) NULL,
+    UniqueReferenceNo VARCHAR(150) UNIQUE NULL,
+
+    PaymentStatus VARCHAR(50) ,
+    -- Pending / Success / Failed / Refunded
+
+    PaymentGatewayResponse NVARCHAR(MAX) NULL, 
+    -- optional JSON response from Razorpay/other gateway
+
+    Remarks NVARCHAR(500) NULL,
+
+    DateAdded DATETIME DEFAULT GETDATE(),
+    DateModified DATETIME NULL,
+    UpdatedByUser NVARCHAR(200) NULL
+);
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsInsert]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsInsert]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsInsert]
+(
+	@TenantID int,
+	@MandirID int,
+	@UserID int,
+	@TransactionType varchar(50),
+	@ServiceName nvarchar(200),
+	@DonorName nvarchar(150),
+	@Phone varchar(20),
+	@Amount nvarchar(200),
+	@PaymentMode varchar(50),
+	@OrderID varchar(150),
+	@UniqueReferenceNo varchar(150),
+	@PaymentStatus varchar(50),
+	@PaymentGatewayResponse nvarchar(max),
+	@Remarks nvarchar(500),
+	@DateAdded datetime,
+	@DateModified datetime,
+	@UpdatedByUser nvarchar(200)
+)
+
+AS
+
+ 
+
+INSERT INTO [MandirTransactions]
+(
+	[TenantID],
+	[MandirID],
+	[UserID],
+	[TransactionType],
+	[ServiceName],
+	[DonorName],
+	[Phone],
+	[Amount],
+	[PaymentMode],
+	[OrderID],
+	[UniqueReferenceNo],
+	[PaymentStatus],
+	[PaymentGatewayResponse],
+	[Remarks],
+	[DateAdded],
+	[DateModified],
+	[UpdatedByUser]
+)
+VALUES
+(
+	case when(@TenantID=0) then null else @TenantID end,
+	case when(@MandirID=0) then null else @MandirID end,
+	case when(@UserID=0) then null else @UserID end,
+	@TransactionType,
+	@ServiceName,
+	@DonorName,
+	@Phone,
+	@Amount,
+	@PaymentMode,
+	@OrderID,
+	@UniqueReferenceNo,
+	@PaymentStatus,
+	@PaymentGatewayResponse,
+	@Remarks,
+	@DateAdded,
+	@DateModified,
+	@UpdatedByUser
+)
+
+SELECT IDENT_CURRENT('MandirTransactions')
+GO
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsUpdate]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsUpdate]
+(
+	@TransactionID bigint,
+	@TenantID int,
+	@MandirID int,
+	@UserID int,
+	@TransactionType varchar(50),
+	@ServiceName nvarchar(200),
+	@DonorName nvarchar(150),
+	@Phone varchar(20),
+	@Amount nvarchar(200),
+	@PaymentMode varchar(50),
+	@OrderID varchar(150),
+	@UniqueReferenceNo varchar(150),
+	@PaymentStatus varchar(50),
+	@PaymentGatewayResponse nvarchar(max),
+	@Remarks nvarchar(500),
+	@DateAdded datetime,
+	@DateModified datetime,
+	@UpdatedByUser nvarchar(200)
+)
+
+AS
+
+ 
+
+UPDATE [MandirTransactions]
+SET [TenantID] = @TenantID,
+	[MandirID] = @MandirID,
+	[UserID] = @UserID,
+	[TransactionType] = @TransactionType,
+	[ServiceName] = @ServiceName,
+	[DonorName] = @DonorName,
+	[Phone] = @Phone,
+	[Amount] = @Amount,
+	[PaymentMode] = @PaymentMode,
+	[OrderID] = @OrderID,
+	[UniqueReferenceNo] = @UniqueReferenceNo,
+	[PaymentStatus] = @PaymentStatus,
+	[PaymentGatewayResponse] = @PaymentGatewayResponse,
+	[Remarks] = @Remarks,
+	[DateAdded] = @DateAdded,
+	[DateModified] = @DateModified,
+	[UpdatedByUser] = @UpdatedByUser
+WHERE [TransactionID] = @TransactionID	AND [TenantID] = @TenantID
+GO
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsDelete]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsDelete]
+(
+	@TransactionID bigint
+	, @TenantID int
+)
+
+AS
+
+ 
+
+DELETE FROM [MandirTransactions]
+WHERE [TransactionID] = @TransactionID
+	AND [TenantID] = @TenantID
+GO
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsSelect]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsSelect]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsSelect]
+(
+	@TransactionID bigint
+	, @TenantID int
+)
+
+AS
+
+ 
+
+SELECT [TransactionID],
+	[TenantID],
+	[MandirID],
+	[UserID],
+	[TransactionType],
+	[ServiceName],
+	[DonorName],
+	[Phone],
+	[Amount],
+	[PaymentMode],
+	[OrderID],
+	[UniqueReferenceNo],
+	[PaymentStatus],
+	[PaymentGatewayResponse],
+	[Remarks],
+	[DateAdded],
+	[DateModified],
+	[UpdatedByUser]
+FROM [MandirTransactions]
+WHERE [TransactionID] = @TransactionID
+	AND [TenantID] = @TenantID
+GO
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsSelectAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsSelectAll]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsSelectAll]
+(
+	 @TenantID int
+)
+
+AS
+
+ 
+
+SELECT [TransactionID],
+	[TenantID],
+	[MandirID],
+	[UserID],
+	[TransactionType],
+	[ServiceName],
+	[DonorName],
+	[Phone],
+	[Amount],
+	[PaymentMode],
+	[OrderID],
+	[UniqueReferenceNo],
+	[PaymentStatus],
+	[PaymentGatewayResponse],
+	[Remarks],
+	[DateAdded],
+	[DateModified],
+	[UpdatedByUser]
+FROM [MandirTransactions]
+WHERE [TenantID] = @TenantID order by [MandirTransactions].[DateModified] desc
+GO
+
+/******************************************************************************
+******************************************************************************/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MandirTransactionsSelectByQuery]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+	drop procedure [dbo].[MandirTransactionsSelectByQuery]
+GO
+
+CREATE PROCEDURE [dbo].[MandirTransactionsSelectByQuery] (
+@TenantID int,
+@SchoolID int,
+@Query varchar(max)
+)
+AS
+Begin
+ 
+declare @sSqlQuery nvarchar(max)
+ 
+ set @sSqlQuery = 'SELECT * FROM [MandirTransactions] WHERE '+ @Query
+set @sSqlQuery = @sSqlQuery
+EXECUTE sp_executesql @sSqlQuery
+ 
+End
+GO

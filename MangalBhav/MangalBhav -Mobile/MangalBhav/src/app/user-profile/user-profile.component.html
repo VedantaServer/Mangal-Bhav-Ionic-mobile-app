@@ -42,6 +42,7 @@
         </div>
       </div>
       <p class="avatar-hint">{{ t.changePhoto }}</p>
+      <button class="update-photo-btn" (click)="uploadProfilePhoto()">Update Photo</button>
     </div>
 
     <!-- FORM SECTION -->
@@ -89,13 +90,26 @@
           <ion-icon name="transgender-outline"></ion-icon>
           {{ t.gender }}
         </div>
+        <!-- GENDER (fixed) -->
         <div class="field-input-wrap">
-          <ion-select placeholder="Select Gender" [(ngModel)]="profile.Gender">
-            <ion-select [placeholder]="t.selectGender">
-              <ion-select-option value="Male">{{ t.male }}</ion-select-option>
-              <ion-select-option value="Female">{{ t.female }}</ion-select-option>
-              <ion-select-option value="Other">{{ t.other }}</ion-select-option>
-            </ion-select>
+          <ion-select [placeholder]="t.selectGender" [(ngModel)]="profile.Gender">
+            <ion-select-option value="Male">{{ t.male }}</ion-select-option>
+            <ion-select-option value="Female">{{ t.female }}</ion-select-option>
+            <ion-select-option value="Other">{{ t.other }}</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+
+      <!-- ROLE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          {{ t.role }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-select [placeholder]="t.selectRole" interface="popover" [(ngModel)]="selectedRole" name="Role">
+            <ion-select-option value="PANDIT">{{ t.pandit }}</ion-select-option>
+            <ion-select-option value="BHAKT">{{ t.bhakt }}</ion-select-option>
           </ion-select>
         </div>
       </div>
@@ -152,10 +166,47 @@
       <div class="form-field">
         <div class="field-label">
           <ion-icon name="cash-outline"></ion-icon>
-         {{ t.basePrice }}
+          {{ t.basePrice }}
         </div>
         <div class="field-input-wrap">
-          <ion-input type="number" [(ngModel)]="profile.BasePrice"  [placeholder]="t.enterPrice"></ion-input>
+          <ion-input type="number" [(ngModel)]="profile.BasePrice" [placeholder]="t.enterPrice"></ion-input>
+        </div>
+      </div>
+
+      <!-- UPI ID — PANDIT only -->
+      <div *ngIf="userDetails?.Role === 'PANDIT'" class="form-field" style="margin-top: 16px;">
+        <div class="field-label">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          UPI ID
+        </div>
+
+        <!-- Existing UPI shown -->
+        <div *ngIf="bankDetails && !showBankForm" class="field-input-wrap readonly"
+          style="display:flex; align-items:center; justify-content:space-between;">
+          <span style="padding: 0 12px; font-size: 15px; color: var(--ion-color-dark);">{{ bankDetails.UPIId }}</span>
+          <button
+            style="background:none; border:none; color: var(--ion-color-primary); cursor:pointer; font-size:13px; padding: 0 8px;"
+            (click)="showBankForm = true">
+            Edit
+          </button>
+        </div>
+
+        <!-- Add / Edit UPI form -->
+        <div *ngIf="showBankForm" style="display:flex; flex-direction:column; gap: 10px; margin-top: 6px;">
+          <div class="field-input-wrap">
+            <ion-input [(ngModel)]="upiId" placeholder="e.g. yourname@upi" type="text">
+            </ion-input>
+          </div>
+          <div style="display:flex; gap: 8px;">
+            <button class="submit-btn" style="flex:1; font-size:14px; padding: 10px;" (click)="saveBankDetails()">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              {{ bankDetails ? 'Update UPI ID' : 'Save UPI ID' }}
+            </button>
+            <button *ngIf="bankDetails" class="logout-btn" style="flex:0; padding: 10px 14px; font-size:14px;"
+              (click)="showBankForm = false">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
 
@@ -173,12 +224,17 @@
     <div class="submit-wrap">
       <button class="submit-btn" (click)="saveProfile()">
         <ion-icon name="checkmark-circle-outline"></ion-icon>
-       {{ isEditMode ? t.updateProfile : t.createProfile }}
+        {{ isEditMode ? t.updateProfile : t.createProfile }}
       </button>
 
       <button class="logout-btn" (click)="logout()">
         <ion-icon name="log-out-outline"></ion-icon>
         {{ t.logout }}
+      </button>
+
+      <button class="not-interested-btn" (click)="showNotInterestedModal = true">
+        <ion-icon name="sad-outline"></ion-icon>
+        {{ t.notInterested }}
       </button>
     </div>
 
@@ -203,3 +259,36 @@
 <app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+
+
+
+<div class="ni-backdrop" *ngIf="showNotInterestedModal" (click)="showNotInterestedModal = false"></div>
+<div class="ni-modal" [class.active]="showNotInterestedModal">
+
+  <div class="ni-modal-icon">😔</div>
+  <h3 class="ni-modal-title">{{ t.sorryTitle }}</h3>
+  <p class="ni-modal-sub">{{ t.sorrySub }}</p>
+
+  <button class="ni-option-btn support" (click)="contactSupport()">
+    <div class="ni-option-icon">💬</div>
+    <div class="ni-option-text">
+      <span class="ni-option-label">{{ t.connectSupport }}</span>
+      <span class="ni-option-sub">{{ t.connectSupportSub }}</span>
+    </div>
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </button>
+
+  <button class="ni-option-btn delete" (click)="goToDeleteAccount()">
+    <div class="ni-option-icon">🗑️</div>
+    <div class="ni-option-text">
+      <span class="ni-option-label">{{ t.deleteAccount }}</span>
+      <span class="ni-option-sub">{{ t.deleteAccountSub }}</span>
+    </div>
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </button>
+
+  <button class="ni-cancel-btn" (click)="showNotInterestedModal = false">
+    {{ t.cancelKeep }}
+  </button>
+
+</div>

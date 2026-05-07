@@ -7,10 +7,10 @@
           [ngClass]="GroupName === 'Support' ? 'support' : GroupName === 'AskPandit' ? 'pandit' : 'group'">
           <span *ngIf="GroupName === 'Support'">🛡️</span>
           <span *ngIf="GroupName === 'AskPandit'">🕉️</span>
-          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">{{ GroupName.charAt(0) || '🙏' }}</span>
+          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">{{ GroupName?.charAt(0) || '🙏' }}</span>
         </div>
         <div class="logo-text-block">
-          <div class="nav-logo-text">{{ GroupName }}</div>
+          <div class="nav-logo-text">{{ GroupName || '…' }}</div>
           <div class="nav-logo-sub">Sacred Conversations</div>
         </div>
       </div>
@@ -55,20 +55,20 @@
             </span>
           </div>
 
-          <div class="bubble-wrap">
-            <!-- Hide sender label for Support & AskPandit (1-on-1 chats) -->
+          <!-- <div class="bubble-wrap">
+           
             <div class="sender-name"
               *ngIf="!isMine(msg.SenderID) && GroupName !== 'Support' && GroupName !== 'AskPandit'">
               {{ msg.SenderName || 'Member' }}
             </div>
             ...
-          </div>
+          </div> -->
 
           <div class="bubble-wrap">
-            <div class="sender-name" *ngIf="!isMine(msg.SenderID) && customGroupID">
-              User {{ msg.SenderID }}
+            <div class="sender-name"
+              *ngIf="!isMine(msg.SenderID) && GroupName !== 'Support' && GroupName !== 'AskPandit'">
+              {{ msg.SenderName || 'Member' }}
             </div>
-
             <div class="bubble" [ngClass]="isMine(msg.SenderID) ? 'bubble-out' : 'bubble-in'">
               <p class="bubble-text">{{ msg.MessageText }}</p>
               <div class="bubble-meta">

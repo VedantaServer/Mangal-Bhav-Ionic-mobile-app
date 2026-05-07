@@ -1,0 +1,183 @@
+// ── Palette ──────────────────────────────────────────
+$bhagva:       #FF6B00;
+$bhagva-light: #FF8C2F;
+$bhagva-pale:  #FFF3E8;
+$bhagva-deep:  #C94F00;
+$gold:         #D4A017;
+$cream:        #FDF6EC;
+$text-dark:    #2C1A00;
+$text-mid:     #6B4020;
+$text-soft:    #A0673A;
+
+// ── Toolbar ──────────────────────────────────────────
+ion-toolbar {
+  --background: #{$bhagva};
+  --color: #fff;
+  --border-color: transparent;
+}
+
+.header-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .om {
+    font-size: 1.4rem;
+    color: $gold;
+  }
+}
+
+// ── Content Background ────────────────────────────────
+ion-content {
+  --background: #{$cream};
+}
+
+// ── Top Banner ───────────────────────────────────────
+.top-banner {
+  background: linear-gradient(135deg, $bhagva 0%, $bhagva-light 100%);
+  padding: 14px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba($bhagva-deep, 0.25);
+
+  .shloka {
+    margin: 0;
+    color: #fff;
+    font-size: 0.95rem;
+    font-style: italic;
+    letter-spacing: 1px;
+    opacity: 0.95;
+  }
+}
+
+// ── Card List ─────────────────────────────────────────
+.card-list {
+  padding: 16px 12px 8px;
+}
+
+// ── Pandit Card ───────────────────────────────────────
+.pandit-card {
+  background: #fff;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 12px rgba($bhagva-deep, 0.1);
+  border-left: 4px solid $bhagva;
+  overflow: hidden;
+
+  .card-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 14px 8px;
+  }
+
+  // Avatar
+  .avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, $bhagva-pale, #ffe0c2);
+      border: 2px solid $bhagva-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .avatar-icon {
+        font-size: 1.6rem;
+        line-height: 1;
+      }
+    }
+
+    .badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      background: $bhagva;
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+  }
+
+  // Info
+  .pandit-info {
+    flex: 1;
+    min-width: 0;
+
+    .pandit-name {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: $text-dark;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+      color: $text-mid;
+
+      .info-icon {
+        color: $bhagva;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .upi {
+        color: $text-soft;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  // Footer
+  .card-footer {
+    display: flex;
+    border-top: 1px solid $bhagva-pale;
+    padding: 4px 8px;
+
+    .contact-btn {
+      flex: 1;
+      --color: #{$bhagva};
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+  }
+}
+
+// ── Bottom Note ───────────────────────────────────────
+.bottom-note {
+  text-align: center;
+  padding: 8px 0 24px;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: $text-soft;
+    letter-spacing: 1px;
+  }
+}

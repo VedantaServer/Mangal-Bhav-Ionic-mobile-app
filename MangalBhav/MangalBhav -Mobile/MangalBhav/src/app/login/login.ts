@@ -181,6 +181,7 @@ export class LoginPage {
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
     this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
 
+    
 
 
 
@@ -406,6 +407,11 @@ export class LoginPage {
   ];
 
 
+    async action5() {
+    await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
+
+    this.routerCtrl.navigateForward(`/open-find-pandit`);
+  }
 
   async getLoginOtp() {
     if (!this.loginUsername || this.loginUsername.toString().length !== 10) {

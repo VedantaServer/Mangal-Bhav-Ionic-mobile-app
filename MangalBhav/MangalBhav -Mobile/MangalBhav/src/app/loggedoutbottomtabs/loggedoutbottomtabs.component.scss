@@ -4449,17 +4449,17 @@ ion-tab-bar.mb-tab-bar::part(native) {
   object-fit: cover;
   transition: transform 0.4s ease;
 
-  .puja-card:hover & { transform: scale(1.04); }
+  .puja-card:hover & {
+    transform: scale(1.04);
+  }
 }
 
 .puja-img-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.05) 0%,
-    rgba(0,0,0,0.45) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0.45) 100%);
 }
 
 .puja-img-badge {
@@ -4490,7 +4490,9 @@ ion-tab-bar.mb-tab-bar::part(native) {
   color: #ffffff;
   backdrop-filter: blur(4px);
 
-  ion-icon { font-size: 11px; }
+  ion-icon {
+    font-size: 11px;
+  }
 }
 
 // ── BODY ──
@@ -4519,7 +4521,10 @@ ion-tab-bar.mb-tab-bar::part(native) {
   font-size: 12px;
   font-weight: 700;
 
-  ion-icon { font-size: 11px; color: #ffffff; }
+  ion-icon {
+    font-size: 11px;
+    color: #ffffff;
+  }
 }
 
 .puja-rating-text {
@@ -4546,7 +4551,10 @@ ion-tab-bar.mb-tab-bar::part(native) {
   font-weight: 500;
   margin: 0;
 
-  ion-icon { font-size: 12px; color: #FF9500; }
+  ion-icon {
+    font-size: 12px;
+    color: #FF9500;
+  }
 }
 
 // Subtitle
@@ -4634,12 +4642,14 @@ ion-tab-bar.mb-tab-bar::part(native) {
   transition: transform 0.2s;
   white-space: nowrap;
 
-  &:active { transform: scale(0.95); }
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 
 .puja-price-label {
- 
+
   font-size: 12px;
   font-weight: 700;
   color: #B08050;
@@ -4674,7 +4684,7 @@ ion-tab-bar.mb-tab-bar::part(native) {
   ion-textarea {
     --color: #2B1A00;
     --placeholder-color: #BFA060;
-    
+
     font-size: 14px;
     font-weight: 500;
     --padding-start: 0;
@@ -4691,4 +4701,406 @@ ion-tab-bar.mb-tab-bar::part(native) {
     align-items: flex-start;
     padding: 8px 12px;
   }
+}
+
+
+
+
+// ===== MANGAL BHAV BOTTOM TAB BAR =====
+
+.mb-tab-bar {
+  --background: #ffffff;
+  height: 64px;
+  border-top: 1.5px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 -6px 24px rgba(255, 149, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar {
+  overflow: visible !important;
+}
+
+ion-tab-bar.mb-tab-bar::part(native) {
+  overflow: visible !important;
+}
+
+// Left + Right buttons
+.mb-tab-btn {
+  flex: 1;
+  --color: #C4934A;
+  --color-selected: #FF9500;
+  --ripple-color: rgba(255, 149, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  ion-label {
+    
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+}
+
+// Center scanner wrapper
+.mb-tab-center-wrap {
+  flex: 0 0 72px;
+  --color: transparent;
+  --color-selected: transparent;
+  --ripple-color: transparent;
+  --background-focused: transparent;
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+// Scanner button
+.mb-tab-scanner {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -22px;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+
+  &:active {
+    transform: scale(0.92);
+  }
+
+  // Pulsing outer ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+@keyframes mbScanPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
+// User avatar circle
+.mb-tab-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(224, 123, 0, 0.4);
+  margin-bottom: 2px;
+}
+
+.mb-scanner-float {
+  position: fixed;
+  bottom: 10px !important;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  box-shadow:
+    0 -4px 18px rgba(224, 123, 0, 0.4),
+    0 6px 18px rgba(224, 123, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:active {
+    transform: translateX(-50%) scale(0.92);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    animation: mbScanPulse 2.2s ease-in-out infinite;
+  }
+
+  .mb-scanner-logo-img {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    object-fit: contain;
+  }
+
+  ion-icon {
+    font-size: 26px;
+    color: #ffffff;
+  }
+}
+
+.mb-tab-spacer {
+  flex: 0 0 72px;
+  pointer-events: none;
+  --color: transparent;
+}
+
+
+.mb-scanner-float {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #FF9500, #E07B00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFBF0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow:
+    0 8px 24px rgba(224, 123, 0, 0.5),
+    0 2px 8px rgba(224, 123, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  // outer glow ring
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(255, 149, 0, 0.35);
+    animation: mbScanPulse 2s ease-in-out infinite;
+  }
+
+  // top shine
+  &::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    right: 8px;
+    height: 30%;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+.mb-scanner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.mb-scanner-label {
+  
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+@keyframes mbScanPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+
+.custom-tab-icon {
+  width: 100px;
+  height: 100px;
+  background-image: url('/assets/yagna2.png'); // your image path
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+// Center image icon — slightly bigger than other icons
+.mb-tab-center {
+  ion-icon {
+    font-size: 30px;
+  }
+}
+
+.mb-center-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+.mb-tab-btn {
+  svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+}
+
+.custom-tab-icon {
+  width: 24px;
+  height: 24px;
+  background-image: url('/assets/yagna2.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+.mb-tab-btn {
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  ion-label {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    margin-top: 1vh;
+  }
+}
+
+ion-tab-button.mb-tab-btn::part(native) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+  height: 100%;
+}
+
+.mb-tab-spacer {
+  display: none; // no longer needed
+}
+
+.mb-center-fab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.mb-center-fab-img {
+  width: 100px; // slightly bigger than other icons (24px)
+  height: 100px;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+}
+
+.mb-center-fab-label {
+  
+  font-size: 10px;
+  font-weight: 600;
+  color: #C4934A;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.mb-center-fab-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  display: block;
+}
+
+
+
+
+.mb-tab-center::part(native) {
+  overflow: visible !important;
+  padding: 0;
+}
+
+.mb-center-fab-img {
+  width: 36px; // base size
+  height: 36px;
+  object-fit: contain;
+  display: block;
+  transform: scale(2.5); // ← increase this number to make it bigger
+  transform-origin: center center;
 }

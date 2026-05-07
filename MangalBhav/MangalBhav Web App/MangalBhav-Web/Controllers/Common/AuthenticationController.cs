@@ -326,6 +326,35 @@ namespace FaceUPAI.Controllers
         }
 
 
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("GetPanditDetails")]
+        public IActionResult GetPanditDetails()
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+             
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "GetPanditDetails", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
 
 
 
