@@ -46,7 +46,6 @@
     "@google/genai": "^1.45.0",
     "@ionic/angular": "^8.0.0",
     "@ionic/storage-angular": "^4.0.0",
-    "@vedantacollege/fingerprint-bridge": "file:fingerprint-bridge/vedantacollege-fingerprint-bridge-0.0.1.tgz",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "@zxing/ngx-scanner": "^21.0.0",

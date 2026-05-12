@@ -721,15 +721,7 @@ ion-tab-button.mb-tab-btn::part(native) {
     opacity: 0.7;
   }
 }
-
-.mb-center-fab-img {
-  width: 100px; // slightly bigger than other icons (24px)
-  height: 100px;
-  border-radius: 8px;
-  object-fit: contain;
-  display: block;
-}
-
+ 
 .mb-center-fab-label {
   
   font-size: 10px;
@@ -739,13 +731,7 @@ ion-tab-button.mb-tab-btn::part(native) {
   text-align: center;
 }
 
-.mb-center-fab-img {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-  display: block;
-}
-
+ 
 
 
 
@@ -759,6 +745,6 @@ ion-tab-button.mb-tab-btn::part(native) {
   height: 36px;
   object-fit: contain;
   display: block;
-  transform: scale(2.5); // ← increase this number to make it bigger
+  transform: scale(1); // ← increase this number to make it bigger
   transform-origin: center center;
 }
