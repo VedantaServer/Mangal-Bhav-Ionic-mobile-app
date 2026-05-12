@@ -5342,15 +5342,6 @@ ion-tab-button.mb-tab-btn::part(native) {
   height: 36px;
   object-fit: contain;
   display: block;
-  transform: scale(2.5); // ← increase this number to make it bigger
-  transform-origin: center center;
-}
-
-.mb-center-fab-img {
-  width: 36px; // base size
-  height: 36px;
-  object-fit: contain;
-  display: block;
-  transform: scale(2.5); // ← increase this number to make it bigger
+  transform: scale(1); // ← increase this number to make it bigger
   transform-origin: center center;
 }

@@ -54,8 +54,8 @@ export class TabscommonheaderComponent implements OnInit {
     },
 
     hi: {
-      appTitle: '🕉️ मंगल भाव',
-      logoTitle: 'मंगल.भाव:',
+      appTitle: '🕉️ मंगल भव:',
+      logoTitle: 'मंगल.भव:',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
 
       greetingTitle: 'नमस्ते 🙏, ',
