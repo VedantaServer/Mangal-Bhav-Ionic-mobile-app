@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -71,13 +71,20 @@ export class TopRatedComponent implements OnInit {
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute,public toastController: ToastController,
     private plt: Platform,
     private http: HttpClient,
     private alertCtrl: AlertController
   ) { }
 
 
+
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
 
   async ngOnInit() {
 
@@ -259,16 +266,16 @@ export class TopRatedComponent implements OnInit {
       null
     ).subscribe((res: any) => {
       if (res.BookingList.length > 0) {
-        alert('You have already booked');
+        this.showToast('You have already booked','danger');
       } else {
         this.apinu.postUrlData('BookingsInsert', payload)
           .subscribe((res: any) => {
             if (res?.BookingID > 0) {
-              alert('Booking Confirmed 🎉');
+              this.showToast('Booking Confirmed 🎉','success');
               this.isBookingModalOpen = false;
               this.loadList();
             } else {
-              alert("Something went wrong ❌");
+              this.showToast("Something went wrong ❌",'danger');
             }
           });
       }

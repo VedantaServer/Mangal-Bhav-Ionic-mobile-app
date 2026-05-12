@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ export class TodayPoojaComponent implements OnInit {
   language: any;
 
   constructor(
-    public routerCtrl: NavController,
+    public routerCtrl: NavController, public toastController: ToastController,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
@@ -190,10 +190,16 @@ export class TodayPoojaComponent implements OnInit {
   }
   sendAlert(booking: any) {
 
-    alert(`Message sent to ${booking.BhaktProfile?.FullName} 📩`);
+    this.showToast(`Message sent to ${booking.BhaktProfile?.FullName} 📩`,'success');
 
   }
 
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
 
   currentImageIndex: { [key: string]: number } = {};
   imageIntervals: { [key: string]: any } = {};

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -175,31 +175,147 @@ export class PanditServicesComponent implements OnInit {
   LocationList: any[] = [];
   // selectedFile: any = null;
   language!: any;
+  // ── Quick Add Location via GeoNames ──
+  isQuickLocationModalOpen = false;
+  geonamesQuery = '';
+  geonamesResults: any[] = [];
+  isGeonamesLoading = false;
+  selectedGeoname: any = null;
+  quickLocationName = '';
 
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
-    private storage: Storage,
+    private storage: Storage, public toastController: ToastController, 
     private plt: Platform, private router: Router,
     private http: HttpClient,
     private alertCtrl: AlertController
   ) { }
 
-  onAddLocation() {
-    this.closeModal();
 
-    setTimeout(() => {
-      this.routerCtrl.navigateForward('/location');
-    }, 300); // delay in milliseconds
+
+  onAddLocation() {
+    // Open inline GeoNames modal — no navigation needed
+    this.geonamesQuery = '';
+    this.geonamesResults = [];
+    this.selectedGeoname = null;
+    this.quickLocationName = '';
+    this.isQuickLocationModalOpen = true;
+  }
+
+  closeQuickAddLocation() {
+    this.isQuickLocationModalOpen = false;
+  }
+
+ 
+
+  searchGeonames() {
+  if (!this.geonamesQuery.trim()) return;
+
+  this.isGeonamesLoading = true;
+  this.geonamesResults = [];
+  this.selectedGeoname = null;
+
+  const query = this.geonamesQuery.trim();
+  const isPincode = /^\d{6}$/.test(query);   // exactly 6 digits = pincode
+
+  const url = isPincode
+    ? `https://secure.geonames.org/postalCodeSearchJSON?postalcode=${query}&country=IN&maxRows=8&username=nehul0402`
+    : `https://secure.geonames.org/searchJSON?q=${encodeURIComponent(query)}&maxRows=8&username=nehul0402&style=MEDIUM&country=IN`;
+
+  this.http.get(url).subscribe({
+    next: (data: any) => {
+      this.isGeonamesLoading = false;
+
+      if (isPincode) {
+        // Normalize postal results → same shape as geonames search results
+        this.geonamesResults = (data.postalCodes || []).map((p: any) => ({
+          geonameId:   `${p.postalCode}_${p.placeName}`,   // synthetic unique key
+          toponymName: p.placeName,
+          name:        p.placeName,
+          adminName1:  p.adminName1,                        // State
+          adminName2:  p.adminName2 || p.adminName3 || p.placeName,  // District/City
+          countryName: 'India',
+          lat:         p.lat,
+          lng:         p.lng,
+          postalCode:  p.postalCode,                        // ← pincode preserved
+        }));
+      } else {
+        this.geonamesResults = data.geonames || [];
+      }
+    },
+    error: () => {
+      this.isGeonamesLoading = false;
+      this.showToast('Search failed. Check network or GeoNames username.','danger');
+    }
+  });
+}
+
+
+  selectGeoname(place: any) {
+    this.selectedGeoname = place;
+    this.quickLocationName = place.toponymName || place.name;
+  }
+
+
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
+
+  saveQuickLocation() {
+    if (!this.selectedGeoname || !this.quickLocationName.trim()) {
+      this.showToast('Please search and select a place first.','danger');
+      return;
+    }
+
+    const payload = {
+      locationID: 0,
+      tenantID: Number(this.userDetails.TenantID),
+      userID: Number(this.userDetails.UserID),
+      name: this.quickLocationName.trim(),
+      contactPerson: this.userDetails.FullName,
+      contactPhone: String(this.userDetails.LoginID),
+      contactEmail: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: this.selectedGeoname.adminName2 || this.selectedGeoname.name || '',
+      pincode: this.selectedGeoname.postalCode || '',
+      state: this.selectedGeoname.adminName1 || '',
+      country: this.selectedGeoname.countryName || '',
+      latitude: Number(this.selectedGeoname.lat) || 0,
+      longitude: Number(this.selectedGeoname.lng) || 0,
+      isActive: true,
+      dateAdded: new Date().toISOString(),
+      dateModified: new Date().toISOString(),
+      updatedByUser: String(this.userDetails.UserID),
+    };
+
+    this.apinu.postUrlData('LocationsInsert', payload).subscribe((res: any) => {
+      if (res.LocationID > 0) {
+        // Refresh dropdown and auto-select the new location
+        this.apinu
+          .postUrlData(`LocationsNUSelectByQuery?Query=UserID=${this.userDetails.UserID}`, null)
+          .subscribe((r: any) => {
+            this.LocationList = r.LocationList;
+            this.panditServices.LocationID = res.LocationID; // auto-select it
+          });
+        this.closeQuickAddLocation();
+      } else {
+        this.showToast('Could not save location ❌','danger');
+      }
+    });
   }
 
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
 
- //   this.language = await this.storage.get("Language");
-     this.language = this.userDetails.Languages;
+    //   this.language = await this.storage.get("Language");
+    this.language = this.userDetails.Languages;
 
     // alert(this.language)
     // 1. Categories
@@ -312,7 +428,7 @@ export class PanditServicesComponent implements OnInit {
             UpdatedByUser: this.userDetails.LoginID
           };
           this.apinu.postUrlData(`DocumentInsert`, body).subscribe((resp: any) => {
-            alert('Success');
+            this.showToast('Success','success');
             this.selectedFile = null;
           })
         }
@@ -379,7 +495,7 @@ export class PanditServicesComponent implements OnInit {
 
       },
 
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Error fetching document list:', err);
       }
     });
@@ -719,18 +835,18 @@ export class PanditServicesComponent implements OnInit {
       const payload = this.preparePayload();
       this.apinu.postUrlData(DBAction, payload).subscribe((res: any) => {
         if (res?.PanditServiceID > 0) {
-          alert('Updated successfully ✅');
+          this.showToast('Updated successfully ✅','success');
           this.closeModal();
           this.loadList();
         } else {
-          alert('Something went wrong ❌');
+          this.showToast('Something went wrong ❌','danger');
         }
       });
 
     } else {
       // Add mode — insert one record per selected service
       if (!this.selectedServiceIDs.length) {
-        alert('Please select at least one service.');
+        this.showToast('Please select at least one service.','danger');
         return;
       }
 
@@ -765,9 +881,9 @@ export class PanditServicesComponent implements OnInit {
             // When all done
             if (completed + failed === total) {
               if (failed === 0) {
-                alert(`${completed} service(s) saved successfully ✅`);
+                this.showToast(`${completed} service(s) saved successfully ✅`,'success');
               } else {
-                alert(`${completed} saved, ${failed} failed ❌`);
+                this.showToast(`${completed} saved, ${failed} failed ❌`,'danger');
               }
               this.closeModal();
               this.loadList();
@@ -776,7 +892,7 @@ export class PanditServicesComponent implements OnInit {
           error: () => {
             failed++;
             if (completed + failed === total) {
-              alert(`${completed} saved, ${failed} failed ❌`);
+              this.showToast(`${completed} saved, ${failed} failed ❌`);
               this.closeModal();
               this.loadList();
             }

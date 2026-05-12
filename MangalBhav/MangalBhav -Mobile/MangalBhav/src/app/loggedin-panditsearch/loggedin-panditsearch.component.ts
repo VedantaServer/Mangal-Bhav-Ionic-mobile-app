@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 
 @Component({
@@ -15,7 +17,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './loggedin-panditsearch.component.html',
   styleUrls: ['./loggedin-panditsearch.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent]
 })
 export class LoggedinPanditsearchComponent implements OnInit {
 
@@ -176,15 +178,15 @@ export class LoggedinPanditsearchComponent implements OnInit {
       spec3: 'Griha Pravesh & Vastu',
       spec4: 'Marriage Ceremonies',
       notifyMeBtn: '🔔 Notify Me When Available',
-notifyTitle: 'Get Notified',
-notifySubtitle: "We'll let you know when a pandit becomes available.",
-notifyNameLabel: 'Full Name',
-notifyNamePlaceholder: 'Enter your name',
-notifyNameError: 'Name is required',
-notifyPhoneLabel: 'Phone Number',
-notifyPhonePlaceholder: 'Enter your phone number',
-notifyPhoneError: 'Phone number is required',
-notifySubmit: 'Submit',
+      notifyTitle: 'Get Notified',
+      notifySubtitle: "We'll let you know when a pandit becomes available.",
+      notifyNameLabel: 'Full Name',
+      notifyNamePlaceholder: 'Enter your name',
+      notifyNameError: 'Name is required',
+      notifyPhoneLabel: 'Phone Number',
+      notifyPhonePlaceholder: 'Enter your phone number',
+      notifyPhoneError: 'Phone number is required',
+      notifySubmit: 'Submit',
 
       // ── Footer ────────────────────────────────────
       footerTagline: "A platform for booking verified pandits for every sacred ritual — from the first breath to the final farewell.",
@@ -207,6 +209,8 @@ notifySubmit: 'Submit',
       footerTerms: 'Terms of Service',
       footerRefund: 'Refund Policy',
       footerContact: 'Contact Us',
+      infoLabelLocation: 'Serves At',
+      locationNotFilled: 'Location not added',
 
       footerCopy: '© 2026 Mangal.Bhav . All rights reserved.',
     },
@@ -225,6 +229,8 @@ notifySubmit: 'Submit',
       samagriChecklist: 'सामग्री सूची प्रदान की जाएगी',
 
       findPandit: 'पंडित जी खोजें',
+      infoLabelLocation: 'सेवा स्थान',
+      locationNotFilled: 'स्थान नहीं जोड़ा',
 
       veryGood: 'बहुत अच्छा',
       reviews: 'समीक्षाएँ',
@@ -250,15 +256,15 @@ notifySubmit: 'Submit',
       step2: 'चरण 2',
       step3: 'चरण 3',
       notifyMeBtn: '🔔 उपलब्ध होने पर सूचित करें',
-notifyTitle: 'सूचना पाएं',
-notifySubtitle: 'पंडित जी उपलब्ध होते ही हम आपको बताएंगे।',
-notifyNameLabel: 'पूरा नाम',
-notifyNamePlaceholder: 'अपना नाम दर्ज करें',
-notifyNameError: 'नाम आवश्यक है',
-notifyPhoneLabel: 'फ़ोन नंबर',
-notifyPhonePlaceholder: 'अपना फ़ोन नंबर दर्ज करें',
-notifyPhoneError: 'फ़ोन नंबर आवश्यक है',
-notifySubmit: 'जमा करें',
+      notifyTitle: 'सूचना पाएं',
+      notifySubtitle: 'पंडित जी उपलब्ध होते ही हम आपको बताएंगे।',
+      notifyNameLabel: 'पूरा नाम',
+      notifyNamePlaceholder: 'अपना नाम दर्ज करें',
+      notifyNameError: 'नाम आवश्यक है',
+      notifyPhoneLabel: 'फ़ोन नंबर',
+      notifyPhonePlaceholder: 'अपना फ़ोन नंबर दर्ज करें',
+      notifyPhoneError: 'फ़ोन नंबर आवश्यक है',
+      notifySubmit: 'जमा करें',
 
       how1Title: 'अनुष्ठान चुनें',
       how1Desc: '30+ पवित्र हवन और पूजा समारोहों में से चुनें — जन्म से पितृ अनुष्ठान तक। अपनी आवश्यकता के अनुसार चुनें।',
@@ -458,6 +464,8 @@ notifySubmit: 'जमा करें',
   isPanditModalOpen = false;
   selectedPandit: any = null;
 
+  locationLoadingPending = false ;
+
   openPoojaModal() {
     this.isPoojaModalOpen = true;
   }
@@ -466,44 +474,86 @@ notifySubmit: 'जमा करें',
     this.selectedPandit = pandit;
     this.isPanditModalOpen = true;
   }
+  panditLocationMap: { [userID: number]: any } = {};
 
   loadPandits() {
     this.isLoading = true;
+    this.locationLoadingPending = true;
 
-    this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
-      .subscribe((res: any) => {
+    this.apinu.postUrlData(
+      `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null
+    ).subscribe((res: any) => {
 
-        const profileIDs = res.PanditServiceList?.map((x: any) => x.ProfileID) || [];
-        const uniqueProfileIDs = [...new Set(profileIDs)];
+      const panditServices = res.PanditServiceList || [];
 
-        if (uniqueProfileIDs.length === 0) {
-          this.panditProfiles = [];
-          this.isLoading = false;
-          return;
+      if (panditServices.length === 0) {
+        this.panditProfiles = [];
+        this.isLoading = false;
+        return;
+      }
+
+      // ── Unique profile IDs for fetching profiles ──
+      const profileIDs = panditServices.map((x: any) => x.ProfileID);
+      const uniqueProfileIDs = [...new Set(profileIDs)];
+
+      // ── Build a ProfileID → LocationID map (first service per pandit) ──
+      const profileLocationMap: { [id: number]: number } = {};
+      panditServices.forEach((ps: any) => {
+        if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
+          profileLocationMap[ps.ProfileID] = ps.LocationID;
         }
+      });
 
-        const profileCalls = uniqueProfileIDs.map((id: any) =>
-          this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
-        );
+      // ── Fetch profiles ──
+      const profileCalls = uniqueProfileIDs.map((id: any) =>
+        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
+      );
 
-        forkJoin(profileCalls).subscribe((profiles: any[]) => {
+      forkJoin(profileCalls).subscribe((profiles: any[]) => {
 
-          let profileData: any[] = [];
-          profiles.forEach((p: any) => {
-            if (p?.ProfileList?.length > 0) {
-              profileData.push(...p.ProfileList);
+        let profileData: any[] = [];
+        profiles.forEach((p: any) => {
+          if (p?.ProfileList?.length > 0) profileData.push(...p.ProfileList);
+        });
+
+        this.panditProfiles = profileData;
+        this.isLoading = false;
+
+        // ── Load profile images ──
+        this.panditProfiles.forEach(p => {
+          if (p.UserID) this.loadProfileImage(p);
+        });
+
+        // ── Collect unique LocationIDs ──
+        const locationIDs = [...new Set(
+          Object.values(profileLocationMap).filter(Boolean)
+        )];
+
+        if (locationIDs.length === 0) return;
+
+        // ✅ ONE call instead of N calls
+        const query = `LocationID IN (${locationIDs.join(',')})`;
+        this.apinu.postUrlData(
+          `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
+        ).subscribe((locRes: any) => {
+          const locations: any[] = locRes?.LocationList || [];
+
+          // Build locationID → location object map
+          const locationByID: { [id: number]: any } = {};
+          locations.forEach(loc => locationByID[loc.LocationID] = loc);
+
+          // Map each pandit's UserID → their location
+          this.panditProfiles.forEach(p => {
+            const locID = profileLocationMap[p.UserID];
+            if (locID && locationByID[locID]) {
+              this.panditLocationMap[p.UserID] = locationByID[locID];
+              this.locationLoadingPending = false ;
             }
           });
-
-          this.panditProfiles = profileData;
-          this.isLoading = false;
-
-          this.panditProfiles.forEach(p => {
-            if (p.UserID) this.loadProfileImage(p);
-          });
-
         });
       });
+
+    });
   }
 
 
@@ -546,7 +596,7 @@ notifySubmit: 'जमा करें',
     this.routerCtrl.back();
   }
 
-   showNotifyModal = false;
+  showNotifyModal = false;
   formSubmitted = false;
 
   notifyForm = {

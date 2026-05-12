@@ -224,6 +224,10 @@
     <div class="modal-txn-id" *ngIf="selectedTxn.TransactionID || selectedTxn.MandirTransactionID">
       Txn ID: #{{ selectedTxn.TransactionID || selectedTxn.MandirTransactionID }}
     </div>
+    <button class="modal-share-btn" (click)="shareOnWhatsapp(selectedTxn)">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20" height="20" />
+      Share on WhatsApp
+    </button>
 
   </ng-container>
 
@@ -271,6 +275,10 @@
       Txn ID: #{{ selectedTxn.TransactionID || selectedTxn.MandirTransactionID }}
     </div>
 
+    <button class="modal-share-btn" (click)="shareOnWhatsapp(selectedTxn)">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20" height="20" />
+      Share on WhatsApp
+    </button>
   </ng-container>
 
 </div>

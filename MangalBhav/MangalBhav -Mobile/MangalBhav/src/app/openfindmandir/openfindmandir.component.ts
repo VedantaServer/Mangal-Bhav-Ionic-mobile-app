@@ -10,13 +10,15 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 import { Router } from '@angular/router';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-openfindmandir',
   templateUrl: './openfindmandir.component.html',
   styleUrls: ['./openfindmandir.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent, LoggedoutbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent, JajmanbottomtabsComponent, PanditjibottomtabsComponent, LoggedoutbottomtabsComponent]
 })
 export class OpenfindmandirComponent implements OnInit {
 
@@ -51,6 +53,7 @@ export class OpenfindmandirComponent implements OnInit {
   filteredMandirs: any[] = [];
   mandirSearchQuery = '';
   showAddMandirForm = false;
+  isLoadingMandirs = false;
   isSubmittingMandir = false;
 
   // Front image
@@ -58,6 +61,8 @@ export class OpenfindmandirComponent implements OnInit {
   frontImagePreview: string | null = null;
   isUploadingFront = false;
 
+  // Add this property (replace userLat/userLng block area)
+  locationState: 'fetching' | 'granted' | 'denied' | 'unavailable' = 'fetching';
   // Inside image
   selectedInsideImageFile: File | null = null;
   insideImagePreview: string | null = null;
@@ -66,6 +71,8 @@ export class OpenfindmandirComponent implements OnInit {
   userDetails: any;
   showbottomtab: boolean = true;
 
+  userLat: number | null = null;
+  userLng: number | null = null;
 
 
   constructor(private router: Router, public api: Api, public routerCtrl: NavController, public apinu: ApiNU, private storage: Storage, public toastController: ToastController) { }
@@ -84,8 +91,68 @@ export class OpenfindmandirComponent implements OnInit {
     if (this.userDetails?.LoginID) {
       this.userLoggedIn = true;
     }
+    await this.fetchUserLocation();
     this.loadMandirs();
 
+  }
+
+
+
+  async fetchUserLocation() {
+    this.locationState = 'fetching';
+    try {
+      let lat: number;
+      let lng: number;
+
+      if (Capacitor.getPlatform() === 'web') {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+        });
+        lat = position.coords.latitude;
+        lng = position.coords.longitude;
+      } else {
+        const permission = await Geolocation.requestPermissions();
+        if (permission.location !== 'granted' && permission.coarseLocation !== 'granted') {
+          this.locationState = 'denied';
+          return;
+        }
+        const position = await Geolocation.getCurrentPosition();
+        lat = position.coords.latitude;
+        lng = position.coords.longitude;
+      }
+
+      this.userLat = lat;
+      this.userLng = lng;
+      this.locationState = 'granted';
+      this.query = this.buildLocationQuery(lat, lng);
+
+    } catch (e) {
+      console.warn('Location unavailable', e);
+      this.locationState = 'unavailable';
+      // query stays as default ORDER BY DateAdded DESC — that's fine
+    }
+  }
+
+
+
+  buildLocationQuery(lat: number, lng: number): string {
+    return `tenantID=1 ORDER BY (6371 * ACOS(COS(RADIANS(${lat})) * COS(RADIANS(CAST(Latitude AS FLOAT))) * COS(RADIANS(CAST(Longitude AS FLOAT)) - RADIANS(${lng})) + SIN(RADIANS(${lat})) * SIN(RADIANS(CAST(Latitude AS FLOAT))))) ASC`;
+  }
+
+
+  getDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 
 
@@ -102,7 +169,7 @@ export class OpenfindmandirComponent implements OnInit {
         console.log('Lat:', this.Mandir.Latitude);
         console.log('Lng:', this.Mandir.Longitude);
       } else {
-        alert('Location permission denied');
+        this.showToast('Location permission denied', 'danger');
       }
 
     } catch (error) {
@@ -140,6 +207,7 @@ export class OpenfindmandirComponent implements OnInit {
     this.loadMandirs(true);
   }
 
+
   onMandirSearchChange(value: string) {
     clearTimeout(this.searchTimeout);
     const q = value?.trim();
@@ -148,8 +216,11 @@ export class OpenfindmandirComponent implements OnInit {
       this.pageNumber = 1;
       this.allMandirs = [];
       this.filteredMandirs = [];
-      this.query = `tenantID=1 ORDER BY DateAdded DESC`;
-      this.infiniteScrollEvent = null; // ✅ reset scroll state
+      // ✅ Restore location query on clear, not just date
+      this.query = (this.userLat && this.userLng)
+        ? this.buildLocationQuery(this.userLat, this.userLng)
+        : `tenantID=1 ORDER BY DateAdded DESC`;
+      this.infiniteScrollEvent = null;
       this.loadMandirs();
       return;
     }
@@ -160,45 +231,111 @@ export class OpenfindmandirComponent implements OnInit {
       this.pageNumber = 1;
       this.allMandirs = [];
       this.filteredMandirs = [];
-      this.infiniteScrollEvent = null; // ✅ reset scroll state
+      this.infiniteScrollEvent = null;
 
-      this.query = `
-      tenantID=1
-      AND (
-        MandirName LIKE '%${q}%'
-        OR GodName LIKE '%${q}%'
-        OR City LIKE '%${q}%'
-        OR State LIKE '%${q}%'
-        OR Address LIKE '%${q}%'
-      )
-      ORDER BY DateAdded DESC
-    `;
+      // ✅ Search also sorted by distance if location available
+      const orderBy = (this.userLat && this.userLng)
+        ? `ORDER BY (6371 * ACOS(COS(RADIANS(${this.userLat})) * COS(RADIANS(CAST(Latitude AS FLOAT))) * COS(RADIANS(CAST(Longitude AS FLOAT)) - RADIANS(${this.userLng})) + SIN(RADIANS(${this.userLat})) * SIN(RADIANS(CAST(Latitude AS FLOAT))))) ASC`
+        : `ORDER BY DateAdded DESC`;
+
+      this.query = `tenantID=1 AND (MandirName LIKE '%${q}%' OR GodName LIKE '%${q}%' OR City LIKE '%${q}%' OR State LIKE '%${q}%' OR Address LIKE '%${q}%') ${orderBy}`;
       this.loadMandirs();
     }, 500);
   }
 
+
+  // loadMandirs(loadMore = false) {
+  //   const query = this.query;
+
+  //   this.apinu.postUrlData(
+  //     `MandirSelectByQueryPaging?tenantID=1&schoolID=0&pageNumber=${this.pageNumber}&pageSize=${this.pageSize}&Query=${encodeURIComponent(query)}`,
+  //     null
+  //   ).subscribe({
+  //     next: (res: any) => {
+  //       let newMandirs = (res?.MandirList ?? []).map((m: any) => ({
+  //         ...m,
+  //         FrontImageUrl: null,
+  //         DistanceKm: (this.userLat && this.userLng && m.Latitude && m.Longitude)
+  //           ? this.getDistance(this.userLat, this.userLng, +m.Latitude, +m.Longitude)
+  //           : null
+  //       }));
+
+  //       if (!newMandirs.length) {
+  //         if (this.infiniteScrollEvent) {
+  //           this.infiniteScrollEvent.target.complete();
+  //           this.infiniteScrollEvent.target.disabled = true;
+  //           this.infiniteScrollEvent = null;
+  //         }
+  //         return;
+  //       }
+
+  //       if (loadMore) {
+  //         this.allMandirs = [...this.allMandirs, ...newMandirs];
+  //       } else {
+  //         this.allMandirs = newMandirs;
+  //       }
+
+  //       // ✅ Sort by distance if location available
+  //       if (this.userLat && this.userLng) {
+  //         this.allMandirs.sort((a, b) => {
+  //           if (a.DistanceKm === null) return 1;
+  //           if (b.DistanceKm === null) return -1;
+  //           return a.DistanceKm - b.DistanceKm;
+  //         });
+  //       }
+
+  //       this.filteredMandirs = [...this.allMandirs];
+  //       newMandirs.forEach((m: any) => this.loadMandirImage(m));
+
+  //       if (this.infiniteScrollEvent) {
+  //         this.infiniteScrollEvent.target.complete();
+  //         if (newMandirs.length < this.pageSize) {
+  //           this.infiniteScrollEvent.target.disabled = true;
+  //         }
+  //         this.infiniteScrollEvent = null;
+  //       }
+  //     },
+  //     error: (err: any) => {
+  //       console.error(err);
+  //       if (this.infiniteScrollEvent) {
+  //         this.infiniteScrollEvent.target.complete();
+  //         this.infiniteScrollEvent = null;
+  //       }
+  //     }
+  //   });
+  // }
+
+
+  private sanitizeQuery(q: string): string {
+    return q.replace(/\s+/g, ' ').trim();
+  }
+
+
   loadMandirs(loadMore = false) {
-    const query = this.query;
+    const query = this.query.replace(/\s+/g, ' ').trim(); // still sanitize
 
-    this.apinu.postUrlData(
-      `MandirSelectByQueryPaging?tenantID=1&schoolID=0&pageNumber=${this.pageNumber}&pageSize=${this.pageSize}&Query=${encodeURIComponent(query)}`,
-      null
-    ).subscribe({
+    if (!loadMore) {
+      this.isLoadingMandirs = true;
+    }
+
+    // ✅ Send everything in the body now
+    const body = {
+      tenantID: 1,
+      schoolID: 0,
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      query: query   // no URL encoding needed!
+    };
+
+    this.apinu.postUrlData('MandirSelectByQueryPaging', body).subscribe({
       next: (res: any) => {
-        const newMandirs = (res?.MandirList ?? []).map((m: any) => ({
+        let newMandirs = (res?.MandirList ?? []).map((m: any) => ({
           ...m,
-          FrontImageUrl: null
+          FrontImageUrl: null,
+          DistanceKm: (this.userLat && this.userLng && m.Latitude && m.Longitude)
+            ? this.getDistance(this.userLat, this.userLng, +m.Latitude, +m.Longitude)
+            : null
         }));
-
-        // ✅ Bug 2 fix: no more data — stop & disable immediately
-        if (!newMandirs.length) {
-          if (this.infiniteScrollEvent) {
-            this.infiniteScrollEvent.target.complete();
-            this.infiniteScrollEvent.target.disabled = true;
-            this.infiniteScrollEvent = null;
-          }
-          return;
-        }
 
         if (loadMore) {
           this.allMandirs = [...this.allMandirs, ...newMandirs];
@@ -207,12 +344,11 @@ export class OpenfindmandirComponent implements OnInit {
         }
 
         this.filteredMandirs = [...this.allMandirs];
-
         newMandirs.forEach((m: any) => this.loadMandirImage(m));
+        this.isLoadingMandirs = false;
 
         if (this.infiniteScrollEvent) {
           this.infiniteScrollEvent.target.complete();
-          // ✅ Bug 1 fix: check newMandirs.length, not res.length
           if (newMandirs.length < this.pageSize) {
             this.infiniteScrollEvent.target.disabled = true;
           }
@@ -221,7 +357,7 @@ export class OpenfindmandirComponent implements OnInit {
       },
       error: (err: any) => {
         console.error(err);
-        // ✅ Always complete on error too
+        this.isLoadingMandirs = false;
         if (this.infiniteScrollEvent) {
           this.infiniteScrollEvent.target.complete();
           this.infiniteScrollEvent = null;
@@ -231,7 +367,7 @@ export class OpenfindmandirComponent implements OnInit {
   }
 
   searchTimeout: any;
-  query = `tenantID=1 ORDER BY DateAdded DESC`;
+  query: any = `tenantID=1 ORDER BY DateAdded DESC`;
 
 
   // Add this property

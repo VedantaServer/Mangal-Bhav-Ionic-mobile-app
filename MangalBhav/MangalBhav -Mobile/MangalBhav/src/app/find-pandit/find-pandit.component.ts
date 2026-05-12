@@ -12,13 +12,16 @@ import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-find-pandit',
   templateUrl: './find-pandit.component.html',
   styleUrls: ['./find-pandit.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, TabscommonheaderComponent,
     PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class FindPanditComponent implements OnInit {
@@ -30,6 +33,8 @@ export class FindPanditComponent implements OnInit {
   // ── Pandit list (profiles only on init) ──────────────────────────────────
   panditList: any[] = [];
   profileImages: { [key: number]: string } = {};
+
+  isLoading = false; // add this property
 
   // ── Pandit detail modal ───────────────────────────────────────────────────
   isPanditModalOpen = false;
@@ -49,12 +54,13 @@ export class FindPanditComponent implements OnInit {
 
   // ── Booking counts ────────────────────────────────────────────────────────
   panditServiceBookingMap: { [key: string]: number } = {};
-
+  locationState: 'fetching' | 'granted' | 'denied' | 'unavailable' = 'fetching';
   // ── Slideshow ─────────────────────────────────────────────────────────────
   currentImageIndex: { [key: string]: number } = {};
   imageIntervals: { [key: string]: any } = {};
-
-  query = "Role='PANDIT'";
+  currentLat: number | null = null;
+  currentLng: number | null = null;
+  query = '';
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
@@ -82,7 +88,7 @@ export class FindPanditComponent implements OnInit {
       this.openQrScanner();
     } else {
       localStorage.removeItem('findPanditThroghtFloating');
-      this.loadPanditProfiles(`Role='PANDIT'`);
+      this.fetchNearbyPandits();
     }
   }
 
@@ -126,51 +132,185 @@ export class FindPanditComponent implements OnInit {
 
   searchTimeout: any;
 
+  //   onSearchChange(value: string) {
+  //     clearTimeout(this.searchTimeout);
+
+
+
+  //     const q = value?.trim();
+
+  //     if (!this.currentLat || !this.currentLng) {
+  //       console.log('Location not available');
+  //       return;
+  //     }
+
+  //     // if empty → load default list again
+  //     if (!q) {
+  //       this.fetchNearbyPandits();
+  //       return;
+  //     }
+
+  //     // only search after 3 letters
+  //     if (q.length < 3) return;
+
+  //     // debounce 500ms (avoid API hit on every key)
+  //     this.searchTimeout = setTimeout(() => {
+  //       this.pageNumber = 1;
+  //       this.panditList = [];
+
+
+  //       this.query = `
+  // U.UserID IN (
+  //   SELECT UserID
+  //   FROM Profiles
+  //   WHERE FullName LIKE '%${q}%'
+  // )
+  // ORDER BY (
+  //   6371 * ACOS(
+  //     COS(RADIANS(${this.currentLat}))
+  //     * COS(RADIANS(L.Latitude))
+  //     * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng}))
+  //     + SIN(RADIANS(${this.currentLat}))
+  //     * SIN(RADIANS(L.Latitude))
+  //   )
+  // ) ASC
+  // `;
+
+
+  //       //       this.query = `
+  //       //   U.UserID IN (
+  //       //     SELECT UserID
+  //       //     FROM Profiles
+  //       //     WHERE FullName LIKE '%${q}%'
+  //       //   )
+  //       //   AND
+  //       //   (
+  //       //     6371 * ACOS(
+  //       //       COS(RADIANS(${this.currentLat}))
+  //       //       * COS(RADIANS(L.Latitude))
+  //       //       * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng}))
+  //       //       + SIN(RADIANS(${this.currentLat}))
+  //       //       * SIN(RADIANS(L.Latitude))
+  //       //     )
+  //       //   ) <= 5
+  //       // `;
+
+  //       this.loadPanditProfiles(this.query);
+  //     }, 500);
+  //   }
+
+
+
+  // loadPanditProfiles(query: string, loadMore = false) {
+
+  //   if (!loadMore) this.isLoading = true;
+
+
+  //   this.apinu.postUrlData(
+  //     `UsersNUSelectByQueryPaging?Query=${encodeURIComponent(query)}&pageNumber=${this.pageNumber}&pageSize=${this.pageSize}`,
+  //     null
+  //   ).subscribe({
+  //     next: (userRes: any) => {
+  //       const users = userRes?.UserList;
+
+  //       // ✅ No more data — stop the spinner & disable infinite scroll
+  //       if (!users?.length) {
+  //         if (this.infiniteScrollEvent) {
+  //           this.infiniteScrollEvent.target.complete();
+  //           this.infiniteScrollEvent.target.disabled = true;
+  //           this.infiniteScrollEvent = null;
+  //           this.isLoading = false;
+  //         }
+  //         return;
+  //       }
+
+  //       from(users).pipe(
+  //         mergeMap((user: any) =>
+  //           this.apinu.postUrlData(
+  //             `ProfilesSelectAllByUserID?userID=${user.UserID}`,
+  //             null
+  //           ).pipe(
+  //             map((profileRes: any) => ({
+  //               user,
+  //               profile: profileRes?.ProfileList?.[0] || null,
+  //               panditServices: [],
+  //               _servicesLoaded: false
+  //             }))
+  //           )
+  //         ),
+  //         toArray()
+  //       ).subscribe((result: any[]) => {
+
+  //         if (loadMore) {
+  //           this.panditList = [...this.panditList, ...result];
+  //         } else {
+  //           this.panditList = result;
+  //         }
+
+  //         this.isLoading = false;
+  //         this.panditList.forEach(item => {
+  //           if (item.profile) this.loadProfileImage(item.profile);
+  //         });
+
+  //         if (this.infiniteScrollEvent) {
+  //           this.infiniteScrollEvent.target.complete();
+  //           if (result.length < this.pageSize) {
+  //             this.infiniteScrollEvent.target.disabled = true;
+  //           }
+  //           this.infiniteScrollEvent = null;
+  //         }
+  //       });
+  //     },
+  //     // ✅ Also handle API errors so spinner doesn't hang on failure
+  //     error: () => {
+  //       if (this.infiniteScrollEvent) {
+  //         this.infiniteScrollEvent.target.complete();
+  //         this.infiniteScrollEvent = null;
+  //         this.isLoading = false;
+  //       }
+  //     }
+  //   });
+  // }
+
   onSearchChange(value: string) {
     clearTimeout(this.searchTimeout);
-
     const q = value?.trim();
 
-    // if empty → load default list again
     if (!q) {
-      this.pageNumber = 1;
-      this.query = "Role='PANDIT'";
-      this.panditList = [];
-      this.loadPanditProfiles(this.query);
+      this.fetchNearbyPandits();
       return;
     }
 
-    // only search after 3 letters
     if (q.length < 3) return;
 
-    // debounce 500ms (avoid API hit on every key)
     this.searchTimeout = setTimeout(() => {
       this.pageNumber = 1;
       this.panditList = [];
 
-      this.query = `Role='PANDIT' AND UserID IN (
-      SELECT UserID
-      FROM Profiles
-      WHERE FullName LIKE '%${q}%'
-    )`;
+      const orderBy = (this.currentLat && this.currentLng)
+        ? `ORDER BY (6371 * ACOS(COS(RADIANS(${this.currentLat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng})) + SIN(RADIANS(${this.currentLat})) * SIN(RADIANS(L.Latitude)))) ASC`
+        : `ORDER BY U.UserID DESC`;
 
+      this.query = `U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${q}%') ${orderBy}`;
       this.loadPanditProfiles(this.query);
     }, 500);
   }
 
-
-
   loadPanditProfiles(query: string, loadMore = false) {
+    if (!loadMore) this.isLoading = true;
 
-    this.apinu.postUrlData(
-      `UsersNUSelectByQueryPaging?Query=${encodeURIComponent(query)}&pageNumber=${this.pageNumber}&pageSize=${this.pageSize}`,
-      null
-    ).subscribe({
+    const body = {
+      query: query.replace(/\s+/g, ' ').trim(),
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    };
+
+    this.apinu.postUrlData('UsersNUSelectByQueryPaging', body).subscribe({
       next: (userRes: any) => {
         const users = userRes?.UserList;
 
-        // ✅ No more data — stop the spinner & disable infinite scroll
         if (!users?.length) {
+          this.isLoading = false;
           if (this.infiniteScrollEvent) {
             this.infiniteScrollEvent.target.complete();
             this.infiniteScrollEvent.target.disabled = true;
@@ -182,8 +322,7 @@ export class FindPanditComponent implements OnInit {
         from(users).pipe(
           mergeMap((user: any) =>
             this.apinu.postUrlData(
-              `ProfilesSelectAllByUserID?userID=${user.UserID}`,
-              null
+              `ProfilesSelectAllByUserID?userID=${user.UserID}`, null
             ).pipe(
               map((profileRes: any) => ({
                 user,
@@ -195,13 +334,8 @@ export class FindPanditComponent implements OnInit {
           ),
           toArray()
         ).subscribe((result: any[]) => {
-
-          if (loadMore) {
-            this.panditList = [...this.panditList, ...result];
-          } else {
-            this.panditList = result;
-          }
-
+          this.panditList = loadMore ? [...this.panditList, ...result] : result;
+          this.isLoading = false;
           this.panditList.forEach(item => {
             if (item.profile) this.loadProfileImage(item.profile);
           });
@@ -215,8 +349,8 @@ export class FindPanditComponent implements OnInit {
           }
         });
       },
-      // ✅ Also handle API errors so spinner doesn't hang on failure
       error: () => {
+        this.isLoading = false;
         if (this.infiniteScrollEvent) {
           this.infiniteScrollEvent.target.complete();
           this.infiniteScrollEvent = null;
@@ -224,7 +358,6 @@ export class FindPanditComponent implements OnInit {
       }
     });
   }
-
 
   loadMorePandits(query: string) {
     this.pageNumber++;
@@ -375,7 +508,7 @@ export class FindPanditComponent implements OnInit {
     this.isScannerOpen = false;
     const match = result.toLowerCase().match(/pandituserid=(\d+)/);
     if (match) {
-      this.loadPanditProfiles(`Role='PANDIT' and UserID = ${Number(match[1])}`);
+      this.loadPanditProfiles(`U.UserID = ${Number(match[1])}`);
     }
   }
   onScanError(error: any) { console.error('Scan error:', error); }
@@ -407,6 +540,157 @@ export class FindPanditComponent implements OnInit {
     img.src = 'assets/img/default.jpg';
     img.onerror = null;
   }
+
+  async fetchNearbyPandits() {
+    this.locationState = 'fetching';
+    this.isLoading = true;
+
+    try {
+      let lat: number;
+      let lng: number;
+
+      if (Capacitor.getPlatform() === 'web') {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true, timeout: 10000, maximumAge: 0
+          });
+        });
+        lat = position.coords.latitude;
+        lng = position.coords.longitude;
+      } else {
+        const permission = await Geolocation.requestPermissions();
+        if (permission.location !== 'granted' && permission.coarseLocation !== 'granted') {
+          this.locationState = 'denied';
+          this.isLoading = false;
+          return;
+        }
+        const position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true, timeout: 10000
+        });
+        lat = position.coords.latitude;
+        lng = position.coords.longitude;
+      }
+
+      this.currentLat = lat;
+      this.currentLng = lng;
+      this.locationState = 'granted';
+
+      this.query = `1=1 ORDER BY (6371 * ACOS(COS(RADIANS(${lat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${lng})) + SIN(RADIANS(${lat})) * SIN(RADIANS(L.Latitude)))) ASC`;
+
+      this.pageNumber = 1;
+      this.panditList = [];
+      this.loadPanditProfiles(this.query);
+
+    } catch (err) {
+      console.error('Location error:', err);
+      this.locationState = 'unavailable';
+      // fallback — load all pandits without sorting
+      this.query = `1=1 ORDER BY U.UserID DESC`;
+      this.pageNumber = 1;
+      this.panditList = [];
+      this.loadPanditProfiles(this.query);
+    }
+  }
+
+
+  //   async fetchNearbyPandits() {
+  //     try {
+  //       this.isLoading = true;
+
+  //       let lat: number;
+  //       let lng: number;
+
+  //       // WEB
+  //       if (Capacitor.getPlatform() === 'web') {
+  //         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+  //           navigator.geolocation.getCurrentPosition(
+  //             resolve,
+  //             reject,
+  //             {
+  //               enableHighAccuracy: true,
+  //               timeout: 10000,
+  //               maximumAge: 0
+  //             }
+  //           );
+  //         });
+
+  //         lat = position.coords.latitude;
+  //         lng = position.coords.longitude;
+  //       }
+
+  //       // ANDROID / IOS
+  //       else {
+  //         const permission = await Geolocation.requestPermissions();
+
+  //         if (
+  //           permission.location !== 'granted' &&
+  //           permission.coarseLocation !== 'granted'
+  //         ) {
+  //           console.log('Location permission denied');
+  //           this.isLoading = false;
+  //           return;
+  //         }
+
+  //         const position = await Geolocation.getCurrentPosition({
+  //           enableHighAccuracy: true,
+  //           timeout: 10000
+  //         });
+
+  //         lat = position.coords.latitude;
+  //         lng = position.coords.longitude;
+  //       }
+
+  //       this.currentLat = lat;
+  //       this.currentLng = lng;
+
+  //       console.log('Latitude:', lat);
+  //       console.log('Longitude:', lng);
+
+  //       // 5 KM radius
+  //       //   this.query = `
+  //       //   (
+  //       //     6371 * ACOS(
+  //       //       COS(RADIANS(${lat}))
+  //       //       * COS(RADIANS(L.Latitude))
+  //       //       * COS(RADIANS(L.Longitude) - RADIANS(${lng}))
+  //       //       + SIN(RADIANS(${lat}))
+  //       //       * SIN(RADIANS(L.Latitude))
+  //       //     )
+  //       //   ) <= 25
+  //       // `;
+
+  //       this.query = `
+  // 1=1
+  // ORDER BY (
+  //   6371 * ACOS(
+  //     COS(RADIANS(${lat}))
+  //     * COS(RADIANS(L.Latitude))
+  //     * COS(RADIANS(L.Longitude) - RADIANS(${lng}))
+  //     + SIN(RADIANS(${lat}))
+  //     * SIN(RADIANS(L.Latitude))
+  //   )
+  // ) ASC
+  // `;
+
+  //       console.log(this.query)
+
+
+
+  //       // reset paging
+  //       this.pageNumber = 1;
+  //       this.panditList = [];
+
+  //       // fetch data
+  //       this.loadPanditProfiles(this.query);
+
+  //     } catch (err) {
+  //       console.error('Location error:', err);
+  //       this.isLoading = false;
+  //     }
+  //   }
+
+
+
 
   // ─────────────────────────────────────────────────────────────────────────
   // Localization

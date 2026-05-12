@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.35425.106
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FaceUPAI-Web", "FaceUPAI-Web.csproj", "{CE79ABFA-480E-496C-BD5C-B92F1D596729}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MangalBhav-Web", "MangalBhav-Web.csproj", "{CE79ABFA-480E-496C-BD5C-B92F1D596729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

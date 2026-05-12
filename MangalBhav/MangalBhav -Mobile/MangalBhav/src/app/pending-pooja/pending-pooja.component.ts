@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -14,64 +14,64 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './pending-pooja.component.html',
   styleUrls: ['./pending-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class PendingPoojaComponent implements OnInit {
   userDetails: any;
   language: any;
   PanditServicesList: any;
-   labels = {
-  en: {
-    pageTitle: 'Bookings',
-    bannerSubCurrent: 'Current',
-    bannerTitle: 'Seva Bookings',
+  labels = {
+    en: {
+      pageTitle: 'Bookings',
+      bannerSubCurrent: 'Current',
+      bannerTitle: 'Seva Bookings',
 
-    requested: 'Requested',
-    accepted: 'Accepted',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
+      requested: 'Requested',
+      accepted: 'Accepted',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
 
-    yourServices: 'Your Services',
+      yourServices: 'Your Services',
 
-    bookings: 'Bookings',
-    noBookings: 'No bookings yet for this service',
+      bookings: 'Bookings',
+      noBookings: 'No bookings yet for this service',
 
-    sendAlert: 'Send Alert',
-    acceptPayment: 'Accept Payment',
-    finishPooja: 'Finish Pooja',
+      sendAlert: 'Send Alert',
+      acceptPayment: 'Accept Payment',
+      finishPooja: 'Finish Pooja',
 
-    noServices: 'No Services Found',
-    noServicesSub: 'Add services first to start receiving bookings'
-  },
+      noServices: 'No Services Found',
+      noServicesSub: 'Add services first to start receiving bookings'
+    },
 
-  hi: {
-    pageTitle: 'बुकिंग्स',
-    bannerSubCurrent: 'वर्तमान',
-    bannerTitle: 'सेवा बुकिंग्स',
+    hi: {
+      pageTitle: 'बुकिंग्स',
+      bannerSubCurrent: 'वर्तमान',
+      bannerTitle: 'सेवा बुकिंग्स',
 
-    requested: 'अनुरोधित',
-    accepted: 'स्वीकृत',
-    completed: 'पूर्ण',
-    cancelled: 'रद्द',
+      requested: 'अनुरोधित',
+      accepted: 'स्वीकृत',
+      completed: 'पूर्ण',
+      cancelled: 'रद्द',
 
-    yourServices: 'आपकी सेवाएँ',
+      yourServices: 'आपकी सेवाएँ',
 
-    bookings: 'बुकिंग्स',
-    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+      bookings: 'बुकिंग्स',
+      noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
 
-    sendAlert: 'सूचना भेजें',
-    acceptPayment: 'भुगतान स्वीकार करें',
-    finishPooja: 'पूजा पूर्ण करें',
+      sendAlert: 'सूचना भेजें',
+      acceptPayment: 'भुगतान स्वीकार करें',
+      finishPooja: 'पूजा पूर्ण करें',
 
-    noServices: 'कोई सेवा नहीं मिली',
-    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
-  }
-};
+      noServices: 'कोई सेवा नहीं मिली',
+      noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
+    }
+  };
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
-    private plt: Platform,
+    private plt: Platform, public toastController: ToastController,
     private http: HttpClient,
     private alertCtrl: AlertController,) { }
 
@@ -83,10 +83,16 @@ export class PendingPoojaComponent implements OnInit {
     this.loadList();
   }
 
-   openPage(pageName: any) {
+  openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
+  async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
 
 
   currentImageIndex: { [key: string]: number } = {};
@@ -109,11 +115,11 @@ export class PendingPoojaComponent implements OnInit {
     ];
   }
 
-   get t() {
-  return this.language === 'Hindi'
-    ? this.labels.hi
-    : this.labels.en;
-}
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
 
   startSlideshow(serviceName: string) {
     const key = this.getCleanName(serviceName);
@@ -216,9 +222,9 @@ export class PendingPoojaComponent implements OnInit {
   }
 
 
-    sendAlert(booking: any) {
+  sendAlert(booking: any) {
 
-    alert(`Message sent to ${booking.BhaktProfile?.FullName} 📩`);
+    this.showToast(`Message sent to ${booking.BhaktProfile?.FullName} 📩`, 'success');
 
   }
   loadList() {
@@ -327,7 +333,7 @@ export class PendingPoojaComponent implements OnInit {
         this.PanditServicesList = finalList;
       },
 
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Error loading data:', err);
       }
 

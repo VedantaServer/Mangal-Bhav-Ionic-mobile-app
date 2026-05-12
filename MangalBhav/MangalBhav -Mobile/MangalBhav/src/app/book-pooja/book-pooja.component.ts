@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -12,13 +12,14 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 
 @Component({
   selector: 'app-book-pooja',
   templateUrl: './book-pooja.component.html',
   styleUrls: ['./book-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class BookPoojaComponent implements OnInit {
   userDetails: any;
@@ -514,7 +515,7 @@ export class BookPoojaComponent implements OnInit {
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage, private route: ActivatedRoute,
-    private plt: Platform,
+    private plt: Platform, public toastController: ToastController,
     private http: HttpClient,
     private alertCtrl: AlertController
   ) { }
@@ -719,20 +720,27 @@ export class BookPoojaComponent implements OnInit {
   }
 
 
+  async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
+
 
   confirmBooking() {
     if (!this.BookingDate) {
-      alert('Please select a Pooja date 📅');
+      this.showToast('Please select a Pooja date 📅', 'danger');
       return;
     }
 
     if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
-      alert('Please enter your name (min 3 characters) 🙏');
+      this.showToast('Please enter your name (min 3 characters) 🙏', 'danger');
       return;
     }
 
     if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
-      alert('Please enter a valid 10-digit mobile number 🙏');
+      this.showToast('Please enter a valid 10-digit mobile number 🙏', 'danger');
       return;
     }
 
@@ -749,7 +757,7 @@ export class BookPoojaComponent implements OnInit {
       null
     ).subscribe((res: any) => {
       if (res.BookingList?.length > 0) {
-        alert('You have already booked this service for the selected date.');
+        this.showToast('You have already booked this service for the selected date.', 'danger');
         return;
       }
 
@@ -759,8 +767,9 @@ export class BookPoojaComponent implements OnInit {
   }
 
   initiateBookingPayment(payload: any) {
-    this.amt = String(this.advanceAmount) + '00';
+    // this.amt = String(this.advanceAmount) + '00';
 
+    this.amt = 21 + '00';
     this.apinu.postUrlData(`getRazorPayUniqueOrderID?amount=${this.amt}`, null)
       .subscribe((res: any) => {
         this.orderID = res.orderID;
@@ -803,7 +812,7 @@ export class BookPoojaComponent implements OnInit {
                   const bookingID = bookingRes?.BookingID;
 
                   if (!bookingID || bookingID <= 0) {
-                    alert('Payment received but booking insert failed ❌\nPlease contact support with Payment ID: ' + paymentId);
+                    this.showToast('Payment received but booking insert failed ❌\nPlease contact support with Payment ID: ' + paymentId, 'danger');
                     return;
                   }
 
@@ -827,7 +836,7 @@ export class BookPoojaComponent implements OnInit {
                     .subscribe(() => {
                       this.isBookingModalOpen = false;
                       this.isProcessingPayment = false;
-                      alert(`🎉 Booking Confirmed!\n\n✅ Advance of ₹${this.advanceAmount} paid successfully.`);
+                      this.showToast(`🎉 Booking Confirmed!\n\n✅ Advance of ₹${this.advanceAmount} paid successfully.`, 'success');
                       setTimeout(() => this.routerCtrl.navigateForward('/booking'), 400);
                     });
                 });
@@ -835,12 +844,12 @@ export class BookPoojaComponent implements OnInit {
               } else {
                 // Payment verified but failed — do NOT insert booking
                 this.isProcessingPayment = false;
-                alert('Payment verification failed ❌\nBooking was NOT created. Please try again.');
+                this.showToast('Payment verification failed ❌\nBooking was NOT created. Please try again.', 'danger');
               }
             },
             error: () => {
               this.isProcessingPayment = false;
-              alert('Verification error ❌\nBooking was NOT created. Please contact support.');
+              this.showToast('Verification error ❌\nBooking was NOT created. Please contact support.', 'danger');
             }
           });
         },

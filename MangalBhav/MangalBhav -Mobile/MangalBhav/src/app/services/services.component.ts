@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +40,7 @@ export class ServicesComponent implements OnInit {
     public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
-    private storage: Storage,
+    private storage: Storage, public toastController: ToastController, 
     private plt: Platform,
     private http: HttpClient,
     private alertCtrl: AlertController
@@ -164,6 +164,13 @@ export class ServicesComponent implements OnInit {
     };
   }
 
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
+
   // -----------------------------
   // Save (Insert / Update)
   // -----------------------------
@@ -180,13 +187,13 @@ export class ServicesComponent implements OnInit {
 
         if (res?.ServiceID > 0) {
 
-          alert("Saved successfully ✅");
+          this.showToast("Saved successfully ✅",'success');
 
           this.closeModal();
           this.loadList();
 
         } else {
-          alert("Something went wrong ❌");
+          this.showToast("Something went wrong ❌",'danger');
         }
 
       });

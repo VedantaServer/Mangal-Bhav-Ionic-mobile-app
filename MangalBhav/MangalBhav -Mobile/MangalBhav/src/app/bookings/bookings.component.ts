@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -108,7 +108,7 @@ export class BookingsComponent implements OnInit {
   language: any;
 
   constructor(
-    public routerCtrl: NavController,
+    public routerCtrl: NavController,public toastController: ToastController,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
@@ -124,6 +124,13 @@ export class BookingsComponent implements OnInit {
 
 
     this.loadList();
+  }
+
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
   }
 
   openPage(pageName: any) {
@@ -377,13 +384,13 @@ export class BookingsComponent implements OnInit {
 
         if (res?.BookingID > 0) {
 
-          alert("Saved successfully ✅");
+          this.showToast("Saved successfully ✅",'success');
 
           this.closeModal();
           this.loadList();
 
         } else {
-          alert("Something went wrong ❌");
+          this.showToast("Something went wrong ❌",'danger');
         }
 
       });

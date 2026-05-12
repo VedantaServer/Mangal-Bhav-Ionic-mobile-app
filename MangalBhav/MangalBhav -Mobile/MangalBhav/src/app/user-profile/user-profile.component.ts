@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
 import { Browser } from '@capacitor/browser';
@@ -21,7 +21,7 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, QRCodeComponent, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;
@@ -185,7 +185,7 @@ export class UserProfileComponent implements OnInit {
     public api: Api,
     private storage: Storage,
     private plt: Platform,
-    private http: HttpClient,
+    private http: HttpClient,public toastController: ToastController,
     private alertCtrl: AlertController) { }
 
   async ngOnInit() {
@@ -286,13 +286,20 @@ export class UserProfileComponent implements OnInit {
             const account = await this.storage.get('account');
             account.ProfilePhotoUrl = this.profileObject.ProfilePhotoUrl;;
             await this.storage.set('account', account);
-            alert('Profile photo updated successfully');
+            this.showToast('Profile photo updated successfully' , 'success');
           }
         })
       } else {
-        alert("Profile photo Upload failed");
+        this.showToast("Profile photo Upload failed",'danger');
       }
     });
+  }
+
+   async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
   }
 
   prepareProfileForSubmit() {
@@ -367,6 +374,7 @@ export class UserProfileComponent implements OnInit {
 
   saveBankDetails() {
     const body: any = {
+      BankDetailsId: Number(this.bankDetails.BankDetailsId || 0),
       TenantId: Number(this.userDetails.TenantID || 1),
       UserID: Number(this.userDetails.UserID),
       AccountHolderName: '',
@@ -392,7 +400,7 @@ export class UserProfileComponent implements OnInit {
 
     this.apinu.postUrlData(action, body).subscribe((res: any) => {
       console.log(res);
-      alert('UPI ID saved successfully ✅');
+      this.showToast('UPI ID saved successfully ✅','success');
       this.loadBankDetails();
     });
   }
@@ -432,7 +440,7 @@ export class UserProfileComponent implements OnInit {
             this.userDetails.Role = this.selectedRole;
             this.userDetails.Languages = payload.languages;
 
-            alert('Profile saved successfully ✅');
+            this.showToast('Profile saved successfully ✅','success');
 
             // ✅ Reload entire app if role changed
             if (previousRole !== this.selectedRole) {
@@ -440,12 +448,12 @@ export class UserProfileComponent implements OnInit {
             }
 
           } else {
-            alert('Profile saved but role update failed ⚠️');
+            this.showToast('Profile saved but role update failed ⚠️','danger');
           }
         });
 
       } else {
-        alert('Something went wrong ❌');
+        this.showToast('Something went wrong ❌','danger');
       }
     });
   }

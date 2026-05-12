@@ -8,13 +8,14 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 
 @Component({
   selector: 'app-open-pandit-search',
   templateUrl: './open-pandit-search.component.html',
   styleUrls: ['./open-pandit-search.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, LoggedoutbottomtabsComponent]
 })
 export class OpenPanditSearchComponent implements OnInit {
 
@@ -178,58 +179,91 @@ export class OpenPanditSearchComponent implements OnInit {
         }
       });
   }
+
+  // Add this property near profileImages
+  panditLocationMap: { [userID: number]: any } = {};
+  locationLoadingPending = false;
+
   loadPandits() {
     this.isLoading = true;
+    this.locationLoadingPending = true;
 
-    this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null)
-      .subscribe((res: any) => {
+    this.apinu.postUrlData(
+      `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null
+    ).subscribe((res: any) => {
 
-        const serviceList = res.PanditServiceList || [];
+      const panditServices = res.PanditServiceList || [];
 
-        const profileIDs = serviceList.map((x: any) => x.ProfileID);
-        const uniqueProfileIDs = [...new Set(profileIDs)];
+      if (panditServices.length === 0) {
+        this.panditProfiles = [];
+        this.isLoading = false;
+        return;
+      }
 
-        if (uniqueProfileIDs.length === 0) {
-          this.panditProfiles = [];
-          this.isLoading = false;
-          return;
+      // ── Unique profile IDs for fetching profiles ──
+      const profileIDs = panditServices.map((x: any) => x.ProfileID);
+      const uniqueProfileIDs = [...new Set(profileIDs)];
+
+      // ── Build a ProfileID → LocationID map (first service per pandit) ──
+      const profileLocationMap: { [id: number]: number } = {};
+      panditServices.forEach((ps: any) => {
+        if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
+          profileLocationMap[ps.ProfileID] = ps.LocationID;
         }
+      });
 
-        const profileCalls = uniqueProfileIDs.map((id: any) =>
-          this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
-        );
+      // ── Fetch profiles ──
+      const profileCalls = uniqueProfileIDs.map((id: any) =>
+        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
+      );
 
-        forkJoin(profileCalls).subscribe((profiles: any[]) => {
+      forkJoin(profileCalls).subscribe((profiles: any[]) => {
 
-          let profileData: any[] = [];
+        let profileData: any[] = [];
+        profiles.forEach((p: any) => {
+          if (p?.ProfileList?.length > 0) profileData.push(...p.ProfileList);
+        });
 
-          profiles.forEach((p: any) => {
-            if (p?.ProfileList?.length > 0) {
-              profileData.push(...p.ProfileList);
+        this.panditProfiles = profileData;
+        this.isLoading = false;
+
+        // ── Load profile images ──
+        this.panditProfiles.forEach(p => {
+          if (p.UserID) this.loadProfileImage(p);
+        });
+
+        // ── Collect unique LocationIDs ──
+        const locationIDs = [...new Set(
+          Object.values(profileLocationMap).filter(Boolean)
+        )];
+
+        if (locationIDs.length === 0) return;
+
+        // ✅ ONE call instead of N calls
+        const query = `LocationID IN (${locationIDs.join(',')})`;
+        this.apinu.postUrlData(
+          `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
+        ).subscribe((locRes: any) => {
+          const locations: any[] = locRes?.LocationList || [];
+
+          // Build locationID → location object map
+          const locationByID: { [id: number]: any } = {};
+          locations.forEach(loc => locationByID[loc.LocationID] = loc);
+
+          // Map each pandit's UserID → their location
+          this.panditProfiles.forEach(p => {
+            const locID = profileLocationMap[p.UserID];
+            if (locID && locationByID[locID]) {
+              this.panditLocationMap[p.UserID] = locationByID[locID];
+              this.locationLoadingPending = false;
             }
           });
-
-          // 🔥 Attach service price to profile
-          this.panditProfiles = profileData.map(profile => {
-            const matchedService = serviceList.find(
-              (s: any) => s.ProfileID === profile.UserID
-            );
-
-            return {
-              ...profile,
-              ServicePrice: matchedService?.Price || 0
-            };
-          });
-
-          this.isLoading = false;
-
-          this.panditProfiles.forEach(p => {
-            if (p.UserID) this.loadProfileImage(p);
-          });
-
         });
       });
+
+    });
   }
+
 
 
   loadProfileImage(pandit: any) {

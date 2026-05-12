@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { HttpClient } from '@angular/common/http';
@@ -27,11 +27,18 @@ export class DeleteAccountComponent implements OnInit {
     private routerCtrl: NavController,
     private apinu: ApiNU,
     private storage: Storage,
-    private http: HttpClient
+    private http: HttpClient,  public toastController: ToastController,
   ) { }
 
   async ngOnInit() {
     this.userDetails = await this.storage.get('account');
+  }
+
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
   }
 
   // ── Step 1: User reads warning, clicks "I understand, proceed" ──
@@ -66,7 +73,7 @@ export class DeleteAccountComponent implements OnInit {
       },
       error: () => {
         this.isLoading = false;
-        alert('Failed to send OTP. Please try again.');
+        this.showToast('Failed to send OTP. Please try again.','danger');
       }
     });
   }
@@ -80,12 +87,12 @@ export class DeleteAccountComponent implements OnInit {
   // ── Step 3: Verify OTP ──
   verifyOtp() {
     if (!this.otp || this.otp.toString().length < 4) {
-      alert('Please enter a valid OTP');
+      this.showToast('Please enter a valid OTP','danger');
       return;
     }
 
     if (this.otp.toString() !== this.generatedOtp.toString()) {
-      alert('❌ Incorrect OTP. Please try again.');
+      this.showToast('❌ Incorrect OTP. Please try again.','danger');
       return;
     }
 
@@ -106,32 +113,21 @@ export class DeleteAccountComponent implements OnInit {
   // ── Step 5: Call API, clear storage, redirect ──
   deleteAccount() {
     this.isLoading = true;
-    const mobile = this.userDetails?.LoginID;
 
-    const updatedUser = {
-      ...this.userDetails,
-      LoginID: `${mobile}-deleted`,
-      PasswordHash : 'DELETED',
-      Status: 'SUSPENDED',
-      DateAdded : new Date(),
-      DateMordified: new Date(),
-      UpdatedByUser: String(mobile),
-    };
-
-    this.apinu.postUrlData('UsersUpdate', updatedUser).subscribe({
+    this.apinu.postUrlData(`DeleteUserWithDependencies?userID=${this.userDetails.UserID}`, null).subscribe({
       next: async (res: any) => {
-        if (res?.UserID > 0) {
+        if (res) {
           await this.storage.clear();
-          alert('✅ Your account has been deleted successfully.\n\nThank you for using Mangal Bhav. 🙏');
+          this.showToast('✅ Your account has been deleted successfully.\n\nThank you for using Mangal Bhav. 🙏','success');
           window.location.href = '/login';
         } else {
           this.isLoading = false;
-          alert('Something went wrong. Please contact support.');
+          this.showToast('Something went wrong. Please contact support.','danger');
         }
       },
       error: () => {
         this.isLoading = false;
-        alert('❌ Deletion failed. Please try again or contact support.');
+        this.showToast('❌ Deletion failed. Please try again or contact support.','danger');
       }
     });
   }

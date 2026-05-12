@@ -154,7 +154,7 @@
           {{ t.language }}
         </div>
         <div class="field-input-wrap">
-          <ion-select [placeholder]="t.selectLanguage" interface="action-sheet" [(ngModel)]="profile.Languages"
+          <ion-select [placeholder]="t.selectLanguage" interface="popover" [(ngModel)]="profile.Languages"
             name="Languages">
             <ion-select-option value="Hindi">Hindi</ion-select-option>
             <ion-select-option value="English">English</ion-select-option>
@@ -211,13 +211,13 @@
       </div>
 
 
-      <div *ngIf="userDetails?.Role === 'PANDIT' && userDetails?.UserID"
+      <!-- <div *ngIf="userDetails?.Role === 'PANDIT' && userDetails?.UserID"
         style="display:flex;align-items: center;justify-content: center;">
 
         <qrcode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="200" errorCorrectionLevel="M">
         </qrcode>
 
-      </div>
+      </div> -->
     </div>
 
     <!-- SAVE BUTTON -->

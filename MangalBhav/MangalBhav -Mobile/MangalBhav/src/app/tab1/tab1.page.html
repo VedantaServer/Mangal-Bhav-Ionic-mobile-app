@@ -1,34 +1,6 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <div class="header-inner">
 
-      <!-- Logo — same as web nav -->
-      <div class="nav-logo">
-        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
-        <div class="logo-text-block">
-          <div class="nav-logo-text">{{ t.logoTitle }}</div>
-          <div class="nav-logo-sub">{{ t.logoSub }}</div>
-        </div>
-      </div>
+<app-tabscommonheader></app-tabscommonheader>
 
-
-      <div style="display: flex;gap: 4px;">
-        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
-            name="logo-whatsapp" style="color: white;"></ion-icon></button>
-
-        <button class="header-logout-btn" (click)="openShare()">
-          <ion-icon name="share-social-outline"></ion-icon>
-        </button>
-      </div>
-
-      <!-- <button class="inner-reload-btn" (click)="ngOnInit()">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </button> -->
-
-      <!-- <button class="nav-icon-btn" title="Change Language">🌐</button> -->
-    </div>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content [fullscreen]="true">
 

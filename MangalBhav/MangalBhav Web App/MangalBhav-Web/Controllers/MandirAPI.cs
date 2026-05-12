@@ -244,45 +244,45 @@ namespace FaceUPAI.API
 		}
 
 
+		// Create a model for the body
+		public class MandirQueryRequest
+		{
+			public int TenantID { get; set; }
+			public int SchoolID { get; set; }
+			public string Query { get; set; }
+			public int PageNumber { get; set; } = 1;
+			public int PageSize { get; set; } = 10;
+		}
 
 		[HttpPost]
 		[EnableCors("AllowAll")]
 		[Route("MandirSelectByQueryPaging")]
-		public IActionResult MandirSelectByQueryPaging(
-	int tenantID,
-	int schoolID,
-	string Query,
-	int pageNumber = 1,
-	int pageSize = 10)
+		public IActionResult MandirSelectByQueryPaging([FromBody] MandirQueryRequest request)
 		{
 			return ApiHandler.Handle(() =>
 			{
 				SqlParameter[] parameters = new SqlParameter[]
 				{
-			new SqlParameter("@TenantID", tenantID),
-			new SqlParameter("@SchoolID", schoolID),
-			new SqlParameter("@Query", Query),
-			new SqlParameter("@PageNumber", pageNumber),
-			new SqlParameter("@PageSize", pageSize)
+			new SqlParameter("@TenantID", request.TenantID),
+			new SqlParameter("@SchoolID", request.SchoolID),
+			new SqlParameter("@Query", request.Query),
+			new SqlParameter("@PageNumber", request.PageNumber),
+			new SqlParameter("@PageSize", request.PageSize)
 				};
-
 				using (SqlDataReader dataReader = DataAccess.ExecuteReader(
 					CommandType.StoredProcedure,
 					"MandirSelectByQueryPaging",
 					parameters))
 				{
 					List<Mandir> MandirList = new List<Mandir>();
-
 					while (dataReader.Read())
 					{
 						MandirList.Add(MakeMandir(dataReader));
 					}
-
 					return Ok(new { MandirList });
 				}
 			}, this);
 		}
-
 		/// <summary>
 		/// Creates a new instance of the Mandir class and populates it with data from the specified SqlDataReader.
 		/// </summary>

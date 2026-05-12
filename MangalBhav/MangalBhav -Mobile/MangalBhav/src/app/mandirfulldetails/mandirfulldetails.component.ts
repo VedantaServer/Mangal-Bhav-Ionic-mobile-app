@@ -58,6 +58,8 @@ export class MandirfulldetailsComponent implements OnInit {
   amt: string = '';
   isProcessingPayment: boolean = false;
   userDetails: any;
+  MandirTransactionList: any = [];
+  showStampPopup = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -80,6 +82,8 @@ export class MandirfulldetailsComponent implements OnInit {
 
     this.mandirID = this.route.snapshot.paramMap.get('id');
     if (this.mandirID) this.loadMandir();
+
+    this.loadTransaction();
 
     this.MandirTransaction.MandirID = Number(this.mandirID);
 
@@ -152,6 +156,17 @@ export class MandirfulldetailsComponent implements OnInit {
       })
 
 
+  }
+
+
+  loadTransaction() {
+    this.apinu.postUrlData(
+      `MandirTransactionsSelectByQuery?Query= MandirID = '${this.mandirID}' order by dateAdded desc`,
+      null
+    ).subscribe((res: any) => {
+      this.MandirTransactionList = res.MandirTransactionList;
+      console.log(this.MandirTransactionList)
+    })
   }
 
   loadMandir() {
@@ -329,7 +344,8 @@ export class MandirfulldetailsComponent implements OnInit {
                         this.isDonating = false;
                       });
 
-                      alert('Payment Success');
+                      // alert('Payment Success');
+                      this.showToast('Payment Success', 'success');
                       this.submitDonation();
                     });
                 }

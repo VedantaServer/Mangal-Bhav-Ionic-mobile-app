@@ -6,7 +6,7 @@ import { FcmService } from '../../providers/fcm/fcm';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, IonInput, NavController, Platform } from '@ionic/angular';
+import { IonicModule, IonInput, NavController, Platform, ToastController } from '@ionic/angular';
 import { Network } from '@capacitor/network';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { Geolocation } from '@capacitor/geolocation';
@@ -16,6 +16,7 @@ import { AlertController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
+import { Browser } from '@capacitor/browser';
 
 
 @Component({
@@ -347,11 +348,14 @@ export class Tab3Page {
   enrichedCategories: any[] = [];  // ← this drives the HTML
 
   serviceBookingCountMap: { [key: string]: number } = {};
+  copied!: boolean;
+  selectedPlatform!: any;
+  showShareModal: boolean = false;
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
-    private fcm: FcmService,
+    private fcm: FcmService, public toastController: ToastController,
     private plt: Platform,
     private http: HttpClient,
     private alertCtrl: AlertController
@@ -382,6 +386,13 @@ export class Tab3Page {
 
     // console.log("Current Language:", this.Language);
 
+  }
+
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
   }
 
 
@@ -603,7 +614,7 @@ export class Tab3Page {
 
   getLoginOtp() {
     if (!this.loginUsername || this.loginUsername.toString().length !== 10) {
-      alert('Please enter a valid 10-digit mobile number');
+      this.showToast('Please enter a valid 10-digit mobile number' , 'danger');
       return;
     }
 
@@ -611,13 +622,13 @@ export class Tab3Page {
       .subscribe((res: any) => {
         console.log(res);
         if (res.UserList.length === 0) {
-          alert('Please register..');
+          this.showToast('Please register..','success');
           return;
         } else {
           // Generate OTP
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           this.loginOtpSent = true;
-          alert(this.loginGeneratedOtp)
+         // alert(this.loginGeneratedOtp)
           // Send via WhatsApp
           // const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.loginUsername}&type=template&templateid=813743&placeholders=${this.loginGeneratedOtp}`;
 
@@ -1106,6 +1117,99 @@ export class Tab3Page {
     this.isCategoryDropdownOpen = false;
     // same as before — scroll to that section
     this.explorePooja(cat.CategoryName);
+  }
+
+    // ✅ Replace these with your real store links
+  androidLink = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
+  iosLink = 'https://apps.apple.com/app/mangalbhav/id000000000';
+
+  openShare() {
+    this.selectedPlatform = null;
+    this.showShareModal = true;
+    this.copied = false;
+  }
+
+  closeShare() {
+    this.showShareModal = false;
+    this.selectedPlatform = null;
+    this.copied = false;
+  }
+
+  selectPlatform(platform: 'android' | 'ios') {
+    this.selectedPlatform = platform;
+    this.copied = false;
+  }
+
+  getAppLink(): string {
+    return this.selectedPlatform === 'android' ? this.androidLink : this.iosLink;
+  }
+
+  getQrUrl(): string {
+    const link = encodeURIComponent(this.getAppLink());
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${link}&color=E07B00&bgcolor=FFFBF0`;
+  }
+
+  copyLink() {
+    navigator.clipboard.writeText(this.getAppLink()).then(() => {
+      this.copied = true;
+      setTimeout(() => this.copied = false, 2500);
+    });
+  }
+  // ── Share message (beautiful, used by all share channels) ─────────────────
+  private getShareMessage(): string {
+    return (
+      `🙏 *Mangal Bhav* — Book Verified Pandits for Sacred Rituals\n\n` +
+      `✨ Find trusted Pandits for Puja, Havan, Vivah & more\n` +
+      `📿 Authentic Vedic rituals at your doorstep\n` +
+      `⭐ Verified, experienced & multilingual Pandits\n\n` +
+      `📱 Download now:\n` +
+      `🤖 Android: https://play.google.com/store/apps/details?id=com.mangalbhav.app\n` +
+      `🍎 iPhone: https://apps.apple.com/app/mangalbhav/id000000000\n\n` +
+      `✦ ॐ Mangal Bhav ✦`
+    );
+  }
+
+  // ── WhatsApp share ────────────────────────────────────────────────────────
+  shareOnWhatsApp() {
+    const message = encodeURIComponent(this.getShareMessage());
+    const url = `https://wa.me/?text=${message}`;
+    window.open(url, '_blank');
+  }
+
+  // ── Native share (mobile share sheet) ────────────────────────────────────
+  async shareNative() {
+    const shareData = {
+      title: '🙏 Mangal Bhav — Book Verified Pandits',
+      text: this.getShareMessage(),
+      url: 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User cancelled — do nothing
+      }
+    } else {
+      // Fallback: copy to clipboard if Web Share API not supported
+      try {
+        await navigator.clipboard.writeText(
+          `${shareData.text}\n\n${shareData.url}`
+        );
+        this.copied = true;
+        setTimeout(() => (this.copied = false), 2500);
+      } catch {
+        console.warn('Clipboard write failed');
+      }
+    }
+  }
+
+
+
+  async openWhatsApp() {
+    await Browser.open({
+      url: 'https://wa.me/918796917944?text=' + encodeURIComponent('Need help')
+    });
   }
 
 }

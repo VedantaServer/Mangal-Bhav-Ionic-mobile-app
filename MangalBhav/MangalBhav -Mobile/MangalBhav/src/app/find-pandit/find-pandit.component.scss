@@ -2391,3 +2391,88 @@ select {
   color: var(--ion-color-medium);
   margin-top: 2px;
 }
+
+// ── Location State Banners ──────────────────────────────────────
+.location-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  margin: 10px auto 14px;
+  width: fit-content;
+  max-width: 90%;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+
+  &.fetching {
+    background: #fff8e1;
+    color: #92680a;
+    border: 1px solid #f0c040;
+  }
+
+  &.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+  }
+
+  &.warning {
+    background: #fdecea;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+
+    strong {
+      margin-left: 4px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  &.muted {
+    background: #f5f5f5;
+    color: #888;
+    border: 1px solid #ddd;
+  }
+}
+
+// ── Pandit Loading Spinner ──────────────────────────────────────
+.pandit-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 12px;
+
+  ion-spinner {
+    width: 36px;
+    height: 36px;
+    color: var(--ion-color-primary, #b8860b);
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+    font-style: italic;
+  }
+}
+
+// ── Pandit Empty State ──────────────────────────────────────────
+.pandit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 10px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: #aaa;
+  }
+}

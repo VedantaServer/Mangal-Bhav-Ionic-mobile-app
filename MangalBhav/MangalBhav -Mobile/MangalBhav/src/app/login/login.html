@@ -4,26 +4,12 @@
   </ion-toolbar>
 </ion-header> -->
 
-<ion-content fullscreen>
-  <div>
-    <nav>
-      <div class="nav-logo" (click)="backToMain()">
-        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
-        <div class="logo-text-block">
-          <div class="nav-logo-text">Mangal<span class="logo-dot">.</span>Bhav</div>
-          <div class="nav-logo-sub">✦Peace·Prosperity·Protection✦</div>
-        </div>
-      </div>
 
-      <div class="nav-actions">
-        <!-- <button class="nav-icon-btn" (click)="toggleLanguage()" title="Change Language">🌐</button> -->
-        <!-- <button class="nav-icon-btn login" (click)="openLoginSection()" title="Login">👤</button> -->
-        <button class="header-logout-btn" (click)="openPage('open-find-pandit')">
-          <ion-icon name="qr-code-outline"></ion-icon>
-        </button>
-      </div>
-    </nav>
-  </div>
+<app-tabscommonheader></app-tabscommonheader>
+
+
+<ion-content fullscreen>
+
 
   <div *ngIf="showMainSection" class="main-wrapper">
 
@@ -921,7 +907,7 @@
 
 
         <div class="field-input-wrap" style="margin-bottom: 4vh;">
-          <ion-select placeholder="Select Language" interface="action-sheet" [(ngModel)]="UserLanguage"
+          <ion-select placeholder="Select Language" interface="popover" [(ngModel)]="UserLanguage"
             name="Languages">
             <ion-select-option value="Hindi">Hindi</ion-select-option>
             <ion-select-option value="English">English</ion-select-option>
@@ -1022,7 +1008,7 @@
 
 
   <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
-   <img src="/assets/yagna2.png" class="mb-center-fab-img"  />
+    <img src="/assets/yagna2.png" class="mb-center-fab-img" />
   </ion-tab-button>
 
   <ion-tab-button class="mb-tab-btn" (click)="action5()">
@@ -1042,11 +1028,11 @@
       <circle cx="14" cy="28" r="1.5" fill="#c7521e" />
       <circle cx="14" cy="28" r="0.8" fill="#ffa06c" />
     </svg>
-    <ion-label >Pandit Ji</ion-label>
+    <ion-label>Pandit Ji</ion-label>
   </ion-tab-button>
 
   <ion-tab-button class="mb-tab-btn" (click)="openLoginSection()">
-     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 36 36">
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 36 36">
       <path fill="#662113" d="M2 34h32l-1-1H3z" />
       <path fill="#662113" d="M6 35V28Q6 20 10 18H26Q30 20 30 28V35z" />
       <path fill="#c7521e" d="M7 35V28Q7.5 21 11 19.5H25Q28.5 21 29 28V35z" />

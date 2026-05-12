@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="inner-header">
       <button class="inner-back-btn" (click)="routerCtrl.back()">
@@ -13,9 +13,9 @@
       </div>
     </div>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-
+<app-tabscommonheader></app-tabscommonheader>
 <ion-content>
   <div class="page-wrapper">
 
@@ -85,7 +85,7 @@
             [src]="getProfileImage(item.profile?.UserID)"
             class="pr-photo" (error)="onImgError($event)" />
           <span class="pr-dot"
-            [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'">
+            [class.verified]="item.profile?.VerificationStatus === 'APPROVED'">
           </span>
         </div>
 
@@ -102,8 +102,8 @@
             </span>
           </p>
           <span class="pr-badge"
-            [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'"
-            [class.pending]="item.profile?.VerificationStatus !== 'VERIFIED'">
+            [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"
+            [class.pending]="item.profile?.VerificationStatus !== 'APPROVED'">
             {{ item.profile?.VerificationStatus === 'APPROVED' ? '✓ Verified' : '⏳ Pending' }}
           </span>
         </div>
@@ -131,6 +131,8 @@
   </div>
 </ion-content>
 
+
+<app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>
 
 <!-- ═══════════════════════════════════════════════════════════════
      PANDIT DETAIL MODAL

@@ -9,6 +9,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './open-community-page.component.html',
   styleUrls: ['./open-community-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,LoggedoutbottomtabsComponent,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,TabscommonheaderComponent,LoggedoutbottomtabsComponent,PanditjibottomtabsComponent]
 })
 export class OpenCommunityPageComponent implements OnInit {
   userDetails: any;
@@ -127,7 +128,7 @@ async getCurrentLocation() {
       console.log('Lat:', this.Mandir.Latitude);
       console.log('Lng:', this.Mandir.Longitude);
     } else {
-      alert('Location permission denied');
+      this.showToast('Location permission denied','danger');
     }
 
   } catch (error) {

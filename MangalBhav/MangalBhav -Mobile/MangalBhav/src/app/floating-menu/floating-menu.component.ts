@@ -122,52 +122,52 @@ export class FloatingMenuComponent implements OnInit {
     });
   }
   // ── Share message (beautiful, used by all share channels) ─────────────────
-private getShareMessage(): string {
-  return (
-    `🙏 *Mangal Bhav* — Book Verified Pandits for Sacred Rituals\n\n` +
-    `✨ Find trusted Pandits for Puja, Havan, Vivah & more\n` +
-    `📿 Authentic Vedic rituals at your doorstep\n` +
-    `⭐ Verified, experienced & multilingual Pandits\n\n` +
-    `📱 Download now:\n` +
-    `🤖 Android: https://play.google.com/store/apps/details?id=com.mangalbhav.app\n` +
-    `🍎 iPhone: https://apps.apple.com/app/mangalbhav/id000000000\n\n` +
-    `✦ ॐ Mangal Bhav ✦`
-  );
-}
+  private getShareMessage(): string {
+    return (
+      `🙏 *Mangal Bhav* — Book Verified Pandits for Sacred Rituals\n\n` +
+      `✨ Find trusted Pandits for Puja, Havan, Vivah & more\n` +
+      `📿 Authentic Vedic rituals at your doorstep\n` +
+      `⭐ Verified, experienced & multilingual Pandits\n\n` +
+      `📱 Download now:\n` +
+      `🤖 Android: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n` +
+      `🍎 iPhone: https://apps.apple.com/app/mangalbhav/id000000000\n\n` +
+      `✦ ॐ Mangal Bhav ✦`
+    );
+  }
 
-// ── WhatsApp share ────────────────────────────────────────────────────────
-shareOnWhatsApp() {
-  const message = encodeURIComponent(this.getShareMessage());
-  const url = `https://wa.me/?text=${message}`;
-  window.open(url, '_blank');
-}
+  // ── WhatsApp share ────────────────────────────────────────────────────────
+  shareOnWhatsApp() {
+    const message = encodeURIComponent(this.getShareMessage());
+    const url = `https://wa.me/?text=${message}`;
+    window.open(url, '_blank');
+  }
 
-// ── Native share (mobile share sheet) ────────────────────────────────────
-async shareNative() {
-  const shareData = {
-    title: '🙏 Mangal Bhav — Book Verified Pandits',
-    text: this.getShareMessage(),
-    url: 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'
-  };
+  // ── Native share (mobile share sheet) ────────────────────────────────────
+  async shareNative() {
+    const shareData = {
+      title: '🙏 Mangal Bhav — Book Verified Pandits',
+      text: this.getShareMessage(),
+      url: 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'
+    };
 
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-    } catch (err) {
-      // User cancelled — do nothing
-    }
-  } else {
-    // Fallback: copy to clipboard if Web Share API not supported
-    try {
-      await navigator.clipboard.writeText(
-        `${shareData.text}\n\n${shareData.url}`
-      );
-      this.copied = true;
-      setTimeout(() => (this.copied = false), 2500);
-    } catch {
-      console.warn('Clipboard write failed');
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User cancelled — do nothing
+      }
+    } else {
+      // Fallback: copy to clipboard if Web Share API not supported
+      try {
+        await navigator.clipboard.writeText(
+          `${shareData.text}\n\n${shareData.url}`
+        );
+        this.copied = true;
+        setTimeout(() => (this.copied = false), 2500);
+      } catch {
+        console.warn('Clipboard write failed');
+      }
     }
   }
-}
 
 }

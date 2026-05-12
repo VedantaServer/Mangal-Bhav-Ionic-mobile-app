@@ -17,6 +17,7 @@ import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
 import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 
 
@@ -26,7 +27,7 @@ import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbo
   templateUrl: 'login.html',
   styleUrls: ['login.scss'],
   //standalone: true,  // 👈 makes it standalone
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent]
 })
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;
@@ -173,15 +174,15 @@ export class LoginPage {
 
   async ngOnInit() {
 
-    if(await this.storage.get('adminloggedin') == 'true'){
-        this.routerCtrl.navigateRoot('/admindashboard');
+    if (await this.storage.get('adminloggedin') == 'true') {
+      this.routerCtrl.navigateRoot('/admindashboard');
     }
 
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
     this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
 
-    
+
 
 
 
@@ -407,7 +408,7 @@ export class LoginPage {
   ];
 
 
-    async action5() {
+  async action5() {
     await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
 
     this.routerCtrl.navigateForward(`/open-find-pandit`);
@@ -415,7 +416,7 @@ export class LoginPage {
 
   async getLoginOtp() {
     if (!this.loginUsername || this.loginUsername.toString().length !== 10) {
-      alert('Please enter a valid 10-digit mobile number');
+      this.showToastMessage('Please enter a valid 10-digit mobile number', 'danger');
       return;
     }
 
@@ -429,7 +430,7 @@ export class LoginPage {
         console.log(res);
 
         if (res.UserList.length === 0) {
-          alert('Please register..');
+          this.showToastMessage('Please register..', 'success');
           this.openRegisterSection();
           this.mobileNumber = this.loginUsername;
           this.goToOtp();
@@ -491,12 +492,12 @@ export class LoginPage {
   // Step 2 — verify OTP then call VedantaLogin
   verifyLoginOtp() {
     if (!this.loginOtp || this.loginOtp.toString().length < 4) {
-      alert('Please enter the OTP');
+      this.showToastMessage('Please enter the OTP', 'success');
       return;
     }
 
     if (this.loginOtp.toString() !== this.loginGeneratedOtp.toString()) {
-      alert('Invalid OTP. Please try again.');
+      this.showToastMessage('Invalid OTP. Please try again.', 'danger');
       return;
     }
 
@@ -689,14 +690,14 @@ export class LoginPage {
         console.log(res.UserList);
 
         if (res.UserList.length > 0) {
-          alert('User Already Exists.Please login or use different mobile no.');
+          this.showToastMessage('User Already Exists.Please login or use different mobile no.', 'danger');
 
           this.showRegisterSection = false;
           this.showLoginSection = true;
 
           return;
         } else {
-          alert('Otp sent');
+          this.showToastMessage('Otp sent', 'success');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
 
@@ -720,7 +721,7 @@ export class LoginPage {
 
     // alert('clicked')
     if (!this.otp) {
-      alert('Please enter valid otp');
+      this.showToastMessage('Please enter valid otp', 'danger');
       return;
     }
     //console.log(this.otp)
@@ -731,7 +732,7 @@ export class LoginPage {
       //  alert('correct');
       this.registerStep = 'role';
     } else {
-      alert('Incorrect Otp.')
+      this.showToastMessage('Incorrect Otp.', 'danger')
     }
 
   }
@@ -739,48 +740,50 @@ export class LoginPage {
 
   async selectRole(role: string) {
 
+    this.showConfirmAlert(role);
+
     // 👉 If role is pandit → ask for UPI
-    if (role === 'PANDIT') {
+    // if (role === 'PANDIT') {
 
-      const upiAlert = await this.alertCtrl.create({
-        header: 'Give UPI for dakshina',
-        inputs: [
-          {
-            name: 'upi',
-            type: 'text',
-            placeholder: 'Give UPI for dakshina (e.g. name@upi)'
-          }
-        ],
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel'
-          },
-          {
-            text: 'Continue',
-            handler: (data) => {
-              if (!data.upi) {
-                this.showToastMessage('UPI ID is required', 'danger');
-                return false;
-              }
-
-
-              this.upiId = data.upi;
+    //   const upiAlert = await this.alertCtrl.create({
+    //     header: 'Give UPI for dakshina',
+    //     inputs: [
+    //       {
+    //         name: 'upi',
+    //         type: 'text',
+    //         placeholder: 'Give UPI for dakshina (e.g. name@upi)'
+    //       }
+    //     ],
+    //     buttons: [
+    //       {
+    //         text: 'Cancel',
+    //         role: 'cancel'
+    //       },
+    //       {
+    //         text: 'Continue',
+    //         handler: (data) => {
+    //           if (!data.upi) {
+    //             this.showToastMessage('UPI ID is required', 'danger');
+    //             return false;
+    //           }
 
 
-              this.showConfirmAlert(role);
-              return true;
-            }
-          }
-        ]
-      });
+    //           this.upiId = data.upi;
 
-      await upiAlert.present();
 
-    } else {
-      // 👉 Normal flow
-      this.showConfirmAlert(role);
-    }
+    //           this.showConfirmAlert(role);
+    //           return true;
+    //         }
+    //       }
+    //     ]
+    //   });
+
+    //   await upiAlert.present();
+
+    // } else {
+
+    //   this.showConfirmAlert(role);
+    // }
   }
 
   async showToastMessage(message: string, color: string = 'primary') {
@@ -852,7 +855,7 @@ export class LoginPage {
           AccountNumber: "",
           IFSCCode: "",
           BranchName: "",
-          UPIId: String(this.upiId),
+          UPIId: String(this.upiId || ''),
           AccountType: "",
           IsActive: Boolean(1),
           DateAdded: new Date(),
@@ -867,7 +870,7 @@ export class LoginPage {
           })
 
 
-        alert('User Created Successfully!');
+        this.showToastMessage('User Created Successfully!', 'success');
 
 
         const body = {

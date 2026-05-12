@@ -143,7 +143,133 @@
     <div class="mfd-section-label">Details</div>
     <div class="mfd-details-row">
       <div class="mfd-detail-box">
-        <div class="mfd-detail-icon">{{ mandir.IsVerified ? '✅' : '⏳' }}</div>
+        <!-- Stamp — make it clickable -->
+        <div class="mfd-detail-icon" (click)="mandir.IsVerified && showStampPopup = true"
+          [style.cursor]="mandir.IsVerified ? 'pointer' : 'default'">
+          <ng-container *ngIf="mandir.IsVerified; else pendingIcon">
+            <svg width="52" height="52" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+                <path id="botArc" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
+              </defs>
+
+              <!-- outer ring -->
+              <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
+              <!-- dashed ring -->
+              <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
+              <!-- inner ring -->
+              <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
+
+              <!-- 8 tick marks -->
+              <g fill="#b85c00">
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(0   80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(45  80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(90  80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(135 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(180 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(225 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(270 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(315 80 80)" />
+              </g>
+
+              <!-- corner stars -->
+              <text x="32" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="128" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="32" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="128" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+
+              <!-- top curved: MANGAL BHAV -->
+              <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                <textPath href="#topArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+              </text>
+
+              <!-- bottom curved: MANGAL BHAV -->
+              <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                <textPath href="#botArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+              </text>
+
+              <!-- OM -->
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
+                fill="#b85c00">ॐ</text>
+              <!-- VERIFIED -->
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
+                fill="#b85c00" letter-spacing="3">VERIFIED</text>
+              <!-- divider -->
+              <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
+              <!-- SACRED PLACE -->
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
+                letter-spacing="2">SACRED PLACE</text>
+            </svg>
+          </ng-container>
+          <ng-template #pendingIcon>⏳</ng-template>
+        </div>
+
+        <!-- ══ STAMP POPUP ══ -->
+        <div class="stamp-backdrop" *ngIf="showStampPopup" (click)="showStampPopup = false">
+          <div class="stamp-popup" (click)="$event.stopPropagation()">
+
+            <button class="stamp-popup-close" (click)="showStampPopup = false">✕</button>
+
+            <svg width="190" height="190" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+                <path id="botArc" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
+              </defs>
+
+              <!-- outer ring -->
+              <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
+              <!-- dashed ring -->
+              <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
+              <!-- inner ring -->
+              <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
+
+              <!-- 8 tick marks -->
+              <g fill="#b85c00">
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(0   80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(45  80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(90  80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(135 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(180 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(225 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(270 80 80)" />
+                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(315 80 80)" />
+              </g>
+
+              <!-- corner stars -->
+              <text x="32" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="128" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="32" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+              <text x="128" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
+
+              <!-- top curved: MANGAL BHAV -->
+              <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                <textPath href="#topArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+              </text>
+
+              <!-- bottom curved: MANGAL BHAV -->
+              <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                <textPath href="#botArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+              </text>
+
+              <!-- OM -->
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
+                fill="#b85c00">ॐ</text>
+              <!-- VERIFIED -->
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
+                fill="#b85c00" letter-spacing="3">VERIFIED</text>
+              <!-- divider -->
+              <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
+              <!-- SACRED PLACE -->
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
+                letter-spacing="2">SACRED PLACE</text>
+            </svg>
+
+            <div class="stamp-popup-title">{{ mandir.MandirName }}</div>
+            <div class="stamp-popup-sub">This mandir has been officially verified by Mangal Bhav</div>
+            <div class="stamp-popup-badge">✦ Trusted & Verified ✦</div>
+
+          </div>
+        </div>
         <div class="mfd-detail-label">Status</div>
         <div class="mfd-detail-value" [class.green]="mandir.IsVerified" [class.orange]="!mandir.IsVerified">
           {{ mandir.IsVerified ? 'Verified' : 'Pending' }}
@@ -160,7 +286,40 @@
         <div class="mfd-detail-value">{{ mandir.DateAdded | date:'dd MMM yyyy' }}</div>
       </div>
     </div>
+    <!-- ══════════════════════════════════
+     DONATIONS RECEIVED
+══════════════════════════════════ -->
+    <ng-container *ngIf="MandirTransactionList?.length > 0">
+      <div class="mfd-section-label">🪔 Donations Received</div>
 
+      <div class="mfd-donate-count-badge">
+        {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this
+        mandir
+      </div>
+
+      <div class="mfd-txn-card" *ngFor="let txn of MandirTransactionList">
+        <div class="mfd-txn-left">
+          <div class="mfd-txn-avatar">{{ txn.DonorName?.charAt(0)?.toUpperCase() || '🙏' }}</div>
+        </div>
+        <div class="mfd-txn-body">
+          <div class="mfd-txn-name">{{ txn.DonorName || 'Anonymous' }}</div>
+          <div class="mfd-txn-service">
+            {{ txn.ServiceName }} &nbsp;·&nbsp;
+            📱 ******{{ txn.Phone | slice:-4 }}
+          </div>
+          <div class="mfd-txn-date">{{ txn.DateAdded | date:'dd MMM yyyy, h:mm a' }}</div>
+        </div>
+        <div class="mfd-txn-right">
+          <div class="mfd-txn-amount">₹{{ txn.Amount }}</div>
+          <div class="mfd-txn-status" [class.mfd-txn-success]="txn.PaymentStatus === 'Success'"
+            [class.mfd-txn-pending]="txn.PaymentStatus !== 'Success'">
+            {{ txn.PaymentStatus === 'Success' ? '✔ Paid' : '⏳ ' + txn.PaymentStatus }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+   
     <!-- Divider -->
     <div class="mfd-divider">✦ ॐ ✦ ॐ ✦</div>
 
@@ -175,76 +334,72 @@
   ══════════════════════════════════ -->
   <div class="mfd-backdrop" [class.active]="showDonateSheet" (click)="closeDonate()"></div>
 
- <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
+  <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
 
-  <div class="mfd-sheet-header">
-    <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
-    <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
-    <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
-  </div>
+    <div class="mfd-sheet-header">
+      <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
+      <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
+      <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
+    </div>
 
-  <div class="mfd-sheet-body">
+    <div class="mfd-sheet-body">
 
-    <!-- Preset amounts -->
-    <div class="mfd-donate-label">Select Amount</div>
-    <div class="mfd-preset-grid">
-      <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts"
-        [class.selected]="donateAmount === (amt + '')"
-        (click)="selectPreset(amt)">
-        ₹{{ amt }}
+      <!-- Preset amounts -->
+      <div class="mfd-donate-label">Select Amount</div>
+      <div class="mfd-preset-grid">
+        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
+          (click)="selectPreset(amt)">
+          ₹{{ amt }}
+        </button>
+      </div>
+
+      <!-- Custom amount + Name + Mobile in compact 2-col row -->
+      <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div>
+      <div class="mfd-amount-input-wrap">
+        <span class="mfd-rupee">₹</span>
+        <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount" placeholder="e.g. 750"
+          (input)="donateAmount = ''" />
+      </div>
+
+      <div class="mfd-two-col" style="margin-top: 12px;">
+        <div>
+          <div class="mfd-donate-label">Your Name</div>
+          <input class="mfd-text-input" type="text" [(ngModel)]="donateName" placeholder="Name" />
+        </div>
+        <div>
+          <div class="mfd-donate-label">Mobile No.</div>
+          <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile" placeholder="10-digit" maxlength="10" />
+        </div>
+      </div>
+
+      <!-- Summary with platform fee -->
+      <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
+        <div class="mfd-summary-row">
+          <span>🙏 Donation Amount : </span>
+          <strong>₹{{ finalAmount }}</strong>
+        </div>
+        <div class="mfd-summary-divider"></div>
+        <div class="mfd-summary-row platform">
+          <span>⚡ Platform Charges : </span>
+          <span class="platform-fee">₹5</span>
+        </div>
+        <div class="mfd-summary-divider"></div>
+        <div class="mfd-summary-row total">
+          <span>💰 Total Donation : </span>
+          <strong class="total-amt">₹{{ finalAmount + 5 }}</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mfd-sheet-footer">
+      <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
+      <button class="mfd-donate-submit-btn" (click)="initiatePayment()" [disabled]="isDonating || finalAmount < 1">
+        <span *ngIf="!isDonating">🪔 Donate ₹{{ finalAmount > 0 ? finalAmount + 5 : 0 }}</span>
+        <span *ngIf="isDonating">Processing…</span>
       </button>
     </div>
 
-    <!-- Custom amount + Name + Mobile in compact 2-col row -->
-    <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div>
-    <div class="mfd-amount-input-wrap">
-      <span class="mfd-rupee">₹</span>
-      <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount"
-        placeholder="e.g. 750" (input)="donateAmount = ''" />
-    </div>
-
-    <div class="mfd-two-col" style="margin-top: 12px;">
-      <div>
-        <div class="mfd-donate-label">Your Name</div>
-        <input class="mfd-text-input" type="text" [(ngModel)]="donateName"
-          placeholder="Name" />
-      </div>
-      <div>
-        <div class="mfd-donate-label">Mobile No.</div>
-        <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile"
-          placeholder="10-digit" maxlength="10" />
-      </div>
-    </div>
-
-    <!-- Summary with platform fee -->
-    <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
-      <div class="mfd-summary-row">
-        <span>🙏 Donation Amount : </span>
-        <strong>₹{{ finalAmount }}</strong>
-      </div>
-      <div class="mfd-summary-divider"></div>
-      <div class="mfd-summary-row platform">
-        <span>⚡ Platform Charges : </span>
-        <span class="platform-fee">₹5</span>
-      </div>
-      <div class="mfd-summary-divider"></div>
-      <div class="mfd-summary-row total">
-        <span>💰 Total Donation : </span>
-        <strong class="total-amt">₹{{ finalAmount + 5 }}</strong>
-      </div>
-    </div>
-
   </div>
-
-  <div class="mfd-sheet-footer">
-    <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
-    <button class="mfd-donate-submit-btn" (click)="initiatePayment()"
-      [disabled]="isDonating || finalAmount < 1">
-      <span *ngIf="!isDonating">🪔 Donate ₹{{ finalAmount > 0 ? finalAmount + 5 : 0 }}</span>
-      <span *ngIf="isDonating">Processing…</span>
-    </button>
-  </div>
-
-</div>
 
 </ion-content>

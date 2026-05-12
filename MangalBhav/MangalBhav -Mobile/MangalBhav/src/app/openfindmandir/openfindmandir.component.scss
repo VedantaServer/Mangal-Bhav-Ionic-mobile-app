@@ -1770,3 +1770,61 @@ select {
     transform: translateX(3px);
   }
 }
+
+.mandir-loading {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px 20px;
+  text-align: center;
+
+  ion-spinner {
+    transform: scale(1.4);
+    --color: #e67e22; // saffron tone
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    letter-spacing: 0.2px;
+  }
+}
+
+.mandir-location-notice {
+  text-align: center;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin: 8px auto 12px;
+  display: inline-block;
+  width: fit-content;
+
+  &.fetching {
+    background: #fff8e1;
+    color: #b8860b;
+    border: 1px solid #f0c040;
+  }
+
+  &.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+  }
+
+  &.warning {
+    background: #fdecea;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+  }
+
+  &.muted {
+    background: #f5f5f5;
+    color: #888;
+    border: 1px solid #ddd;
+  }
+}

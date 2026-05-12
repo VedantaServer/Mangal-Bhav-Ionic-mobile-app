@@ -7,12 +7,14 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
 
 import { Tab1PageRoutingModule } from './tab1-routing.module';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
+    TabscommonheaderComponent,
     QRCodeComponent,
     ExploreContainerComponentModule,
     Tab1PageRoutingModule

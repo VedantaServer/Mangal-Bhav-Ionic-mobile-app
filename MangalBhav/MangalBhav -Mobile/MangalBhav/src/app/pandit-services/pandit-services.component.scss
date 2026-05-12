@@ -1241,3 +1241,42 @@ ion-toggle {
 
   ion-icon { font-size: 22px; color: #ffffff; }
 }
+
+// ── GeoNames result items ──
+.geo-result-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #f5d76e;
+    background: #fffdf0;
+  }
+
+  &.selected-place {
+    border-color: #e6a817;
+    background: #fffbec;
+  }
+}
+
+.geo-result-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.geo-result-sub {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.geo-result-coords {
+  font-size: 11px;
+  color: #e6a817;
+  margin-top: 4px;
+  font-weight: 500;
+}

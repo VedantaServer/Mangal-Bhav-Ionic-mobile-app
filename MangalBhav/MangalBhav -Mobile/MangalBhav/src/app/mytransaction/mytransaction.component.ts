@@ -86,6 +86,39 @@ export class MytransactionComponent implements OnInit {
     this.loadTransactions();
   }
 
+
+  shareOnWhatsapp(txn: any) {
+  let message = '';
+
+  if (txn._type === 'donation') {
+    const mandir = txn._mandir;
+    message =
+      `🛕 *Mandir Donation - Mangal Bhav*\n\n` +
+      `🕌 Mandir   : ${mandir?.MandirName || 'N/A'}\n` +
+      `📍 Location : ${mandir?.City || ''}${mandir?.State ? ', ' + mandir.State : ''}\n` +
+      `💰 Amount   : ₹${txn.Amount || txn.TransactionAmount}\n` +
+      `🗓️ Date      : ${this.formatDate(txn.DateAdded)}\n` +
+      `🔖 Txn ID   : #${txn.TransactionID || txn.MandirTransactionID}\n\n` +
+      `✦ हर हर महादेव · जय माता दी ✦\n` +
+      `_Powered by Mangal Bhav App_`;
+
+  } else if (txn._type === 'booking') {
+    const booking = txn._booking;
+    message =
+      `🙏 *Pandit Booking - Mangal Bhav*\n\n` +
+      `🔱 Pooja    : ${booking?.PoojaName || booking?.ServiceName || 'N/A'}\n` +
+      `👤 Pandit   : ${booking?.PanditName || booking?.FullName || 'N/A'}\n` +
+      `💰 Amount   : ₹${txn.Amount || txn.TransactionAmount}\n` +
+      `🗓️ Date      : ${this.formatDate(txn.DateAdded)}\n` +
+      `🔖 Txn ID   : #${txn.TransactionID || txn.MandirTransactionID}\n\n` +
+      `✦ जय श्री राम · शुभ पूजा ✦\n` +
+      `_Powered by Mangal Bhav App_`;
+  }
+
+  const encoded = encodeURIComponent(message);
+  window.open(`https://wa.me/?text=${encoded}`, '_blank');
+}
+
   loadTransactions() {
     this.isLoading = true;
     const phone = this.userDetails?.LoginID;

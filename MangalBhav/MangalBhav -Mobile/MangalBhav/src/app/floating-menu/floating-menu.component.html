@@ -2,7 +2,7 @@
   <div class="fab-backdrop" *ngIf="fabOpen" (click)="closeFab()"></div>
 
   <!-- Pill card container -->
-  <div class="fab-menu" [class.open]="fabOpen">
+  <div class="fab-menu" [class.open]="fabOpen" (click)="$event.stopPropagation()">
 
     <!-- NEW: Card header -->
     <div class="fab-card-header">
@@ -44,17 +44,17 @@
       <span>Language</span>
     </button>
 
-    <button class="fab-pill" (click)="openShare(); closeFab()">
+    <!-- <button class="fab-pill" (click)="openShare(); closeFab()">
       <div class="fab-pill-icon"><ion-icon name="share-social-outline"></ion-icon></div>
       <span>Share</span>
-    </button>
+    </button> -->
   </div>
 
   <!-- wrap your button like this -->
   <div class="fab-ripple-wrap">
     <div class="ripple"></div>
     <div class="ripple2"></div>
-    <button class="fab-main-btn" (click)="toggleFab()">
+    <button class="fab-main-btn" (click)="toggleFab(); $event.stopPropagation()">
       <img src="../../assets/swastik.png" alt="">
     </button>
   </div>

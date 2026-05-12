@@ -10,13 +10,15 @@ import { forkJoin, from, map, mergeMap, of, toArray } from 'rxjs';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
+import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 @Component({
   selector: 'app-open-find-pandit',
   templateUrl: './open-find-pandit.component.html',
   styleUrls: ['./open-find-pandit.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule]
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,TabscommonheaderComponent, LoggedoutbottomtabsComponent]
 })
 export class OpenFindPanditComponent implements OnInit {
 
@@ -49,6 +51,8 @@ export class OpenFindPanditComponent implements OnInit {
   // ── Slideshow ─────────────────────────────────────────────────────────────
   currentImageIndex: { [key: string]: number } = {};
   imageIntervals: { [key: string]: any } = {};
+  userDetails: any;
+  userLoggedIn: boolean = false;
 
   constructor(
     public routerCtrl: NavController,
@@ -65,6 +69,12 @@ export class OpenFindPanditComponent implements OnInit {
   // INIT: only fetch users + profiles — NO services
   // ─────────────────────────────────────────────────────────────────────────
   async ngOnInit() {
+
+    this.userDetails = await this.storage.get("account");
+    if (this.userDetails?.LoginID) {
+      this.userLoggedIn = true;
+    }
+
     if (localStorage.getItem('openfindPanditThroghtFloating') !== 'openfindPanditThroghtFloating') {
       this.openQrScanner();
     } else {
@@ -311,7 +321,7 @@ export class OpenFindPanditComponent implements OnInit {
       this.currentImageIndex[key] = 0;
       this.imageIntervals[key] = setInterval(() => {
         this.currentImageIndex[key] = (this.currentImageIndex[key] + 1) % 3;
-      }, 3000);
+      }, 3000000);
     }
     return images[this.currentImageIndex[key] || 0];
   }

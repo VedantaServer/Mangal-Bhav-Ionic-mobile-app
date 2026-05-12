@@ -174,7 +174,7 @@
               </div>
               <div class="select-inner">
                 <p class="select-label">{{ t.selectCategory }}</p>
-                <ion-select [placeholder]="t.chooseCategory" interface="action-sheet" [(ngModel)]="selectedCategoryID"
+                <ion-select [placeholder]="t.chooseCategory" interface="popover" [(ngModel)]="selectedCategoryID"
                   (ionChange)="onCategoryChange($event)">
                   <ion-select-option *ngFor="let category of ServiceCategoryList" [value]="category.CategoryID">
                     {{ language === 'Hindi'
@@ -192,7 +192,7 @@
               </div>
               <div class="select-inner">
                 <p class="select-label">{{ t.selectService }}</p>
-                <ion-select [placeholder]="t.chooseService" interface="action-sheet" [multiple]="true"
+                <ion-select [placeholder]="t.chooseService" interface="popover" [multiple]="true"
                   [(ngModel)]="panditServices.ServiceID">
                   <ion-select-option *ngFor="let service of FilteredServiceList" [value]="service.ServiceID">
                     {{ getServiceNameHindiEnglish(service) }}
@@ -235,7 +235,7 @@
                     <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 </div>
-                <ion-select [placeholder]="t.chooseLocation" interface="action-sheet"
+                <ion-select [placeholder]="t.chooseLocation" interface="popover"
                   [(ngModel)]="panditServices.LocationID">
                   <ion-select-option *ngFor="let location of LocationList" [value]="location.LocationID">
                     {{ location.Name }}
@@ -390,5 +390,111 @@
         <img [src]="previewUrl" class="preview-full-img" />
       </div>
     </ion-content>
+  </ng-template>
+</ion-modal>
+
+
+
+<!-- ═══ QUICK ADD LOCATION MODAL (GeoNames) ═══ -->
+<ion-modal [isOpen]="isQuickLocationModalOpen" (didDismiss)="closeQuickAddLocation()" [breakpoints]="[0, 0.85, 1]"
+  [initialBreakpoint]="0.85">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeQuickAddLocation()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="header-title">📍 Add Location</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="modal-wrapper">
+
+        <!-- SEARCH ROW -->
+        <div class="form-section">
+          <div class="form-section-title">🔍 Search a Place</div>
+
+          <div class="input-group" style="display: flex; gap: 8px; align-items: center;">
+            <div class="input-icon"><ion-icon name="search-outline"></ion-icon></div>
+            <ion-input placeholder="Place name or 6-digit pincode..." [(ngModel)]="geonamesQuery"
+              (keyup.enter)="searchGeonames()" style="flex: 1;">
+            </ion-input>
+            <ion-button fill="solid" color="warning" (click)="searchGeonames()" size="default">
+              Search
+            </ion-button>
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="isGeonamesLoading" style="text-align:center; padding: 16px; color: #888;">
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+            <p style="margin-top: 8px; font-size: 13px;">Searching places...</p>
+          </div>
+        </div>
+
+        <!-- RESULTS LIST -->
+        <div class="form-section" *ngIf="geonamesResults.length > 0 && !isGeonamesLoading">
+          <div class="form-section-title">🗺️ Select a Place</div>
+
+          <div *ngFor="let place of geonamesResults" (click)="selectGeoname(place)"
+            [class.selected-place]="selectedGeoname?.geonameId === place.geonameId" class="geo-result-item">
+
+            <div class="geo-result-name">{{ place.toponymName || place.name }}</div>
+            <div class="geo-result-sub">
+              {{ place.adminName2 ? place.adminName2 + ', ' : '' }}
+              {{ place.adminName1 || '' }}
+              {{ place.countryName ? ' — ' + place.countryName : '' }}
+            </div>
+            <div class="geo-result-coords" *ngIf="selectedGeoname?.geonameId === place.geonameId">
+              ✅ Selected · {{ place.lat | number:'1.4-4' }}°N, {{ place.lng | number:'1.4-4' }}°E
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPTY SEARCH RESULT -->
+        <div *ngIf="geonamesResults.length === 0 && !isGeonamesLoading && geonamesQuery && !selectedGeoname"
+          class="empty-state" style="padding: 20px 0;">
+          <div class="empty-icon">🔍</div>
+          <p class="empty-sub">No results found. Try a different spelling.</p>
+        </div>
+
+        <!-- LOCATION NAME (shown after selection) -->
+        <div class="form-section" *ngIf="selectedGeoname">
+          <div class="form-section-title">🏷️ Location Label</div>
+          <p style="font-size: 13px; color: #888; margin-bottom: 8px;">
+            Auto-filled from GeoNames. You can rename it.
+          </p>
+
+          <div class="input-group">
+            <div class="input-icon"><ion-icon name="business-outline"></ion-icon></div>
+            <ion-input placeholder="Location name" [(ngModel)]="quickLocationName">
+            </ion-input>
+          </div>
+
+          <!-- Preview card -->
+          <div
+            style="background: #fffbf0; border: 1px solid #f5d76e; border-radius: 10px; padding: 12px; margin-top: 12px; font-size: 13px; line-height: 1.7;">
+            <div>📍 <strong>{{ quickLocationName }}</strong></div>
+            <div>🏙️ {{ selectedGeoname.adminName2 || selectedGeoname.name }}, {{ selectedGeoname.adminName1 }}</div>
+            <div *ngIf="selectedGeoname.postalCode">📮 {{ selectedGeoname.postalCode }}</div>
+            <div>🌍 {{ selectedGeoname.countryName }}</div>
+            <div>🧭 {{ selectedGeoname.lat }}°N, {{ selectedGeoname.lng }}°E</div>
+          </div>
+        </div>
+
+        <!-- SAVE BUTTON -->
+        <div class="modal-footer" *ngIf="selectedGeoname">
+          <ion-button expand="block" class="save-btn" (click)="saveQuickLocation()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Save Location & Select
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-content>
+
   </ng-template>
 </ion-modal>

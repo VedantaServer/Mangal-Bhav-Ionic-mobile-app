@@ -1,0 +1,112 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="header-inner">
+
+      <!-- Logo — same as web nav -->
+      <div class="nav-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
+        <div class="logo-text-block">
+          <div class="nav-logo-text">{{ t.logoTitle }}</div>
+          <div class="nav-logo-sub">{{ t.logoSub }}</div>
+        </div>
+      </div>
+
+
+      <div style="display: flex;gap: 4px;">
+        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
+            name="logo-whatsapp" style="color: white;"></ion-icon></button>
+
+        <button class="header-logout-btn" (click)="openShare()">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </button>
+      </div>
+
+      <!-- <button class="inner-reload-btn" (click)="ngOnInit()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button> -->
+
+      <!-- <button class="nav-icon-btn" title="Change Language">🌐</button> -->
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+
+
+
+<div class="share-backdrop" *ngIf="showShareModal" (click)="closeShare()"></div>
+
+<div class="share-modal" [class.active]="showShareModal">
+
+  <button class="share-close" (click)="closeShare()">✕</button>
+
+  <!-- Step 1: Pick platform -->
+  <div *ngIf="!selectedPlatform" class="share-step">
+    <div class="share-modal-icon">🔗</div>
+    <h3 class="share-modal-title">Share Mangal Bhav</h3>
+    <p class="share-modal-sub">Select your platform to get the download QR</p>
+
+    <div class="share-platform-grid">
+      <button class="share-platform-btn android" (click)="selectPlatform('android')">
+        <div class="share-platform-icon">🤖</div>
+        <span class="share-platform-label">Android</span>
+        <span class="share-platform-sub">Google Play</span>
+      </button>
+      <button class="share-platform-btn ios" (click)="selectPlatform('ios')">
+        <div class="share-platform-icon">🍎</div>
+        <span class="share-platform-label">iPhone</span>
+        <span class="share-platform-sub">App Store</span>
+      </button>
+    </div>
+
+    <!-- ── NEW: Direct share buttons ── -->
+    <div class="share-direct-row">
+      <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
+        <span class="share-direct-icon">💬</span>
+        <span class="share-direct-label">WhatsApp</span>
+      </button>
+      <button class="share-direct-btn native" (click)="shareNative()">
+        <span class="share-direct-icon">↗️</span>
+        <span class="share-direct-label">More Apps</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Step 2: Show QR (unchanged) -->
+  <div *ngIf="selectedPlatform" class="share-step">
+    <button class="share-back-btn" (click)="selectedPlatform = null">← Back</button>
+
+    <div class="share-qr-platform-badge" [class.android]="selectedPlatform === 'android'"
+      [class.ios]="selectedPlatform === 'ios'">
+      {{ selectedPlatform === 'android' ? '🤖 Android — Google Play' : '🍎 iPhone — App Store' }}
+    </div>
+
+    <div class="share-qr-wrap">
+      <img [src]="getQrUrl()" class="share-qr-img" alt="QR Code" />
+      <div class="share-qr-glow"></div>
+    </div>
+
+    <p class="share-qr-hint">Scan with camera to download the app</p>
+
+    <div class="share-link-row">
+      <span class="share-link-text">{{ getAppLink() }}</span>
+      <button class="share-copy-btn" (click)="copyLink()">
+        {{ copied ? '✅ Copied!' : '📋 Copy' }}
+      </button>
+    </div>
+
+    <!-- ── NEW: Share QR step also has quick-share buttons ── -->
+    <div class="share-direct-row" style="margin-top: 1rem;">
+      <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
+        <span class="share-direct-icon">💬</span>
+        <span class="share-direct-label">WhatsApp</span>
+      </button>
+      <button class="share-direct-btn native" (click)="shareNative()">
+        <span class="share-direct-icon">↗️</span>
+        <span class="share-direct-label">More Apps</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>

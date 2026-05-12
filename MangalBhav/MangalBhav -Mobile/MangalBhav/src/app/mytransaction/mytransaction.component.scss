@@ -521,3 +521,31 @@ ion-back-button { --color: #ffffff; }
   border-radius: 10px;
   flex-shrink: 0;
 }
+
+
+.modal-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 13px;
+  background: #25D366;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+
+  img {
+    filter: brightness(0) invert(1);
+  }
+
+  &:active {
+    background: #1ebe5d;
+    transform: scale(0.98);
+  }
+}

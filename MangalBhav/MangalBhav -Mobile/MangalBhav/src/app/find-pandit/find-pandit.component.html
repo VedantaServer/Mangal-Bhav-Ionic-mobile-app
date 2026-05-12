@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="inner-header">
       <button class="inner-back-btn" (click)="routerCtrl.back()">
@@ -13,8 +13,10 @@
       </div>
     </div>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
+
+<app-tabscommonheader></app-tabscommonheader>
 
 <ion-content>
   <div class="page-wrapper">
@@ -68,54 +70,73 @@
     ════════════════════════════════════════════════════════ -->
     <div class="pandit-list-wrap">
 
-      <div class="pandit-row" *ngFor="let item of filteredPanditList" (click)="openPanditModal(item)">
+      <div class="location-notice fetching" *ngIf="locationState === 'fetching'">
+        <ion-spinner name="dots" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></ion-spinner>
+        Fetching your location…
+      </div>
 
-        <!-- Avatar -->
-        <div class="pandit-row-avatar">
-          <div class="pr-initials" *ngIf="!profileImages[item.profile?.UserID]">
-            {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+      <div class="location-notice success" *ngIf="locationState === 'granted'">
+        📍 Showing pandits nearest to you
+      </div>
+
+      <div class="location-notice warning" *ngIf="locationState === 'denied'">
+        🔒 Location denied —
+        <strong (click)="fetchNearbyPandits()" style="cursor:pointer;text-decoration:underline;">Tap to retry</strong>
+      </div>
+
+
+      <div class="location-notice muted" *ngIf="locationState === 'unavailable'">
+        📍 Location unavailable — showing all pandits
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading || locationState === 'fetching'" class="pandit-loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>{{ locationState === 'fetching' ? 'Getting your location…' : 'Loading pandits…' }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && locationState !== 'fetching' && filteredPanditList.length > 0">
+        <div class="pandit-row" *ngFor="let item of filteredPanditList" (click)="openPanditModal(item)">
+
+          <!-- Avatar -->
+          <div class="pandit-row-avatar">
+            <div class="pr-initials" *ngIf="!profileImages[item.profile?.UserID]">
+              {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+            </div>
+            <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
+              class="pr-photo" (error)="onImgError($event)" />
+            <!-- Verified dot -->
+            <span class="pr-dot" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'">
+            </span>
           </div>
-          <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
-            class="pr-photo" (error)="onImgError($event)" />
-          <!-- Verified dot -->
-          <span class="pr-dot" [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'">
-          </span>
-        </div>
 
-        <!-- Info -->
-        <div class="pandit-row-info">
-          <p class="pr-name">{{ item.profile?.FullName || item.user?.Username }}</p>
-          <p class="pr-meta">
-            <span *ngIf="item.profile?.Languages">
-              <ion-icon name="language-outline"></ion-icon>
-              {{ item.profile?.Languages }}
+          <!-- Info -->
+          <div class="pandit-row-info">
+            <p class="pr-name">{{ item.profile?.FullName || item.user?.Username }}</p>
+            <p class="pr-meta">
+              <span *ngIf="item.profile?.Languages">
+                <ion-icon name="language-outline"></ion-icon>
+                {{ item.profile?.Languages }}
+              </span>
+              <span *ngIf="item.profile?.ExperienceYears" class="pr-exp">
+                · {{ item.profile?.ExperienceYears }} yrs exp
+              </span>
+            </p>
+            <span class="pr-badge" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"
+              [class.pending]="item.profile?.VerificationStatus !== 'APPROVED'">
+              {{ item.profile?.VerificationStatus === 'APPROVED' ? '✓ Verified' : '⏳ Pending' }}
             </span>
-            <span *ngIf="item.profile?.ExperienceYears" class="pr-exp">
-              · {{ item.profile?.ExperienceYears }} yrs exp
-            </span>
-          </p>
-          <span class="pr-badge" [class.verified]="item.profile?.VerificationStatus === 'VERIFIED'"
-            [class.pending]="item.profile?.VerificationStatus !== 'VERIFIED'">
-            {{ item.profile?.VerificationStatus === 'VERIFIED' ? '✓ Verified' : '⏳ Pending' }}
-          </span>
-        </div>
+          </div>
 
-        <!-- Arrow -->
-        <ion-icon name="chevron-forward-outline" class="pr-arrow"></ion-icon>
+          <!-- Arrow -->
+          <ion-icon name="chevron-forward-outline" class="pr-arrow"></ion-icon>
 
-      </div><!-- end pandit-row -->
-
+        </div><!-- end pandit-row -->
+      </div>
     </div>
 
-    <!-- EMPTY STATE -->
-    <div *ngIf="!filteredPanditList?.length" class="empty-state">
-      <div class="empty-icon">🙏</div>
-      <h3 class="empty-title">
-        {{ searchQuery ? 'No results for "' + searchQuery + '"' : 'No Pandits Found' }}
-      </h3>
-      <p class="empty-sub">
-        {{ searchQuery ? 'Try a different name or language' : 'Check back soon' }}
-      </p>
+    <div class="pandit-empty" *ngIf="!isLoading && locationState !== 'fetching' && filteredPanditList.length === 0">
+      <p>No pandits found nearby.</p>
     </div>
 
     <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
@@ -383,8 +404,8 @@
               {{ selectedPandit?.profile?.Languages }}
             </p>
           </div>
-          <div class="strip-verify" [class.verified]="selectedPandit?.profile?.VerificationStatus === 'VERIFIED'">
-            <ion-icon [name]="selectedPandit?.profile?.VerificationStatus === 'VERIFIED'
+          <div class="strip-verify" [class.verified]="selectedPandit?.profile?.VerificationStatus === 'APPROVED'">
+            <ion-icon [name]="selectedPandit?.profile?.VerificationStatus === 'APPROVED'
               ? 'shield-checkmark-outline' : 'time-outline'">
             </ion-icon>
           </div>

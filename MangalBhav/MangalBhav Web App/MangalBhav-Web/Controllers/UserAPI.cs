@@ -223,35 +223,38 @@ namespace FaceUPAI.API
 		}
 
 
+
+
+		public class UsersQueryRequest
+		{
+			public string Query { get; set; }
+			public int PageNumber { get; set; } = 1;
+			public int PageSize { get; set; } = 10;
+		}
+
 		[HttpPost]
 		[EnableCors("AllowAll")]
 		[Route("UsersNUSelectByQueryPaging")]
-		public IActionResult UsersNUSelectByQueryPaging(
-	string Query,
-	int pageNumber = 1,
-	int pageSize = 10)
+		public IActionResult UsersNUSelectByQueryPaging([FromBody] UsersQueryRequest request)
 		{
 			return ApiHandler.Handle(() =>
 			{
 				SqlParameter[] parameters = new SqlParameter[]
 				{
-			new SqlParameter("@Query", Query),
-			new SqlParameter("@PageNumber", pageNumber),
-			new SqlParameter("@PageSize", pageSize)
+			new SqlParameter("@Query", request.Query),
+			new SqlParameter("@PageNumber", request.PageNumber),
+			new SqlParameter("@PageSize", request.PageSize)
 				};
-
 				using (SqlDataReader dataReader = DataAccess.ExecuteReader(
 					CommandType.StoredProcedure,
 					"UsersNUSelectByQueryPaging",
 					parameters))
 				{
 					List<User> UserList = new List<User>();
-
 					while (dataReader.Read())
 					{
 						UserList.Add(MakeUser(dataReader));
 					}
-
 					return Ok(new { UserList });
 				}
 			}, this);

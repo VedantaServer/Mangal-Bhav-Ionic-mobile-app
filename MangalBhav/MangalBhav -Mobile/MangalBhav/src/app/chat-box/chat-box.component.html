@@ -7,7 +7,7 @@
           [ngClass]="GroupName === 'Support' ? 'support' : GroupName === 'AskPandit' ? 'pandit' : 'group'">
           <span *ngIf="GroupName === 'Support'">🛡️</span>
           <span *ngIf="GroupName === 'AskPandit'">🕉️</span>
-          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">{{ GroupName?.charAt(0) || '🙏' }}</span>
+          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">{{ GroupName.charAt(0) || '🙏' }}</span>
         </div>
         <div class="logo-text-block">
           <div class="nav-logo-text">{{ GroupName || '…' }}</div>

@@ -17,6 +17,7 @@ import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { forkJoin } from 'rxjs';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 
 
@@ -25,7 +26,7 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
   templateUrl: './loggedin-home.component.html',
   styleUrls: ['./loggedin-home.component.scss'],
   //standalone: true,  // 👈 makes it standalone
-  imports: [CommonModule, FormsModule, IonicModule , JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule , JajmanbottomtabsComponent,TabscommonheaderComponent]
 })
 export class LoggedinHomeComponent implements OnInit {
 

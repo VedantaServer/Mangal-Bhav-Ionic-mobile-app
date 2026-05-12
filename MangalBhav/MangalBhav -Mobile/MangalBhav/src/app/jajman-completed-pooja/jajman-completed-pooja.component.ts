@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -173,7 +173,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
 
   constructor(
     public routerCtrl: NavController,
-    public apinu: ApiNU,
+    public apinu: ApiNU, public toastController: ToastController,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
@@ -423,6 +423,13 @@ export class JajmanCompletedPoojaComponent implements OnInit {
     };
   }
 
+    async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
+
   // -----------------------------
   // Save (Insert / Update)
   // -----------------------------
@@ -439,13 +446,13 @@ export class JajmanCompletedPoojaComponent implements OnInit {
 
         if (res?.BookingID > 0) {
 
-          alert("Saved successfully ✅");
+          this.showToast("Saved successfully ✅",'success');
 
           this.closeModal();
           this.loadList();
 
         } else {
-          alert("Something went wrong ❌");
+          this.showToast("Something went wrong ❌",'danger');
         }
 
       });
@@ -498,7 +505,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
         };
 
         this.apinu.postUrlData('DocumentInsert', body).subscribe(() => {
-          alert('Success');
+          this.showToast('Success','success');
           this.selectedFile = null;
           this.getBookingPhotos(); // refresh gallery
         });
@@ -626,7 +633,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
       console.log(res)
     })
 
-    alert('🙏 Thank you for your feedback!');
+    this.showToast('🙏 Thank you for your feedback!','success');
     this.isFeedbackModalOpen = false;
   }
 }

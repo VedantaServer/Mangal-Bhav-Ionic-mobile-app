@@ -291,6 +291,36 @@ namespace FaceUPAI.Controllers
 
 
 
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("DeleteUserWithDependencies")]
+       
+        public IActionResult DeleteUserWithDependencies(int userID)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@UserID", userID)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "DeleteUserWithDependencies", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
 
 
 

@@ -123,13 +123,15 @@ async getCurrentLocation() {
       console.log('Lat:', this.Mandir.Latitude);
       console.log('Lng:', this.Mandir.Longitude);
     } else {
-      alert('Location permission denied');
+      this.showToast('Location permission denied','danger');
     }
 
   } catch (error) {
     console.error('Error getting location:', error);
   }
 }
+
+
 
   loadMandirs() {
     this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1  ORDER BY DateAdded DESC`, null).subscribe({

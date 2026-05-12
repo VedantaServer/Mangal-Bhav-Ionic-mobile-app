@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -134,7 +134,7 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
-    public api: Api,
+    public api: Api, public toastController: ToastController,
     private storage: Storage,
     private plt: Platform,
     private http: HttpClient,
@@ -488,6 +488,14 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
     return parts[0].trim();
   }
 
+  
+  async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
+
   // -----------------------------
   // Save (Insert / Update)
   // -----------------------------
@@ -504,13 +512,13 @@ export class JajmanUpcomingPoojaComponent implements OnInit {
 
         if (res?.BookingID > 0) {
 
-          alert("Saved successfully ✅");
+          this.showToast("Saved successfully ✅",'success');
 
           this.closeModal();
           this.loadList();
 
         } else {
-          alert("Something went wrong ❌");
+          this.showToast("Something went wrong ❌",'danger');
         }
 
       });

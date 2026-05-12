@@ -15,13 +15,14 @@ import { IndiaDateComponent } from 'src/components/india-date/india-date';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
 @Component({
   selector: 'app-jajman-dashboard',
   templateUrl: './jajman-dashboard.component.html',
   styleUrls: ['./jajman-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, JajmanbottomtabsComponent]
+  imports: [CommonModule, IonicModule, FormsModule, JajmanbottomtabsComponent,TabscommonheaderComponent]
 })
 export class JajmanDashboardComponent implements OnInit {
   userDetails: any;

@@ -125,10 +125,10 @@
                 {{ pandit.FullName }}
                 <ion-icon name="chevron-forward-outline"></ion-icon>
               </h3>
-              <span class="verified-pill" *ngIf="pandit.VerificationStatus === 'Verified'">
+              <span class="verified-pill" *ngIf="pandit.VerificationStatus === 'APPROVED'">
                 {{ t.verifiedBadge }}
               </span>
-              <span class="unverified-pill" *ngIf="pandit.VerificationStatus !== 'Verified'">
+              <span class="unverified-pill" *ngIf="pandit.VerificationStatus !== 'APPROVED'">
                 {{ t.pendingBadge }}
               </span>
             </div>
@@ -143,6 +143,30 @@
               <span class="meta-chip" *ngIf="pandit.Languages">
                 <ion-icon name="language-outline"></ion-icon> {{ pandit.Languages }}
               </span>
+            </div>
+
+            <!-- Add this right after the closing </div> of pandit-meta -->
+            <!-- Still fetching -->
+            <div class="pandit-location-row muted" *ngIf="locationLoadingPending">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>Loading...</span>
+            </div>
+
+            <!-- Loaded with data -->
+            <div class="pandit-location-row" *ngIf="!locationLoadingPending && panditLocationMap[pandit.UserID]">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>
+                {{ panditLocationMap[pandit.UserID]?.Name }}
+                <ng-container *ngIf="panditLocationMap[pandit.UserID]?.City">
+                  , {{ panditLocationMap[pandit.UserID]?.City }}
+                </ng-container>
+              </span>
+            </div>
+
+            <!-- Loaded but no location set -->
+            <div class="pandit-location-row muted" *ngIf="!locationLoadingPending && !panditLocationMap[pandit.UserID]">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ t.locationNotFilled }}</span>
             </div>
           </div>
 
@@ -171,7 +195,7 @@
 </ion-content>
 
 
-<ion-tab-bar slot="bottom" class="mb-tab-bar">
+<!-- <ion-tab-bar slot="bottom" class="mb-tab-bar">
 
   <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
     <ion-icon name="sparkles-outline"></ion-icon>
@@ -187,8 +211,11 @@
     <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || t.me }}</ion-label>
   </ion-tab-button>
 
-</ion-tab-bar>
+</ion-tab-bar> -->
 
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+
+<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 
 <!-- ================================================
      POOJA DETAIL MODAL
@@ -252,6 +279,8 @@
               <p class="detail-info-value">{{ t.infoValueBestTime }}</p>
             </div>
           </div>
+          <!-- Add this inside the detail-info-grid in the pandit modal, after the BasePrice tile -->
+
         </div>
 
         <!-- About -->
@@ -315,10 +344,10 @@
             <img [src]="getProfileImage(selectedPandit.UserID)" class="pandit-modal-photo" />
           </div>
           <h2 class="pandit-modal-name">{{ selectedPandit.FullName }}</h2>
-          <span class="verified-pill" *ngIf="selectedPandit.VerificationStatus === 'Verified'">
+          <span class="verified-pill" *ngIf="selectedPandit.VerificationStatus === 'APPROVED'">
             {{ t.verifiedPanditBadge }}
           </span>
-          <span class="unverified-pill" *ngIf="selectedPandit.VerificationStatus !== 'Verified'">
+          <span class="unverified-pill" *ngIf="selectedPandit.VerificationStatus !== 'APPROVED'">
             {{ t.pendingPanditBadge }}
           </span>
         </div>
@@ -351,6 +380,24 @@
             <div>
               <p class="detail-info-label">{{ t.dakshina }}</p>
               <p class="detail-info-value">₹{{ selectedPandit.BasePrice }}</p>
+            </div>
+          </div>
+
+          <div class="detail-info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">{{ t.infoLabelLocation }}</p>
+              <p class="detail-info-value" *ngIf="panditLocationMap[selectedPandit?.UserID]">
+                {{ panditLocationMap[selectedPandit?.UserID]?.City || panditLocationMap[selectedPandit?.UserID]?.Name }}
+              </p>
+              <p class="detail-info-value muted" *ngIf="!panditLocationMap[selectedPandit?.UserID]">
+                {{ t.locationNotFilled }}
+              </p>
+              <!-- venue name as subtitle if city exists -->
+              <p class="detail-info-sub"
+                *ngIf="panditLocationMap[selectedPandit?.UserID]?.Name && panditLocationMap[selectedPandit?.UserID]?.City">
+                {{ panditLocationMap[selectedPandit?.UserID]?.Name }}
+              </p>
             </div>
           </div>
         </div>
