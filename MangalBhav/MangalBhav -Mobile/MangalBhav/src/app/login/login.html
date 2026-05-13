@@ -907,8 +907,7 @@
 
 
         <div class="field-input-wrap" style="margin-bottom: 4vh;">
-          <ion-select placeholder="Select Language" interface="popover" [(ngModel)]="UserLanguage"
-            name="Languages">
+          <ion-select placeholder="Select Language" interface="popover" [(ngModel)]="UserLanguage" name="Languages">
             <ion-select-option value="Hindi">Hindi</ion-select-option>
             <ion-select-option value="English">English</ion-select-option>
           </ion-select>
@@ -959,7 +958,7 @@
 <ion-tab-bar slot="bottom" class="mb-tab-bar">
 
   <ion-tab-button class="mb-tab-btn" (click)="backToMain()">
-     <img src="/assets/pooja.png" class="mb-center-fab-img" />
+    <img src="/assets/pooja.png" class="mb-center-fab-img" />
     <ion-label>Pooja</ion-label>
   </ion-tab-button>
 
@@ -969,12 +968,14 @@
   </ion-tab-button>
 
 
-  <!-- Empty spacer in center -->
-  <!-- <ion-tab-button class="mb-tab-spacer" disabled></ion-tab-button> -->
-
 
   <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
-    <img src="/assets/yagna2.png" class="mb-center-fab-img" />
+    <img src="/assets/yagna2.png" class="mb-center-fab-img" style="
+        width: 49px;
+        height: 49px;
+        border-radius: 50%;
+        object-fit: cover;
+      " />
   </ion-tab-button>
 
   <ion-tab-button class="mb-tab-btn" (click)="action5()">

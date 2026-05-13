@@ -11,10 +11,15 @@
     <ion-tab-button tab="openfindmandir" class="mb-tab-btn" href="/tabs/openfindmandir">
       <img src="/assets/temple.png" class="mb-center-fab-img" />
       <ion-label>Temple</ion-label>
-    </ion-tab-button> 
+    </ion-tab-button>
 
     <ion-tab-button class="mb-tab-btn mb-tab-center" (click)="openPage('open-community-page')">
-      <img src="/assets/yagna2.png" class="mb-center-fab-img" />
+      <img src="/assets/yagna2.png" class="mb-center-fab-img" style="
+        width: 49px;
+        height: 49px;
+        border-radius: 50%;
+        object-fit: cover;
+      " />
     </ion-tab-button>
 
     <!-- 4. Dan / Dakshina -->
@@ -28,7 +33,7 @@
       <!-- <div class="mb-tab-avatar">
         {{ userDetails?.FullName?.split(' ')?.[0]?.[0]?.toUpperCase() || 'M' }}
       </div> -->
-    <img src="/assets/user.png" class="mb-center-fab-img" />
+      <img src="/assets/user.png" class="mb-center-fab-img" />
       <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
     </ion-tab-button>
 

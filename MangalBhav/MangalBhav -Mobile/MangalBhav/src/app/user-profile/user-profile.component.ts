@@ -185,7 +185,7 @@ export class UserProfileComponent implements OnInit {
     public api: Api,
     private storage: Storage,
     private plt: Platform,
-    private http: HttpClient,public toastController: ToastController,
+    private http: HttpClient, public toastController: ToastController,
     private alertCtrl: AlertController) { }
 
   async ngOnInit() {
@@ -286,16 +286,16 @@ export class UserProfileComponent implements OnInit {
             const account = await this.storage.get('account');
             account.ProfilePhotoUrl = this.profileObject.ProfilePhotoUrl;;
             await this.storage.set('account', account);
-            this.showToast('Profile photo updated successfully' , 'success');
+            this.showToast('Profile photo updated successfully', 'success');
           }
         })
       } else {
-        this.showToast("Profile photo Upload failed",'danger');
+        this.showToast("Profile photo Upload failed", 'danger');
       }
     });
   }
 
-   async showToast(message: string, color = 'primary') {
+  async showToast(message: string, color = 'primary') {
     const toast = await this.toastController.create({
       message, duration: 4000, color, position: 'top'
     });
@@ -400,7 +400,7 @@ export class UserProfileComponent implements OnInit {
 
     this.apinu.postUrlData(action, body).subscribe((res: any) => {
       console.log(res);
-      this.showToast('UPI ID saved successfully ✅','success');
+      this.showToast('UPI ID saved successfully ✅', 'success');
       this.loadBankDetails();
     });
   }
@@ -419,7 +419,8 @@ export class UserProfileComponent implements OnInit {
   saveProfile() {
     const payload = this.prepareProfileForSubmit();
     const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
-    const previousRole = this.userDetails.Role; // ← capture before save
+    const previousRole = this.userDetails.Role;
+    const previousLanguage = this.userDetails.Languages; // ← add this
 
     this.apinu.postUrlData(DBAction, payload).subscribe(async (res: any) => {
       if (res.ProfileID > 0) {
@@ -440,20 +441,20 @@ export class UserProfileComponent implements OnInit {
             this.userDetails.Role = this.selectedRole;
             this.userDetails.Languages = payload.languages;
 
-            this.showToast('Profile saved successfully ✅','success');
+            this.showToast('Profile saved successfully ✅', 'success');
 
-            // ✅ Reload entire app if role changed
-            if (previousRole !== this.selectedRole) {
+            // ✅ Reload if role OR language changed
+            if (previousRole !== this.selectedRole || previousLanguage !== payload.languages) {
               window.location.reload();
             }
 
           } else {
-            this.showToast('Profile saved but role update failed ⚠️','danger');
+            this.showToast('Profile saved but role update failed ⚠️', 'danger');
           }
         });
 
       } else {
-        this.showToast('Something went wrong ❌','danger');
+        this.showToast('Something went wrong ❌', 'danger');
       }
     });
   }

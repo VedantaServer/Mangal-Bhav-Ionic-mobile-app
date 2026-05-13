@@ -31,7 +31,7 @@ export class TabscommonheaderComponent implements OnInit {
     en: {
       appTitle: '🕉️ Mangal Bhav',
       logoTitle: 'Mangal.Bhav',
-      logoSub: '✦ Peace · Prosperity · Protection ✦',
+      logoSub: '✦ Peace·Prosperity·Protection ✦',
 
       greetingTitle: 'Namaste 🙏, ',
       greetingSubtitle: 'Ready for today’s seva?',
@@ -56,7 +56,7 @@ export class TabscommonheaderComponent implements OnInit {
     hi: {
       appTitle: '🕉️ मंगल भव:',
       logoTitle: 'मंगल.भव:',
-      logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+      logoSub: '✦ शांति·समृद्धि·सुरक्षा ✦',
 
       greetingTitle: 'नमस्ते 🙏, ',
       greetingSubtitle: 'क्या आप आज की सेवा के लिए तैयार हैं?',
@@ -103,7 +103,7 @@ export class TabscommonheaderComponent implements OnInit {
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
 
-    this.language = this.userDetails.Languages;
+    this.language = this.userDetails?.Languages;
   }
 
 
