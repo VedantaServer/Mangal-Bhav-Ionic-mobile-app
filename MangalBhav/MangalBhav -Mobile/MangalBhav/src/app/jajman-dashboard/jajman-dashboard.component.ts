@@ -22,7 +22,7 @@ import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.
   templateUrl: './jajman-dashboard.component.html',
   styleUrls: ['./jajman-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, JajmanbottomtabsComponent,TabscommonheaderComponent]
+  imports: [CommonModule, IonicModule, FormsModule, JajmanbottomtabsComponent, TabscommonheaderComponent]
 })
 export class JajmanDashboardComponent implements OnInit {
   userDetails: any;
@@ -39,7 +39,7 @@ export class JajmanDashboardComponent implements OnInit {
       logoTitle: 'Mangal.Bhav',
       myBookings: 'My Bookings',
       profile: 'Profile',
-      festivals: 'Festivals',
+      festivals: 'Hindu Calender',
       logoSub: '✦ Peace · Prosperity · Protection ✦',
       explore: 'Explore Life',
       me: 'Me',
@@ -56,7 +56,7 @@ export class JajmanDashboardComponent implements OnInit {
       myBookings: 'मेरी बुकिंग्स',
       profile: 'प्रोफ़ाइल',
       logoTitle: 'मंगल.भाव:',
-      festivals: 'त्योहार',
+      festivals: 'हिंदू पंचांग',
 
       explore: 'जीवन देखें',
       me: 'मैं'

@@ -2476,3 +2476,300 @@ select {
     color: #aaa;
   }
 }
+
+
+.pr-stamp {
+  display: block;
+  margin-top: 4px;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 2px rgba(184, 92, 0, 0.25));
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: rotate(-4deg) scale(1.08);
+  }
+}
+
+
+/* ─── Pandit List Wrapper ─── */
+.pandit-list-wrap {
+  padding: 12px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ─── Pandit Row Card ─── */
+.pandit-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 14px 14px 14px 14px;
+  border: 1.5px solid rgba(255, 184, 0, 0.18);
+  box-shadow:
+    0 2px 12px rgba(255, 149, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+
+  /* Saffron top accent line */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2.5px;
+    background: linear-gradient(90deg, #FF9500, #FFD166, #FF9500);
+    border-radius: 18px 18px 0 0;
+  }
+
+  &:active {
+    transform: scale(0.985);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ─── Watermark Stamp (absolute) ─── */
+.pr-stamp-watermark {
+  position: absolute;
+  top: 50%;
+  right: 36px;          /* sits left of the arrow */
+  transform: translateY(-50%) rotate(-12deg);
+  width: 64px;
+  height: 64px;
+  opacity: 0.13;        /* very light — it's a watermark */
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Reveal stamp a bit more on hover/active */
+.pandit-row:active .pr-stamp-watermark {
+  opacity: 0.22;
+}
+
+/* ─── Avatar Block ─── */
+.pandit-row-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  .pr-initials {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #FF9500, #E07B00);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.28);
+  }
+
+  .pr-photo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 184, 0, 0.3);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .pr-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2.5px solid #ffffff;
+    background: #f59e0b;
+
+    &.verified {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+    }
+  }
+}
+
+/* ─── Info Column ─── */
+.pandit-row-info {
+  flex: 1;
+  min-width: 0;
+  /* leave right gap so watermark stamp has room */
+  padding-right: 48px;
+}
+
+/* Name */
+.pr-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.pr-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1c1200;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+}
+
+/* Meta chips row */
+.pr-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 5px;
+}
+
+.pr-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7A4D00;
+  background: #FFF5D6;
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  border-radius: 50px;
+  padding: 2px 8px;
+  white-space: nowrap;
+
+  ion-icon {
+    font-size: 10px;
+    color: #FF9500;
+  }
+}
+
+/* Location row */
+.pr-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #a06030;
+  font-weight: 500;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ion-icon {
+    font-size: 12px;
+    color: #FF9500;
+    flex-shrink: 0;
+  }
+}
+
+/* Pending badge */
+.pr-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 50px;
+  margin-top: 2px;
+
+  &.pending {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* Arrow */
+.pr-arrow {
+  color: #e0c080;
+  font-size: 17px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ─── Pandit Row Card — taller ─── */
+.pandit-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 14px 16px 14px;   /* ← was 14px top/bottom, now 18/16 */
+  border: 1.5px solid rgba(255, 184, 0, 0.18);
+  box-shadow:
+    0 2px 12px rgba(255, 149, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2.5px;
+    background: linear-gradient(90deg, #FF9500, #FFD166, #FF9500);
+    border-radius: 18px 18px 0 0;
+  }
+
+  &:active {
+    transform: scale(0.985);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ─── Avatar — slightly bigger to fill new height ─── */
+.pandit-row-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  .pr-initials {
+    width: 62px;          /* ← was 56px */
+    height: 62px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #FF9500, #E07B00);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.28);
+  }
+
+  .pr-photo {
+    width: 62px;          /* ← was 56px */
+    height: 62px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 184, 0, 0.3);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .pr-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2.5px solid #ffffff;
+    background: #f59e0b;
+
+    &.verified {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+    }
+  }
+}

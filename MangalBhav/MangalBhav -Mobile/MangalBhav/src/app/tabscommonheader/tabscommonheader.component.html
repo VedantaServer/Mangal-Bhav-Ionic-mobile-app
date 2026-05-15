@@ -47,12 +47,12 @@
 
     <div class="share-platform-grid">
       <button class="share-platform-btn android" (click)="selectPlatform('android')">
-        <div class="share-platform-icon">🤖</div>
+        <div class="share-platform-icon"> <ion-icon name="logo-android"></ion-icon></div>
         <span class="share-platform-label">Android</span>
         <span class="share-platform-sub">Google Play</span>
       </button>
       <button class="share-platform-btn ios" (click)="selectPlatform('ios')">
-        <div class="share-platform-icon">🍎</div>
+        <div class="share-platform-icon"> <ion-icon name="logo-apple"></ion-icon></div>
         <span class="share-platform-label">iPhone</span>
         <span class="share-platform-sub">App Store</span>
       </button>
@@ -61,7 +61,7 @@
     <!-- ── NEW: Direct share buttons ── -->
     <div class="share-direct-row">
       <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
-        <span class="share-direct-icon">💬</span>
+        <span class="share-direct-icon">  <ion-icon name="logo-whatsapp"></ion-icon></span>
         <span class="share-direct-label">WhatsApp</span>
       </button>
       <button class="share-direct-btn native" (click)="shareNative()">
@@ -78,7 +78,7 @@
 
     <div class="share-qr-platform-badge" [class.android]="selectedPlatform === 'android'"
       [class.ios]="selectedPlatform === 'ios'">
-      {{ selectedPlatform === 'android' ? '🤖 Android — Google Play' : '🍎 iPhone — App Store' }}
+      {{ selectedPlatform === 'android' ? ' Android — Google Play' : ' iPhone — App Store' }}
     </div>
 
     <div class="share-qr-wrap">

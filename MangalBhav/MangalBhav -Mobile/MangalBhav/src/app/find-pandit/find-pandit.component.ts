@@ -324,12 +324,34 @@ export class FindPanditComponent implements OnInit {
             this.apinu.postUrlData(
               `ProfilesSelectAllByUserID?userID=${user.UserID}`, null
             ).pipe(
-              map((profileRes: any) => ({
-                user,
-                profile: profileRes?.ProfileList?.[0] || null,
-                panditServices: [],
-                _servicesLoaded: false
-              }))
+              // ── after getting profile, fetch first service location ──
+              mergeMap((profileRes: any) => {
+                const profile = profileRes?.ProfileList?.[0] || null;
+                return this.apinu.postUrlData(
+                  `PanditServicesSelectAllByProfileID?profileID=${user.UserID}`, null
+                ).pipe(
+                  mergeMap((svcRes: any) => {
+                    const firstSvc = svcRes?.PanditServiceList?.[0];
+                    if (!firstSvc?.LocationID) {
+                      return of({ user, profile, _city: null, panditServices: [], _servicesLoaded: false });
+                    }
+                    return this.apinu.postUrlData(
+                      `LocationSelect?locationID=${firstSvc.LocationID}&tenantID=${this.userDetails.TenantID}`, null
+                    ).pipe(
+                      map((locRes: any) => {
+                        const loc = locRes?.LocationList?.[0];
+                        return {
+                          user,
+                          profile,
+                          _city: loc?.Name || loc?.City || null,
+                          panditServices: [],
+                          _servicesLoaded: false
+                        };
+                      })
+                    );
+                  })
+                );
+              })
             )
           ),
           toArray()
