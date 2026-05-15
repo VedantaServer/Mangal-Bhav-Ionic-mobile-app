@@ -61,7 +61,7 @@ ion-content {
 
 .comm-hero-bg-om {
   position: absolute;
-  font-family: 'Noto Serif Devanagari', serif;
+ 
   font-size: 420px;
   color: rgba(255, 149, 0, 0.04);
   top: 50%;
@@ -130,7 +130,7 @@ ion-content {
 }
 
 .comm-hero-title {
-  font-family: 'Yatra One', cursive;
+ 
   font-size: 64px;
   color: #FFD580;
   line-height: 1;
@@ -139,7 +139,7 @@ ion-content {
 }
 
 .comm-hero-devanagari {
-  font-family: 'Noto Serif Devanagari', serif;
+
   font-size: 16px;
   color: rgba(255, 200, 100, 0.65);
   letter-spacing: 3px;
@@ -192,15 +192,15 @@ ion-content {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: #FF9500;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .comm-heading {
-  font-family: 'Yatra One', cursive;
+ 
   font-size: 28px;
   text-align: center;
   color: #2B1A00;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   line-height: 1.2;
 }
 
@@ -246,7 +246,7 @@ ion-content {
     position: absolute;
     bottom: -8px;
     right: 4px;
-    font-family: 'Noto Serif Devanagari', serif;
+
     font-size: 80px;
     color: rgba(255, 149, 0, 0.05);
     line-height: 1;
@@ -261,14 +261,14 @@ ion-content {
 }
 
 .comm-pillar-title {
-  font-family: 'Yatra One', cursive;
+ 
   font-size: 22px;
   color: #2B1A00;
   margin-bottom: 4px;
 }
 
 .comm-pillar-hindi {
-  font-family: 'Noto Serif Devanagari', serif;
+ 
   font-size: 13px;
   color: #FF9500;
   letter-spacing: 1px;
@@ -294,7 +294,6 @@ ion-content {
 
 .comm-hanuman-bg-om {
   position: absolute;
-  font-family: 'Noto Serif Devanagari', serif;
   font-size: 400px;
   color: rgba(255, 149, 0, 0.03);
   top: 50%;
@@ -319,7 +318,7 @@ ion-content {
 }
 
 .comm-hanuman-title {
-  font-family: 'Yatra One', cursive;
+ 
   font-size: 44px;
   color: #FFD580;
   margin-bottom: 6px;
@@ -327,7 +326,7 @@ ion-content {
 }
 
 .comm-hanuman-sub {
-  font-family: 'Noto Serif Devanagari', serif;
+
   font-size: 15px;
   color: rgba(255, 200, 100, 0.6);
   letter-spacing: 2px;
@@ -342,7 +341,7 @@ ion-content {
 }
 
 .comm-chalisa-verse {
-  font-family: 'Noto Serif Devanagari', serif;
+  
   font-size: 18px;
   color: rgba(255, 230, 170, 0.82);
   line-height: 2;
@@ -397,7 +396,7 @@ ion-content {
 }
 
 .comm-stat-number {
-  font-family: 'Yatra One', cursive;
+
   font-size: 40px;
   color: #FF9500;
   line-height: 1;
@@ -433,7 +432,7 @@ ion-content {
 }
 
 .comm-value-number {
-  font-family: 'Yatra One', cursive;
+
   font-size: 40px;
   color: rgba(255, 184, 0, 0.2);
   line-height: 1;
@@ -446,14 +445,13 @@ ion-content {
 }
 
 .comm-value-title {
-  font-family: 'Yatra One', cursive;
+
   font-size: 20px;
   color: #2B1A00;
   margin-bottom: 3px;
 }
 
 .comm-value-hindi {
-  font-family: 'Noto Serif Devanagari', serif;
   font-size: 12px;
   color: #FF9500;
   margin-bottom: 8px;
@@ -487,14 +485,14 @@ ion-content {
 }
 
 .comm-footer-logo {
-  font-family: 'Yatra One', cursive;
+
   font-size: 28px;
   color: #FFD580;
   margin-bottom: 6px;
 }
 
 .comm-footer-tag {
-  font-family: 'Noto Serif Devanagari', serif;
+
   font-size: 12px;
   color: rgba(255, 200, 100, 0.45);
   letter-spacing: 2px;
@@ -1195,7 +1193,7 @@ ion-back-button {
     }
 
     .temple-label {
-      font-family: 'Tiro Devanagari Sanskrit', serif;
+
       font-size: 13px;
       color: rgba(245, 200, 66, 0.65);
       letter-spacing: 3px;
@@ -1218,7 +1216,7 @@ ion-back-button {
   padding: 14px 16px 16px;
 
   .mandir-card-name {
-    font-family: 'Tiro Devanagari Sanskrit', Georgia, serif;
+
     font-size: 17px; font-weight: 400;
     color: #8B1A1A;
     line-height: 1.35; letter-spacing: 0.3px;
@@ -1463,8 +1461,14 @@ ion-back-button {
       background: #ffffff;
     }
   }
+  
 
   textarea { resize: vertical; min-height: 80px; }
+}
+
+.mandir-search-input::placeholder {
+  color: #888; /* change to any color */
+  opacity: 1;
 }
 
 select {
@@ -1800,7 +1804,7 @@ select {
   font-size: 13px;
   padding: 6px 12px;
   border-radius: 20px;
-  margin: 8px auto 12px;
+  margin: 5px;
   display: inline-block;
   width: fit-content;
 
@@ -1828,3 +1832,65 @@ select {
     border: 1px solid #ddd;
   }
 }
+
+
+
+.mandir-top-compact {
+  margin-bottom: 10px;
+}
+
+.mandir-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.comm-heading {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mandir-search-wrap.compact {
+  height: 44px;
+  border-radius: 14px;
+}
+
+.mandir-search-input {
+  font-size: 14px;
+}
+
+.mandir-add-btn.compact {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+.mandir-search-input::-webkit-input-placeholder {
+  color: #888;
+}
+
+.mandir-search-input::-moz-placeholder {
+  color: #888;
+}
+
+.mandir-search-input:-ms-input-placeholder {
+  color: #888;
+}
+
+.mandir-verified-seal {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mandir-verified-seal svg {
+  width: 100%;
+  height: 100%;
+}
+

@@ -149,16 +149,33 @@ export class TabscommonheaderComponent implements OnInit {
       setTimeout(() => this.copied = false, 2500);
     });
   }
-  // ── Share message (beautiful, used by all share channels) ─────────────────
+
+  // ── Share message (multi-language) ───────────────────────────────
   private getShareMessage(): string {
+
+    // ✅ Hindi message
+    if (this.language === 'Hindi') {
+      return (
+        `🙏 *मंगल भव:* — सत्यापित पंडितों से धार्मिक अनुष्ठान बुक करें\n\n` +
+        `✨ पूजा, हवन, विवाह एवं अन्य धार्मिक सेवाओं के लिए अनुभवी पंडित खोजें\n` +
+        `📿 आपके घर पर प्रामाणिक वैदिक अनुष्ठान\n` +
+        `⭐ सत्यापित, अनुभवी एवं बहुभाषी पंडित\n\n` +
+        `📱 अभी डाउनलोड करें:\n` +
+        `🤖 Android: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n` +
+        `🍎 iPhone: https://apps.apple.com/in/app/mangal-bhav/id6764030842\n\n` +
+        `✦ ॐ मंगल भव: ✦`
+      );
+    }
+
+    // ✅ English message
     return (
       `🙏 *Mangal Bhav* — Book Verified Pandits for Sacred Rituals\n\n` +
       `✨ Find trusted Pandits for Puja, Havan, Vivah & more\n` +
       `📿 Authentic Vedic rituals at your doorstep\n` +
       `⭐ Verified, experienced & multilingual Pandits\n\n` +
       `📱 Download now:\n` +
-      `🤖 Android: https://play.google.com/store/apps/details?id=com.mangalbhav.app\n` +
-      `🍎 iPhone: https://apps.apple.com/app/mangalbhav/id000000000\n\n` +
+      `🤖 Android: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n` +
+      `🍎 iPhone: https://apps.apple.com/in/app/mangal-bhav/id6764030842\n\n` +
       `✦ ॐ Mangal Bhav ✦`
     );
   }
@@ -170,33 +187,38 @@ export class TabscommonheaderComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  // ── Native share (mobile share sheet) ────────────────────────────────────
-  async shareNative() {
-    const shareData = {
-      title: '🙏 Mangal Bhav — Book Verified Pandits',
-      text: this.getShareMessage(),
-      url: 'https://play.google.com/store/apps/details?id=com.mangalbhav.app'
-    };
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        // User cancelled — do nothing
-      }
-    } else {
-      // Fallback: copy to clipboard if Web Share API not supported
-      try {
-        await navigator.clipboard.writeText(
-          `${shareData.text}\n\n${shareData.url}`
-        );
-        this.copied = true;
-        setTimeout(() => (this.copied = false), 2500);
-      } catch {
-        console.warn('Clipboard write failed');
-      }
+
+  async shareNative() {
+
+    const isHindi = this.language === 'Hindi';
+
+    const message = this.getShareMessage();
+
+    try {
+
+      await Share.share({
+        title: isHindi
+          ? '🙏 मंगल भव:'
+          : '🙏 Mangal Bhav',
+
+        text: message,
+
+        url: this.selectedPlatform === 'ios'
+          ? this.iosLink
+          : this.androidLink,
+
+        dialogTitle: isHindi
+          ? 'मंगल भव: शेयर करें'
+          : 'Share Mangal Bhav'
+      });
+
+    } catch (err) {
+      console.log('Share cancelled', err);
     }
   }
+
+
 
 
 

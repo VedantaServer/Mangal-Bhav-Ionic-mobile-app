@@ -4,23 +4,42 @@
 <ion-content>
   <!-- ═══ MANDIR DIRECTORY ═══ -->
   <section class="comm-section mandir-dir-section">
-    <p class="comm-eyebrow">🛕 Sacred Places</p>
+    <!-- <p class="comm-eyebrow">🛕 Sacred Places</p>
     <h2 class="comm-heading">Mandir Directory</h2>
-    <p class="comm-sub">Discover and add mandirs near you — open to every devotee</p>
 
-    <!-- Search + Add Bar -->
+    
     <div class="mandir-toolbar">
 
 
       <div class="mandir-search-wrap">
         <span class="mandir-search-icon">🔍</span>
         <input class="mandir-search-input" type="text" placeholder="Search by name, deity or city..."
-          style="color: black;" [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)" />
+          style="color: black;" [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)"
+          (focus)="isSearchFocused = true" (blur)="isSearchFocused = false" />
       </div>
 
-      <button class="mandir-add-btn" (click)="openAddMandir()">
+      <button class="mandir-add-btn" (click)="openAddMandir()" *ngIf="!isSearchFocused">
         <span>+</span> Want to add a Mandir
       </button>
+    </div> -->
+    <div class="mandir-top-compact">
+
+      <div class="mandir-title-row">
+        <h2 class="comm-heading">🛕 Mandirs Nearby</h2>
+
+        <button class="mandir-add-btn compact" (click)="openAddMandir()" *ngIf="!isSearchFocused">
+          + Add
+        </button>
+      </div>
+
+      <div class="mandir-search-wrap compact">
+        <span class="mandir-search-icon">🔍</span>
+
+        <input class="mandir-search-input" type="text" placeholder="Search mandirs..." style="color:black;"
+          [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)"
+          (focus)="isSearchFocused = true" (blur)="isSearchFocused = false" />
+      </div>
+
     </div>
 
 
@@ -30,7 +49,7 @@
       Fetching your location…
     </div>
 
-    <div class="mandir-location-notice success" *ngIf="locationState === 'granted'">
+    <div class="mandir-location-notice success" *ngIf="locationState === 'granted' && showLocationSuccess">
       📍 Showing mandirs nearest to you
     </div>
 
@@ -74,7 +93,35 @@
           <div class="mandir-img-name">{{ m.MandirName }}</div>
 
           <!-- Verified badge -->
-          <span class="mandir-verified-badge" *ngIf="m.IsVerified">✦ Verified</span>
+          <span class="mandir-verified-badge" *ngIf="m.IsVerified" style="background-color: white;"><svg width="32" height="32" viewBox="0 0 160 160"
+              xmlns="http://www.w3.org/2000/svg">
+
+              <defs>
+                <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+                <path id="botArc" d="M 80,80 m 55,0 a 55,55 0 0,1 -110,0" />
+              </defs>
+
+              <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
+              <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
+              <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
+
+              <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+                  VERIFIED
+                </textPath>
+              </text>
+
+              <text x="80" y="78" text-anchor="middle" font-family="serif" font-size="22" font-weight="700"
+                fill="#b85c00">
+                ॐ
+              </text>
+
+              <text x="80" y="98" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00"
+                letter-spacing="2">
+                SACRED PLACE
+              </text>
+
+            </svg></span>
         </div>
 
         <!-- Card Body -->
@@ -105,9 +152,45 @@
               🗺️ {{ m.DistanceKm < 1 ? (m.DistanceKm * 1000 | number:'1.0-0') + ' m away' : (m.DistanceKm |
                 number:'1.1-1') + ' km away' }} </a>
 
-                <span class="mandir-status-chip" [class.verified]="m.IsVerified" [class.pending]="!m.IsVerified">
-                  {{ m.IsVerified ? '✔ Active' : '⏳ Pending' }}
-                </span>
+                <!-- <div class="mandir-verified-seal" *ngIf="m.IsVerified">
+
+                  <svg width="32" height="32" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+
+                    <defs>
+                      <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+                      <path id="botArc" d="M 80,80 m 55,0 a 55,55 0 0,1 -110,0" />
+                    </defs>
+
+                    <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
+                    <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1"
+                      stroke-dasharray="4 3" />
+                    <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
+
+                    <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+                      <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+                        VERIFIED
+                      </textPath>
+                    </text>
+
+                    <text x="80" y="78" text-anchor="middle" font-family="serif" font-size="22" font-weight="700"
+                      fill="#b85c00">
+                      ॐ
+                    </text>
+
+                    <text x="80" y="98" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00"
+                      letter-spacing="2">
+                      SACRED PLACE
+                    </text>
+
+                  </svg>
+
+                </div>
+
+                <span class="mandir-status-chip pending" *ngIf="!m.IsVerified">
+                  ⏳ Pending
+                </span> -->
+
+
 
                 <span class="mandir-arrow">→</span>
           </div>

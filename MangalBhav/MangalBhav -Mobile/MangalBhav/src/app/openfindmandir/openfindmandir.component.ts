@@ -52,8 +52,10 @@ export class OpenfindmandirComponent implements OnInit {
   //allMandirs: any[] = [];
   filteredMandirs: any[] = [];
   mandirSearchQuery = '';
+  showLocationSuccess = false;
   showAddMandirForm = false;
   isLoadingMandirs = false;
+  isSearchFocused = false;
   isSubmittingMandir = false;
 
   // Front image
@@ -128,6 +130,11 @@ export class OpenfindmandirComponent implements OnInit {
       this.userLat = lat;
       this.userLng = lng;
       this.locationState = 'granted';
+      this.showLocationSuccess = true;
+
+      setTimeout(() => {
+        this.showLocationSuccess = false;
+      }, 3000);
       this.query = this.buildLocationQuery(lat, lng);
 
     } catch (e) {
