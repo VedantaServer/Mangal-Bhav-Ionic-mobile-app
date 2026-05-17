@@ -176,7 +176,7 @@ ion-content {
 
 // ── SECTION BASE ──
 .comm-section {
-  padding: 24px;
+  
   background: #FFFBF0;
 }
 
@@ -195,14 +195,14 @@ ion-content {
   margin-bottom: 5px;
 }
 
-.comm-heading {
+// .comm-heading {
  
-  font-size: 28px;
-  text-align: center;
-  color: #2B1A00;
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
+//   font-size: 28px;
+//   text-align: center;
+//   color: #2B1A00;
+//   margin-bottom: 5px;
+//   line-height: 1.2;
+// }
 
 .comm-sub {
   
@@ -1835,23 +1835,23 @@ select {
 
 
 
-.mandir-top-compact {
-  margin-bottom: 10px;
-}
+// .mandir-top-compact {
+//   margin-bottom: 10px;
+// }
 
-.mandir-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
+// .mandir-title-row {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   margin-bottom: 10px;
+// }
 
-.comm-heading {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-}
+// .comm-heading {
+//   margin: 0;
+//   font-size: 22px;
+//   font-weight: 700;
+//   line-height: 1.2;
+// }
 
 .mandir-search-wrap.compact {
   height: 44px;
@@ -1862,24 +1862,24 @@ select {
   font-size: 14px;
 }
 
-.mandir-add-btn.compact {
-  height: 36px;
-  padding: 0 14px;
-  font-size: 13px;
-  border-radius: 12px;
-}
+// .mandir-add-btn.compact {
+//   height: 36px;
+//   padding: 0 14px;
+//   font-size: 13px;
+//   border-radius: 12px;
+// }
 
-.mandir-search-input::-webkit-input-placeholder {
-  color: #888;
-}
+// .mandir-search-input::-webkit-input-placeholder {
+//   color: #888;
+// }
 
-.mandir-search-input::-moz-placeholder {
-  color: #888;
-}
+// .mandir-search-input::-moz-placeholder {
+//   color: #888;
+// }
 
-.mandir-search-input:-ms-input-placeholder {
-  color: #888;
-}
+// .mandir-search-input:-ms-input-placeholder {
+//   color: #888;
+// }
 
 .mandir-verified-seal {
   width: 42px;
@@ -1894,3 +1894,414 @@ select {
   height: 100%;
 }
 
+// .mandir-action-btns {
+//   display: flex;
+//   gap: 8px;
+//   align-items: center;
+// }
+
+// .mandir-scan-btn {
+//   background: #fff3e0;
+//   border: 1.5px solid #b85c00;
+//   color: #b85c00;
+//   border-radius: 20px;
+//   padding: 6px 14px;
+//   font-size: 13px;
+//   font-weight: 600;
+//   cursor: pointer;
+//   white-space: nowrap;
+// }
+
+// .mandir-action-btns {
+//   display: flex;
+//   gap: 8px;
+//   align-items: center;
+// }
+
+// .mandir-scan-btn {
+//   background: #fff3e0;
+//   border: 1.5px solid #b85c00;
+//   color: #b85c00;
+//   border-radius: 20px;
+//   padding: 6px 14px;
+//   font-size: 13px;
+//   font-weight: 600;
+//   cursor: pointer;
+//   white-space: nowrap;
+// }
+
+.mandir-scanner-wrap {
+  margin: 0 16px 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid #e8c87a;
+  background: #000;
+
+  .mandir-scanner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #fff8f0;
+    border-bottom: 1px solid #e8c87a;
+
+    .mandir-scanner-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #7a5c00;
+    }
+
+    .mandir-scanner-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #b85c00;
+      cursor: pointer;
+      font-weight: 700;
+    }
+  }
+
+  zxing-scanner {
+    width: 100%;
+    display: block;
+
+    video {
+      width: 100% !important;
+      max-height: 260px;
+      object-fit: cover;
+    }
+  }
+
+  .mandir-scanner-hint {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: #fff8f0;
+    background: #b85c00;
+    font-weight: 500;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Top Compact Block ─────────────────────────────── */
+.mandir-top-compact {
+  padding: 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Title Row ─────────────────────────────────────── */
+.mandir-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mandir-heading-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .mandir-heading-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .comm-heading {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+  }
+
+  .mandir-heading-sub {
+    margin: 0;
+    font-size: 11px;
+    color: #999;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+  }
+}
+
+/* ── Action Buttons ────────────────────────────────── */
+.mandir-action-btns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mandir-scan-btn,
+.mandir-add-btn.compact {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 22px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  .btn-icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .btn-label {
+    line-height: 1;
+  }
+}
+
+.mandir-scan-btn {
+  background: #fff3e0;
+  border: 1.5px solid #d4860a;
+  color: #b85c00;
+  box-shadow: 0 2px 6px rgba(184, 92, 0, 0.15);
+}
+
+.mandir-add-btn.compact {
+  background: linear-gradient(135deg, #d4860a, #b85c00);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(184, 92, 0, 0.3);
+  border: none;
+}
+
+/* ── Search Bar ────────────────────────────────────── */
+.mandir-search-wrap.compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #e8c87a;
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 8px rgba(184, 92, 0, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: #b85c00;
+    box-shadow: 0 2px 12px rgba(184, 92, 0, 0.18);
+  }
+
+  .mandir-search-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .mandir-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 400;
+
+    &::placeholder {
+      color: #bbb;
+      font-size: 13px;
+    }
+  }
+
+  .mandir-search-clear {
+    font-size: 13px;
+    color: #b85c00;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0 2px;
+    opacity: 0.7;
+
+    &:active {
+      opacity: 1;
+    }
+  }
+}
+
+
+/* ── Banner ─────────────────────────────────────────── */
+.mandir-banner {
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  padding: 20px 20px 22px;
+  position: relative;
+  overflow: hidden;
+
+  .mandir-banner-om {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 72px;
+    color: rgba(255, 255, 255, 0.10);
+    line-height: 1;
+    pointer-events: none;
+    font-family: serif;
+  }
+
+  .mandir-banner-text {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mandir-banner-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.75);
+    text-transform: uppercase;
+  }
+
+  .mandir-banner-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ── Search Row ─────────────────────────────────────── */
+.mandir-search-row {
+  padding: 14px 14px 4px;
+  background: #FFFBF0;
+}
+
+/* ── Search Wrap ─────────────────────────────────────── */
+.mandir-search-wrap.compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #e8c87a;
+  border-radius: 14px;
+  padding: 0 4px 0 14px;
+  box-shadow: 0 2px 10px rgba(184, 92, 0, 0.10);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  height: 48px;
+
+  &.focused,
+  &:focus-within {
+    border-color: #FF9500;
+    box-shadow: 0 2px 14px rgba(184, 92, 0, 0.20);
+  }
+
+  .mandir-search-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    opacity: 0.55;
+  }
+
+  .mandir-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1a1a1a;
+    min-width: 0;
+
+    &::placeholder {
+      color: #c4a882;
+      font-size: 13px;
+    }
+  }
+
+  .mandir-search-clear {
+    font-size: 12px;
+    color: #b85c00;
+    cursor: pointer;
+    font-weight: 700;
+    opacity: 0.65;
+    flex-shrink: 0;
+    &:active { opacity: 1; }
+  }
+}
+
+/* ── QR Scan icon button (inside search) ──────────── */
+.mandir-scan-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #b85c00;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+
+  &:active,
+  &.active {
+    background: rgba(184, 92, 0, 0.10);
+    color: #FF9500;
+  }
+
+  svg { display: block; }
+}
+
+/* ── Divider between scan & add ────────────────────── */
+.mandir-search-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(184, 92, 0, 0.20);
+  flex-shrink: 0;
+}
+
+/* ── Add button (inside search bar) ───────────────── */
+.mandir-add-inline-btn {
+  height: 36px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px rgba(184, 92, 0, 0.30);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-right: 2px;
+
+  &:active {
+    transform: scale(0.96);
+    box-shadow: 0 1px 4px rgba(184, 92, 0, 0.20);
+  }
+}
+
+/* ── Top Compact wrapper ───────────────────────────── */
+.mandir-top-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  background: #FFFBF0;
+}

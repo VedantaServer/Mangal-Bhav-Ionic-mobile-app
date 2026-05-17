@@ -4,44 +4,61 @@
 <ion-content>
   <!-- ═══ MANDIR DIRECTORY ═══ -->
   <section class="comm-section mandir-dir-section">
-    <!-- <p class="comm-eyebrow">🛕 Sacred Places</p>
-    <h2 class="comm-heading">Mandir Directory</h2>
 
-    
-    <div class="mandir-toolbar">
-
-
-      <div class="mandir-search-wrap">
-        <span class="mandir-search-icon">🔍</span>
-        <input class="mandir-search-input" type="text" placeholder="Search by name, deity or city..."
-          style="color: black;" [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)"
-          (focus)="isSearchFocused = true" (blur)="isSearchFocused = false" />
-      </div>
-
-      <button class="mandir-add-btn" (click)="openAddMandir()" *ngIf="!isSearchFocused">
-        <span>+</span> Want to add a Mandir
-      </button>
-    </div> -->
     <div class="mandir-top-compact">
 
-      <div class="mandir-title-row">
-        <h2 class="comm-heading">🛕 Mandirs Nearby</h2>
-
-        <button class="mandir-add-btn compact" (click)="openAddMandir()" *ngIf="!isSearchFocused">
-          + Add
-        </button>
+      <!-- ── Orange Banner ── -->
+      <div class="mandir-banner">
+        <div class="mandir-banner-om">ॐ</div>
+        <div class="mandir-banner-text">
+          <span class="mandir-banner-eyebrow">✦ SACRED PLACES ✦</span>
+          <h2 class="mandir-banner-title">Mandirs Nearby</h2>
+        </div>
       </div>
 
-      <div class="mandir-search-wrap compact">
-        <span class="mandir-search-icon">🔍</span>
+      <!-- ── Search Bar (Scan + Add inside) ── -->
+      <div class="mandir-search-row">
+        <div class="mandir-search-wrap compact" [class.focused]="isSearchFocused">
+          <span class="mandir-search-icon">🔍</span>
 
-        <input class="mandir-search-input" type="text" placeholder="Search mandirs..." style="color:black;"
-          [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)"
-          (focus)="isSearchFocused = true" (blur)="isSearchFocused = false" />
+          <input class="mandir-search-input" type="text" placeholder="Search by name, deity or city…"
+            [(ngModel)]="mandirSearchQuery" (ngModelChange)="onMandirSearchChange($event)"
+            (focus)="isSearchFocused = true" (blur)="isSearchFocused = false" />
+
+          <span class="mandir-search-clear" *ngIf="mandirSearchQuery"
+            (click)="mandirSearchQuery=''; onMandirSearchChange('')">
+            ✕
+          </span>
+
+          <!-- Scan icon inside search bar -->
+          <button class="mandir-scan-icon-btn" (click)="toggleScanner()" [class.active]="showScanner">
+            <span *ngIf="!showScanner">
+              <!-- QR icon SVG -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none" />
+                <rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none" />
+                <rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none" />
+                <path d="M14 14h2v2h-2zM18 14h2v2h-2zM16 16h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" fill="currentColor"
+                  stroke="none" />
+              </svg>
+            </span>
+            <span *ngIf="showScanner" style="font-size:16px;font-weight:700;">✕</span>
+          </button>
+
+          <!-- Divider -->
+          <div class="mandir-search-divider"></div>
+
+          <!-- Add button inside search bar -->
+          <button class="mandir-add-inline-btn" (click)="openAddMandir()">
+            + Add
+          </button>
+        </div>
       </div>
 
     </div>
-
 
 
     <div class="mandir-location-notice fetching" *ngIf="locationState === 'fetching'">
@@ -72,7 +89,7 @@
 
 
 
-    <div class="mandir-grid" *ngIf="!isLoadingMandirs && filteredMandirs.length > 0; else noMandirs">
+    <div style="padding: 24px;" class="mandir-grid" *ngIf="!isLoadingMandirs && filteredMandirs.length > 0; else noMandirs">
       <div class="mandir-card" *ngFor="let m of filteredMandirs" (click)="openMandirDetails(m.MandirID)">
 
         <!-- Saffron top stripe -->
@@ -93,8 +110,8 @@
           <div class="mandir-img-name">{{ m.MandirName }}</div>
 
           <!-- Verified badge -->
-          <span class="mandir-verified-badge" *ngIf="m.IsVerified" style="background-color: white;"><svg width="32" height="32" viewBox="0 0 160 160"
-              xmlns="http://www.w3.org/2000/svg">
+          <span class="mandir-verified-badge" *ngIf="m.IsVerified" style="background-color: white;"><svg width="32"
+              height="32" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
 
               <defs>
                 <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
@@ -382,6 +399,22 @@
 
 </ion-content>
 
+
+<!-- ══════════════════════════════════
+     QR SCANNER OVERLAY
+══════════════════════════════════ -->
+<div class="mandir-scanner-wrap" *ngIf="showScanner">
+  <div class="mandir-scanner-header">
+    <span class="mandir-scanner-title">📷 Point at Mandir QR Code</span>
+    <button class="mandir-scanner-close" (click)="toggleScanner()">✕</button>
+  </div>
+
+  <zxing-scanner [enable]="showScanner" (scanSuccess)="onQrScanSuccess($event)" (scanError)="onQrScanError($event)"
+    [formats]="allowedFormats">
+  </zxing-scanner>
+
+  <div class="mandir-scanner-hint">🛕 Scan a Mandir QR to open its details</div>
+</div>
 
 
 <app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>

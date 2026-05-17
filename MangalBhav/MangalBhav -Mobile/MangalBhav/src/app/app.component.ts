@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Api, ApiNU } from '../providers';
+import { Router } from '@angular/router';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,27 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private storage: Storage,
-    public routerCtrl: NavController,
+    public routerCtrl: NavController,private router: Router
   ) {
     this.initializeApp();
+    this.handleDeepLinks();
+  }
+
+
+  handleDeepLinks() {
+
+    App.addListener('appUrlOpen', (event: any) => {
+
+      console.log('URL OPENED', event.url);
+
+      const slug = event.url.split('.com').pop();
+
+      if (slug) {
+        this.router.navigateByUrl(slug);
+      }
+
+    });
+
   }
 
   async initializeApp() {
@@ -33,6 +53,6 @@ export class AppComponent {
       this.routerCtrl.navigateRoot('/tabs/tab1', { replaceUrl: true });
     } else {
       this.routerCtrl.navigateRoot('/login', { replaceUrl: true });
-    } 
+    }
   }
 }

@@ -71,7 +71,7 @@
 
             <div class="puja-carousel" [id]="'carousel-cat-' + cat.CategoryID">
 
-              <div class="puja-card" *ngFor="let svc of cat.services">
+              <div class="puja-card" *ngFor="let svc of cat.services" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
 
                 <!-- IMAGE SECTION -->
                 <div class="puja-img-wrap">

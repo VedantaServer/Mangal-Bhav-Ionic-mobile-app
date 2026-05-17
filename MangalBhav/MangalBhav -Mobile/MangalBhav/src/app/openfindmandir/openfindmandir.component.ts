@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from 'src/providers';
 import { Storage } from '@ionic/storage-angular';
-
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { BarcodeFormat } from '@zxing/library';
 import { Geolocation } from '@capacitor/geolocation';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +19,7 @@ import { Capacitor } from '@capacitor/core';
   templateUrl: './openfindmandir.component.html',
   styleUrls: ['./openfindmandir.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent, JajmanbottomtabsComponent, PanditjibottomtabsComponent, LoggedoutbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,ZXingScannerModule, TabscommonheaderComponent, JajmanbottomtabsComponent, PanditjibottomtabsComponent, LoggedoutbottomtabsComponent]
 })
 export class OpenfindmandirComponent implements OnInit {
 
@@ -54,8 +55,10 @@ export class OpenfindmandirComponent implements OnInit {
   mandirSearchQuery = '';
   showLocationSuccess = false;
   showAddMandirForm = false;
+  allowedFormats = [BarcodeFormat.QR_CODE];
   isLoadingMandirs = false;
   isSearchFocused = false;
+  showScanner = false;
   isSubmittingMandir = false;
 
   // Front image
@@ -584,5 +587,28 @@ export class OpenfindmandirComponent implements OnInit {
   openMandirDetails(mandirID: number) {
     this.routerCtrl.navigateForward(`/mandirfulldetails/${mandirID}`);
   }
+
+  toggleScanner() {
+  this.showScanner = !this.showScanner;
+}
+
+onQrScanSuccess(result: string) {
+  // result will be like "mandirID=42"
+  const match = result.match(/mandirID=(\d+)/);
+
+  if (match && match[1]) {
+    this.showScanner = false;
+    const mandirId = match[1];
+    this.routerCtrl.navigateForward(`/mandirfulldetails/${mandirId}`);
+  } else {
+    this.showToast('Invalid QR — not a Mandir QR code 🛕', 'warning');
+  }
+}
+
+onQrScanError(error: any) {
+  console.error('QR Scan Error:', error);
+  // Don't show toast on every frame error — ZXing fires this frequently
+  // Only close if it's a real device/permission error
+}
 
 }

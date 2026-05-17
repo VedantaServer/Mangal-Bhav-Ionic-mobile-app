@@ -32,24 +32,15 @@
 
       <ng-container *ngIf="slideImages.length > 0; else heroPlaceholder">
         <img [src]="slideImages[activeSlide].url" class="mfd-hero-img" [alt]="mandir.MandirName" />
-
-        <!-- Gradient overlay -->
         <div class="mfd-hero-overlay"></div>
-
-        <!-- Slide label -->
         <div class="mfd-slide-label">{{ slideImages[activeSlide].label }}</div>
-
-        <!-- Slider controls -->
         <div class="mfd-slider-controls" *ngIf="slideImages.length > 1">
           <button class="mfd-slider-btn" (click)="prevSlide()">‹</button>
           <div class="mfd-slider-dots">
-            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index" [class.active]="i === activeSlide">
-            </span>
+            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index" [class.active]="i === activeSlide"></span>
           </div>
           <button class="mfd-slider-btn" (click)="nextSlide()">›</button>
         </div>
-
-        <!-- Verified badge -->
         <div class="mfd-verified" *ngIf="mandir.IsVerified">✦ Verified</div>
       </ng-container>
 
@@ -60,7 +51,6 @@
         </div>
       </ng-template>
 
-      <!-- Name + God floating at bottom -->
       <div class="mfd-hero-bottom">
         <h1 class="mfd-hero-name">{{ mandir.MandirName }}</h1>
         <p class="mfd-hero-god">✦ {{ mandir.GodName }}</p>
@@ -86,7 +76,6 @@
     ══════════════════════════════════ -->
     <div class="mfd-section-label">About</div>
 
-    <!-- Deity -->
     <div class="mfd-info-card">
       <div class="mfd-info-icon">🌸</div>
       <div class="mfd-info-body">
@@ -95,7 +84,6 @@
       </div>
     </div>
 
-    <!-- Pujari -->
     <div class="mfd-info-card" *ngIf="mandir.PujariName">
       <div class="mfd-info-icon">🙏</div>
       <div class="mfd-info-body">
@@ -109,7 +97,6 @@
       </div>
     </div>
 
-    <!-- Address -->
     <div class="mfd-info-card mfd-info-card--clickable" *ngIf="mandir.Address" (click)="openMaps()">
       <div class="mfd-info-icon">📍</div>
       <div class="mfd-info-body">
@@ -123,14 +110,10 @@
       <ion-icon name="chevron-forward-outline" class="mfd-info-arrow"></ion-icon>
     </div>
 
-    <!-- Map button -->
     <div class="mfd-map-btn-wrap" *ngIf="mandir.Latitude && mandir.Longitude">
-      <button class="mfd-map-btn" (click)="openMaps()">
-        🗺️ Open in Google Maps
-      </button>
+      <button class="mfd-map-btn" (click)="openMaps()">🗺️ Open in Google Maps</button>
     </div>
 
-    <!-- History -->
     <ng-container *ngIf="mandir.History">
       <div class="mfd-section-label">History & Significance</div>
       <div class="mfd-history-card">
@@ -143,7 +126,6 @@
     <div class="mfd-section-label">Details</div>
     <div class="mfd-details-row">
       <div class="mfd-detail-box">
-        <!-- Stamp — make it clickable -->
         <div class="mfd-detail-icon" (click)="mandir.IsVerified && showStampPopup = true"
           [style.cursor]="mandir.IsVerified ? 'pointer' : 'default'">
           <ng-container *ngIf="mandir.IsVerified; else pendingIcon">
@@ -152,15 +134,9 @@
                 <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
                 <path id="botArc" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
               </defs>
-
-              <!-- outer ring -->
               <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
-              <!-- dashed ring -->
               <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
-              <!-- inner ring -->
               <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
-
-              <!-- 8 tick marks -->
               <g fill="#b85c00">
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(0   80 80)" />
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(45  80 80)" />
@@ -171,59 +147,37 @@
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(270 80 80)" />
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(315 80 80)" />
               </g>
-
-              <!-- corner stars -->
               <text x="32" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="128" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="32" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="128" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
-
-              <!-- top curved: MANGAL BHAV -->
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
                 <textPath href="#topArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-
-              <!-- bottom curved: MANGAL BHAV -->
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
                 <textPath href="#botArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-
-              <!-- OM -->
-              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
-                fill="#b85c00">ॐ</text>
-              <!-- VERIFIED -->
-              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
-                fill="#b85c00" letter-spacing="3">VERIFIED</text>
-              <!-- divider -->
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700" fill="#b85c00">ॐ</text>
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700" fill="#b85c00" letter-spacing="3">VERIFIED</text>
               <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
-              <!-- SACRED PLACE -->
-              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
-                letter-spacing="2">SACRED PLACE</text>
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00" letter-spacing="2">SACRED PLACE</text>
             </svg>
           </ng-container>
           <ng-template #pendingIcon>⏳</ng-template>
         </div>
 
-        <!-- ══ STAMP POPUP ══ -->
+        <!-- STAMP POPUP -->
         <div class="stamp-backdrop" *ngIf="showStampPopup" (click)="showStampPopup = false">
           <div class="stamp-popup" (click)="$event.stopPropagation()">
-
             <button class="stamp-popup-close" (click)="showStampPopup = false">✕</button>
-
             <svg width="190" height="190" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
-                <path id="botArc" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
+                <path id="topArc2" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+                <path id="botArc2" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
               </defs>
-
-              <!-- outer ring -->
               <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
-              <!-- dashed ring -->
               <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
-              <!-- inner ring -->
               <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
-
-              <!-- 8 tick marks -->
               <g fill="#b85c00">
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(0   80 80)" />
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(45  80 80)" />
@@ -234,69 +188,73 @@
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(270 80 80)" />
                 <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(315 80 80)" />
               </g>
-
-              <!-- corner stars -->
               <text x="32" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="128" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="32" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text x="128" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
-
-              <!-- top curved: MANGAL BHAV -->
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
-                <textPath href="#topArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+                <textPath href="#topArc2" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-
-              <!-- bottom curved: MANGAL BHAV -->
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
-                <textPath href="#botArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
+                <textPath href="#botArc2" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-
-              <!-- OM -->
-              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
-                fill="#b85c00">ॐ</text>
-              <!-- VERIFIED -->
-              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
-                fill="#b85c00" letter-spacing="3">VERIFIED</text>
-              <!-- divider -->
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700" fill="#b85c00">ॐ</text>
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700" fill="#b85c00" letter-spacing="3">VERIFIED</text>
               <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
-              <!-- SACRED PLACE -->
-              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
-                letter-spacing="2">SACRED PLACE</text>
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00" letter-spacing="2">SACRED PLACE</text>
             </svg>
-
             <div class="stamp-popup-title">{{ mandir.MandirName }}</div>
             <div class="stamp-popup-sub">This mandir has been officially verified by Mangal Bhav</div>
             <div class="stamp-popup-badge">✦ Trusted & Verified ✦</div>
-
           </div>
         </div>
+
         <div class="mfd-detail-label">Status</div>
         <div class="mfd-detail-value" [class.green]="mandir.IsVerified" [class.orange]="!mandir.IsVerified">
           {{ mandir.IsVerified ? 'Verified' : 'Pending' }}
         </div>
       </div>
+
       <div class="mfd-detail-box" *ngIf="mandir.AddedByName">
         <div class="mfd-detail-icon">👤</div>
         <div class="mfd-detail-label">Added By</div>
         <div class="mfd-detail-value">{{ mandir.AddedByName }}</div>
       </div>
+
       <div class="mfd-detail-box">
         <div class="mfd-detail-icon">📅</div>
         <div class="mfd-detail-label">Added On</div>
         <div class="mfd-detail-value">{{ mandir.DateAdded | date:'dd MMM yyyy' }}</div>
       </div>
     </div>
+
     <!-- ══════════════════════════════════
-     DONATIONS RECEIVED
-══════════════════════════════════ -->
+         QR CODE SECTION
+    ══════════════════════════════════ -->
+    <div class="mfd-section-label">Share This Mandir</div>
+    <div class="mfd-qr-card">
+      <div class="mfd-qr-label">Scan to visit this mandir's page</div>
+      <qrcode [qrdata]="'mandirID=' + mandirID" [width]="180" errorCorrectionLevel="M"></qrcode>
+      <div class="mfd-qr-sub">{{ mandir?.MandirName }}</div>
+      <div class="mfd-share-row">
+        <button class="mfd-share-btn whatsapp" (click)="shareOnWhatsApp()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+          </svg>
+          Share on WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         DONATIONS RECEIVED
+    ══════════════════════════════════ -->
     <ng-container *ngIf="MandirTransactionList?.length > 0">
       <div class="mfd-section-label">🪔 Donations Received</div>
-
       <div class="mfd-donate-count-badge">
-        {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this
-        mandir
+        {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this mandir
       </div>
-
       <div class="mfd-txn-card" *ngFor="let txn of MandirTransactionList">
         <div class="mfd-txn-left">
           <div class="mfd-txn-avatar">{{ txn.DonorName?.charAt(0)?.toUpperCase() || '🙏' }}</div>
@@ -319,21 +277,20 @@
       </div>
     </ng-container>
 
-   
-    <!-- Divider -->
     <div class="mfd-divider">✦ ॐ ✦ ॐ ✦</div>
-
     <div class="mfd-slogan">
       <p>हर हर महादेव · जय श्री राम · जय माता दी</p>
     </div>
 
   </div><!-- /mfd-wrap -->
 
+
   <!-- ══════════════════════════════════
        DONATE BOTTOM SHEET
   ══════════════════════════════════ -->
-  <div class="mfd-backdrop" [class.active]="showDonateSheet" (click)="closeDonate()"></div>
+  <div class="mfd-backdrop" [class.active]="showDonateSheet || showPreviewSheet" (click)="closeAll()"></div>
 
+  <!-- ─── DONATE SHEET ─── -->
   <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
 
     <div class="mfd-sheet-header">
@@ -347,13 +304,14 @@
       <!-- Preset amounts -->
       <div class="mfd-donate-label">Select Amount</div>
       <div class="mfd-preset-grid">
-        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
+        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts"
+          [class.selected]="donateAmount === (amt + '')"
           (click)="selectPreset(amt)">
           ₹{{ amt }}
         </button>
       </div>
 
-      <!-- Custom amount + Name + Mobile in compact 2-col row -->
+      <!-- Custom amount -->
       <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div>
       <div class="mfd-amount-input-wrap">
         <span class="mfd-rupee">₹</span>
@@ -361,6 +319,17 @@
           (input)="donateAmount = ''" />
       </div>
 
+      <!-- Purpose Dropdown -->
+      <div class="mfd-donate-label" style="margin-top: 14px;">Purpose of Donation</div>
+      <div class="mfd-select-wrap">
+        <select class="mfd-select" [(ngModel)]="donatePurpose">
+          <option value="" disabled>Select a purpose…</option>
+          <option *ngFor="let opt of purposeOptions" [value]="opt">{{ opt }}</option>
+        </select>
+        <span class="mfd-select-arrow">▾</span>
+      </div>
+
+      <!-- Name + Mobile -->
       <div class="mfd-two-col" style="margin-top: 12px;">
         <div>
           <div class="mfd-donate-label">Your Name</div>
@@ -372,34 +341,364 @@
         </div>
       </div>
 
-      <!-- Summary with platform fee -->
+      <!-- Make a Wish Box -->
+      <div class="mfd-donate-label" style="margin-top: 14px;">🌟 Make a Wish (Optional)</div>
+      <div class="mfd-wish-wrap">
+        <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
+          placeholder="Write your wish or prayer here… 🙏&#10;e.g. Bless my family with good health & happiness"
+          rows="3" maxlength="200"></textarea>
+        <div class="mfd-wish-count">{{ donateWish?.length || 0 }}/200</div>
+      </div>
+
+      <!-- Summary -->
       <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
         <div class="mfd-summary-row">
           <span>🙏 Donation Amount : </span>
           <strong>₹{{ finalAmount }}</strong>
         </div>
         <div class="mfd-summary-divider"></div>
+        <div class="mfd-support-box">
+          <label class="mfd-support-label">
+            <input type="checkbox" [(ngModel)]="supportMangalBhav" />
+            ❤️ Support Mangal Bhav App
+          </label>
+          <div class="mfd-support-sub">Help us maintain and improve the app 🙏</div>
+        </div>
+        <div class="mfd-summary-divider"></div>
         <div class="mfd-summary-row platform">
           <span>⚡ Platform Charges : </span>
-          <span class="platform-fee">₹5</span>
+          <span class="platform-fee">₹{{ supportMangalBhav ? platformFee : 0 }}</span>
         </div>
         <div class="mfd-summary-divider"></div>
         <div class="mfd-summary-row total">
           <span>💰 Total Donation : </span>
-          <strong class="total-amt">₹{{ finalAmount + 5 }}</strong>
+          <strong class="total-amt">
+            ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}
+          </strong>
         </div>
       </div>
 
-    </div>
+      <!-- Donor history teaser -->
+      <div class="mfd-donor-teaser" *ngIf="MandirTransactionList?.length === 0">
+        <span class="mfd-donor-teaser-icon">🌟</span>
+        <div>
+          <div class="mfd-donor-teaser-title">Be the First Donor!</div>
+          <div class="mfd-donor-teaser-sub">Your name will be forever remembered as the founding donor of this mandir.</div>
+        </div>
+      </div>
+      <div class="mfd-donor-teaser" *ngIf="MandirTransactionList?.length > 0">
+        <span class="mfd-donor-teaser-icon">🪔</span>
+        <div>
+          <div class="mfd-donor-teaser-title">Join {{ MandirTransactionList.length }} generous donor{{ MandirTransactionList.length > 1 ? 's' : '' }}</div>
+          <div class="mfd-donor-teaser-sub">Your support keeps this sacred place alive. Your name will be listed with honour.</div>
+        </div>
+      </div>
+
+    </div><!-- /sheet-body -->
 
     <div class="mfd-sheet-footer">
       <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
-      <button class="mfd-donate-submit-btn" (click)="initiatePayment()" [disabled]="isDonating || finalAmount < 1">
-        <span *ngIf="!isDonating">🪔 Donate ₹{{ finalAmount > 0 ? finalAmount + 5 : 0 }}</span>
+      <button class="mfd-donate-submit-btn" (click)="proceedToPreview()" [disabled]="finalAmount < 1">
+        🪔 Preview &amp; Confirm ₹{{ finalAmount > 0 ? finalAmount + (supportMangalBhav ? platformFee : 0) : 0 }}
+      </button>
+    </div>
+
+  </div><!-- /donate-sheet -->
+
+
+  <!-- ─── PREVIEW / CONFIRMATION SHEET ─── -->
+  <div class="mfd-preview-sheet" [class.active]="showPreviewSheet">
+
+    <div class="mfd-preview-header">
+      <button class="mfd-preview-back" (click)="backToDonate()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="mfd-preview-header-text">
+        <div class="mfd-preview-header-title">Confirm Donation</div>
+        <div class="mfd-preview-header-sub">Review before payment</div>
+      </div>
+      <button class="mfd-sheet-close" (click)="closeAll()">✕</button>
+    </div>
+
+    <div class="mfd-preview-body">
+
+      <!-- Temple image + Deity side by side -->
+      <div class="mfd-preview-temple-row">
+        <div class="mfd-preview-temple-img-wrap">
+          <img *ngIf="FrontImageUrl; else previewPlaceholder" [src]="FrontImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
+          <ng-template #previewPlaceholder>
+            <div class="mfd-preview-temple-placeholder">🛕</div>
+          </ng-template>
+          <div class="mfd-preview-img-label">{{ mandir?.MandirName }}</div>
+        </div>
+        <div class="mfd-preview-deity-wrap">
+          <div class="mfd-preview-deity-icon">🙏</div>
+          <div class="mfd-preview-deity-name">{{ mandir?.GodName }}</div>
+          <div class="mfd-preview-deity-label">Presiding Deity</div>
+          <div class="mfd-preview-verified-badge" *ngIf="mandir?.IsVerified">
+            ✦ Verified Mandir
+          </div>
+        </div>
+      </div>
+
+      <!-- Mandir Address Card -->
+      <div class="mfd-preview-card">
+        <div class="mfd-preview-card-title">📍 Mandir Location</div>
+        <div class="mfd-preview-card-body">
+          <div class="mfd-preview-address" *ngIf="mandir?.Address">{{ mandir.Address }}</div>
+          <div class="mfd-preview-city" *ngIf="mandir?.City || mandir?.State">
+            {{ mandir.City }}{{ mandir.City && mandir.State ? ', ' : '' }}{{ mandir.State }}
+            {{ mandir.Pincode ? ' – ' + mandir.Pincode : '' }}
+          </div>
+          <button class="mfd-preview-maps-link" *ngIf="mandir?.Latitude && mandir?.Longitude" (click)="openMaps()">
+            🗺️ View on Google Maps
+          </button>
+        </div>
+      </div>
+
+      <!-- Bank Account Info -->
+      <div class="mfd-preview-card mfd-preview-card--bank">
+        <div class="mfd-preview-card-title">🏦 Funds Go Directly to Temple</div>
+        <div class="mfd-preview-bank-row">
+          <div class="mfd-preview-bank-icon">🔒</div>
+          <div class="mfd-preview-bank-info">
+            <div class="mfd-preview-bank-label">100% of your donation reaches the mandir</div>
+            <div class="mfd-preview-bank-acct">Account ending in ···· {{ mandir?.BankAccountLast4 || '****' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caretaker (if available) -->
+      <div class="mfd-preview-card" *ngIf="mandir?.PujariName">
+        <div class="mfd-preview-card-title">🙏 Caretaker / Pujari</div>
+        <div class="mfd-preview-card-body">
+          <div class="mfd-preview-caretaker-row">
+            <div class="mfd-preview-caretaker-avatar">{{ mandir.PujariName?.charAt(0)?.toUpperCase() }}</div>
+            <div>
+              <div class="mfd-preview-caretaker-name">{{ mandir.PujariName }}</div>
+              <a *ngIf="mandir?.PujariPhoneNumber" [href]="'tel:' + mandir.PujariPhoneNumber" class="mfd-preview-phone">
+                📞 {{ mandir.PujariPhoneNumber }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Refund Promise -->
+      <div class="mfd-preview-card mfd-preview-card--refund">
+        <div class="mfd-preview-card-title">🔄 Refund Promise</div>
+        <div class="mfd-preview-refund-body">
+          <div class="mfd-preview-refund-icon">🛡️</div>
+          <div>
+            <div class="mfd-preview-refund-text">If you face any payment issue, we promise a full refund within</div>
+            <div class="mfd-preview-refund-days">11 Days</div>
+            <div class="mfd-preview-refund-sub">No questions asked. Contact us within 11 days of donation.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+      <div class="mfd-preview-card mfd-preview-card--support">
+        <div class="mfd-preview-card-title">💬 Need Help?</div>
+        <button class="mfd-preview-whatsapp-btn" (click)="openWhatsApp()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+          </svg>
+          Chat with Support on WhatsApp
+        </button>
+        <div class="mfd-preview-support-sub">Available Mon–Sat · 9 AM to 6 PM</div>
+      </div>
+
+      <!-- Donation Summary -->
+      <div class="mfd-preview-card mfd-preview-card--amount">
+        <div class="mfd-preview-card-title">💰 Donation Summary</div>
+        <div class="mfd-preview-summary-grid">
+          <div class="mfd-preview-summary-row">
+            <span>Donor</span>
+            <strong>{{ donateName || '—' }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row">
+            <span>Purpose</span>
+            <strong>{{ donatePurpose || 'General Donation' }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row" *ngIf="donateWish">
+            <span>Wish</span>
+            <strong class="mfd-preview-wish-val">{{ donateWish }}</strong>
+          </div>
+          <div class="mfd-preview-summary-divider"></div>
+          <div class="mfd-preview-summary-row">
+            <span>Donation</span>
+            <strong>₹{{ finalAmount }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row" *ngIf="supportMangalBhav">
+            <span>Platform Fee</span>
+            <strong>₹{{ platformFee }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row mfd-preview-summary-total">
+            <span>Total</span>
+            <strong>₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}</strong>
+          </div>
+        </div>
+        <div class="mfd-preview-charges-note">* Payment gateway charges may apply</div>
+      </div>
+
+      <!-- Make a wish (on preview too) -->
+      <ng-container *ngIf="!donateWish">
+        <div class="mfd-donate-label" style="padding: 0 4px 8px;">🌟 Add a Wish / Prayer</div>
+        <div class="mfd-wish-wrap">
+          <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
+            placeholder="Write your wish or prayer… 🙏"
+            rows="2" maxlength="200"></textarea>
+          <div class="mfd-wish-count">{{ donateWish?.length || 0 }}/200</div>
+        </div>
+      </ng-container>
+
+      <!-- Donor history teaser -->
+      <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length === 0">
+        <div class="mfd-preview-honor-icon">🌟</div>
+        <div class="mfd-preview-honor-text">
+          <strong>You could be the first donor!</strong>
+          <p>Your name will be recorded in the mandir's history as the founding donor. A true blessing.</p>
+        </div>
+      </div>
+      <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length > 0">
+        <div class="mfd-preview-honor-icon">🪔</div>
+        <div class="mfd-preview-honor-text">
+          <strong>{{ MandirTransactionList.length }} people have donated</strong>
+          <p>Join this family of devotees. Your name will be listed with pride among all donors.</p>
+        </div>
+      </div>
+
+      <!-- Secure badges -->
+      <div class="mfd-preview-secure-strip">
+        <div class="mfd-preview-secure-item">🔒 Safe &amp; Secure</div>
+        <div class="mfd-preview-secure-item">✦ Verified Temple</div>
+        <div class="mfd-preview-secure-item">🛡️ 11-Day Refund</div>
+      </div>
+
+    </div><!-- /preview-body -->
+
+    <!-- Footer with trust seals -->
+    <div class="mfd-preview-footer">
+      <div class="mfd-preview-trust-row">
+        <div class="mfd-preview-trust-item">
+          <span class="mfd-preview-trust-icon">🔒</span>
+          <span>Secure<br>Payment</span>
+        </div>
+        <div class="mfd-preview-trust-divider"></div>
+        <div class="mfd-preview-trust-item">
+          <span class="mfd-preview-trust-icon">✅</span>
+          <span>Instant<br>Receipt</span>
+        </div>
+        <div class="mfd-preview-trust-divider"></div>
+        <div class="mfd-preview-trust-item">
+          <span class="mfd-preview-trust-icon">✅</span>
+          <span>Donation<br>Recorded</span>
+        </div>
+        <div class="mfd-preview-trust-divider"></div>
+        <div class="mfd-preview-trust-item">
+          <span class="mfd-preview-trust-icon">✅</span>
+          <span>Temple<br>Verified</span>
+        </div>
+      </div>
+
+      <button class="mfd-preview-pay-btn" (click)="initiatePayment()" [disabled]="isDonating">
+        <span *ngIf="!isDonating">
+          🪔 Make Secure Payment · ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}
+        </span>
         <span *ngIf="isDonating">Processing…</span>
       </button>
     </div>
 
-  </div>
+  </div><!-- /preview-sheet -->
 
 </ion-content>
+
+
+<div class="modal-bg" *ngIf="showDonationSuccessModal">
+  <div class="modal-wrap">
+
+    <div class="modal-header">
+      <div class="sparkles-wrap" id="sparks"></div>
+
+      <div class="diya-row">
+        <span class="diya">🪔</span>
+        <span class="diya">🙏</span>
+        <span class="diya">🪔</span>
+      </div>
+
+      <span class="modal-god-icon">🛕</span>
+      <div class="modal-title">जय श्री राम 🙏</div>
+      <p class="modal-subtitle">आपका दान पुण्यकारी है।<br>May your blessings multiply a thousand-fold.</p>
+      <div class="mandir-name-banner">✦ Shri Ram Mandir, Ayodhya ✦</div>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="receipt-card">
+        <div class="receipt-top">
+          <div>
+            <div class="receipt-amount-label">Donation Amount</div>
+            <div class="receipt-amount">₹{{ successDonationData?.amount }}</div>
+            <div class="receipt-amount-sub">+ ₹{{ successDonationData?.platformFee }} platform support</div>
+          </div>
+          <div class="receipt-diya-stamp">🪔</div>
+        </div>
+
+        <div class="receipt-rows">
+          <div class="receipt-row">
+            <span class="rr-label">Donor</span>
+            <span class="rr-value">{{ successDonationData?.donorName }}</span>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row">
+            <span class="rr-label">Purpose</span>
+            <span class="rr-value">{{ successDonationData?.purpose }}</span>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row">
+            <span class="rr-label">Date & Time</span>
+            <span class="rr-value">{{ successDonationData?.date | date:'dd MMM yyyy · hh:mm a' }}</span>
+          </div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-row">
+            <span class="rr-label">Txn ID</span>
+            <span class="rr-value" style="font-family: monospace; font-size: 11px; color: #B08050;">{{ successDonationData?.paymentId }}</span>
+          </div>
+        </div>
+
+        <div style="padding: 0 16px 14px;">
+          <div class="wish-box">
+            <span class="wish-icon">🌟</span>
+            "Bless my family with good health, peace, and prosperity. Jai Shri Ram!"
+          </div>
+        </div>
+      </div>
+
+      <div class="message-box">
+        <div class="message-box-title">✅ Donation Recorded Successfully</div>
+        <div class="message-box-text">
+          Your seva has been recorded in the mandir's history.<br>
+          An eternal blessing has been sent your way. 🙏
+        </div>
+      </div>
+
+      <div class="honor-strip">
+        <span class="honor-icon">🌟</span>
+        <div class="honor-text">You are among 12 generous souls who have blessed this mandir.<br>Your name is now part of its sacred history.</div>
+      </div>
+
+      <div class="share-row">
+        <button class="share-btn whatsapp" (click)="shareDonationOnWhatsApp()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          Share Seva
+        </button>
+        <button class="share-btn close-btn" (click)="showDonationSuccessModal = false">Jai Shri Ram 🙏</button>
+      </div>
+
+      <div class="bottom-mantra">हर हर महादेव · जय माता दी · जय श्री राम</div>
+
+    </div>
+  </div>
+</div>
