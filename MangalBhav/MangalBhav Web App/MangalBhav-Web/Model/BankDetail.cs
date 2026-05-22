@@ -7,6 +7,7 @@ namespace FaceUPAI.Models
 
 		private int bankDetailsId;
 		private int tenantId;
+		private int mandirID;
 		private int userID;
 		private string accountHolderName;
 		private string bankName;
@@ -34,9 +35,10 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the BankDetail class.
 		/// </summary>
-		public BankDetail(int tenantId, int userID, string accountHolderName, string bankName, string accountNumber, string iFSCCode, string branchName, string uPIId, string accountType, bool isActive, DateTime dateAdded, DateTime dateModified, int updatedByUser)
+		public BankDetail(int tenantId, int mandirID, int userID, string accountHolderName, string bankName, string accountNumber, string iFSCCode, string branchName, string uPIId, string accountType, bool isActive, DateTime dateAdded, DateTime dateModified, int updatedByUser)
 		{
 			this.tenantId = tenantId;
+			this.mandirID = mandirID;
 			this.userID = userID;
 			this.accountHolderName = accountHolderName;
 			this.bankName = bankName;
@@ -54,10 +56,11 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the BankDetail class.
 		/// </summary>
-		public BankDetail(int bankDetailsId, int tenantId, int userID, string accountHolderName, string bankName, string accountNumber, string iFSCCode, string branchName, string uPIId, string accountType, bool isActive, DateTime dateAdded, DateTime dateModified, int updatedByUser)
+		public BankDetail(int bankDetailsId, int tenantId, int mandirID, int userID, string accountHolderName, string bankName, string accountNumber, string iFSCCode, string branchName, string uPIId, string accountType, bool isActive, DateTime dateAdded, DateTime dateModified, int updatedByUser)
 		{
 			this.bankDetailsId = bankDetailsId;
 			this.tenantId = tenantId;
+			this.mandirID = mandirID;
 			this.userID = userID;
 			this.accountHolderName = accountHolderName;
 			this.bankName = bankName;
@@ -91,6 +94,15 @@ namespace FaceUPAI.Models
 		{
 			get { return tenantId; }
 			set { tenantId = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the MandirID value.
+		/// </summary>
+		public  int MandirID
+		{
+			get { return mandirID; }
+			set { mandirID = value; }
 		}
 
 		/// <summary>

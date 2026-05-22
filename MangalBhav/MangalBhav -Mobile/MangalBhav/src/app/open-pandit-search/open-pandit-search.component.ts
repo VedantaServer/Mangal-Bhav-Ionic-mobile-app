@@ -286,7 +286,7 @@ export class OpenPanditSearchComponent implements OnInit {
     });
   }
   getProfileImage(userID: number): string {
-    return this.profileImages[userID] || 'assets/default.jfif';
+    return this.profileImages[userID] || 'assets/pandit.png';
   }
 
   // Book Now — store panditUserID, go to login

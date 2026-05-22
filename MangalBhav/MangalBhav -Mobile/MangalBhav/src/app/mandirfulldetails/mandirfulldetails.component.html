@@ -37,7 +37,8 @@
         <div class="mfd-slider-controls" *ngIf="slideImages.length > 1">
           <button class="mfd-slider-btn" (click)="prevSlide()">‹</button>
           <div class="mfd-slider-dots">
-            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index" [class.active]="i === activeSlide"></span>
+            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index"
+              [class.active]="i === activeSlide"></span>
           </div>
           <button class="mfd-slider-btn" (click)="nextSlide()">›</button>
         </div>
@@ -68,7 +69,7 @@
           <div class="mfd-donate-sub">Support the sacred upkeep & seva</div>
         </div>
       </div>
-      <button class="mfd-donate-cta">Donate ₹</button>
+      <!-- <button class="mfd-donate-cta">Donate ₹</button> -->
     </div>
 
     <!-- ══════════════════════════════════
@@ -102,10 +103,10 @@
       <div class="mfd-info-body">
         <div class="mfd-info-label">Address</div>
         <div class="mfd-info-value">{{ mandir.Address }}</div>
-        <div class="mfd-info-sub" *ngIf="mandir.City || mandir.State">
+        <!-- <div class="mfd-info-sub" *ngIf="mandir.City || mandir.State">
           {{ mandir.City }}{{ mandir.City && mandir.State ? ', ' : '' }}{{ mandir.State }}
           {{ mandir.Pincode ? ' – ' + mandir.Pincode : '' }}
-        </div>
+        </div> -->
       </div>
       <ion-icon name="chevron-forward-outline" class="mfd-info-arrow"></ion-icon>
     </div>
@@ -157,10 +158,13 @@
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
                 <textPath href="#botArc" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700" fill="#b85c00">ॐ</text>
-              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700" fill="#b85c00" letter-spacing="3">VERIFIED</text>
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
+                fill="#b85c00">ॐ</text>
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
+                fill="#b85c00" letter-spacing="3">VERIFIED</text>
               <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
-              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00" letter-spacing="2">SACRED PLACE</text>
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
+                letter-spacing="2">SACRED PLACE</text>
             </svg>
           </ng-container>
           <ng-template #pendingIcon>⏳</ng-template>
@@ -198,10 +202,13 @@
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
                 <textPath href="#botArc2" startOffset="50%" text-anchor="middle">MANGAL BHAV</textPath>
               </text>
-              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700" fill="#b85c00">ॐ</text>
-              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700" fill="#b85c00" letter-spacing="3">VERIFIED</text>
+              <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
+                fill="#b85c00">ॐ</text>
+              <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700"
+                fill="#b85c00" letter-spacing="3">VERIFIED</text>
               <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
-              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00" letter-spacing="2">SACRED PLACE</text>
+              <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
+                letter-spacing="2">SACRED PLACE</text>
             </svg>
             <div class="stamp-popup-title">{{ mandir.MandirName }}</div>
             <div class="stamp-popup-sub">This mandir has been officially verified by Mangal Bhav</div>
@@ -239,8 +246,10 @@
       <div class="mfd-share-row">
         <button class="mfd-share-btn whatsapp" (click)="shareOnWhatsApp()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
           </svg>
           Share on WhatsApp
         </button>
@@ -253,7 +262,8 @@
     <ng-container *ngIf="MandirTransactionList?.length > 0">
       <div class="mfd-section-label">🪔 Donations Received</div>
       <div class="mfd-donate-count-badge">
-        {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this mandir
+        {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this
+        mandir
       </div>
       <div class="mfd-txn-card" *ngFor="let txn of MandirTransactionList">
         <div class="mfd-txn-left">
@@ -304,8 +314,7 @@
       <!-- Preset amounts -->
       <div class="mfd-donate-label">Select Amount</div>
       <div class="mfd-preset-grid">
-        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts"
-          [class.selected]="donateAmount === (amt + '')"
+        <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
           (click)="selectPreset(amt)">
           ₹{{ amt }}
         </button>
@@ -347,7 +356,7 @@
         <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
           placeholder="Write your wish or prayer here… 🙏&#10;e.g. Bless my family with good health & happiness"
           rows="3" maxlength="200"></textarea>
-        <div class="mfd-wish-count">{{ donateWish?.length || 0 }}/200</div>
+        <div class="mfd-wish-count">{{ donateWish.length || 0 }}/200</div>
       </div>
 
       <!-- Summary -->
@@ -383,14 +392,17 @@
         <span class="mfd-donor-teaser-icon">🌟</span>
         <div>
           <div class="mfd-donor-teaser-title">Be the First Donor!</div>
-          <div class="mfd-donor-teaser-sub">Your name will be forever remembered as the founding donor of this mandir.</div>
+          <div class="mfd-donor-teaser-sub">Your name will be forever remembered as the founding donor of this mandir.
+          </div>
         </div>
       </div>
       <div class="mfd-donor-teaser" *ngIf="MandirTransactionList?.length > 0">
         <span class="mfd-donor-teaser-icon">🪔</span>
         <div>
-          <div class="mfd-donor-teaser-title">Join {{ MandirTransactionList.length }} generous donor{{ MandirTransactionList.length > 1 ? 's' : '' }}</div>
-          <div class="mfd-donor-teaser-sub">Your support keeps this sacred place alive. Your name will be listed with honour.</div>
+          <div class="mfd-donor-teaser-title">Join {{ MandirTransactionList.length }} generous donor{{
+            MandirTransactionList.length > 1 ? 's' : '' }}</div>
+          <div class="mfd-donor-teaser-sub">Your support keeps this sacred place alive. Your name will be listed with
+            honour.</div>
         </div>
       </div>
 
@@ -425,7 +437,8 @@
       <!-- Temple image + Deity side by side -->
       <div class="mfd-preview-temple-row">
         <div class="mfd-preview-temple-img-wrap">
-          <img *ngIf="FrontImageUrl; else previewPlaceholder" [src]="FrontImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
+          <img *ngIf="InsideImageUrl || FrontImageUrl; else previewPlaceholder" [src]="InsideImageUrl || FrontImageUrl"
+            class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
           <ng-template #previewPlaceholder>
             <div class="mfd-preview-temple-placeholder">🛕</div>
           </ng-template>
@@ -441,8 +454,41 @@
         </div>
       </div>
 
+      <div class="mfd-preview-card mfd-preview-card--amount">
+        <div class="mfd-preview-card-title">💰 Donation Summary</div>
+        <div class="mfd-preview-summary-grid">
+          <div class="mfd-preview-summary-row">
+            <span>Donor</span>
+            <strong>{{ donateName || '—' }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row">
+            <span>Purpose</span>
+            <strong>{{ donatePurpose || 'General Donation' }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row" *ngIf="donateWish">
+            <span>Wish</span>
+            <strong class="mfd-preview-wish-val">{{ donateWish }}</strong>
+          </div>
+          <div class="mfd-preview-summary-divider"></div>
+          <div class="mfd-preview-summary-row">
+            <span>Donation</span>
+            <strong>₹{{ finalAmount }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row" *ngIf="supportMangalBhav">
+            <span>Platform Fee</span>
+            <strong>₹{{ platformFee }}</strong>
+          </div>
+          <div class="mfd-preview-summary-row mfd-preview-summary-total">
+            <span>Total</span>
+            <strong>₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}</strong>
+          </div>
+        </div>
+        <div class="mfd-preview-charges-note">* Payment gateway charges may apply</div>
+      </div>
+
+
       <!-- Mandir Address Card -->
-      <div class="mfd-preview-card">
+      <!-- <div class="mfd-preview-card">
         <div class="mfd-preview-card-title">📍 Mandir Location</div>
         <div class="mfd-preview-card-body">
           <div class="mfd-preview-address" *ngIf="mandir?.Address">{{ mandir.Address }}</div>
@@ -454,7 +500,7 @@
             🗺️ View on Google Maps
           </button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Bank Account Info -->
       <div class="mfd-preview-card mfd-preview-card--bank">
@@ -463,10 +509,11 @@
           <div class="mfd-preview-bank-icon">🔒</div>
           <div class="mfd-preview-bank-info">
             <div class="mfd-preview-bank-label">100% of your donation reaches the mandir</div>
-            <div class="mfd-preview-bank-acct">Account ending in ···· {{ mandir?.BankAccountLast4 || '****' }}</div>
+            <div class="mfd-preview-bank-acct">Account ending in ···· {{ mandir?.BankAccountLast4 || '2343' }}</div>
           </div>
         </div>
       </div>
+
 
       <!-- Caretaker (if available) -->
       <div class="mfd-preview-card" *ngIf="mandir?.PujariName">
@@ -502,8 +549,10 @@
         <div class="mfd-preview-card-title">💬 Need Help?</div>
         <button class="mfd-preview-whatsapp-btn" (click)="openWhatsApp()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
           </svg>
           Chat with Support on WhatsApp
         </button>
@@ -511,64 +560,32 @@
       </div>
 
       <!-- Donation Summary -->
-      <div class="mfd-preview-card mfd-preview-card--amount">
-        <div class="mfd-preview-card-title">💰 Donation Summary</div>
-        <div class="mfd-preview-summary-grid">
-          <div class="mfd-preview-summary-row">
-            <span>Donor</span>
-            <strong>{{ donateName || '—' }}</strong>
-          </div>
-          <div class="mfd-preview-summary-row">
-            <span>Purpose</span>
-            <strong>{{ donatePurpose || 'General Donation' }}</strong>
-          </div>
-          <div class="mfd-preview-summary-row" *ngIf="donateWish">
-            <span>Wish</span>
-            <strong class="mfd-preview-wish-val">{{ donateWish }}</strong>
-          </div>
-          <div class="mfd-preview-summary-divider"></div>
-          <div class="mfd-preview-summary-row">
-            <span>Donation</span>
-            <strong>₹{{ finalAmount }}</strong>
-          </div>
-          <div class="mfd-preview-summary-row" *ngIf="supportMangalBhav">
-            <span>Platform Fee</span>
-            <strong>₹{{ platformFee }}</strong>
-          </div>
-          <div class="mfd-preview-summary-row mfd-preview-summary-total">
-            <span>Total</span>
-            <strong>₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}</strong>
-          </div>
-        </div>
-        <div class="mfd-preview-charges-note">* Payment gateway charges may apply</div>
-      </div>
 
       <!-- Make a wish (on preview too) -->
-      <ng-container *ngIf="!donateWish">
+      <!-- <ng-container *ngIf="!donateWish">
         <div class="mfd-donate-label" style="padding: 0 4px 8px;">🌟 Add a Wish / Prayer</div>
         <div class="mfd-wish-wrap">
-          <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
-            placeholder="Write your wish or prayer… 🙏"
-            rows="2" maxlength="200"></textarea>
-          <div class="mfd-wish-count">{{ donateWish?.length || 0 }}/200</div>
+          <textarea class="mfd-wish-input" [(ngModel)]="donateWish" placeholder="Write your wish or prayer… 🙏" rows="2"
+            maxlength="200"></textarea>
+          <div class="mfd-wish-count">{{ donateWish.length || 0 }}/200</div>
         </div>
-      </ng-container>
+      </ng-container> -->
 
       <!-- Donor history teaser -->
-      <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length === 0">
+      <!-- <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length === 0">
         <div class="mfd-preview-honor-icon">🌟</div>
         <div class="mfd-preview-honor-text">
           <strong>You could be the first donor!</strong>
           <p>Your name will be recorded in the mandir's history as the founding donor. A true blessing.</p>
         </div>
-      </div>
-      <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length > 0">
+      </div> -->
+      <!-- <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length > 0">
         <div class="mfd-preview-honor-icon">🪔</div>
         <div class="mfd-preview-honor-text">
           <strong>{{ MandirTransactionList.length }} people have donated</strong>
           <p>Join this family of devotees. Your name will be listed with pride among all donors.</p>
         </div>
-      </div>
+      </div> -->
 
       <!-- Secure badges -->
       <div class="mfd-preview-secure-strip">
@@ -581,7 +598,7 @@
 
     <!-- Footer with trust seals -->
     <div class="mfd-preview-footer">
-      <div class="mfd-preview-trust-row">
+      <!-- <div class="mfd-preview-trust-row">
         <div class="mfd-preview-trust-item">
           <span class="mfd-preview-trust-icon">🔒</span>
           <span>Secure<br>Payment</span>
@@ -601,7 +618,7 @@
           <span class="mfd-preview-trust-icon">✅</span>
           <span>Temple<br>Verified</span>
         </div>
-      </div>
+      </div> -->
 
       <button class="mfd-preview-pay-btn" (click)="initiatePayment()" [disabled]="isDonating">
         <span *ngIf="!isDonating">
@@ -664,7 +681,8 @@
           <div class="receipt-divider"></div>
           <div class="receipt-row">
             <span class="rr-label">Txn ID</span>
-            <span class="rr-value" style="font-family: monospace; font-size: 11px; color: #B08050;">{{ successDonationData?.paymentId }}</span>
+            <span class="rr-value" style="font-family: monospace; font-size: 11px; color: #B08050;">{{
+              successDonationData?.paymentId }}</span>
           </div>
         </div>
 
@@ -686,12 +704,18 @@
 
       <div class="honor-strip">
         <span class="honor-icon">🌟</span>
-        <div class="honor-text">You are among 12 generous souls who have blessed this mandir.<br>Your name is now part of its sacred history.</div>
+        <div class="honor-text">You are among 12 generous souls who have blessed this mandir.<br>Your name is now part
+          of its sacred history.</div>
       </div>
 
       <div class="share-row">
         <button class="share-btn whatsapp" (click)="shareDonationOnWhatsApp()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+          </svg>
           Share Seva
         </button>
         <button class="share-btn close-btn" (click)="showDonationSuccessModal = false">Jai Shri Ram 🙏</button>

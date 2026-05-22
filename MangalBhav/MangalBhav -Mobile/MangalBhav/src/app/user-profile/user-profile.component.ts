@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { FcmService } from 'src/providers/fcm/fcm';
 
 @Component({
   selector: 'app-user-profile',
@@ -184,6 +185,7 @@ export class UserProfileComponent implements OnInit {
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
+    private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient, public toastController: ToastController,
     private alertCtrl: AlertController) { }
@@ -265,6 +267,8 @@ export class UserProfileComponent implements OnInit {
       this.profilePreview = e.target.result;
     };
     reader.readAsDataURL(file);
+
+    this.uploadProfilePhoto();
   }
   uploadProfilePhoto() {
     const userId = this.profile.UserID;
@@ -377,6 +381,7 @@ export class UserProfileComponent implements OnInit {
       BankDetailsId: Number(this.bankDetails.BankDetailsId || 0),
       TenantId: Number(this.userDetails.TenantID || 1),
       UserID: Number(this.userDetails.UserID),
+      MandirID: 0,
       AccountHolderName: '',
       BankName: '',
       AccountNumber: '',
@@ -409,6 +414,33 @@ export class UserProfileComponent implements OnInit {
 
     await this.storage.clear();
     this.routerCtrl.navigateRoot('/login');
+
+    const deviceId = await this.fcm.getDeviceID();
+
+
+    this.apinu.postUrlData(`UserDeviceSelectByQuery?Query=DeviceID=${deviceId}`, null)
+      .subscribe(async (res: any) => {
+        console.log(res.UserDeviceList[0]);
+
+
+        const body = {
+          ...res.UserDeviceList[0],
+          IsActive: Boolean(0),
+          DateModified: new Date()
+        }
+
+        this.apinu.postUrlData(`UserDeviceUpdate`, body)
+          .subscribe(async (res: any) => {
+
+
+            await this.storage.clear();
+            this.routerCtrl.navigateRoot('/login');
+
+          })
+
+      })
+
+
   }
 
   openPage(pageName: any) {

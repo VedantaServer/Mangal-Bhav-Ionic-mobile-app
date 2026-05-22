@@ -1,27 +1,9 @@
-<!-- <ion-header [translucent]="true">
-  <ion-toolbar>
-    <div class="inner-header">
-      <button class="inner-back-btn" (click)="routerCtrl.back()">
-        <ion-icon name="chevron-back-outline"></ion-icon>
-      </button>
-      <div class="inner-title-block">
-        <div class="inner-title">Find Pandit</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
-      </div>
-      <div class="inner-logo">
-        <img src="../../assets/mangalbhavlogo1.jpeg" />
-      </div>
-    </div>
-  </ion-toolbar>
-</ion-header> -->
-
-
 <app-tabscommonheader></app-tabscommonheader>
 
 <ion-content>
   <div class="page-wrapper">
 
-    <!-- TOP BANNER -->
+    <!-- ══ TOP BANNER ══ -->
     <div class="page-banner">
       <div class="banner-text">
         <p class="banner-sub">Verified & Trusted</p>
@@ -29,7 +11,7 @@
       <div class="banner-om">ॐ</div>
     </div>
 
-    <!-- SEARCH BAR -->
+    <!-- ══ SEARCH BAR ══ -->
     <div class="search-wrap">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
@@ -39,7 +21,7 @@
       </div>
     </div>
 
-    <!-- QR SCANNER OVERLAY -->
+    <!-- ══ QR SCANNER OVERLAY ══ -->
     <div class="qr-overlay" *ngIf="isScannerOpen">
       <button class="qr-close-fixed" (click)="closeQrScanner()">
         <ion-icon name="close-outline"></ion-icon>
@@ -65,9 +47,18 @@
       <p class="qr-hint">Point camera at a Mangal.Bhav QR code</p>
     </div>
 
-
     <div class="pandit-list-wrap">
 
+      <!-- ══ SHOW NEARBY BUTTON (default idle state) ══ -->
+      <div class="nearby-cta-row" *ngIf="locationState === 'idle'">
+        <button class="nearby-cta-btn" (click)="onShowNearby()">
+          <span class="nearby-btn-icon">📍</span>
+          <span class="nearby-btn-label">Show Nearby Pandits</span>
+          <span class="nearby-btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- ══ LOCATION STATE NOTICES ══ -->
       <div class="location-notice fetching" *ngIf="locationState === 'fetching'">
         <ion-spinner name="dots" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></ion-spinner>
         Fetching your location…
@@ -79,26 +70,27 @@
 
       <div class="location-notice warning" *ngIf="locationState === 'denied'">
         🔒 Location denied —
-        <strong (click)="fetchNearbyPandits()" style="cursor:pointer;text-decoration:underline;">Tap to retry</strong>
+        <strong (click)="onShowNearby()" style="cursor:pointer;text-decoration:underline;">Tap to retry</strong>
       </div>
-
 
       <div class="location-notice muted" *ngIf="locationState === 'unavailable'">
         📍 Location unavailable — showing all pandits
       </div>
 
-      <!-- Loading -->
+      <!-- ══ LOADING ══ -->
       <div *ngIf="isLoading || locationState === 'fetching'" class="pandit-loading">
         <ion-spinner name="crescent"></ion-spinner>
         <p>{{ locationState === 'fetching' ? 'Getting your location…' : 'Loading pandits…' }}</p>
       </div>
 
-      <div *ngIf="!isLoading && locationState !== 'fetching' && filteredPanditList.length > 0">
-        <div class="pandit-row" *ngFor="let item of filteredPanditList" (click)="openPanditModal(item)">
+      <!-- ══ PANDIT CARDS GRID ══ -->
+      <div class="pandit-cards-grid"
+        *ngIf="!isLoading && locationState !== 'fetching' && filteredPanditList.length > 0">
+        <div class="pandit-card" *ngFor="let item of filteredPanditList" (click)="openPanditModal(item)">
 
-          <!-- Verified Stamp — absolute watermark -->
-          <ng-container *ngIf="item.profile?.VerificationStatus === 'APPROVED'">
-            <svg class="pr-stamp-watermark" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Verified watermark stamp -->
+          <div class="card-stamp-wrap" *ngIf="item.profile?.VerificationStatus === 'APPROVED'">
+            <svg class="card-stamp-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <path id="topArc-{{item.profile?.UserID}}" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
                 <path id="botArc-{{item.profile?.UserID}}" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
@@ -106,20 +98,6 @@
               <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
               <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
               <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
-              <g fill="#b85c00">
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(0   80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(45  80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(90  80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(135 80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(180 80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(225 80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(270 80 80)" />
-                <rect x="78.5" y="5" width="3" height="6" rx="1" transform="rotate(315 80 80)" />
-              </g>
-              <text x="32" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
-              <text x="128" y="52" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
-              <text x="32" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
-              <text x="128" y="112" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00">✦</text>
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
                 <textPath [attr.href]="'#topArc-' + item.profile?.UserID" startOffset="50%" text-anchor="middle">MANGAL
                   BHAV</textPath>
@@ -136,62 +114,92 @@
               <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
                 letter-spacing="2">SACRED PLACE</text>
             </svg>
-          </ng-container>
+          </div>
+
+          <!-- Card Cover Banner -->
+          <div class="card-cover">
+            <div class="card-cover-pattern"></div>
+          </div>
 
           <!-- Avatar -->
-          <div class="pandit-row-avatar">
-            <div class="pr-initials" *ngIf="!profileImages[item.profile?.UserID]">
-              {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+          <div class="card-avatar-wrap">
+            <div class="card-avatar-ring" [class.verified-ring]="item.profile?.VerificationStatus === 'APPROVED'">
+              <div class="card-avatar-initials" *ngIf="!profileImages[item.profile?.UserID]" style="text-transform: capitalize;">
+                {{ item.profile?.FullName?.charAt(0) || '🙏' }}
+              </div>
+              <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
+                class="card-avatar-img" (error)="onImgError($event)" />
             </div>
-            <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
-              class="pr-photo" (error)="onImgError($event)" />
-            <span class="pr-dot" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"></span>
+            <!-- Online dot -->
+            <span class="card-online-dot" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"></span>
           </div>
 
-          <!-- Info -->
-          <div class="pandit-row-info">
+          <!-- Card Body -->
+          <div class="card-body">
 
-            <!-- Name row -->
-            <div class="pr-name-row">
-              <p class="pr-name">{{ item.profile?.FullName || item.user?.Username }}</p>
+            <!-- Name + Verified tick -->
+            <div class="card-name-row">
+              <h3 class="card-name">{{ item.profile?.FullName || item.user?.Username }}</h3>
+              <span class="card-verified-tick" *ngIf="item.profile?.VerificationStatus === 'APPROVED'"
+                title="Verified Pandit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="10" fill="#E07B00" />
+                  <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
             </div>
 
-            <!-- Language + Exp -->
-            <p class="pr-meta" *ngIf="item.profile?.Languages || item.profile?.ExperienceYears">
-              <span class="pr-meta-chip" *ngIf="item.profile?.Languages">
-                <ion-icon name="language-outline"></ion-icon>
-                {{ item.profile?.Languages }}
-              </span>
-              <span class="pr-meta-chip" *ngIf="item.profile?.ExperienceYears">
+            <!-- Tagline / Speciality -->
+            <p class="card-tagline" *ngIf="item.profile?.Bio">
+              {{ item.profile?.Bio | slice:0:55 }}{{ item.profile?.Bio?.length > 55 ? '…' : '' }}
+            </p>
+            <p class="card-tagline muted" *ngIf="!item.profile?.Bio">
+              Vedic Pandit · Available for bookings
+            </p>
+
+            <!-- Chips row -->
+            <div class="card-chips">
+              <span class="card-chip exp" *ngIf="item.profile?.ExperienceYears">
                 <ion-icon name="time-outline"></ion-icon>
-                {{ item.profile?.ExperienceYears }} yrs
+                {{ item.profile?.ExperienceYears }} yrs exp
               </span>
-            </p>
+              <span class="card-chip lang" *ngIf="item.profile?.Languages">
+                <ion-icon name="language-outline"></ion-icon>
+                {{ item.profile?.Languages | slice:0:14 }}
+              </span>
+              <span class="card-chip loc" *ngIf="item._city">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ item._city }}
+              </span>
+            </div>
 
-            <!-- Location -->
-            <!-- Location — from profile City, or service location if pre-fetched -->
-            <!-- Location -->
-            <p class="pr-location" *ngIf="item._city">
-              <ion-icon name="location-outline"></ion-icon>
-              {{ item._city }}
-            </p>
+            <!-- Divider -->
+            <div class="card-divider"></div>
 
-            <!-- Pending badge (only shown when NOT verified) -->
-            <span class="pr-badge pending" *ngIf="item.profile?.VerificationStatus !== 'APPROVED'">
-              ⏳ Verification Pending
-            </span>
+            <!-- Footer: Status + CTA -->
+            <div class="card-footer">
+
+
+              <span></span>
+              <button class="card-cta-btn" (click)="openPanditModal(item); $event.stopPropagation()">
+                View Profile
+              </button>
+              <span></span>
+            </div>
 
           </div>
-
-          <!-- Arrow -->
-          <ion-icon name="chevron-forward-outline" class="pr-arrow"></ion-icon>
 
         </div>
       </div>
+      <!-- /pandit-cards-grid -->
+
     </div>
 
     <div class="pandit-empty" *ngIf="!isLoading && locationState !== 'fetching' && filteredPanditList.length === 0">
-      <p>No pandits found nearby.</p>
+      <p>No pandits found.</p>
     </div>
 
     <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
@@ -204,15 +212,14 @@
   </div>
 </ion-content>
 
-
 <app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomtab"></app-panditjibottomtabs>
 
 
 <!-- ═══════════════════════════════════════════════════════════════
-     PANDIT DETAIL MODAL — opens when a pandit row is tapped
-     Shows profile details + lazy-loaded services
+     PANDIT DETAIL MODAL
 ════════════════════════════════════════════════════════════════ -->
+
 <ion-modal [isOpen]="isPanditModalOpen" (didDismiss)="isPanditModalOpen = false" [breakpoints]="[0, 0.95, 1]"
   [initialBreakpoint]="0.95">
   <ng-template>
@@ -231,15 +238,26 @@
     <ion-content>
       <div class="modal-wrapper" *ngIf="activePandit">
 
-        <!-- ── HERO ── -->
+        <!-- ══ HERO ══ -->
         <div class="pandit-modal-hero">
           <div class="pandit-modal-photo-wrap">
+
+            <!-- Initials fallback — not clickable (no image to enlarge) -->
             <div class="avatar" *ngIf="!profileImages[activePandit.profile?.UserID]">
               {{ activePandit.profile?.FullName?.charAt(0) || '🙏' }}
             </div>
+
+            <!-- Photo — tap to open lightbox -->
             <img *ngIf="profileImages[activePandit.profile?.UserID]"
-              [src]="getProfileImage(activePandit.profile?.UserID)" class="pandit-modal-photo"
-              (error)="onImgError($event)" />
+              [src]="getProfileImage(activePandit.profile?.UserID)" class="pandit-modal-photo photo-tappable"
+              (error)="onImgError($event)" (click)="openLightbox(getProfileImage(activePandit.profile?.UserID))" />
+
+            <!-- Expand hint badge -->
+            <span class="photo-expand-hint" *ngIf="profileImages[activePandit.profile?.UserID]"
+              (click)="openLightbox(getProfileImage(activePandit.profile?.UserID))">
+              🔍
+            </span>
+
           </div>
           <h2 class="pandit-modal-name">{{ activePandit.profile?.FullName }}</h2>
           <span class="verified-pill" *ngIf="activePandit.profile?.VerificationStatus === 'APPROVED'">
@@ -250,9 +268,7 @@
           </span>
         </div>
 
-        <!-- ── QUICK STATS ── -->
-
-        <!-- ── QUICK STATS ── -->
+        <!-- ══ QUICK STATS ══ -->
         <div class="detail-info-grid">
           <div class="detail-info-item">
             <ion-icon name="time-outline"></ion-icon>
@@ -269,9 +285,7 @@
             <ion-icon name="person-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Gender</p>
-              <p class="detail-info-value">
-                {{ activePandit.profile?.Gender || 'Not Filled' }}
-              </p>
+              <p class="detail-info-value">{{ activePandit.profile?.Gender || 'Not Filled' }}</p>
             </div>
           </div>
 
@@ -279,9 +293,7 @@
             <ion-icon name="language-outline"></ion-icon>
             <div>
               <p class="detail-info-label">Languages</p>
-              <p class="detail-info-value">
-                {{ activePandit.profile?.Languages || 'Not Filled' }}
-              </p>
+              <p class="detail-info-value">{{ activePandit.profile?.Languages || 'Not Filled' }}</p>
             </div>
           </div>
 
@@ -295,7 +307,6 @@
             </div>
           </div>
 
-          <!-- ── NEW: Combined Contact box ── -->
           <div class="detail-info-item contact-combined-item">
             <ion-icon name="call-outline"></ion-icon>
             <div>
@@ -311,7 +322,6 @@
             </div>
           </div>
 
-          <!-- ── NEW: Location box (from first available service) ── -->
           <div class="detail-info-item">
             <ion-icon name="location-outline"></ion-icon>
             <div>
@@ -325,38 +335,31 @@
                 </p>
               </ng-container>
               <ng-template #locLoading>
-                <p class="detail-info-value">
-                  {{ isLoadingServices ? 'Loading…' : 'Not Filled' }}
-                </p>
+                <p class="detail-info-value">{{ isLoadingServices ? 'Loading…' : 'Not Filled' }}</p>
               </ng-template>
             </div>
           </div>
-
         </div>
 
-
-        <!-- ── BIO ── -->
+        <!-- ══ BIO ══ -->
         <div class="detail-section" *ngIf="activePandit.profile?.Bio">
           <h4 class="detail-section-title">🙏 About Pandit Ji</h4>
           <p class="detail-section-text">{{ activePandit.profile?.Bio }}</p>
         </div>
 
-        <!-- ── SERVICES ── -->
+        <!-- ══ SERVICES ══ -->
         <div class="detail-section">
           <h4 class="detail-section-title">
             <ion-icon name="flame-outline"></ion-icon>
             Available Services
           </h4>
 
-          <!-- Loading spinner -->
           <div class="services-loading" *ngIf="isLoadingServices">
             <ion-spinner name="crescent"></ion-spinner>
             <p>Loading services…</p>
           </div>
 
-          <!-- Service cards -->
           <div class="service-list" *ngIf="!isLoadingServices">
-
             <div class="service-item" *ngFor="let ps of activePanditServices">
               <div class="svc-img-wrap">
                 <img [src]="getCurrentImage(ps.ServiceDetails?.[0]?.Name)" class="svc-img"
@@ -364,17 +367,14 @@
                 <div class="svc-img-overlay"></div>
               </div>
               <div class="svc-body">
-                <h4 class="svc-name">
-                  {{ getLocalizedText(ps.ServiceDetails?.[0]?.Name) }}
-                </h4>
+                <h4 class="svc-name">{{ getLocalizedText(ps.ServiceDetails?.[0]?.Name) }}</h4>
                 <span class="svc-booking-count">
                   <ion-icon name="people-outline"></ion-icon>
                   {{ panditServiceBookingMap[ps.PanditServiceID] || 10 }}+ booked
                 </span>
                 <p class="svc-location">
                   <ion-icon name="location-outline"></ion-icon>
-                  {{ ps.LocationDetails?.[0]?.Name }},
-                  {{ ps.LocationDetails?.[0]?.City }}
+                  {{ ps.LocationDetails?.[0]?.Name }}, {{ ps.LocationDetails?.[0]?.City }}
                 </p>
                 <div class="svc-footer">
                   <span class="svc-price">₹ {{ ps.Price }}</span>
@@ -386,25 +386,39 @@
               </div>
             </div>
 
-            <!-- No services -->
             <div *ngIf="!activePanditServices?.length" class="no-services">
               <span>🙏</span>
               <p>No services listed yet</p>
             </div>
-
-          </div><!-- end service-list -->
-
-        </div><!-- end services section -->
+          </div>
+        </div>
 
       </div>
-    </ion-content>
 
+      <!-- ══════════════════════════════════════
+           LIGHTBOX OVERLAY
+      ══════════════════════════════════════ -->
+      <div class="lightbox-overlay" *ngIf="lightboxImageUrl" (click)="closeLightbox()">
+
+        <!-- Close button -->
+        <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+
+        <!-- Big image -->
+        <div class="lightbox-img-wrap" (click)="$event.stopPropagation()">
+          <img [src]="lightboxImageUrl" class="lightbox-img" (error)="onImgError($event)" />
+        </div>
+
+        <!-- Tap outside hint -->
+        <p class="lightbox-hint">Tap outside to close</p>
+
+      </div>
+
+    </ion-content>
   </ng-template>
 </ion-modal>
 
-
 <!-- ═══════════════════════════════════════════════════════════════
-     EXPLORE SERVICE MODAL — behaviour identical to before
+     EXPLORE SERVICE MODAL
 ════════════════════════════════════════════════════════════════ -->
 <ion-modal [isOpen]="isExploreModalOpen" (didDismiss)="isExploreModalOpen = false" [breakpoints]="[0, 0.92, 1]"
   [initialBreakpoint]="0.92">
@@ -441,17 +455,13 @@
             <h2 class="explore-img-title">
               {{ getLocalizedText(selectedService?.ServiceDetails?.[0]?.Name) }}
             </h2>
-            <div class="explore-price-pill">
-              ₹ {{ selectedService?.Price | number:'1.0-0' }}
-            </div>
+            <div class="explore-price-pill">₹ {{ selectedService?.Price | number:'1.0-0' }}</div>
           </div>
         </div>
 
         <!-- PANDIT STRIP -->
         <div class="explore-pandit-strip">
-          <div class="strip-avatar">
-            {{ selectedPandit?.profile?.FullName?.charAt(0) || '🙏' }}
-          </div>
+          <div class="strip-avatar">{{ selectedPandit?.profile?.FullName?.charAt(0) || '🙏' }}</div>
           <div class="strip-info">
             <p class="strip-name">{{ selectedPandit?.profile?.FullName }}</p>
             <p class="strip-exp">
@@ -482,23 +492,17 @@
             <div class="detail-tile">
               <div class="detail-tile-icon">⏱️</div>
               <p class="detail-tile-label">Duration</p>
-              <p class="detail-tile-value">
-                {{ selectedService?.ServiceDetails?.[0]?.DurationMinutes || '—' }} min
-              </p>
+              <p class="detail-tile-value">{{ selectedService?.ServiceDetails?.[0]?.DurationMinutes || '—' }} min</p>
             </div>
             <div class="detail-tile">
               <div class="detail-tile-icon">💰</div>
               <p class="detail-tile-label">Price</p>
-              <p class="detail-tile-value price-tile">
-                ₹ {{ selectedService?.Price | number:'1.0-0' }}
-              </p>
+              <p class="detail-tile-value price-tile">₹ {{ selectedService?.Price | number:'1.0-0' }}</p>
             </div>
             <div class="detail-tile">
               <div class="detail-tile-icon">📍</div>
               <p class="detail-tile-label">City</p>
-              <p class="detail-tile-value">
-                {{ selectedService?.LocationDetails?.[0]?.City || '—' }}
-              </p>
+              <p class="detail-tile-value">{{ selectedService?.LocationDetails?.[0]?.City || '—' }}</p>
             </div>
             <div class="detail-tile">
               <div class="detail-tile-icon">✅</div>
@@ -517,9 +521,7 @@
             <div class="category-name-icon">🕉️</div>
             <div>
               <p class="category-name-main">{{ cat.CategoryName }}</p>
-              <p class="category-name-hi" *ngIf="cat.CategoryName_HI">
-                {{ cat.CategoryName_HI }}
-              </p>
+              <p class="category-name-hi" *ngIf="cat.CategoryName_HI">{{ cat.CategoryName_HI }}</p>
             </div>
           </div>
           <p class="explore-description" style="margin-top:12px">
@@ -564,18 +566,12 @@
         </div>
 
         <!-- LOCATION -->
-
         <div class="explore-section">
           <div class="explore-section-title">🏠 Seva Location</div>
-
           <div class="location-detail-card" *ngIf="selectedService?.LocationDetails?.[0] as loc; else noLocation">
             <div class="location-pin">📍</div>
-
             <div class="location-text">
-              <p class="location-detail-name">
-                {{ loc.Name || 'Location not specified' }}
-              </p>
-
+              <p class="location-detail-name">{{ loc.Name || 'Location not specified' }}</p>
               <p class="location-detail-addr" *ngIf="loc.AddressLine1 || loc.City || loc.State">
                 <span *ngIf="loc.AddressLine1">{{ loc.AddressLine1 }}</span>
                 <span *ngIf="loc.AddressLine1 && (loc.City || loc.State)">, </span>
@@ -583,13 +579,11 @@
                 <span *ngIf="loc.City && loc.State">, </span>
                 <span *ngIf="loc.State">{{ loc.State }}</span>
               </p>
-
               <p class="location-detail-addr muted" *ngIf="!loc.AddressLine1 && !loc.City && !loc.State">
                 Address not available
               </p>
             </div>
           </div>
-
           <ng-template #noLocation>
             <div class="location-empty">
               <span>🗺️</span>

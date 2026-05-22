@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { FcmService } from 'src/providers/fcm/fcm';
 
 @Component({
   selector: 'app-pandit-fulldetails',
@@ -20,12 +21,12 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class PanditFulldetailsComponent  implements OnInit {
+export class PanditFulldetailsComponent implements OnInit {
   panditList: any;
 
-   constructor(public routerCtrl: NavController,
+  constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
-    public api: Api,
+    public api: Api, private fcm: FcmService,
     private storage: Storage, private router: Router,
     private plt: Platform,
     private http: HttpClient,
@@ -33,11 +34,33 @@ export class PanditFulldetailsComponent  implements OnInit {
 
   ngOnInit() {
 
-    this.apinu.postUrlData('GetPanditDetails',null)
-    .subscribe((res:any)=>{
-      console.log(res)
-      this.panditList = res ;
-    })
+    this.apinu.postUrlData('GetPanditDetails', null)
+      .subscribe((res: any) => {
+        console.log(res)
+        this.panditList = res;
+      })
   }
 
+  async login(loginUsername: any) {
+    await this.storage.clear();
+    this.apinu.postUrlData(`VedantaLogin?UserName=${loginUsername}`, null)
+      .subscribe(async (res: any) => {
+        console.log(res)
+        if (res) {
+          this.fcm.initPush(res.UserID);
+          if (res.Role == 'PANDIT') {
+            await this.storage.set("account", res);
+            await this.storage.set("IsUserLoggedIn", "true");
+            await this.storage.set("Language", res.Languages);
+            this.routerCtrl.navigateRoot('/tabs/tab1');
+          } else {
+
+            await this.storage.set("account", res);
+            await this.storage.set("IsUserLoggedIn", "true");
+            await this.storage.set("Language", res.Languages);
+            this.routerCtrl.navigateRoot('/jajmandashboard');
+          }
+        }
+      })
+  }
 }

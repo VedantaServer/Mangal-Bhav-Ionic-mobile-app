@@ -310,27 +310,15 @@
         </div>
 
         <!-- ADVANCE PAYMENT SUMMARY -->
-        <div class="advance-summary" *ngIf="selectedBooking">
-          <div class="advance-row">
-            <span>💰 Total Dakshina</span>
-            <strong>₹{{ selectedBooking?.Price | number:'1.0-0' }}</strong>
-          </div>
-          <div class="advance-divider"></div>
-          <div class="advance-row highlight">
-            <span>⚡ Advance to Pay </span>
-            <strong class="advance-amt">₹ 21</strong>
-          </div>
-          <p class="advance-note">
-            * Remaining ₹{{ (selectedBooking?.Price - 21) | number:'1.0-0' }} to be paid to Pandit Ji on the
-            day of seva
-          </p>
-        </div>
 
-        <!-- CONFIRM BUTTON -->
+
+        
+
+       <!-- BOOK BUTTON -->
         <div class="modal-footer">
-          <ion-button expand="block" class="confirm-btn" (click)="confirmBooking()" [disabled]="isProcessingPayment">
-            <ion-icon name="card-outline" slot="start"></ion-icon>
-            {{ isProcessingPayment ? 'Processing…' : 'Pay ₹' + 21 + ' & Confirm' }}
+        <ion-button expand="block" class="confirm-btn" (click)="openCheckoutPreview(); $event.stopPropagation()">
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            Preview &amp; Book
           </ion-button>
         </div>
 
@@ -342,6 +330,97 @@
 
   </ng-template>
 
+</ion-modal>
+
+
+<!-- ===== CHECKOUT PREVIEW MODAL ===== -->
+<ion-modal [isOpen]="isCheckoutModalOpen" (didDismiss)="isCheckoutModalOpen = false"
+  [breakpoints]="[0, 0.75, 1]" [initialBreakpoint]="0.75">
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="isCheckoutModalOpen = false">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="header-title">Booking Summary</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="modal-wrapper">
+
+        <!-- Service strip -->
+        <div class="checkout-svc-strip">
+          <div class="checkout-svc-img">
+            <img [src]="getCurrentImage(selectedBooking?.ServiceName)"
+                 (error)="onImgError($event)" class="checkout-svc-thumb" />
+          </div>
+          <div>
+            <div class="checkout-svc-name">
+              {{ Language === 'Hindi'
+                ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
+                : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
+            </div>
+            <div class="checkout-svc-sub">{{ selectedBooking?.UserName }} · {{ selectedBooking?.LocationName }}</div>
+          </div>
+        </div>
+
+        <!-- Summary rows -->
+        <div class="checkout-rows">
+          <div class="checkout-row">
+            <span class="checkout-row-label">
+              <ion-icon name="calendar-outline"></ion-icon> Puja date
+            </span>
+            <span class="checkout-row-val">{{ BookingDate | date:'d MMM yyyy' }}</span>
+          </div>
+          <div class="checkout-row">
+            <span class="checkout-row-label">
+              <ion-icon name="person-outline"></ion-icon> Name
+            </span>
+            <span class="checkout-row-val">{{ bookingDonorName }}</span>
+          </div>
+          <div class="checkout-row">
+            <span class="checkout-row-label">
+              <ion-icon name="call-outline"></ion-icon> Mobile
+            </span>
+            <span class="checkout-row-val">{{ bookingDonorPhone }}</span>
+          </div>
+          <div class="checkout-row">
+            <span class="checkout-row-label">
+              <ion-icon name="cash-outline"></ion-icon> Total dakshina
+            </span>
+            <span class="checkout-row-val">₹{{ selectedBooking?.Price | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <!-- Book for ₹21 pill -->
+        <div class="checkout-fee-banner">
+          <div>
+            <div class="checkout-fee-label">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              Book Pandit Ji for just
+            </div>
+            <div class="checkout-fee-note"></div>
+          </div>
+          <div class="checkout-fee-amount">₹21</div>
+        </div>
+
+        <!-- Pay button -->
+        <div class="modal-footer">
+          <ion-button expand="block" class="confirm-btn"
+            (click)="confirmBooking()" [disabled]="isProcessingPayment">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            {{ isProcessingPayment ? 'Processing…' : 'Pay ₹21 & Confirm' }}
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-content>
+
+  </ng-template>
 </ion-modal>
 
 <!-- ===== VIEW SERVICE PHOTOS MODAL ===== -->

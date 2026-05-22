@@ -2305,3 +2305,22 @@ select {
   padding: 0;
   background: #FFFBF0;
 }
+
+.mandir-nearby-row {
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px 4px;
+}
+
+.mandir-nearby-btn {
+  background: linear-gradient(135deg, #ff6b00, #e65c00);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(230, 92, 0, 0.35);
+  &:active { transform: scale(0.97); }
+}

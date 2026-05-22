@@ -55,7 +55,7 @@ export class MandirfulldetailsComponent implements OnInit {
   showPreviewSheet = false;
 
   donateAmount = '';
-  donateCustomAmount: any;
+  donateCustomAmount: any = 21; 
   donateName: any = null;
   donateMobile: any = null;
   donateMessage = '';
@@ -233,8 +233,17 @@ export class MandirfulldetailsComponent implements OnInit {
   // ── Slider ────────────────────────────────────────────────────
   get slideImages(): { url: string; label: string }[] {
     const imgs: { url: string; label: string }[] = [];
-    if (this.FrontImageUrl) imgs.push({ url: this.FrontImageUrl, label: '🏛 Front View' });
-    if (this.InsideImageUrl) imgs.push({ url: this.InsideImageUrl, label: '🛕 Inside View' });
+
+    // ✅ Inside image first
+    if (this.InsideImageUrl) {
+      imgs.push({ url: this.InsideImageUrl, label: '🛕 Inside View' });
+    }
+
+    // ✅ Front image second
+    if (this.FrontImageUrl) {
+      imgs.push({ url: this.FrontImageUrl, label: '🏛 Front View' });
+    }
+
     return imgs;
   }
 

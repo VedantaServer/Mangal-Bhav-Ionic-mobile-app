@@ -505,6 +505,7 @@ export class BookPoojaComponent implements OnInit {
     UpdatedByUser: '',
   };
   Language: any;
+  isCheckoutModalOpen = false;
   paramID: any;
   query!: string;
   pendingPanditUserID: any;
@@ -776,6 +777,27 @@ export class BookPoojaComponent implements OnInit {
         this.processBookingPayment(res.orderID, payload);  // pass payload, not bookingID
       });
   }
+
+
+  openCheckoutPreview() {
+  if (!this.BookingDate) {
+    this.showToast('Please select a Pooja date 📅', 'danger');
+    return;
+  }
+  if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
+    this.showToast('Please enter your name (min 3 characters) 🙏', 'danger');
+    return;
+  }
+  if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
+    this.showToast('Please enter a valid 10-digit mobile number 🙏', 'danger');
+    return;
+  }
+
+  // ✅ Open checkout FIRST, then close booking after transition
+  this.isCheckoutModalOpen = true;
+  setTimeout(() => { this.isBookingModalOpen = false; }, 150);
+}
+
 
   processBookingPayment(or: any, payload: any) {
     this.apinu.postUrlData(

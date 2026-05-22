@@ -71,6 +71,7 @@ export class LoginPage {
   showAuthLanding = false;
   showLoginSection = false;
   showRegisterSection = false;
+  isOtpRequesting: boolean = false;
 
   registerStep: 'mobile' | 'otp' | 'form' | 'role' = 'mobile';
   data: any;
@@ -420,6 +421,8 @@ export class LoginPage {
       return;
     }
 
+    this.isOtpRequesting = true;
+
     if (this.loginUsername.toString() == "8796917944") {
       await this.storage.set('adminloggedin', 'true');
       this.routerCtrl.navigateRoot('/admindashboard');
@@ -433,6 +436,7 @@ export class LoginPage {
           this.showToastMessage('Please register..', 'success');
           this.openRegisterSection();
           this.mobileNumber = this.loginUsername;
+          this.isOtpRequesting = false;
           this.goToOtp();
           return;
         } else {
@@ -451,22 +455,6 @@ export class LoginPage {
           }
 
 
-          /*
-          this.apinu.postUrlData(
-            `sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`,
-            null
-          ).subscribe({
-            next: (res: any) => {
-              console.log('WhatsApp OTP sent', res);
-              this.loginOtpSent = true;
-            },
-            error: (err: any) => {
-              console.error('WhatsApp OTP failed:', err);
-            }
-          });
-          */
-
-          //  const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=${this.loginUsername}&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=${this.loginGeneratedOtp} is your OTP to access Mangal Bhav. OTP is confidential and valid for 10 minutes. Do NOT share this OTP.&entityid=1201159703513437045&templateid=1207177614549864835`;
 
           this.apinu.postUrlData(`SendOtpSms?mobileNo=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe({
             next: (smsRes: any) => {
@@ -474,6 +462,7 @@ export class LoginPage {
               this.loginOtpSent = true;
             },
             error: (smsErr: any) => {
+               this.isOtpRequesting = false;
               console.error('SMS OTP failed:', smsErr);
             }
           });
@@ -482,6 +471,22 @@ export class LoginPage {
       });
   }
 
+  /*
+         this.apinu.postUrlData(
+           `sendWhatsAppOtp?phoneno=${this.loginUsername}&otp=${this.loginGeneratedOtp}`,
+           null
+         ).subscribe({
+           next: (res: any) => {
+             console.log('WhatsApp OTP sent', res);
+             this.loginOtpSent = true;
+           },
+           error: (err: any) => {
+             console.error('WhatsApp OTP failed:', err);
+           }
+         });
+         */
+
+  //  const smsUrl = `https://smsapp.wocom365.com/pushapi/sendbulkmsg?username=Vedanta&dest=${this.loginUsername}&apikey=6JYHVQKpor9sTTCOxCa6UFopcNEyKrEN&signature=MNGLBV&msgtype=PM&msgtxt=${this.loginGeneratedOtp} is your OTP to access Mangal Bhav. OTP is confidential and valid for 10 minutes. Do NOT share this OTP.&entityid=1201159703513437045&templateid=1207177614549864835`;
 
 
   resendLoginOtp() {
@@ -514,6 +519,7 @@ export class LoginPage {
       .subscribe(async (res: any) => {
         console.log(res)
         if (res) {
+          this.fcm.initPush(res.UserID);
           if (res.Role == 'PANDIT') {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");

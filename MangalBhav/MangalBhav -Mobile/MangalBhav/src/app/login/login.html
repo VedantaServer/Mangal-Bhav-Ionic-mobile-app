@@ -178,7 +178,8 @@
 
             <div class="puja-carousel" [id]="'carousel-cat-' + cat.CategoryID">
 
-              <div class="puja-card" *ngFor="let svc of cat.services" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
+              <div class="puja-card" *ngFor="let svc of cat.services"
+                (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
 
                 <!-- IMAGE SECTION -->
                 <div class="puja-img-wrap">
@@ -696,8 +697,8 @@
             <ion-input placeholder="10-digit mobile number" type="number" [(ngModel)]="loginUsername"
               class="field-input" [disabled]="loginOtpSent">
             </ion-input>
-            <button class="get-otp-btn" (click)="getLoginOtp()" *ngIf="!loginOtpSent">
-              Get OTP
+            <button class="get-otp-btn" (click)="getLoginOtp()" *ngIf="!loginOtpSent" [disabled]="isOtpRequesting">
+              {{ isOtpRequesting ? 'Sending...' : 'Get OTP' }}
             </button>
             <button class="get-otp-btn resend" (click)="resendLoginOtp()" *ngIf="loginOtpSent">
               Resend

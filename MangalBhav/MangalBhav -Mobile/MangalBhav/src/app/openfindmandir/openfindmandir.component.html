@@ -61,6 +61,14 @@
     </div>
 
 
+    <!-- ── Show Nearby Button (shown when location not yet fetched) ── -->
+    <div class="mandir-nearby-row" *ngIf="locationState === 'idle'">
+      <button class="mandir-nearby-btn" (click)="onShowNearby()">
+        📍 Show Nearby Mandirs
+      </button>
+    </div>
+
+    <!-- ── Location State Notices ── -->
     <div class="mandir-location-notice fetching" *ngIf="locationState === 'fetching'">
       <ion-spinner name="dots" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></ion-spinner>
       Fetching your location…
@@ -72,7 +80,7 @@
 
     <div class="mandir-location-notice warning" *ngIf="locationState === 'denied'">
       🔒 Location access denied —
-      <strong (click)="fetchUserLocation()" style="cursor:pointer;text-decoration:underline;">
+      <strong (click)="onShowNearby()" style="cursor:pointer;text-decoration:underline;">
         Tap to retry
       </strong>
     </div>
@@ -88,8 +96,8 @@
     </div>
 
 
-
-    <div style="padding: 24px;" class="mandir-grid" *ngIf="!isLoadingMandirs && filteredMandirs.length > 0; else noMandirs">
+    <div style="padding: 24px;" class="mandir-grid"
+      *ngIf="!isLoadingMandirs && filteredMandirs.length > 0; else noMandirs">
       <div class="mandir-card" *ngFor="let m of filteredMandirs" (click)="openMandirDetails(m.MandirID)">
 
         <!-- Saffron top stripe -->
@@ -97,8 +105,8 @@
 
         <!-- Image -->
         <div class="mandir-card-img-wrap">
-          <img *ngIf="m.FrontImageUrl" [src]="m.FrontImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
-          <div *ngIf="!m.FrontImageUrl" class="mandir-card-img-placeholder">
+          <img *ngIf="m.InsideImageUrl" [src]="m.InsideImageUrl" class="mandir-card-img" [alt]="m.MandirName" />
+          <div *ngIf="!m.InsideImageUrl" class="mandir-card-img-placeholder">
             <span class="temple-glyph">🛕</span>
             <span class="temple-label">मंदिर</span>
           </div>
@@ -110,35 +118,24 @@
           <div class="mandir-img-name">{{ m.MandirName }}</div>
 
           <!-- Verified badge -->
-          <span class="mandir-verified-badge" *ngIf="m.IsVerified" style="background-color: white;"><svg width="32"
-              height="32" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-
+          <span class="mandir-verified-badge" *ngIf="m.IsVerified" style="background-color: white;">
+            <svg width="32" height="32" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
                 <path id="botArc" d="M 80,80 m 55,0 a 55,55 0 0,1 -110,0" />
               </defs>
-
               <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
               <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
               <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
-
               <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
-                <textPath href="#topArc" startOffset="50%" text-anchor="middle">
-                  VERIFIED
-                </textPath>
+                <textPath href="#topArc" startOffset="50%" text-anchor="middle">VERIFIED</textPath>
               </text>
-
               <text x="80" y="78" text-anchor="middle" font-family="serif" font-size="22" font-weight="700"
-                fill="#b85c00">
-                ॐ
-              </text>
-
+                fill="#b85c00">ॐ</text>
               <text x="80" y="98" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00"
-                letter-spacing="2">
-                SACRED PLACE
-              </text>
-
-            </svg></span>
+                letter-spacing="2">SACRED PLACE</text>
+            </svg>
+          </span>
         </div>
 
         <!-- Card Body -->
@@ -163,66 +160,32 @@
           </p>
 
           <div class="mandir-card-footer">
-            <a *ngIf="m.Latitude && m.Longitude" class="mandir-map-link"
+            <a *ngIf="m.Latitude && m.Longitude && m.DistanceKm !== null" class="mandir-map-link"
               [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
               (click)="$event.stopPropagation()">
               🗺️ {{ m.DistanceKm < 1 ? (m.DistanceKm * 1000 | number:'1.0-0') + ' m away' : (m.DistanceKm |
-                number:'1.1-1') + ' km away' }} </a>
+                number:'1.1-1') + ' km away' }}
+            </a>
 
-                <!-- <div class="mandir-verified-seal" *ngIf="m.IsVerified">
+            <!-- Show map link without distance when location not fetched -->
+            <a *ngIf="m.Latitude && m.Longitude && m.DistanceKm === null" class="mandir-map-link"
+              [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
+              (click)="$event.stopPropagation()">
+              🗺️ View on Map
+            </a>
 
-                  <svg width="32" height="32" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-
-                    <defs>
-                      <path id="topArc" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
-                      <path id="botArc" d="M 80,80 m 55,0 a 55,55 0 0,1 -110,0" />
-                    </defs>
-
-                    <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
-                    <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1"
-                      stroke-dasharray="4 3" />
-                    <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
-
-                    <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
-                      <textPath href="#topArc" startOffset="50%" text-anchor="middle">
-                        VERIFIED
-                      </textPath>
-                    </text>
-
-                    <text x="80" y="78" text-anchor="middle" font-family="serif" font-size="22" font-weight="700"
-                      fill="#b85c00">
-                      ॐ
-                    </text>
-
-                    <text x="80" y="98" text-anchor="middle" font-family="serif" font-size="8" fill="#b85c00"
-                      letter-spacing="2">
-                      SACRED PLACE
-                    </text>
-
-                  </svg>
-
-                </div>
-
-                <span class="mandir-status-chip pending" *ngIf="!m.IsVerified">
-                  ⏳ Pending
-                </span> -->
-
-
-
-                <span class="mandir-arrow">→</span>
+            <span class="mandir-arrow">→</span>
           </div>
         </div>
-
 
       </div>
 
       <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
-        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more pandits...">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more mandirs...">
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
 
     </div>
-
 
 
     <ng-template #noMandirs>
@@ -234,8 +197,10 @@
 
 
   </section>
+
   <!-- ═══ MODAL BACKDROP ═══ -->
   <div class="mandir-modal-backdrop" [class.active]="showAddMandirForm" (click)="closeAddMandir()"></div>
+
   <!-- ═══ ADD MANDIR BOTTOM SHEET ═══ -->
   <div class="mandir-modal" [class.active]="showAddMandirForm">
 
@@ -292,9 +257,7 @@
         </div>
       </div>
 
-
       <div class="mandir-form-row two-col">
-
         <div class="mandir-form-group">
           <label>Latitude</label>
           <input type="number" [(ngModel)]="Mandir.Latitude" placeholder="e.g. 28.6139" />
@@ -306,14 +269,11 @@
       </div>
 
       <div class="mandir-form-row two-col">
-
         <div class="mandir-form-group">
           <label></label>
-          <button class="mandir-location-btn " (click)="getCurrentLocation()">📍 Use Current Location</button>
+          <button class="mandir-location-btn" (click)="getCurrentLocation()">📍 Use Current Location</button>
         </div>
-
       </div>
-
 
       <!-- Added By -->
       <div class="mandir-form-section-label">Your Info (Optional)</div>
@@ -344,15 +304,14 @@
             </div>
           </div>
 
-          <!-- hidden file input -->
           <input #frontImageInput type="file" accept="image/*" style="display:none"
             (change)="onFrontImageSelected($event)" />
 
-          <!-- show after file picked, before upload -->
           <div class="mandir-upload-actions" *ngIf="selectedFrontImageFile && !Mandir.FrontImage">
             <span class="mandir-file-name">📄 {{ selectedFrontImageFile.name }}</span>
-            <button class="mandir-upload-btn" (click)="uploadFrontImage()" [disabled]="isUploadingFront">{{
-              isUploadingFront ? 'Uploading…' : '⬆ Upload' }}</button>
+            <button class="mandir-upload-btn" (click)="uploadFrontImage()" [disabled]="isUploadingFront">
+              {{ isUploadingFront ? 'Uploading…' : '⬆ Upload' }}
+            </button>
           </div>
         </div>
       </div>
@@ -378,8 +337,9 @@
 
           <div class="mandir-upload-actions" *ngIf="selectedInsideImageFile && !Mandir.InsideImage">
             <span class="mandir-file-name">📄 {{ selectedInsideImageFile.name }}</span>
-            <button class="mandir-upload-btn" (click)="uploadInsideImage()" [disabled]="isUploadingInside">{{
-              isUploadingInside ? 'Uploading…' : '⬆ Upload' }}</button>
+            <button class="mandir-upload-btn" (click)="uploadInsideImage()" [disabled]="isUploadingInside">
+              {{ isUploadingInside ? 'Uploading…' : '⬆ Upload' }}
+            </button>
           </div>
         </div>
       </div>
@@ -418,10 +378,5 @@
 
 
 <app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
-
-
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomtab"></app-panditjibottomtabs>
-
-
-
 <app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>

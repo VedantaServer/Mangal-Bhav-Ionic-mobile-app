@@ -26,8 +26,8 @@ namespace FaceUPAI.API
 		/// Saves a record to the BankDetails table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailsInsert")]
+	[EnableCors("AllowAll")]
+	[Route("BankDetailsInsert")]
 		public  IActionResult BankDetailsInsert([FromBody] BankDetail bankDetail)
 		{
 			return ApiHandler.Handle(() =>
@@ -36,6 +36,7 @@ namespace FaceUPAI.API
 			SqlParameter[] parameters = new SqlParameter[]
 			{
 				new SqlParameter("@TenantId", bankDetail.TenantId == 0 ? SqlInt32.Null : bankDetail.TenantId ),
+				new SqlParameter("@MandirID", bankDetail.MandirID == 0 ? SqlInt32.Null : bankDetail.MandirID ),
 				new SqlParameter("@UserID", bankDetail.UserID == 0 ? SqlInt32.Null : bankDetail.UserID ),
 				new SqlParameter("@AccountHolderName", bankDetail.AccountHolderName),
 				new SqlParameter("@BankName", bankDetail.BankName),
@@ -59,8 +60,8 @@ namespace FaceUPAI.API
 		/// Updates a record in the BankDetails table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailsUpdate")]
+	[EnableCors("AllowAll")]
+	[Route("BankDetailsUpdate")]
 		public  IActionResult BankDetailsUpdate([FromBody] BankDetail bankDetail)
 		{
 			return ApiHandler.Handle(() =>
@@ -70,6 +71,7 @@ namespace FaceUPAI.API
 			{
 				new SqlParameter("@BankDetailsId", bankDetail.BankDetailsId == 0 ? SqlInt32.Null : bankDetail.BankDetailsId ),
 				new SqlParameter("@TenantId", bankDetail.TenantId == 0 ? SqlInt32.Null : bankDetail.TenantId ),
+				new SqlParameter("@MandirID", bankDetail.MandirID == 0 ? SqlInt32.Null : bankDetail.MandirID ),
 				new SqlParameter("@UserID", bankDetail.UserID == 0 ? SqlInt32.Null : bankDetail.UserID ),
 				new SqlParameter("@AccountHolderName", bankDetail.AccountHolderName),
 				new SqlParameter("@BankName", bankDetail.BankName),
@@ -93,8 +95,8 @@ namespace FaceUPAI.API
 		/// Deletes a record from the BankDetails table by its primary key.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailsDelete")]
+	[EnableCors("AllowAll")]
+	[Route("BankDetailsDelete")]
 		public  IActionResult BankDetailsDelete(int bankDetailsId, int tenantID)
 		{
 			return ApiHandler.Handle(() =>
@@ -114,8 +116,8 @@ namespace FaceUPAI.API
 		/// Selects a single record from the BankDetails table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailSelect")]
+	[EnableCors("AllowAll")]
+	[Route("BankDetailSelect")]
 		public IActionResult BankDetailSelect(int bankDetailsId,int tenantID)
 		{
 			return ApiHandler.Handle(() =>
@@ -144,8 +146,8 @@ namespace FaceUPAI.API
 		/// Selects a single record from the BankDetails table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailSelectAll")]
+	[EnableCors("AllowAll")]
+	[Route("BankDetailSelectAll")]
 		public IActionResult BankDetailSelectAll(int tenantID){
 			return ApiHandler.Handle(() =>
 	{
@@ -171,15 +173,15 @@ namespace FaceUPAI.API
 		/// Selects all query records from the BankDetails table by a ak=ll query.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("BankDetailsSelectByQuery")]
-		public  IActionResult BankDetailsSelectByQuery(int tenantID,string Query)
+	[EnableCors("AllowAll")]
+	[Route("BankDetailsSelectByQuery")]
+		public  IActionResult BankDetailsSelectByQuery(int tenantID,int schoolID,string Query)
 		{
 			return ApiHandler.Handle(() =>
 	{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter("@TenantID", tenantID),								new SqlParameter("@Query", Query),
+				new SqlParameter("@TenantID", tenantID),				new SqlParameter("@SchoolID", schoolID),				new SqlParameter("@Query", Query),
 
 			};
 
@@ -205,6 +207,7 @@ namespace FaceUPAI.API
 			BankDetail bankDetail = new BankDetail();
 			bankDetail.BankDetailsId = DataAccess.GetInt32(dataReader, "BankDetailsId", 0);
 			bankDetail.TenantId = DataAccess.GetInt32(dataReader, "TenantId", 0);
+			bankDetail.MandirID = DataAccess.GetInt32(dataReader, "MandirID", 0);
 			bankDetail.UserID = DataAccess.GetInt32(dataReader, "UserID", 0);
 			bankDetail.AccountHolderName = DataAccess.GetString(dataReader, "AccountHolderName", String.Empty);
 			bankDetail.BankName = DataAccess.GetString(dataReader, "BankName", String.Empty);

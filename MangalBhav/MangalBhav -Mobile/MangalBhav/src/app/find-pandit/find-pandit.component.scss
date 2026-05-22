@@ -2773,3 +2773,443 @@ select {
     }
   }
 }
+
+// ══════════════════════════════════════════════════
+// NEARBY CTA BUTTON
+// ══════════════════════════════════════════════════
+
+.nearby-cta-row {
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px 6px;
+}
+
+.nearby-cta-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ff6b00, #c94f00);
+  color: #fff;
+  border: none;
+  border-radius: 28px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(201, 79, 0, 0.40);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 6px rgba(201, 79, 0, 0.25);
+  }
+
+  .nearby-btn-icon { font-size: 16px; }
+  .nearby-btn-label { font-size: 14px; font-weight: 600; }
+  .nearby-btn-arrow { font-size: 16px; opacity: 0.85; }
+}
+
+
+// ══════════════════════════════════════════════════
+// CARDS GRID  (2-column LinkedIn-style)
+// ══════════════════════════════════════════════════
+
+.pandit-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 12px 14px 24px;
+}
+
+// ── Single Card ──────────────────────────────────
+.pandit-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.09);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── Verified watermark stamp ──────────────────────
+.card-stamp-wrap {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 44px;
+  height: 44px;
+  z-index: 10;
+  opacity: 0.90;
+  pointer-events: none;
+
+  .card-stamp-svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ── Cover Banner ──────────────────────────────────
+.card-cover {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #c94f00 0%, #e8881e 60%, #f5c07a 100%);
+  position: relative;
+  overflow: hidden;
+
+  .card-cover-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.06) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+  }
+}
+
+// ── Avatar ────────────────────────────────────────
+.card-avatar-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: -26px;
+  margin-bottom: 6px;
+  z-index: 2;
+}
+
+.card-avatar-ring {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: #f5e8d8;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.verified-ring {
+    border-color: #E07B00;
+  }
+}
+
+.card-avatar-initials {
+  font-size: 22px;
+  font-weight: 700;
+  color: #b85c00;
+ 
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.card-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: calc(50% - 30px);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #9ca3af;
+  border: 2px solid #fff;
+
+  &.verified {
+    background: #16a34a;
+  }
+}
+
+// ── Card Body ─────────────────────────────────────
+.card-body {
+  padding: 0 12px 12px;
+}
+
+.card-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
+.card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.card-verified-tick {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.card-tagline {
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 8px;
+  line-height: 1.4;
+  min-height: 30px;
+
+  &.muted {
+    color: #9ca3af;
+    font-style: italic;
+  }
+}
+
+// ── Chips ─────────────────────────────────────────
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  ion-icon {
+    font-size: 10px;
+  }
+
+  &.exp {
+    background: #fff4e6;
+    color: #b45309;
+    border: 1px solid #fed7aa;
+  }
+
+  &.lang {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+
+  &.loc {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+}
+
+// ── Divider ───────────────────────────────────────
+.card-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+  margin: 8px 0;
+}
+
+// ── Footer ────────────────────────────────────────
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.card-status {
+  font-size: 10.5px;
+  font-weight: 600;
+
+  &.verified-status {
+    color: #16a34a;
+  }
+
+  &.pending-status {
+    color: #d97706;
+  }
+}
+
+.card-cta-btn {
+  background: linear-gradient(135deg, #E07B00, #c94f00);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+// ══════════════════════════════════════════════════
+// PHOTO — tappable cursor + expand hint badge
+// ══════════════════════════════════════════════════
+
+.pandit-modal-photo-wrap {
+  position: relative;
+  display: inline-block; // wraps tightly around the photo
+}
+
+.photo-tappable {
+  cursor: zoom-in;
+}
+
+.photo-expand-hint {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+
+// ══════════════════════════════════════════════════
+// LIGHTBOX OVERLAY
+// ══════════════════════════════════════════════════
+
+.lightbox-overlay {
+  position: fixed;       // fixed so it covers the entire viewport
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: lightbox-in 0.2s ease;
+
+  @keyframes lightbox-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.lightbox-img-wrap {
+  max-width: 320px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.lightbox-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  max-height: 70vh;
+}
+
+.lightbox-hint {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+
+// ── Single Card ──────────────────────────────────
+.pandit-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.09);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;              // ← ADD
+  flex-direction: column;     // ← ADD
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ── Card Body ─────────────────────────────────────
+.card-body {
+  padding: 0 12px 12px;
+  display: flex;           // ← ADD
+  flex-direction: column;  // ← ADD
+  flex: 1;                 // ← ADD (takes remaining card height)
+}
+
+// ── Chips — pin to bottom ─────────────────────────
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-top: auto;   // ← CHANGE (was margin-bottom: 8px) — pushes chips down
+  margin-bottom: 8px;
+}
+
+// ── Tagline — remove fixed min-height ────────────
+.card-tagline {
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 8px;
+  line-height: 1.4;
+  // remove min-height: 30px  ← DELETE that line
+}
