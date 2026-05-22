@@ -18,6 +18,8 @@ dependencies {
     implementation project(':capacitor-app')
     implementation project(':capacitor-browser')
     implementation project(':capacitor-camera')
+    implementation project(':capacitor-clipboard')
+    implementation project(':capacitor-device')
     implementation project(':capacitor-file-transfer')
     implementation project(':capacitor-filesystem')
     implementation project(':capacitor-geolocation')
@@ -26,7 +28,6 @@ dependencies {
     implementation project(':capacitor-preferences')
     implementation project(':capacitor-push-notifications')
     implementation project(':capacitor-share')
-    implementation project(':vedantacollege-fingerprint-bridge')
 
 }
 
