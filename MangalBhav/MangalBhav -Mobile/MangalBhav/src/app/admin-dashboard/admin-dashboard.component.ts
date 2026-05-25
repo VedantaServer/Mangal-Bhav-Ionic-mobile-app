@@ -34,7 +34,7 @@ export class AdminDashboardComponent implements OnInit {
     this.isloggedin = await this.storage.get('adminloggedin') == 'true';
 
     if (!this.isloggedin) {
-      this.routerCtrl.navigateRoot('/login');
+      this.routerCtrl.navigateForward('/login');
     }
   }
 
@@ -44,6 +44,6 @@ export class AdminDashboardComponent implements OnInit {
 
   logout(){
     this.storage.remove('adminloggedin')
-     this.routerCtrl.navigateRoot('/login');
+     this.routerCtrl.navigateForward('/login');
   }
 }

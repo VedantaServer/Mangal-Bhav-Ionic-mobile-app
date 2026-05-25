@@ -43,12 +43,8 @@
       </button>
 
       <div class="carousel-dots">
-        <span
-          class="dot"
-          *ngFor="let img of carpetImages; let i = index"
-          [class.active]="activeSlide === i"
-          (click)="goToSlide(i)"
-        ></span>
+        <span class="dot" *ngFor="let img of carpetImages; let i = index" [class.active]="activeSlide === i"
+          (click)="goToSlide(i)"></span>
       </div>
 
       <div class="carousel-badge">✦ Best Seller</div>
@@ -82,17 +78,16 @@
     </div>
 
     <!-- ── BUY NOW ── -->
-    <div class="cta-wrap">
-      <button class="btn-buy" (click)="buyNow()">
-        <ion-icon name="bag-check-outline"></ion-icon>
-        Buy Now on Amazon
-      </button>
-      <button class="btn-wishlist" (click)="toggleWishlist()">
-        <ion-icon [name]="wishlisted ? 'heart' : 'heart-outline'"
-          [style.color]="wishlisted ? '#E05050' : ''">
-        </ion-icon>
-      </button>
-    </div>
+    <!-- ── BUY NOW ── -->
+<div class="cta-wrap">
+  <button class="btn-buy btn-amazon" (click)="buyNow('amazon')">
+    <img src="assets/amazon4.webp" class="brand-icon"  />
+  </button>
+
+  <button class="btn-buy btn-flipkart" (click)="buyNow('flipkart')">
+    <img src="assets/flipkart2.webp" class="brand-icon" />
+  </button>
+</div>
 
     <!-- ── TRUST BADGES ── -->
     <div class="trust-row">

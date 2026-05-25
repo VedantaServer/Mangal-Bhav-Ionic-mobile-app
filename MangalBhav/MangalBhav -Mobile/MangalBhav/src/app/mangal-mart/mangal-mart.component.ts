@@ -222,7 +222,7 @@ export class MangalMartComponent implements OnInit {
 
   // ── CTA ───────────────────────────────────────────────
 
-  buyNow() {
+  buyNow(platform: string) {
     window.open(this.AMAZON_LINK, '_blank');
   }
 

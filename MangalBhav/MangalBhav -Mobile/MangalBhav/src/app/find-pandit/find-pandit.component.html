@@ -17,6 +17,13 @@
         <ion-icon name="search-outline"></ion-icon>
         <input type="text" placeholder="Search by name, language..." class="search-input" [(ngModel)]="searchQuery"
           (ngModelChange)="onSearchChange($event)" />
+
+        <!-- GPS icon -->
+        <ion-icon name="navigate-outline" class="gps-icon" [class.gps-active]="locationState === 'granted'"
+          (click)="onShowNearby()">
+        </ion-icon>
+
+        <!-- QR icon -->
         <ion-icon name="qr-code-outline" class="qr-scan-icon" (click)="openQrScanner()"></ion-icon>
       </div>
     </div>
@@ -50,13 +57,13 @@
     <div class="pandit-list-wrap">
 
       <!-- ══ SHOW NEARBY BUTTON (default idle state) ══ -->
-      <div class="nearby-cta-row" *ngIf="locationState === 'idle'">
+      <!-- <div class="nearby-cta-row" *ngIf="locationState === 'idle'">
         <button class="nearby-cta-btn" (click)="onShowNearby()">
           <span class="nearby-btn-icon">📍</span>
           <span class="nearby-btn-label">Show Nearby Pandits</span>
           <span class="nearby-btn-arrow">→</span>
         </button>
-      </div>
+      </div> -->
 
       <!-- ══ LOCATION STATE NOTICES ══ -->
       <div class="location-notice fetching" *ngIf="locationState === 'fetching'">
@@ -124,14 +131,15 @@
           <!-- Avatar -->
           <div class="card-avatar-wrap">
             <div class="card-avatar-ring" [class.verified-ring]="item.profile?.VerificationStatus === 'APPROVED'">
-              <div class="card-avatar-initials" *ngIf="!profileImages[item.profile?.UserID]" style="text-transform: capitalize;">
+              <div class="card-avatar-initials" *ngIf="!profileImages[item.profile?.UserID]"
+                style="text-transform: capitalize;">
                 {{ item.profile?.FullName?.charAt(0) || '🙏' }}
               </div>
               <img *ngIf="profileImages[item.profile?.UserID]" [src]="getProfileImage(item.profile?.UserID)"
                 class="card-avatar-img" (error)="onImgError($event)" />
             </div>
             <!-- Online dot -->
-            <span class="card-online-dot" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"></span>
+            <!-- <span class="card-online-dot" [class.verified]="item.profile?.VerificationStatus === 'APPROVED'"></span> -->
           </div>
 
           <!-- Card Body -->
@@ -140,7 +148,7 @@
             <!-- Name + Verified tick -->
             <div class="card-name-row">
               <h3 class="card-name">{{ item.profile?.FullName || item.user?.Username }}</h3>
-              <span class="card-verified-tick" *ngIf="item.profile?.VerificationStatus === 'APPROVED'"
+              <!-- <span class="card-verified-tick" *ngIf="item.profile?.VerificationStatus === 'APPROVED'"
                 title="Verified Pandit">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
@@ -149,33 +157,34 @@
                   <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
-              </span>
+              </span> -->
             </div>
 
             <!-- Tagline / Speciality -->
-            <p class="card-tagline" *ngIf="item.profile?.Bio">
+            <!-- <p class="card-tagline" *ngIf="item.profile?.Bio">
               {{ item.profile?.Bio | slice:0:55 }}{{ item.profile?.Bio?.length > 55 ? '…' : '' }}
             </p>
-            <p class="card-tagline muted" *ngIf="!item.profile?.Bio">
+            <p class="card-tagline" *ngIf="!item.profile?.Bio">
               Vedic Pandit · Available for bookings
-            </p>
+            </p> -->
 
             <!-- Chips row -->
             <div class="card-chips">
-              <span class="card-chip exp" *ngIf="item.profile?.ExperienceYears">
+              <span class="card-chip exp">
                 <ion-icon name="time-outline"></ion-icon>
-                {{ item.profile?.ExperienceYears }} yrs exp
+                {{ item.profile?.ExperienceYears ? item.profile.ExperienceYears + ' yrs exp' : '5+ yrs exp' }}
               </span>
-              <span class="card-chip lang" *ngIf="item.profile?.Languages">
+            
+              <span class="card-chip lang">
                 <ion-icon name="language-outline"></ion-icon>
-                {{ item.profile?.Languages | slice:0:14 }}
+                {{ (item.profile?.Languages | slice:0:14) || 'Hindi' }}
               </span>
-              <span class="card-chip loc" *ngIf="item._city">
+            
+              <span class="card-chip loc">
                 <ion-icon name="location-outline"></ion-icon>
-                {{ item._city }}
+                {{ item._city || 'India' }}
               </span>
             </div>
-
             <!-- Divider -->
             <div class="card-divider"></div>
 

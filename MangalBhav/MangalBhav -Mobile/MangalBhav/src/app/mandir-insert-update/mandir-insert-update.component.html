@@ -129,6 +129,14 @@
       </div>
     </div>
 
+
+    <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="crescent"
+        loadingText="Loading more mandirs...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
     <ng-template #noMandirs>
       <div class="mandir-empty">
         <div class="mandir-empty-icon">🛕</div>
@@ -270,6 +278,44 @@
           </div>
         </div>
       </ng-container>
+
+      <!-- UPI ID — Edit mode only -->
+      <ng-container *ngIf="isEditMode">
+        <div class="mandir-form-section-label">Bank / Payment Details</div>
+
+        <div class="mandir-form-row">
+          <div class="mandir-form-group full">
+            <label>UPI ID</label>
+
+            <!-- Existing UPI shown -->
+            <div *ngIf="bankDetails && !showBankForm"
+              style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--ion-color-medium); border-radius:8px; padding: 8px 12px;">
+              <span style="font-size:15px;">{{ bankDetails.UPIId }}</span>
+              <button
+                style="background:none; border:none; color:var(--ion-color-primary); cursor:pointer; font-size:13px;"
+                (click)="showBankForm = true">
+                Edit
+              </button>
+            </div>
+
+            <!-- Add / Edit UPI form -->
+            <div *ngIf="showBankForm" style="display:flex; flex-direction:column; gap:10px;">
+              <input type="text" [(ngModel)]="upiId" placeholder="e.g. mandirname@upi" />
+              <div style="display:flex; gap:8px;">
+                <button class="mandir-submit-btn" style="flex:1; font-size:14px;" (click)="saveBankDetails()">
+                  {{ bankDetails ? 'Update UPI ID' : 'Save UPI ID' }}
+                </button>
+                <button *ngIf="bankDetails" class="mandir-cancel-btn" style="flex:0; padding:10px 14px;"
+                  (click)="showBankForm = false">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </ng-container>
+
 
       <!-- Added By -->
       <div class="mandir-form-section-label">Added By</div>

@@ -103,12 +103,31 @@
                     : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
                   </h4>
 
-                  <p class="puja-location-row">
-                    <ion-icon name="time-outline"></ion-icon>
-                    {{ svc.DurationMinutes || 90 }} {{ t.mins }} · {{ t.atHome }} &nbsp;·&nbsp;
-                    <ion-icon name="cash-outline"></ion-icon>
-                    ₹ 999
-                  </p>
+                  <div class="puja-meta-row">
+                    <span class="puja-meta-chip">
+                      <ion-icon name="time-outline"></ion-icon>
+                      {{ svc.DurationMinutes || 90 }} {{ t.mins }}
+                    </span>
+                  
+                    <span class="puja-meta-dot">·</span>
+                  
+                    <span class="puja-meta-chip">
+                      <ion-icon name="home-outline"></ion-icon>
+                      {{ t.atHome }}
+                    </span>
+                  
+                    <span class="puja-meta-dot">·</span>
+                  
+                    <span class="puja-meta-chip">
+                      <ion-icon name="cash-outline"></ion-icon>
+                      ₹ 999
+                    </span>
+                  
+                    <ng-container *ngIf="cat.AgeText">
+                      <span class="puja-meta-dot">·</span>
+                      <span class="puja-meta-chip puja-meta-age">{{ cat.AgeText }}</span>
+                    </ng-container>
+                  </div>
 
                   <p class="puja-subtitle">
                     {{ Language === 'Hindi'

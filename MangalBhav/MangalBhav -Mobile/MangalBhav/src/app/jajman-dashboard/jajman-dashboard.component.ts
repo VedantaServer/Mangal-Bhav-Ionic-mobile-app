@@ -34,7 +34,7 @@ export class JajmanDashboardComponent implements OnInit {
     en: {
       greeting: 'Namaste 🙏',
       greetingTitle: "Let's Plan Your Next Puja",
-
+      followUs: 'Follow us on social media',
       quickActions: 'Quick Actions',
       logoTitle: 'Mangal.Bhav',
       myBookings: 'My Bookings',
@@ -57,7 +57,7 @@ export class JajmanDashboardComponent implements OnInit {
       profile: 'प्रोफ़ाइल',
       logoTitle: 'मंगल.भाव:',
       festivals: 'हिंदू पंचांग',
-
+      followUs: 'सोशल मीडिया पर फॉलो करें',
       explore: 'जीवन देखें',
       me: 'मैं'
     }
@@ -84,7 +84,7 @@ export class JajmanDashboardComponent implements OnInit {
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'BHAKT'
     ) {
-      this.routerCtrl.navigateRoot('/login');
+      this.routerCtrl.navigateForward('/login');
     }
 
 
@@ -92,7 +92,7 @@ export class JajmanDashboardComponent implements OnInit {
       await this.storage.get("languageChange")
     ) {
       await this.storage.remove('languageChange');
-      this.routerCtrl.navigateRoot('/languagechange');
+      this.routerCtrl.navigateForward('/languagechange');
     }
 
 
@@ -146,7 +146,7 @@ export class JajmanDashboardComponent implements OnInit {
 
 
   goToLoggedInHomePage() {
-    this.routerCtrl.navigateRoot(`/loggedin-home`);
+    this.routerCtrl.navigateForward(`/loggedin-home`);
   }
 
   openPage(pageName: any) {
@@ -163,7 +163,7 @@ export class JajmanDashboardComponent implements OnInit {
   async logout() {
 
     await this.storage.clear();
-    this.routerCtrl.navigateRoot('/login');
+    this.routerCtrl.navigateForward('/login');
   }
 
 
@@ -183,5 +183,13 @@ export class JajmanDashboardComponent implements OnInit {
     console.log('Location clicked');
   }
 
+  followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
+    const urls: any = {
+      facebook:  'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
+      instagram: 'https://www.instagram.com/mangalbhav',  // 🔁 your handle
+      linkedin:  'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
+    };
+    Browser.open({ url: urls[platform] });
+  }
 
 }

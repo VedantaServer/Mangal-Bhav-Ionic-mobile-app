@@ -44,7 +44,7 @@ export class Tab1Page {
       addSeva: 'Add Service',
       bookings: 'Yajman Bookings',
       profile: 'Pandit Profile',
-
+      followUs: 'Follow us on social media',
       mySeva: 'My Seva',
       bookedSeva: 'Booked Seva',
       myBookings: 'My Bookings',
@@ -62,7 +62,7 @@ export class Tab1Page {
       appTitle: '🕉️ मंगल भाव',
       logoTitle: 'मंगल.भाव:',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
-
+      followUs: 'सोशल मीडिया पर फॉलो करें',
       greetingTitle: 'नमस्ते 🙏, ',
       greetingSubtitle: 'क्या आप आज की सेवा के लिए तैयार हैं?',
 
@@ -142,14 +142,14 @@ export class Tab1Page {
       await this.storage.get("languageChange")
     ) {
       await this.storage.remove('languageChange');
-      this.routerCtrl.navigateRoot('/languagechange');
+      this.routerCtrl.navigateForward('/languagechange');
     }
 
     if (
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'PANDIT'
     ) {
-      this.routerCtrl.navigateRoot('/login');
+      this.routerCtrl.navigateForward('/login');
     }
 
 
@@ -209,6 +209,16 @@ export class Tab1Page {
   selectPlatform(platform: 'android' | 'ios') {
     this.selectedPlatform = platform;
     this.copied = false;
+  }
+
+  
+  followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
+    const urls: any = {
+      facebook:  'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
+      instagram: 'https://www.instagram.com/mangalbhav',  // 🔁 your handle
+      linkedin:  'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
+    };
+    Browser.open({ url: urls[platform] });
   }
 
   getAppLink(): string {
@@ -338,7 +348,7 @@ export class Tab1Page {
   async logout() {
 
     await this.storage.clear();
-    this.routerCtrl.navigateRoot('/login');
+    this.routerCtrl.navigateForward('/login');
   }
 
 

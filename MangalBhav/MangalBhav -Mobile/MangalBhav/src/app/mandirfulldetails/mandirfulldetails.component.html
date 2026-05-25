@@ -28,34 +28,44 @@
     <!-- ══════════════════════════════════
          IMAGE SLIDER HERO
     ══════════════════════════════════ -->
-    <div class="mfd-hero">
+    <div class="mfd-hero-images">
 
-      <ng-container *ngIf="slideImages.length > 0; else heroPlaceholder">
-        <img [src]="slideImages[activeSlide].url" class="mfd-hero-img" [alt]="mandir.MandirName" />
-        <div class="mfd-hero-overlay"></div>
-        <div class="mfd-slide-label">{{ slideImages[activeSlide].label }}</div>
-        <div class="mfd-slider-controls" *ngIf="slideImages.length > 1">
-          <button class="mfd-slider-btn" (click)="prevSlide()">‹</button>
-          <div class="mfd-slider-dots">
-            <span class="mfd-dot" *ngFor="let img of slideImages; let i = index"
-              [class.active]="i === activeSlide"></span>
-          </div>
-          <button class="mfd-slider-btn" (click)="nextSlide()">›</button>
+      <div class="mfd-img-tile" *ngIf="FrontImageUrl" (click)="openLightbox(FrontImageUrl)">
+        <img [src]="FrontImageUrl" class="mfd-tile-img" alt="Front" />
+        <div class="mfd-tile-overlay">
+          <ion-icon name="expand-outline"></ion-icon>
+          <span>Outside</span>
         </div>
         <div class="mfd-verified" *ngIf="mandir.IsVerified">✦ Verified</div>
-      </ng-container>
+      </div>
 
-      <ng-template #heroPlaceholder>
-        <div class="mfd-hero-placeholder">
-          <span class="mfd-placeholder-om">🛕</span>
-          <span class="mfd-placeholder-label">मंदिर</span>
+      <div class="mfd-img-tile" *ngIf="InsideImageUrl" (click)="openLightbox(InsideImageUrl)">
+        <img [src]="InsideImageUrl" class="mfd-tile-img" alt="Inside" />
+        <div class="mfd-tile-overlay">
+          <ion-icon name="expand-outline"></ion-icon>
+          <span>Inside</span>
         </div>
-      </ng-template>
+      </div>
+
+      <!-- placeholder if neither image loaded yet -->
+      <div class="mfd-hero-placeholder" *ngIf="!FrontImageUrl && !InsideImageUrl">
+        <span>🛕</span>
+        <span class="mfd-placeholder-label">मंदिर</span>
+      </div>
 
       <div class="mfd-hero-bottom">
         <h1 class="mfd-hero-name">{{ mandir.MandirName }}</h1>
         <p class="mfd-hero-god">✦ {{ mandir.GodName }}</p>
       </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div class="mfd-lightbox" *ngIf="lightboxImageUrl" (click)="closeLightbox()">
+      <button class="mfd-lightbox-close" (click)="closeLightbox()">✕</button>
+      <div class="mfd-lightbox-img-wrap" (click)="$event.stopPropagation()">
+        <img [src]="lightboxImageUrl" class="mfd-lightbox-img" />
+      </div>
+      <p class="mfd-lightbox-hint">Tap outside to close</p>
     </div>
 
     <!-- ══════════════════════════════════
@@ -321,15 +331,15 @@
       </div>
 
       <!-- Custom amount -->
-      <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div>
-      <div class="mfd-amount-input-wrap">
+      <!-- <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div> -->
+      <div class="mfd-amount-input-wrap" style="margin-top: 5px;">
         <span class="mfd-rupee">₹</span>
         <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount" placeholder="e.g. 750"
           (input)="donateAmount = ''" />
       </div>
 
       <!-- Purpose Dropdown -->
-      <div class="mfd-donate-label" style="margin-top: 14px;">Purpose of Donation</div>
+      <div class="mfd-donate-label" style="margin-top: 5px;">Purpose of Donation</div>
       <div class="mfd-select-wrap">
         <select class="mfd-select" [(ngModel)]="donatePurpose">
           <option value="" disabled>Select a purpose…</option>
@@ -339,48 +349,47 @@
       </div>
 
       <!-- Name + Mobile -->
-      <div class="mfd-two-col" style="margin-top: 12px;">
+      <div class="mfd-two-col" style="margin-top: 5px;">
         <div>
-          <div class="mfd-donate-label">Your Name</div>
+          <!-- <div class="mfd-donate-label">Your Name</div> -->
           <input class="mfd-text-input" type="text" [(ngModel)]="donateName" placeholder="Name" />
         </div>
         <div>
-          <div class="mfd-donate-label">Mobile No.</div>
+          <!-- <div class="mfd-donate-label">Mobile No.</div> -->
           <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile" placeholder="10-digit" maxlength="10" />
         </div>
       </div>
 
       <!-- Make a Wish Box -->
-      <div class="mfd-donate-label" style="margin-top: 14px;">🌟 Make a Wish (Optional)</div>
-      <div class="mfd-wish-wrap">
+      <!-- <div class="mfd-donate-label" style="margin-top: 14px;">🌟 Make a Wish (Optional)</div> -->
+      <div class="mfd-wish-wrap" style="margin-top: 5px;">
         <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
-          placeholder="Write your wish or prayer here… 🙏&#10;e.g. Bless my family with good health & happiness"
-          rows="3" maxlength="200"></textarea>
+          placeholder="Write your wish or prayer here… 🙏&#10;"
+          rows="1" maxlength="200"></textarea>
         <div class="mfd-wish-count">{{ donateWish.length || 0 }}/200</div>
       </div>
 
       <!-- Summary -->
       <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
         <div class="mfd-summary-row">
-          <span>🙏 Donation Amount : </span>
+          <span>🙏 Donation Amount</span>
           <strong>₹{{ finalAmount }}</strong>
         </div>
+      
         <div class="mfd-summary-divider"></div>
-        <div class="mfd-support-box">
-          <label class="mfd-support-label">
-            <input type="checkbox" [(ngModel)]="supportMangalBhav" />
-            ❤️ Support Mangal Bhav App
-          </label>
-          <div class="mfd-support-sub">Help us maintain and improve the app 🙏</div>
-        </div>
-        <div class="mfd-summary-divider"></div>
+      
         <div class="mfd-summary-row platform">
-          <span>⚡ Platform Charges : </span>
+          <label class="mfd-platform-label">
+            <input type="checkbox" [(ngModel)]="supportMangalBhav" />
+            <span>⚡ Platform Charges</span>
+          </label>
           <span class="platform-fee">₹{{ supportMangalBhav ? platformFee : 0 }}</span>
         </div>
+      
         <div class="mfd-summary-divider"></div>
+      
         <div class="mfd-summary-row total">
-          <span>💰 Total Donation : </span>
+          <span>💰 Total Donation</span>
           <strong class="total-amt">
             ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}
           </strong>
@@ -436,14 +445,32 @@
 
       <!-- Temple image + Deity side by side -->
       <div class="mfd-preview-temple-row">
-        <div class="mfd-preview-temple-img-wrap">
-          <img *ngIf="InsideImageUrl || FrontImageUrl; else previewPlaceholder" [src]="InsideImageUrl || FrontImageUrl"
-            class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
-          <ng-template #previewPlaceholder>
-            <div class="mfd-preview-temple-placeholder">🛕</div>
-          </ng-template>
+
+        <!-- Front Image -->
+        <div class="mfd-preview-temple-img-wrap" *ngIf="FrontImageUrl" (click)="openLightbox(FrontImageUrl)">
+          <img [src]="FrontImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
+          <div class="mfd-preview-tile-overlay">
+            <ion-icon name="expand-outline"></ion-icon>
+          </div>
+          <div class="mfd-preview-img-label">🏛 Outside</div>
+        </div>
+
+        <!-- Inside Image -->
+        <div class="mfd-preview-temple-img-wrap" *ngIf="InsideImageUrl" (click)="openLightbox(InsideImageUrl)">
+          <img [src]="InsideImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
+          <div class="mfd-preview-tile-overlay">
+            <ion-icon name="expand-outline"></ion-icon>
+          </div>
+          <div class="mfd-preview-img-label">🛕 Inside</div>
+        </div>
+
+        <!-- Placeholder if no images -->
+        <div class="mfd-preview-temple-img-wrap placeholder-tile" *ngIf="!FrontImageUrl && !InsideImageUrl">
+          <div class="mfd-preview-temple-placeholder">🛕</div>
           <div class="mfd-preview-img-label">{{ mandir?.MandirName }}</div>
         </div>
+
+        <!-- Deity info -->
         <div class="mfd-preview-deity-wrap">
           <div class="mfd-preview-deity-icon">🙏</div>
           <div class="mfd-preview-deity-name">{{ mandir?.GodName }}</div>
@@ -452,6 +479,7 @@
             ✦ Verified Mandir
           </div>
         </div>
+
       </div>
 
       <div class="mfd-preview-card mfd-preview-card--amount">
@@ -532,7 +560,7 @@
       </div>
 
       <!-- Refund Promise -->
-      <div class="mfd-preview-card mfd-preview-card--refund">
+      <!-- <div class="mfd-preview-card mfd-preview-card--refund">
         <div class="mfd-preview-card-title">🔄 Refund Promise</div>
         <div class="mfd-preview-refund-body">
           <div class="mfd-preview-refund-icon">🛡️</div>
@@ -542,21 +570,15 @@
             <div class="mfd-preview-refund-sub">No questions asked. Contact us within 11 days of donation.</div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Contact Support -->
-      <div class="mfd-preview-card mfd-preview-card--support">
-        <div class="mfd-preview-card-title">💬 Need Help?</div>
-        <button class="mfd-preview-whatsapp-btn" (click)="openWhatsApp()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-            <path
-              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-          </svg>
-          Chat with Support on WhatsApp
-        </button>
-        <div class="mfd-preview-support-sub">Available Mon–Sat · 9 AM to 6 PM</div>
+      <div class="mfd-preview-support-strip">
+        <div class="mfd-preview-support-item" (click)="openWhatsApp()">
+          💬 Support
+        </div>
+        <!-- <div class="mfd-preview-support-item">🔄 11-Day Refund</div> -->
+        <div class="mfd-preview-support-item">📞 Mon–Sat 9–6 PM</div>
       </div>
 
       <!-- Donation Summary -->

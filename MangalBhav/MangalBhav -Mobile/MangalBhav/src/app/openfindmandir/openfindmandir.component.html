@@ -30,6 +30,13 @@
             ✕
           </span>
 
+<!-- GPS icon -->
+<ion-icon 
+  name="navigate-outline" 
+  class="gps-icon"
+  [class.gps-active]="locationState === 'granted'"
+  (click)="onShowNearby()">
+</ion-icon>
           <!-- Scan icon inside search bar -->
           <button class="mandir-scan-icon-btn" (click)="toggleScanner()" [class.active]="showScanner">
             <span *ngIf="!showScanner">
@@ -62,11 +69,11 @@
 
 
     <!-- ── Show Nearby Button (shown when location not yet fetched) ── -->
-    <div class="mandir-nearby-row" *ngIf="locationState === 'idle'">
+    <!-- <div class="mandir-nearby-row" *ngIf="locationState === 'idle'">
       <button class="mandir-nearby-btn" (click)="onShowNearby()">
         📍 Show Nearby Mandirs
       </button>
-    </div>
+    </div> -->
 
     <!-- ── Location State Notices ── -->
     <div class="mandir-location-notice fetching" *ngIf="locationState === 'fetching'">
@@ -164,17 +171,16 @@
               [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
               (click)="$event.stopPropagation()">
               🗺️ {{ m.DistanceKm < 1 ? (m.DistanceKm * 1000 | number:'1.0-0') + ' m away' : (m.DistanceKm |
-                number:'1.1-1') + ' km away' }}
-            </a>
+                number:'1.1-1') + ' km away' }} </a>
 
-            <!-- Show map link without distance when location not fetched -->
-            <a *ngIf="m.Latitude && m.Longitude && m.DistanceKm === null" class="mandir-map-link"
-              [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
-              (click)="$event.stopPropagation()">
-              🗺️ View on Map
-            </a>
+                <!-- Show map link without distance when location not fetched -->
+                <a *ngIf="m.Latitude && m.Longitude && m.DistanceKm === null" class="mandir-map-link"
+                  [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank"
+                  (click)="$event.stopPropagation()">
+                  🗺️ View on Map
+                </a>
 
-            <span class="mandir-arrow">→</span>
+                <span class="mandir-arrow">→</span>
           </div>
         </div>
 

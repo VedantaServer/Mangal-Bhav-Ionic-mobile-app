@@ -218,40 +218,47 @@ namespace FaceUPAI.API
 			}, this);
 		}
 
-		/// <summary>
-		/// Selects all records from the PanditServices table by a foreign key.
-		/// </summary>
-	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("PanditServicesSelectAllByServiceID")]
-		public  IActionResult PanditServicesSelectAllByServiceID(int serviceID)
-		{
-			return ApiHandler.Handle(() =>
-			{
-			SqlParameter[] parameters = new SqlParameter[]
-			{
-				new SqlParameter("@ServiceID", serviceID)
+        /// <summary>
+        /// Selects all records from the PanditServices table by a foreign key.
+        /// </summary>
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("PanditServicesSelectAllByServiceID")]
+        public IActionResult PanditServicesSelectAllByServiceID(int serviceID, int pageNumber = 1, int pageSize = 5)
+        {
+            return ApiHandler.Handle(() =>
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@ServiceID",   serviceID),
+            new SqlParameter("@PageNumber",  pageNumber),
+            new SqlParameter("@PageSize",    pageSize)
+                };
 
-			};
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    System.Data.CommandType.StoredProcedure,
+                    "PanditServicesSelectAllByServiceID", parameters))
+                {
+                    List<PanditService> PanditServiceList = new List<PanditService>();
+                    while (dataReader.Read())
+                    {
+                        PanditServiceList.Add(MakePanditService(dataReader));
+                    }
 
-			using (SqlDataReader dataReader = DataAccess.ExecuteReader( System.Data.CommandType.StoredProcedure, "PanditServicesSelectAllByServiceID", parameters))
-			{
-				List<PanditService> PanditServiceList = new List<PanditService>();
-				while (dataReader.Read())
-				{
-					PanditService PanditService = MakePanditService(dataReader);
-					PanditServiceList.Add(PanditService);
-				}
+                    int totalCount = 0;
+                    if (dataReader.NextResult() && dataReader.Read())
+                    {
+                        totalCount = Convert.ToInt32(dataReader["TotalCount"]);
+                    }
 
-				return  Ok(new {PanditServiceList});
-			}
-			}, this);
-		}
-
-		/// <summary>
-		/// Selects all records from the PanditServices table by a foreign key.
-		/// </summary>
-	[HttpPost]
+                    return Ok(new { PanditServiceList, TotalCount = totalCount });
+                }
+            }, this);
+        }
+        /// <summary>
+        /// Selects all records from the PanditServices table by a foreign key.
+        /// </summary>
+        [HttpPost]
 		[EnableCors("AllowAll")]
 		[Route("PanditServicesSelectAllByTenantID")]
 		public  IActionResult PanditServicesSelectAllByTenantID(int tenantID)

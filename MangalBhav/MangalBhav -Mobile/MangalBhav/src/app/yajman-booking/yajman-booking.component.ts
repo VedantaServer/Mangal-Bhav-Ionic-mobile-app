@@ -245,13 +245,13 @@ export class YajmanBookingComponent implements OnInit {
 
   expandedIndices: Set<number> = new Set();
 
-  toggleService(i: number) {
-    if (this.expandedIndices.has(i)) {
-      this.expandedIndices.delete(i);
-    } else {
-      this.expandedIndices.add(i);
-    }
-  }
+  // toggleService(i: number) {
+  //   if (this.expandedIndices.has(i)) {
+  //     this.expandedIndices.delete(i);
+  //   } else {
+  //     this.expandedIndices.add(i);
+  //   }
+  // }
 
   async updateBookingStatus(booking: any, status: string) {
 
@@ -385,4 +385,17 @@ export class YajmanBookingComponent implements OnInit {
       default: return '';
     }
   }
+
+  isBookingsModalOpen = false;
+selectedService: any = null;
+
+openBookingsModal(service: any) {
+  this.selectedService = service;
+  this.isBookingsModalOpen = true;
+}
+
+// Keep toggleService but redirect it
+toggleService(i: number) {
+  this.openBookingsModal(this.PanditServicesList[i]);
+}
 }

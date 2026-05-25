@@ -437,7 +437,18 @@ export class LoggedinPanditsearchComponent implements OnInit {
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
+  isPoojaImgOpen = false;
 
+  openPoojaImgLightbox() {
+    this.isPoojaImgOpen = true;
+  }
+
+  closePoojaImgLightbox() {
+    this.isPoojaImgOpen = false;
+  }
+
+  // serviceName: string = '';
+  serviceNameRaw: string = '';   // ← ADD THIS — always English, for image
 
   loadServiceName() {
     if (!this.serviceid) return;
@@ -446,25 +457,27 @@ export class LoggedinPanditsearchComponent implements OnInit {
         const svc = res?.ServiceList?.[0];
         if (svc) {
           const name = svc?.Name || '';
-
           const parts = name.split('/');
 
+          // ← Always English for image lookup
+          this.serviceNameRaw = parts[0]?.trim() || '';
+
+          // Display name based on language
           this.serviceName =
             this.language?.toLowerCase() === 'hindi'
               ? (parts[1]?.trim() || parts[0]?.trim() || '')
               : (parts[0]?.trim() || parts[1]?.trim() || '');
-
-
         }
       });
   }
+
 
 
   isPoojaModalOpen = false;
   isPanditModalOpen = false;
   selectedPandit: any = null;
 
-  locationLoadingPending = false ;
+  locationLoadingPending = false;
 
   openPoojaModal() {
     this.isPoojaModalOpen = true;
@@ -476,85 +489,94 @@ export class LoggedinPanditsearchComponent implements OnInit {
   }
   panditLocationMap: { [userID: number]: any } = {};
 
-  loadPandits() {
-    this.isLoading = true;
-    this.locationLoadingPending = true;
-
-    this.apinu.postUrlData(
-      `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null
-    ).subscribe((res: any) => {
-
-      const panditServices = res.PanditServiceList || [];
-
-      if (panditServices.length === 0) {
-        this.panditProfiles = [];
-        this.isLoading = false;
-        return;
-      }
-
-      // ── Unique profile IDs for fetching profiles ──
-      const profileIDs = panditServices.map((x: any) => x.ProfileID);
-      const uniqueProfileIDs = [...new Set(profileIDs)];
-
-      // ── Build a ProfileID → LocationID map (first service per pandit) ──
-      const profileLocationMap: { [id: number]: number } = {};
-      panditServices.forEach((ps: any) => {
-        if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
-          profileLocationMap[ps.ProfileID] = ps.LocationID;
-        }
-      });
-
-      // ── Fetch profiles ──
-      const profileCalls = uniqueProfileIDs.map((id: any) =>
-        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
-      );
-
-      forkJoin(profileCalls).subscribe((profiles: any[]) => {
-
-        let profileData: any[] = [];
-        profiles.forEach((p: any) => {
-          if (p?.ProfileList?.length > 0) profileData.push(...p.ProfileList);
-        });
-
-        this.panditProfiles = profileData;
-        this.isLoading = false;
-
-        // ── Load profile images ──
-        this.panditProfiles.forEach(p => {
-          if (p.UserID) this.loadProfileImage(p);
-        });
-
-        // ── Collect unique LocationIDs ──
-        const locationIDs = [...new Set(
-          Object.values(profileLocationMap).filter(Boolean)
-        )];
-
-        if (locationIDs.length === 0) return;
-
-        // ✅ ONE call instead of N calls
-        const query = `LocationID IN (${locationIDs.join(',')})`;
-        this.apinu.postUrlData(
-          `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
-        ).subscribe((locRes: any) => {
-          const locations: any[] = locRes?.LocationList || [];
-
-          // Build locationID → location object map
-          const locationByID: { [id: number]: any } = {};
-          locations.forEach(loc => locationByID[loc.LocationID] = loc);
-
-          // Map each pandit's UserID → their location
-          this.panditProfiles.forEach(p => {
-            const locID = profileLocationMap[p.UserID];
-            if (locID && locationByID[locID]) {
-              this.panditLocationMap[p.UserID] = locationByID[locID];
-              this.locationLoadingPending = false ;
-            }
-          });
-        });
-      });
-
-    });
+  getServiceImagePath(serviceName: string): string {
+    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
+    return `assets/img/${englishName}.png`;
   }
+
+  onImgError(event: any) {
+    event.target.src = 'assets/img/default-puja.png'; // or any fallback
+  }
+
+  // loadPandits() {
+  //   this.isLoading = true;
+  //   this.locationLoadingPending = true;
+
+  //   this.apinu.postUrlData(
+  //     `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}`, null
+  //   ).subscribe((res: any) => {
+
+  //     const panditServices = res.PanditServiceList || [];
+
+  //     if (panditServices.length === 0) {
+  //       this.panditProfiles = [];
+  //       this.isLoading = false;
+  //       return;
+  //     }
+
+  //     // ── Unique profile IDs for fetching profiles ──
+  //     const profileIDs = panditServices.map((x: any) => x.ProfileID);
+  //     const uniqueProfileIDs = [...new Set(profileIDs)];
+
+  //     // ── Build a ProfileID → LocationID map (first service per pandit) ──
+  //     const profileLocationMap: { [id: number]: number } = {};
+  //     panditServices.forEach((ps: any) => {
+  //       if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
+  //         profileLocationMap[ps.ProfileID] = ps.LocationID;
+  //       }
+  //     });
+
+  //     // ── Fetch profiles ──
+  //     const profileCalls = uniqueProfileIDs.map((id: any) =>
+  //       this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
+  //     );
+
+  //     forkJoin(profileCalls).subscribe((profiles: any[]) => {
+
+  //       let profileData: any[] = [];
+  //       profiles.forEach((p: any) => {
+  //         if (p?.ProfileList?.length > 0) profileData.push(...p.ProfileList);
+  //       });
+
+  //       this.panditProfiles = profileData;
+  //       this.isLoading = false;
+
+  //       // ── Load profile images ──
+  //       this.panditProfiles.forEach(p => {
+  //         if (p.UserID) this.loadProfileImage(p);
+  //       });
+
+  //       // ── Collect unique LocationIDs ──
+  //       const locationIDs = [...new Set(
+  //         Object.values(profileLocationMap).filter(Boolean)
+  //       )];
+
+  //       if (locationIDs.length === 0) return;
+
+  //       // ✅ ONE call instead of N calls
+  //       const query = `LocationID IN (${locationIDs.join(',')})`;
+  //       this.apinu.postUrlData(
+  //         `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
+  //       ).subscribe((locRes: any) => {
+  //         const locations: any[] = locRes?.LocationList || [];
+
+  //         // Build locationID → location object map
+  //         const locationByID: { [id: number]: any } = {};
+  //         locations.forEach(loc => locationByID[loc.LocationID] = loc);
+
+  //         // Map each pandit's UserID → their location
+  //         this.panditProfiles.forEach(p => {
+  //           const locID = profileLocationMap[p.UserID];
+  //           if (locID && locationByID[locID]) {
+  //             this.panditLocationMap[p.UserID] = locationByID[locID];
+  //             this.locationLoadingPending = false ;
+  //           }
+  //         });
+  //       });
+  //     });
+
+  //   });
+  // }
 
 
   loadProfileImage(pandit: any) {
@@ -664,4 +686,202 @@ export class LoggedinPanditsearchComponent implements OnInit {
       });
   }
 
+
+  // ── Pagination state (add these as class properties) ──
+  currentPage = 1;
+  pageSize = 5;
+  totalCount = 0;
+  isLoadingMore = false;
+
+  get hasMorePandits(): boolean {
+    return this.panditProfiles.length < this.totalCount;
+  }
+
+  onInfiniteScroll(event: any) {
+    if (!this.hasMorePandits) {
+      event.target.complete();
+      event.target.disabled = true;
+      return;
+    }
+
+    this.currentPage++;
+
+    this.apinu.postUrlData(
+      `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}&pageNumber=${this.currentPage}&pageSize=${this.pageSize}`,
+      null
+    ).subscribe((res: any) => {
+
+      const panditServices = res.PanditServiceList || [];
+      this.totalCount = res.TotalCount || 0;
+
+      if (panditServices.length === 0) {
+        event.target.complete();
+        event.target.disabled = true;
+        return;
+      }
+
+      const profileIDs = panditServices.map((x: any) => x.ProfileID);
+      const uniqueProfileIDs = [...new Set(profileIDs)];
+
+      const profileLocationMap: { [id: number]: number } = {};
+      panditServices.forEach((ps: any) => {
+        if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
+          profileLocationMap[ps.ProfileID] = ps.LocationID;
+        }
+      });
+
+      const profileCalls = uniqueProfileIDs.map((id: any) =>
+        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
+      );
+
+      forkJoin(profileCalls).subscribe((profiles: any[]) => {
+
+        let newProfileData: any[] = [];
+        profiles.forEach((p: any) => {
+          if (p?.ProfileList?.length > 0) newProfileData.push(...p.ProfileList);
+        });
+
+        this.panditProfiles = [...this.panditProfiles, ...newProfileData];
+
+        newProfileData.forEach(p => {
+          if (p.UserID) this.loadProfileImage(p);
+        });
+
+        const locationIDs = [...new Set(
+          Object.values(profileLocationMap).filter(Boolean)
+        )] as number[];
+
+        if (locationIDs.length === 0) {
+          event.target.complete();
+          if (!this.hasMorePandits) event.target.disabled = true;
+          return;
+        }
+
+        const query = `LocationID IN (${locationIDs.join(',')})`;
+        this.apinu.postUrlData(
+          `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
+        ).subscribe((locRes: any) => {
+
+          const locations: any[] = locRes?.LocationList || [];
+          const locationByID: { [id: number]: any } = {};
+          locations.forEach(loc => locationByID[loc.LocationID] = loc);
+
+          newProfileData.forEach(p => {
+            const locID = profileLocationMap[p.UserID];
+            if (locID && locationByID[locID]) {
+              this.panditLocationMap[p.UserID] = locationByID[locID];
+            }
+          });
+
+          // ✅ Tell ionic scroll is done
+          event.target.complete();
+
+          // ✅ Disable if no more data
+          if (!this.hasMorePandits) event.target.disabled = true;
+        });
+      });
+    });
+  }
+
+  loadPandits(page: number = 1) {
+
+    if (page === 1) {
+      this.isLoading = true;
+      this.panditProfiles = [];        // reset on fresh/first load
+      this.panditLocationMap = {};     // reset location map too
+      this.profileImages = {};         // reset images
+      this.currentPage = 1;
+    } else {
+      this.isLoadingMore = true;
+    }
+
+    this.locationLoadingPending = true;
+
+    this.apinu.postUrlData(
+      `PanditServicesSelectAllByServiceID?serviceID=${this.serviceid}&pageNumber=${page}&pageSize=${this.pageSize}`,
+      null
+    ).subscribe((res: any) => {
+
+      const panditServices = res.PanditServiceList || [];
+      this.totalCount = res.TotalCount || 0;
+
+      if (panditServices.length === 0) {
+        this.isLoading = false;
+        this.isLoadingMore = false;
+        this.locationLoadingPending = false;
+        return;
+      }
+
+      // ── Unique profile IDs for fetching profiles ──
+      const profileIDs = panditServices.map((x: any) => x.ProfileID);
+      const uniqueProfileIDs = [...new Set(profileIDs)];
+
+      // ── Build a ProfileID → LocationID map (first service per pandit) ──
+      const profileLocationMap: { [id: number]: number } = {};
+      panditServices.forEach((ps: any) => {
+        if (ps.ProfileID && ps.LocationID && !profileLocationMap[ps.ProfileID]) {
+          profileLocationMap[ps.ProfileID] = ps.LocationID;
+        }
+      });
+
+      // ── Fetch profiles ──
+      const profileCalls = uniqueProfileIDs.map((id: any) =>
+        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${id}`, null)
+      );
+
+      forkJoin(profileCalls).subscribe((profiles: any[]) => {
+
+        let newProfileData: any[] = [];
+        profiles.forEach((p: any) => {
+          if (p?.ProfileList?.length > 0) newProfileData.push(...p.ProfileList);
+        });
+
+        // ── APPEND new page results to existing list ──
+        this.panditProfiles = [...this.panditProfiles, ...newProfileData];
+
+        this.isLoading = false;
+        this.isLoadingMore = false;
+
+        // ── Load profile images for new pandits only ──
+        newProfileData.forEach(p => {
+          if (p.UserID) this.loadProfileImage(p);
+        });
+
+        // ── Collect unique LocationIDs from this page ──
+        const locationIDs = [...new Set(
+          Object.values(profileLocationMap).filter(Boolean)
+        )] as number[];
+
+        if (locationIDs.length === 0) {
+          this.locationLoadingPending = false;
+          return;
+        }
+
+        // ── ONE batch call for all locations ──
+        const query = `LocationID IN (${locationIDs.join(',')})`;
+        this.apinu.postUrlData(
+          `LocationsNUSelectByQuery?Query=${encodeURIComponent(query)}`, null
+        ).subscribe((locRes: any) => {
+
+          const locations: any[] = locRes?.LocationList || [];
+
+          // Build locationID → location object map
+          const locationByID: { [id: number]: any } = {};
+          locations.forEach(loc => locationByID[loc.LocationID] = loc);
+
+          // Map each new pandit's UserID → their location
+          newProfileData.forEach(p => {
+            const locID = profileLocationMap[p.UserID];
+            if (locID && locationByID[locID]) {
+              this.panditLocationMap[p.UserID] = locationByID[locID];
+            }
+          });
+
+          this.locationLoadingPending = false;
+        });
+
+      });
+
+    });
+  }
 }

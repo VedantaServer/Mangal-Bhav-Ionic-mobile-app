@@ -128,7 +128,7 @@ export class LoginOtpPage {
             this.data = resp.Result[0];
             this.storage.set("account", this.data[0]);
             this.fcm.getToken(this.data[0].UserID);//the userdevice token is stored from inside this fuction
-             this.routerCtrl.navigateRoot('/tabs/tab1');
+             this.routerCtrl.navigateForward('/tabs/tab1');
           }
           else {
             this.lblMessage = "Invalid Username and password..";

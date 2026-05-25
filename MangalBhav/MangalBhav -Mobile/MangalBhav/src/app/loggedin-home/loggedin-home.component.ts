@@ -402,7 +402,7 @@ export class LoggedinHomeComponent implements OnInit {
   async logout() {
 
     await this.storage.clear();
-    this.routerCtrl.navigateRoot('/login');
+    this.routerCtrl.navigateForward('/login');
   }
 
 
@@ -417,7 +417,7 @@ export class LoggedinHomeComponent implements OnInit {
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'BHAKT'
     ) {
-      this.routerCtrl.navigateRoot('/login');
+      this.routerCtrl.navigateForward('/login');
     }
 
     await this.storage.remove('pendingPanditUserID');
@@ -540,7 +540,7 @@ export class LoggedinHomeComponent implements OnInit {
   gotToOpenPanditPage(categoryid: any, serviceid?: any) {
     //alert(categoryid);
 
-    this.routerCtrl.navigateRoot('/loggedin-panditsearch', {
+    this.routerCtrl.navigateForward('/loggedin-panditsearch', {
       queryParams: {
         categoryid: categoryid,
         serviceid: serviceid || null
@@ -674,13 +674,13 @@ export class LoggedinHomeComponent implements OnInit {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/tabs/tab1');
+            this.routerCtrl.navigateForward('/tabs/tab1');
           } else {
 
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/jajmandashboard');
+            this.routerCtrl.navigateForward('/jajmandashboard');
           }
         }
       })
@@ -974,13 +974,13 @@ export class LoggedinHomeComponent implements OnInit {
                   await this.storage.set("account", res);
                   await this.storage.set("IsUserLoggedIn", "true");
                   await this.storage.set("Language", res.Languages);
-                  this.routerCtrl.navigateRoot('/tabs/tab1');
+                  this.routerCtrl.navigateForward('/tabs/tab1');
                 } else {
 
                   await this.storage.set("account", res);
                   await this.storage.set("IsUserLoggedIn", "true");
                   await this.storage.set("Language", res.Languages);
-                  this.routerCtrl.navigateRoot('/jajmandashboard');
+                  this.routerCtrl.navigateForward('/jajmandashboard');
                 }
               }
             })
@@ -997,7 +997,7 @@ export class LoggedinHomeComponent implements OnInit {
         //       alert('Failed to send OTP');
         //     }
         //   )
-        // this.routerCtrl.navigateRoot('/login');
+        // this.routerCtrl.navigateForward('/login');
         //   this.showRegisterSection = false;
         // this.showMainSection = true;
         //this.registerStep = 'form';
@@ -1021,7 +1021,7 @@ export class LoggedinHomeComponent implements OnInit {
   }
 
   openLoginSection() {
-    this.routerCtrl.navigateRoot('/jajmandashboard');
+    this.routerCtrl.navigateForward('/jajmandashboard');
   }
 
 
@@ -1071,7 +1071,7 @@ export class LoggedinHomeComponent implements OnInit {
 
 
   async backToMain() {
-    //  this.routerCtrl.navigateRoot('/jajmandashboard')
+    //  this.routerCtrl.navigateForward('/jajmandashboard')
     setTimeout(() => {
       this.content.scrollToTop(500);
     }, 100);

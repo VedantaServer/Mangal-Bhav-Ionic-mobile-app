@@ -50,9 +50,9 @@ export class AppComponent {
     //console.log(accountValue);
     if (accountValue) {
       this.lblMessage = 'Login Found.. Opening Dashboard';
-      this.routerCtrl.navigateRoot('/tabs/tab1', { replaceUrl: true });
+      this.routerCtrl.navigateForward('/tabs/tab1', { replaceUrl: true });
     } else {
-      this.routerCtrl.navigateRoot('/login', { replaceUrl: true });
+      this.routerCtrl.navigateForward('/login', { replaceUrl: true });
     }
   }
 }

@@ -63,6 +63,9 @@ export class UserProfileComponent implements OnInit {
       bannerSub: 'Your Sacred',
       bannerTitle: 'Profile',
 
+      address: 'Address',
+      addressPlaceholder: 'Enter your full address...',
+
       changePhoto: 'Tap to change photo',
 
       personalDetails: 'Personal Details',
@@ -94,6 +97,7 @@ export class UserProfileComponent implements OnInit {
 
       experience: 'Experience (Years)',
       enterExperience: 'e.g. 10',
+
 
       dob: 'Date of Birth',
 
@@ -128,6 +132,8 @@ export class UserProfileComponent implements OnInit {
 
       bannerSub: 'आपका पवित्र',
       bannerTitle: 'प्रोफाइल',
+      address: 'पता',
+      addressPlaceholder: 'अपना पूरा पता दर्ज करें...',
 
       changePhoto: 'फोटो बदलने के लिए टैप करें',
 
@@ -193,6 +199,7 @@ export class UserProfileComponent implements OnInit {
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
     this.language = this.userDetails.Languages;
+    //  alert(this.language);
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
@@ -223,6 +230,11 @@ export class UserProfileComponent implements OnInit {
         //  console.log(data);
         this.isEditMode = true;
         this.profile = { ...data };
+
+        if (this.profile.DOB) {
+          this.profile.DOB = this.profile.DOB.toString().split('T')[0];
+        }
+
         this.profilePreview = data.ProfilePhotoUrl;
         console.log(this.profilePreview)
         this.loadProfileImage()
@@ -270,34 +282,42 @@ export class UserProfileComponent implements OnInit {
 
     this.uploadProfilePhoto();
   }
+
+
   uploadProfilePhoto() {
     const userId = this.profile.UserID;
     const file = this.selectedProfileFile;
     if (!file || !userId) return;
+
     this.api.uploadImage(
       [file],
-      'ProfilePhoto',    // folder/type
-      userId.toString(),       // ref id
+      'ProfilePhoto',
+      userId.toString(),
       'ProfilePhoto'
     ).subscribe((res: any) => {
       console.log(res);
       if (res.Status === 'Success') {
         this.selectedProfileFile = null;
+
+        // ✅ Sync new filename to BOTH objects
         this.profileObject.ProfilePhotoUrl = res.FileName;
+        this.profile.ProfilePhotoUrl = res.FileName;  // ← THIS LINE WAS MISSING
+
         this.apinu.postUrlData('ProfilesUpdate', this.profileObject).subscribe(async (res: any) => {
-          console.log(res.FileName)
           if (res.ProfileID > 0) {
             const account = await this.storage.get('account');
-            account.ProfilePhotoUrl = this.profileObject.ProfilePhotoUrl;;
+            account.ProfilePhotoUrl = this.profileObject.ProfilePhotoUrl;
             await this.storage.set('account', account);
             this.showToast('Profile photo updated successfully', 'success');
           }
-        })
+        });
       } else {
         this.showToast("Profile photo Upload failed", 'danger');
       }
     });
   }
+
+
 
   async showToast(message: string, color = 'primary') {
     const toast = await this.toastController.create({
@@ -318,9 +338,7 @@ export class UserProfileComponent implements OnInit {
         ? Number(this.profile.UserID)
         : 0,
       fullName: this.profile.FullName || '',
-      dOB: this.profile.DOB
-        ? new Date(this.profile.DOB).toISOString()
-        : null,
+      dOB: this.profile.DOB ? `${this.profile.DOB}T00:00:00.000Z` : null,
       gender: this.profile.Gender || '',
       phoneNumber: this.profile.PhoneNumber || '',
       email: this.profile.Email || '',
@@ -378,7 +396,7 @@ export class UserProfileComponent implements OnInit {
 
   saveBankDetails() {
     const body: any = {
-      BankDetailsId: Number(this.bankDetails.BankDetailsId || 0),
+      BankDetailsId: Number(this.bankDetails?.BankDetailsId || 0),
       TenantId: Number(this.userDetails.TenantID || 1),
       UserID: Number(this.userDetails.UserID),
       MandirID: 0,
@@ -413,7 +431,7 @@ export class UserProfileComponent implements OnInit {
   async logout() {
 
     await this.storage.clear();
-    this.routerCtrl.navigateRoot('/login');
+    this.routerCtrl.navigateForward('/login');
 
     const deviceId = await this.fcm.getDeviceID();
 
@@ -434,7 +452,7 @@ export class UserProfileComponent implements OnInit {
 
 
             await this.storage.clear();
-            this.routerCtrl.navigateRoot('/login');
+            this.routerCtrl.navigateForward('/login');
 
           })
 
@@ -452,7 +470,10 @@ export class UserProfileComponent implements OnInit {
     const payload = this.prepareProfileForSubmit();
     const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
     const previousRole = this.userDetails.Role;
-    const previousLanguage = this.userDetails.Languages; // ← add this
+    const previousLanguage = this.profileObject.Languages;
+
+    //  alert(previousRole + " " + previousLanguage);
+    // alert(this.selectedRole + " " + payload.languages);
 
     this.apinu.postUrlData(DBAction, payload).subscribe(async (res: any) => {
       if (res.ProfileID > 0) {

@@ -22,11 +22,16 @@
 
       <!-- Header block -->
       <div class="detail-hero">
-        <div class="detail-hero-icon">🔥</div>
+        <!-- AFTER -->
+        <div class="detail-hero-icon" *ngIf="serviceNameRaw" (click)="openPoojaModal()">
+          <img [src]="getServiceImagePath(serviceNameRaw)" class="detail-hero-img" (error)="onImgError($event)" />
+        </div>
         <h2 class="detail-hero-title" (click)="openPoojaModal()">{{ serviceName }}
         </h2>
         <p class="detail-hero-sub">{{ t.sacredRitual }}</p>
       </div>
+
+
 
       <!-- Info cards -->
       <div class="detail-info-grid">
@@ -121,8 +126,8 @@
 
           <div class="pandit-headline">
             <div class="pandit-name-row">
-              <h3 class="pandit-name clickable-name" (click)="openPanditModal(pandit)">
-                {{ pandit.FullName }}
+              <h3 class="pandit-name clickable-name" style="text-transform: capitalize;" (click)="openPanditModal(pandit)">
+                {{ pandit.FullName || 'Pandit Ji' }}
                 <ion-icon name="chevron-forward-outline"></ion-icon>
               </h3>
               <span class="verified-pill" *ngIf="pandit.VerificationStatus === 'APPROVED'">
@@ -134,18 +139,20 @@
             </div>
 
             <div class="pandit-meta">
-              <span class="meta-chip" *ngIf="pandit.Gender">
-                <ion-icon name="person-outline"></ion-icon> {{ pandit.Gender }}
+              <span class="meta-chip">
+                <ion-icon name="person-outline"></ion-icon>
+                {{ pandit.Gender || 'Male' }}
               </span>
-              <span class="meta-chip" *ngIf="pandit.ExperienceYears">
-                <ion-icon name="time-outline"></ion-icon> {{ pandit.ExperienceYears }} {{ t.yrsExp }}
+              <span class="meta-chip">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ pandit.ExperienceYears || '5+' }} {{ t.yrsExp }}
               </span>
-              <span class="meta-chip" *ngIf="pandit.Languages">
-                <ion-icon name="language-outline"></ion-icon> {{ pandit.Languages }}
+              <span class="meta-chip">
+                <ion-icon name="language-outline"></ion-icon>
+                {{ pandit.Languages || 'Hindi' }}
               </span>
             </div>
 
-            <!-- Add this right after the closing </div> of pandit-meta -->
             <!-- Still fetching -->
             <div class="pandit-location-row muted" *ngIf="locationLoadingPending">
               <ion-icon name="location-outline"></ion-icon>
@@ -163,24 +170,29 @@
               </span>
             </div>
 
-            <!-- Loaded but no location set -->
+            <!-- Loaded but no location -->
             <div class="pandit-location-row muted" *ngIf="!locationLoadingPending && !panditLocationMap[pandit.UserID]">
               <ion-icon name="location-outline"></ion-icon>
-              <span>{{ t.locationNotFilled }}</span>
+              <span>India</span>
             </div>
-          </div>
 
+          </div>
         </div>
 
-        <p class="pandit-bio" *ngIf="pandit.Bio">{{ pandit.Bio }}</p>
+        <!-- Bio -->
+        <!-- <p class="pandit-bio">
+          {{ pandit.Bio || 'Experienced Vedic Pandit available for all sacred rituals and ceremonies at your home.' }}
+        </p> -->
 
         <div class="pandit-divider"></div>
 
         <div class="pandit-bottom-row">
           <div class="pandit-details">
-            <div class="detail-item" *ngIf="pandit.BasePrice">
+            <div class="detail-item">
               <span class="detail-label">{{ t.dakshina }}</span>
-              <span class="detail-value price">₹{{ pandit.BasePrice }}</span>
+              <span class="detail-value price">
+                ₹{{ pandit.ServicePrice || pandit.BasePrice || 1100 }}
+              </span>
             </div>
           </div>
           <button class="book-now-btn" (click)="bookNow(pandit)">
@@ -191,27 +203,15 @@
       </div>
 
     </div>
+    <!-- Remove the load-more-wrap div entirely, add this at the bottom of ion-content, just before closing </div> of page-wrap -->
+
+    <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)" [disabled]="!hasMorePandits">
+      <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more pandits...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
 </ion-content>
 
-
-<!-- <ion-tab-bar slot="bottom" class="mb-tab-bar">
-
-  <ion-tab-button (click)="openPage('loggedin-home')" class="mb-tab-btn">
-    <ion-icon name="sparkles-outline"></ion-icon>
-    <ion-label>{{ t.explore }}</ion-label>
-  </ion-tab-button>
-
-  <ion-tab-button class="mb-tab-btn" (click)="openPage('open-community-page')">
-    <div class="custom-tab-icon"></div>
-  </ion-tab-button>
-
-  <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
-    <ion-icon name="person"></ion-icon>
-    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || t.me }}</ion-label>
-  </ion-tab-button>
-
-</ion-tab-bar> -->
 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
 
@@ -243,10 +243,22 @@
       <div class="detail-modal-wrap">
 
         <!-- Header block -->
+        <!-- Header block -->
         <div class="detail-hero">
-          <div class="detail-hero-icon">🔥</div>
+          <div class="detail-hero-icon" *ngIf="serviceNameRaw" (click)="openPoojaImgLightbox()">
+            <img [src]="getServiceImagePath(serviceNameRaw)" class="detail-hero-img" (error)="onImgError($event)" />
+            <div class="detail-hero-expand-hint">
+              <ion-icon name="expand-outline"></ion-icon>
+            </div>
+          </div>
           <h2 class="detail-hero-title">{{ serviceName }}</h2>
           <p class="detail-hero-sub">{{ t.sacredRitual }}</p>
+        </div>
+
+        <!-- Lightbox -->
+        <div class="img-lightbox" *ngIf="isPoojaImgOpen" (click)="closePoojaImgLightbox()">
+          <div class="img-lightbox-close">✕</div>
+          <img [src]="getServiceImagePath(serviceNameRaw)" (error)="onImgError($event)" />
         </div>
 
         <!-- Info cards -->

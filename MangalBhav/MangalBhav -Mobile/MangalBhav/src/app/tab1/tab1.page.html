@@ -142,6 +142,28 @@
       <p>{{ sloganName}}</p>
     </div>
 
+    <div class="social-share-section">
+      <p class="social-share-label">{{ t.followUs }}</p>
+      <div class="social-share-row">
+    
+        <button class="social-btn facebook" (click)="followOn('facebook')">
+          <img src="assets/facebook.webp" class="social-icon" />
+          <span>Facebook</span>
+        </button>
+    
+        <button class="social-btn instagram" (click)="followOn('instagram')">
+          <img src="assets/instagram.webp" class="social-icon" />
+          <span>Instagram</span>
+        </button>
+    
+        <button class="social-btn linkedin" (click)="followOn('linkedin')">
+          <img src="assets/linkdin.webp" class="social-icon" />
+          <span>LinkedIn</span>
+        </button>
+    
+      </div>
+    </div>
+
   </div>
 
 </ion-content>

@@ -364,7 +364,7 @@ ion-toolbar {
 .mfd-donate-sheet {
   position: fixed; bottom: 0; left: 0; right: 0; max-height: 92vh;
   background: #FFFBF0; border-top: 2px solid rgba(255,149,0,0.35);
-  border-radius: 24px 24px 0 0; z-index: 901;
+  border-radius: 24px 24px 0 0; z-index: 90000000001;
   display: flex; flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
@@ -397,7 +397,7 @@ ion-toolbar {
 // ── Donate label ──
 .mfd-donate-label {
   font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: #FF9500; margin-bottom: 10px;
+  text-transform: uppercase; color: #FF9500; margin-bottom: 5px;
 }
 
 // ── Preset grid ──
@@ -1020,3 +1020,203 @@ ion-toolbar {
   .txn-id { text-align: center; font-size: 10px; color: #C4A882; padding-bottom: 4px; }
 
   .bottom-mantra { text-align: center; font-size: 13px; color: #C45E00; padding: 4px 0 0; letter-spacing: 0.5px; }
+
+  // ── SIDE BY SIDE IMAGES ──────────────────────────────────
+.mfd-hero-images {
+  position: relative;
+  display: flex;
+  gap: 3px;
+  height: 240px;
+  background: #2d1507;
+  overflow: hidden;
+}
+
+.mfd-img-tile {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  &.single {
+    flex: 1;        // takes full width when alone
+  }
+
+  &:active .mfd-tile-overlay {
+    opacity: 1;
+  }
+}
+
+.mfd-tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.mfd-img-tile:active .mfd-tile-img {
+  transform: scale(1.04);
+}
+
+.mfd-tile-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  ion-icon {
+    font-size: 28px;
+    color: #ffffff;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+
+  span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+// always show label at bottom of each tile
+.mfd-img-tile::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 10px 8px;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  pointer-events: none;
+}
+
+// ── LIGHTBOX ─────────────────────────────────────────────
+.mfd-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+.mfd-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mfd-lightbox-img-wrap {
+  width: 92%;
+  max-height: 80vh;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.mfd-lightbox-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.mfd-lightbox-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.5px;
+}
+
+.mfd-preview-tile-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 24px;
+    color: #ffffff;
+  }
+}
+
+.mfd-preview-temple-img-wrap:active .mfd-preview-tile-overlay {
+  opacity: 1;
+}
+
+.mfd-preview-temple-img-wrap.placeholder-tile {
+  cursor: default;
+}
+.mfd-platform-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #9A7A50;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #FF9500;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+
+.mfd-preview-support-strip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  margin: 4px 0;
+}
+
+.mfd-preview-support-item {
+  font-size: 14px;
+  font-weight: 500;
+  color: #B08A50;   // same muted tone as secure strip
+  white-space: nowrap;
+  cursor: default;
+
+  &:first-child {
+    cursor: pointer;
+    // text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+// Add dividers between items using pseudo-elements
+.mfd-preview-support-item + .mfd-preview-support-item::before {
+  content: '·';
+  margin-right: 16px;
+  color: #D4B896;
+}

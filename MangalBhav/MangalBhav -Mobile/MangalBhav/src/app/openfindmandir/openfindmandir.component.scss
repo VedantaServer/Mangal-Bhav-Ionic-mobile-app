@@ -2324,3 +2324,18 @@ select {
   box-shadow: 0 3px 10px rgba(230, 92, 0, 0.35);
   &:active { transform: scale(0.97); }
 }
+.gps-icon {
+  font-size: 20px;
+  color: #C4934A;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+
+  &:active { color: #E07B00; }
+
+  &.gps-active {
+    color: #FF9500;
+    filter: drop-shadow(0 0 4px rgba(255, 149, 0, 0.5));
+  }
+}

@@ -231,13 +231,14 @@
 
             <div class="summary-divider"></div>
 
+            <!-- Replace selectedBooking?.LocationName with userAddress -->
             <div class="summary-row-item">
               <div class="summary-icon-wrap">
                 <ion-icon name="location-outline"></ion-icon>
               </div>
               <div>
                 <p class="summary-item-label">{{ t.summaryLabelLocation }}</p>
-                <p class="summary-item-value">{{ selectedBooking?.LocationName }}</p>
+                <p class="summary-item-value">{{ userAddress || 'No address set' }}</p>
               </div>
             </div>
 
@@ -312,11 +313,11 @@
         <!-- ADVANCE PAYMENT SUMMARY -->
 
 
-        
 
-       <!-- BOOK BUTTON -->
+
+        <!-- BOOK BUTTON -->
         <div class="modal-footer">
-        <ion-button expand="block" class="confirm-btn" (click)="openCheckoutPreview(); $event.stopPropagation()">
+          <ion-button expand="block" class="confirm-btn" (click)="openCheckoutPreview(); $event.stopPropagation()">
             <ion-icon name="calendar-outline" slot="start"></ion-icon>
             Preview &amp; Book
           </ion-button>
@@ -334,8 +335,8 @@
 
 
 <!-- ===== CHECKOUT PREVIEW MODAL ===== -->
-<ion-modal [isOpen]="isCheckoutModalOpen" (didDismiss)="isCheckoutModalOpen = false"
-  [breakpoints]="[0, 0.75, 1]" [initialBreakpoint]="0.75">
+<ion-modal [isOpen]="isCheckoutModalOpen" (didDismiss)="isCheckoutModalOpen = false" [breakpoints]="[0, 0.75, 1]"
+  [initialBreakpoint]="0.75">
   <ng-template>
 
     <ion-header>
@@ -355,16 +356,18 @@
         <!-- Service strip -->
         <div class="checkout-svc-strip">
           <div class="checkout-svc-img">
-            <img [src]="getCurrentImage(selectedBooking?.ServiceName)"
-                 (error)="onImgError($event)" class="checkout-svc-thumb" />
+            <img [src]="getCurrentImage(selectedBooking?.ServiceName)" (error)="onImgError($event)"
+              class="checkout-svc-thumb" />
           </div>
           <div>
             <div class="checkout-svc-name">
               {{ Language === 'Hindi'
-                ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
-                : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
+              ? (selectedBooking?.ServiceName?.split('/')[1]?.trim() || selectedBooking?.ServiceName)
+              : (selectedBooking?.ServiceName?.split('/')[0]?.trim() || selectedBooking?.ServiceName) }}
             </div>
-            <div class="checkout-svc-sub">{{ selectedBooking?.UserName }} · {{ selectedBooking?.LocationName }}</div>
+            <div class="checkout-svc-sub">
+              {{ selectedBooking?.UserName }} 
+            </div>
           </div>
         </div>
 
@@ -388,6 +391,13 @@
             </span>
             <span class="checkout-row-val">{{ bookingDonorPhone }}</span>
           </div>
+          <!-- Location row in checkout-rows -->
+          <div class="checkout-row">
+            <span class="checkout-row-label">
+              <ion-icon name="location-outline"></ion-icon> Your Address
+            </span>
+            <span class="checkout-row-val">{{ userAddress || 'No address set' }}</span>
+          </div>
           <div class="checkout-row">
             <span class="checkout-row-label">
               <ion-icon name="cash-outline"></ion-icon> Total dakshina
@@ -410,8 +420,7 @@
 
         <!-- Pay button -->
         <div class="modal-footer">
-          <ion-button expand="block" class="confirm-btn"
-            (click)="confirmBooking()" [disabled]="isProcessingPayment">
+          <ion-button expand="block" class="confirm-btn" (click)="confirmBooking()" [disabled]="isProcessingPayment">
             <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
             {{ isProcessingPayment ? 'Processing…' : 'Pay ₹21 & Confirm' }}
           </ion-button>

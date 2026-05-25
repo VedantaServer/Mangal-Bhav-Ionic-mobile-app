@@ -137,13 +137,16 @@
       </div>
 
       <!-- BIO -->
+      <!-- BIO / ADDRESS -->
       <div class="form-field">
         <div class="field-label">
-          <ion-icon name="document-text-outline"></ion-icon>
-          {{ t.bio }}
+          <ion-icon [name]="userDetails?.Role === 'BHAKT' ? 'location-outline' : 'document-text-outline'"></ion-icon>
+          {{ userDetails?.Role === 'BHAKT' ? t.address : t.bio }}
         </div>
         <div class="field-input-wrap textarea">
-          <ion-textarea auto-grow="true" [(ngModel)]="profile.Bio" [placeholder]="t.bioPlaceholder"></ion-textarea>
+          <ion-textarea auto-grow="true" [(ngModel)]="profile.Bio"
+            [placeholder]="userDetails?.Role === 'BHAKT' ? t.addressPlaceholder : t.bioPlaceholder">
+          </ion-textarea>
         </div>
       </div>
 

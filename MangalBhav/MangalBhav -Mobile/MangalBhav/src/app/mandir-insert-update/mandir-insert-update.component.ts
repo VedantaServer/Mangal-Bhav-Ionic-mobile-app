@@ -46,6 +46,7 @@ export class MandirInsertUpdateComponent implements OnInit {
   filteredMandirs: any[] = [];
   mandirSearchQuery = '';
   showAddMandirForm = false;
+  private infiniteScrollEvent: any = null;
   isSubmittingMandir = false;
 
   selectedFrontImageFile: File | null = null;
@@ -55,6 +56,12 @@ export class MandirInsertUpdateComponent implements OnInit {
   selectedInsideImageFile: File | null = null;
   insideImagePreview: string | null = null;
   isUploadingInside = false;
+  // Bank Details
+  bankDetails: any = null;
+  upiId: string = '';
+  showBankForm: boolean = false;
+  pageNumber = 1;
+  pageSize = 10;
 
   // slider state per card
   cardSlideIndex: { [mandirID: number]: number } = {};
@@ -120,25 +127,81 @@ export class MandirInsertUpdateComponent implements OnInit {
   }
 
 
+
   // ── Load ───────────────────────────────────────────────────────
-  loadMandirs() {
-    this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1 ORDER BY DateAdded DESC`, null).subscribe({
+
+  loadMandirs(loadMore = false) {
+    const body = {
+      tenantID: 1,
+      schoolID: 0,
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      query: 'tenantID=1 ORDER BY DateAdded DESC'
+    };
+
+    this.apinu.postUrlData('MandirSelectByQueryPaging', body).subscribe({
       next: (res: any) => {
-        this.allMandirs = (res?.MandirList ?? []).map((m: any) => ({
+        const newMandirs = (res?.MandirList ?? []).map((m: any) => ({
           ...m,
           FrontImageUrl: null,
           InsideImageUrl: null,
         }));
+
+        if (loadMore) {
+          this.allMandirs = [...this.allMandirs, ...newMandirs];
+        } else {
+          this.allMandirs = newMandirs;
+        }
+
         this.filteredMandirs = [...this.allMandirs];
-        this.filteredMandirs.forEach(m => {
+
+        newMandirs.forEach((m: any) => {
           this.loadMandirFrontImage(m);
           this.loadMandirInsideImage(m);
           this.cardSlideIndex[m.MandirID] = 0;
         });
+
+        if (this.infiniteScrollEvent) {
+          this.infiniteScrollEvent.target.complete();
+          if (newMandirs.length < this.pageSize) {
+            this.infiniteScrollEvent.target.disabled = true;
+          }
+          this.infiniteScrollEvent = null;
+        }
       },
-      error: (err: any) => console.error('loadMandirs error', err),
+      error: (err: any) => {
+        console.error('loadMandirs error', err);
+        if (this.infiniteScrollEvent) {
+          this.infiniteScrollEvent.target.complete();
+          this.infiniteScrollEvent = null;
+        }
+      },
     });
   }
+
+
+  onInfiniteScroll(event: any) {
+    this.infiniteScrollEvent = event;
+    this.pageNumber++;
+    this.loadMandirs(true);
+  }
+
+  onMandirSearch() {
+    const q = this.mandirSearchQuery.toLowerCase().trim();
+
+    // client-side filter on already loaded data
+    this.filteredMandirs = q
+      ? this.allMandirs.filter(m =>
+        m.MandirName?.toLowerCase().includes(q) ||
+        m.GodName?.toLowerCase().includes(q) ||
+        m.City?.toLowerCase().includes(q) ||
+        m.State?.toLowerCase().includes(q)
+      )
+      : [...this.allMandirs];
+  }
+
+
+
 
   loadMandirFrontImage(mandir: any) {
     if (!mandir.FrontImage) return;
@@ -191,17 +254,17 @@ export class MandirInsertUpdateComponent implements OnInit {
   }
 
   // ── Search ─────────────────────────────────────────────────────
-  onMandirSearch() {
-    const q = this.mandirSearchQuery.toLowerCase().trim();
-    this.filteredMandirs = q
-      ? this.allMandirs.filter(m =>
-        m.MandirName?.toLowerCase().includes(q) ||
-        m.GodName?.toLowerCase().includes(q) ||
-        m.City?.toLowerCase().includes(q) ||
-        m.State?.toLowerCase().includes(q)
-      )
-      : [...this.allMandirs];
-  }
+  // onMandirSearch() {
+  //   const q = this.mandirSearchQuery.toLowerCase().trim();
+  //   this.filteredMandirs = q
+  //     ? this.allMandirs.filter(m =>
+  //       m.MandirName?.toLowerCase().includes(q) ||
+  //       m.GodName?.toLowerCase().includes(q) ||
+  //       m.City?.toLowerCase().includes(q) ||
+  //       m.State?.toLowerCase().includes(q)
+  //     )
+  //     : [...this.allMandirs];
+  // }
 
   // ── Modal open/close/reset ─────────────────────────────────────
   openAddMandir() {
@@ -238,6 +301,15 @@ export class MandirInsertUpdateComponent implements OnInit {
       DateModified: new Date(),
       IsActive: m.IsActive ?? true,
     };
+
+
+
+    this.bankDetails = null;
+    this.upiId = '';
+    this.showBankForm = true;
+    this.loadBankDetails();
+
+
     // Show existing image previews from loaded URLs
     const existing = this.filteredMandirs.find(x => x.MandirID === m.MandirID);
     this.frontImagePreview = existing?.FrontImageUrl ?? null;
@@ -247,7 +319,15 @@ export class MandirInsertUpdateComponent implements OnInit {
     this.showAddMandirForm = true;
   }
 
-  closeAddMandir() { this.showAddMandirForm = false; }
+  closeAddMandir() {
+    this.showAddMandirForm = false;
+    // ✅ Reset paging so list refreshes cleanly after add/edit
+    this.pageNumber = 1;
+    this.allMandirs = [];
+    this.filteredMandirs = [];
+    this.infiniteScrollEvent = null;
+    this.loadMandirs();
+  }
 
   resetMandirForm() {
     this.Mandir = {
@@ -264,6 +344,9 @@ export class MandirInsertUpdateComponent implements OnInit {
     this.frontImagePreview = null;
     this.selectedInsideImageFile = null;
     this.insideImagePreview = null;
+    this.bankDetails = null;  // ✅
+    this.upiId = '';          // ✅
+    this.showBankForm = false; // ✅
   }
 
   // ── File selection ─────────────────────────────────────────────
@@ -362,4 +445,55 @@ export class MandirInsertUpdateComponent implements OnInit {
     const toast = await this.toastController.create({ message, duration: 3000, color, position: 'top' });
     toast.present();
   }
+
+
+
+  loadBankDetails() {
+    const mandirId = this.Mandir.MandirID;
+    if (!mandirId || mandirId === '-1') return;
+
+    this.apinu.postUrlData(
+      `BankDetailsSelectByQuery?Query= MandirID = ${mandirId}`, null
+    ).subscribe((res: any) => {
+      if (res.BankDetailList && res.BankDetailList.length > 0) {
+        this.bankDetails = res.BankDetailList[0];
+        this.upiId = this.bankDetails.UPIId || '';
+        this.showBankForm = false; // ← hide form, show saved UPI instead
+      }
+      // ✅ No else needed — showBankForm is already true from openEditMandir
+    });
+  }
+
+
+
+  saveBankDetails() {
+    const body: any = {
+      BankDetailsId: Number(this.bankDetails?.BankDetailsId || 0),
+      TenantId: Number(this.Mandir.TenantID || 1),
+      UserID: Number(0),                           // ← null for mandir
+      MandirID: Number(this.Mandir.MandirID),
+      AccountHolderName: '',
+      BankName: '',
+      AccountNumber: '',
+      IFSCCode: '',
+      BranchName: '',
+      UPIId: String(this.upiId),
+      AccountType: '',
+      IsActive: true,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      UpdatedByUser: Number(0)
+    };
+
+    const action = this.bankDetails ? 'BankDetailsUpdate' : 'BankDetailsInsert';
+    if (this.bankDetails) {
+      body['BankDetailID'] = this.bankDetails.BankDetailID;
+    }
+
+    this.apinu.postUrlData(action, body).subscribe((res: any) => {
+      this.showToast('UPI ID saved successfully ✅', 'success');
+      this.loadBankDetails();
+    });
+  }
+
 }

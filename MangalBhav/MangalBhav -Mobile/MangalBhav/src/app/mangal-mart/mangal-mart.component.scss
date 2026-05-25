@@ -45,8 +45,8 @@ ion-content {
   border-radius: 50%;
   padding: 4px;
   background: radial-gradient(circle at 40% 35%,
-    rgba(255, 255, 255, 0.35),
-    rgba(255, 220, 100, 0.15));
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 220, 100, 0.15));
   border: 1.5px solid rgba(255, 235, 150, 0.6);
   box-shadow:
     0 0 0 3px rgba(255, 220, 80, 0.2),
@@ -57,12 +57,15 @@ ion-content {
 }
 
 @keyframes divaGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 0 0 3px rgba(255, 220, 80, 0.2),
       0 0 14px rgba(255, 200, 50, 0.3),
       0 2px 8px rgba(0, 0, 0, 0.15);
   }
+
   50% {
     box-shadow:
       0 0 0 5px rgba(255, 220, 80, 0.15),
@@ -102,9 +105,9 @@ ion-content {
   font-weight: 600;
   line-height: 1;
   background: linear-gradient(90deg,
-    rgba(255, 240, 180, 0.7),
-    rgba(255, 255, 220, 1),
-    rgba(255, 240, 180, 0.7));
+      rgba(255, 240, 180, 0.7),
+      rgba(255, 255, 220, 1),
+      rgba(255, 240, 180, 0.7));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -113,8 +116,13 @@ ion-content {
 }
 
 @keyframes shimmerText {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
+  0% {
+    background-position: 200% center;
+  }
+
+  100% {
+    background-position: -200% center;
+  }
 }
 
 .header-right {
@@ -228,8 +236,13 @@ ion-content {
     color: #E07B00;
   }
 
-  &.left  { left: 12px; }
-  &.right { right: 12px; }
+  &.left {
+    left: 12px;
+  }
+
+  &.right {
+    right: 12px;
+  }
 
   &:active {
     background: #FFF5D6;
@@ -387,63 +400,6 @@ ion-content {
 }
 
 // ── CTA WRAP ─────────────────────────────────────────────
-
-.cta-wrap {
-  padding: 16px 18px 0;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.btn-buy {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #FF9500, #E07B00);
-  color: #ffffff;
-  border: none;
-  border-radius: 14px;
-  padding: 14px 20px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 5px 16px rgba(224, 123, 0, 0.4);
-  transition: transform 0.15s;
-
-  ion-icon {
-    font-size: 20px;
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-}
-
-.btn-wishlist {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1.5px solid rgba(255, 184, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.08);
-
-  ion-icon {
-    font-size: 22px;
-    color: #C4934A;
-  }
-
-  &:active {
-    background: #FFF5D6;
-  }
-}
 
 // ── TRUST BADGES ─────────────────────────────────────────
 
@@ -691,5 +647,54 @@ ion-content {
 
   &:active {
     transform: scale(0.96);
+  }
+}
+
+.cta-wrap {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+
+  .btn-buy {
+    flex: 1;
+    border: none;
+    border-radius: 14px;
+    height: 64px;              // ← fixed equal height for both
+    padding: 0 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.15s ease;
+
+    &:active { transform: scale(0.96); }
+  }
+
+  .btn-amazon {
+    background: #000000;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+
+    .brand-icon {
+      width: 120px;            // ← wider wordmark
+      height: 36px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
+  }
+
+  .btn-flipkart {
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+
+    .brand-icon {
+      width: 100px;            // ← bigger, matches amazon visual weight
+      height: 44px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+    }
   }
 }

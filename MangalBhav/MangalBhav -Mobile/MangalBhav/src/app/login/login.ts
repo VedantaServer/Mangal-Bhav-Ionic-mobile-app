@@ -176,7 +176,7 @@ export class LoginPage {
   async ngOnInit() {
 
     if (await this.storage.get('adminloggedin') == 'true') {
-      this.routerCtrl.navigateRoot('/admindashboard');
+      this.routerCtrl.navigateForward('/admindashboard');
     }
 
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
@@ -236,9 +236,9 @@ export class LoginPage {
     ) {
 
       if (this.userDetails?.Role == 'PANDIT') {
-        this.routerCtrl.navigateRoot('/tabs/tab1');
+        this.routerCtrl.navigateForward('/tabs/tab1');
       } else {
-        this.routerCtrl.navigateRoot('/jajmandashboard');
+        this.routerCtrl.navigateForward('/jajmandashboard');
       }
 
     }
@@ -348,7 +348,7 @@ export class LoginPage {
   gotToOpenPanditPage(categoryid: any, serviceid?: any) {
     //alert(categoryid);
 
-    this.routerCtrl.navigateRoot('/pandit-list', {
+    this.routerCtrl.navigateForward('/pandit-list', {
       queryParams: {
         categoryid: categoryid,
         serviceid: serviceid || null
@@ -425,7 +425,7 @@ export class LoginPage {
 
     if (this.loginUsername.toString() == "8796917944") {
       await this.storage.set('adminloggedin', 'true');
-      this.routerCtrl.navigateRoot('/admindashboard');
+      this.routerCtrl.navigateForward('/admindashboard');
     }
 
     this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
@@ -524,13 +524,13 @@ export class LoginPage {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/tabs/tab1');
+            this.routerCtrl.navigateForward('/tabs/tab1');
           } else {
 
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/jajmandashboard');
+            this.routerCtrl.navigateForward('/jajmandashboard');
           }
         }
       })
@@ -908,13 +908,13 @@ export class LoginPage {
                   await this.storage.set("account", res);
                   await this.storage.set("IsUserLoggedIn", "true");
                   await this.storage.set("Language", res.Languages);
-                  this.routerCtrl.navigateRoot('/tabs/tab1');
+                  this.routerCtrl.navigateForward('/tabs/tab1');
                 } else {
 
                   await this.storage.set("account", res);
                   await this.storage.set("IsUserLoggedIn", "true");
                   await this.storage.set("Language", res.Languages);
-                  this.routerCtrl.navigateRoot('/jajmandashboard');
+                  this.routerCtrl.navigateForward('/jajmandashboard');
                 }
               }
             })
@@ -931,7 +931,7 @@ export class LoginPage {
         //       alert('Failed to send OTP');
         //     }
         //   )
-        // this.routerCtrl.navigateRoot('/login');
+        // this.routerCtrl.navigateForward('/login');
         //   this.showRegisterSection = false;
         // this.showMainSection = true;
         //this.registerStep = 'form';

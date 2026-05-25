@@ -60,7 +60,7 @@ export class MandirfulldetailsComponent implements OnInit {
   donateMobile: any = null;
   donateMessage = '';
   donateWish = '';
-  donatePurpose = '';
+  donatePurpose = 'General Donation';
 
   isDonating = false;
   isProcessingPayment = false;
@@ -258,10 +258,21 @@ export class MandirfulldetailsComponent implements OnInit {
   }
 
   // ── Sheet controls ────────────────────────────────────────────
-  openDonate() { this.showDonateSheet = true; this.showPreviewSheet = false; }
-  closeDonate() { this.showDonateSheet = false; }
+  openDonate() { 
+    this.showDonateSheet = true; 
+    this.showPreviewSheet = false; 
+    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'none';
+  }
+  closeDonate() {
+    
+    this.showDonateSheet = false; 
+    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'flex';
+  }
   backToDonate() { this.showPreviewSheet = false; this.showDonateSheet = true; }
-  closeAll() { this.showDonateSheet = false; this.showPreviewSheet = false; }
+  closeAll() { this.showDonateSheet = false; this.showPreviewSheet = false; 
+
+    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'flex';
+  }
 
   selectPreset(amount: number) {
     this.donateAmount = String(amount);
@@ -499,4 +510,14 @@ ${shareUrl}
 
     window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
   }
+
+  lightboxImageUrl: string | null = null;
+
+openLightbox(url: string) {
+  this.lightboxImageUrl = url;
+}
+
+closeLightbox() {
+  this.lightboxImageUrl = null;
+}
 }

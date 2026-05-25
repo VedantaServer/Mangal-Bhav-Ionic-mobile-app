@@ -52,13 +52,13 @@ export class PanditFulldetailsComponent implements OnInit {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/tabs/tab1');
+            this.routerCtrl.navigateForward('/tabs/tab1');
           } else {
 
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/jajmandashboard');
+            this.routerCtrl.navigateForward('/jajmandashboard');
           }
         }
       })

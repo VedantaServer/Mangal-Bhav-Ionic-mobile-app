@@ -505,6 +505,7 @@ export class BookPoojaComponent implements OnInit {
     UpdatedByUser: '',
   };
   Language: any;
+  userAddress: string = '';
   isCheckoutModalOpen = false;
   paramID: any;
   query!: string;
@@ -536,6 +537,8 @@ export class BookPoojaComponent implements OnInit {
   async ngOnInit() {
 
     this.userDetails = await this.storage.get('account');
+
+    this.userAddress = this.userDetails.Bio || '';
 
     if (this.userDetails) {
       this.bookingDonorName = this.userDetails.FullName;
@@ -902,7 +905,7 @@ export class BookPoojaComponent implements OnInit {
       totalAmount: this.selectedBooking.Price
         ? Math.round(Number(this.selectedBooking.Price) * 100) / 100
         : 0,
-      paymentStatus: 'BOOKING AMOUNT PAID',
+      paymentStatus: 'PAID',
       poojaDate: new Date(this.BookingDate).toISOString(),
       dateAdded: new Date().toISOString(),
       dateModified: new Date().toISOString(),
