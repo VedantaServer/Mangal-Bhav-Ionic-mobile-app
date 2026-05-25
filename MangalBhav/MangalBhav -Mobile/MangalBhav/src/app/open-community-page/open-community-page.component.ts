@@ -17,9 +17,10 @@ import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.
   templateUrl: './open-community-page.component.html',
   styleUrls: ['./open-community-page.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,JajmanbottomtabsComponent,TabscommonheaderComponent,LoggedoutbottomtabsComponent,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, JajmanbottomtabsComponent, TabscommonheaderComponent, LoggedoutbottomtabsComponent, PanditjibottomtabsComponent]
 })
 export class OpenCommunityPageComponent implements OnInit {
+  private animationId: number = 0;
   userDetails: any;
   userLoggedIn: boolean = false;
   Mandir = {
@@ -56,11 +57,109 @@ export class OpenCommunityPageComponent implements OnInit {
     if (this.userDetails?.LoginID) {
       this.userLoggedIn = true;
     }
-    this.loadMandirs();
+
+  }
+  ngAfterViewInit() {
+    // flowers wait for button tap — don't autostart
   }
 
   goBack() {
     this.routerCtrl.back();
+  }
+
+  playShankh() {
+    const audio = new Audio('https://cdn.freesound.org/previews/439/439477_9012578-lq.mp3');
+    audio.load();
+    audio.play();
+    // Start flowers immediately (parallel with sound)
+    this.startFlowers();
+
+    // Stop flowers when shankh ends
+    audio.onended = () => {
+      this.stopFlowers();
+    };
+
+  }
+
+  startFlowers() {
+    const canvas = document.getElementById('flowerCanvas') as HTMLCanvasElement;
+    const parent = canvas.parentElement!;
+    canvas.width = parent.offsetWidth;
+    canvas.height = parent.offsetHeight;
+    const ctx = canvas.getContext('2d')!;
+
+    const flowers = ['🌸', '🌺', '🌼', '🏵️', '🌹', '🪷'];
+    const petals: any[] = [];
+
+    // Burst — create all petals from center top
+    for (let i = 0; i < 35; i++) {
+      petals.push({
+        x: canvas.width / 2 + (Math.random() * 200 - 100), // burst from center
+        y: canvas.height * 0.2,                              // start at Hanuman Ji's head
+        size: Math.random() * 20 + 14,
+        speedY: Math.random() * 2 + 1,
+        speedX: Math.random() * 3 - 1.5,                    // spread left & right
+        drift: Math.random() * 0.6 - 0.3,
+        emoji: flowers[Math.floor(Math.random() * flowers.length)],
+        opacity: 1,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: Math.random() * 0.05 - 0.025,
+        delay: Math.random() * 60                            // staggered start (frames)
+      });
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(p => {
+        if (p.delay > 0) { p.delay--; return; } // stagger
+
+        ctx.globalAlpha = p.opacity;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.font = `${p.size}px serif`;
+        ctx.fillText(p.emoji, 0, 0);
+        ctx.restore();
+
+        p.y += p.speedY;
+        p.x += p.speedX;
+        p.speedX += p.drift;
+        p.rotation += p.rotSpeed;
+
+        // reset to burst again from top when off screen
+        if (p.y > canvas.height) {
+          p.y = canvas.height * 0.2;
+          p.x = canvas.width / 2 + (Math.random() * 200 - 100);
+          p.speedX = Math.random() * 3 - 1.5;
+          p.speedY = Math.random() * 2 + 1;
+          p.opacity = 1;
+        }
+      });
+      ctx.globalAlpha = 1;
+      this.animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+  }
+
+  stopFlowers() {
+    const canvas = document.getElementById('flowerCanvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
+
+    // Fade out gracefully
+    let opacity = 1;
+    const fadeOut = () => {
+      cancelAnimationFrame(this.animationId);
+      opacity -= 0.02;
+      ctx.globalAlpha = opacity;
+      if (opacity > 0) {
+        requestAnimationFrame(fadeOut);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+      }
+    };
+    fadeOut();
   }
 
   openPage(pageName: any) {
@@ -81,273 +180,5 @@ export class OpenCommunityPageComponent implements OnInit {
   frontImagePreview: string | null = null;
   isUploadingFront = false;
 
-  // Inside image
-  selectedInsideImageFile: File | null = null;
-  insideImagePreview: string | null = null;
-  isUploadingInside = false;
-
-
-  // ── 2. Load mandirs (call inside ngOnInit / ionViewWillEnter) ───
-
-//   getCurrentLocation() {
-//   if (!navigator.geolocation) {
-//     alert('Geolocation is not supported by your browser');
-//     return;
-//   }
-
-//   navigator.geolocation.getCurrentPosition(
-//     (position) => {
-//       this.Mandir.Latitude = String( position.coords.latitude);
-//       this.Mandir.Longitude = String( position.coords.longitude);
-
-//       console.log('Lat:', this.Mandir.Latitude);
-//       console.log('Lng:', this.Mandir.Longitude);
-//     },
-//     (error) => {
-//       console.error('Error getting location:', error);
-//       alert('Unable to fetch location. Please allow permission.');
-//     },
-//     {
-//       enableHighAccuracy: true,
-//       timeout: 10000
-//     }
-//   );
-// }
-
-
-async getCurrentLocation() {
-  try {
-    const permission = await Geolocation.requestPermissions();
-
-    if (permission.location === 'granted') {
-      const position = await Geolocation.getCurrentPosition();
-
-      this.Mandir.Latitude = String(position.coords.latitude);
-      this.Mandir.Longitude = String(position.coords.longitude);
-
-      console.log('Lat:', this.Mandir.Latitude);
-      console.log('Lng:', this.Mandir.Longitude);
-    } else {
-      this.showToast('Location permission denied','danger');
-    }
-
-  } catch (error) {
-    console.error('Error getting location:', error);
-  }
-}
-
-  loadMandirs() {
-    this.apinu.postUrlData(`MandirSelectByQuery?Query=tenantID=1  ORDER BY DateAdded DESC`, null).subscribe({
-      next: (res: any) => {
-        this.allMandirs = (res?.MandirList ?? []).map((m: any) => ({
-          ...m,
-          FrontImageUrl: null
-        }));
-
-        this.filteredMandirs = [...this.allMandirs];
-
-        // 👇 CALL HERE
-        this.filteredMandirs.forEach(m => {
-          this.loadMandirImage(m);
-        });
-
-      },
-      error: (err: any) => console.error('loadMandirs error', err),
-    });
-  }
-
-  loadMandirImage(mandir: any) {
-    if (!mandir.FrontImage) return;
-
-    this.api.getImage('DownloadImages', {
-      imageName: mandir.FrontImage,
-      imagePurpose: 'ProfilePhoto' // change if needed
-    }).subscribe({
-      next: (blob: any) => {
-        if (blob?.type?.startsWith('image/')) {
-          mandir.FrontImageUrl = URL.createObjectURL(blob);
-
-          // trigger UI refresh
-          this.filteredMandirs = [...this.filteredMandirs];
-        }
-      },
-
-      error: (err) => console.error('Error loading image:', err)
-    });
-  }
-  // ── 3. Search ───────────────────────────────────────────────────
-
-  onMandirSearch() {
-    const q = this.mandirSearchQuery.toLowerCase().trim();
-
-    this.filteredMandirs = q
-      ? this.allMandirs.filter(m =>
-        m.MandirName?.toLowerCase().includes(q) ||
-        m.GodName?.toLowerCase().includes(q) ||
-        m.City?.toLowerCase().includes(q) ||
-        m.State?.toLowerCase().includes(q)
-      )
-      : [...this.allMandirs];
-  }
-
-  // ── 4. Modal open / close / reset ───────────────────────────────
-
-  openAddMandir() {
-    this.resetMandirForm();
-    this.showAddMandirForm = true;
-  }
-
-  closeAddMandir() {
-    this.showAddMandirForm = false;
-  }
-
-  resetMandirForm() {
-    this.Mandir = {
-      TenantID: Number(1),   // ← replace
-      MandirID: '-1',
-      MandirName: '', GodName: '', FrontImage: '', InsideImage: '',
-      PujariName: '', PujariPhoneNumber: '', History: '',
-      Address: '', City: '', State: '', Pincode: '',
-      Latitude: '', Longitude: '',
-      IsVerified: false, VerificationStatus: 'Pending',
-      AddedByUserID: Number(-1),
-      AddedByName: '',
-      DateAdded: new Date(), DateModified: new Date(), IsActive: true,
-    };
-    this.selectedFrontImageFile = null;
-    this.frontImagePreview = null;
-    this.selectedInsideImageFile = null;
-    this.insideImagePreview = null;
-  }
-
-
-  // ── 5. File selection helpers (show local preview) ──────────────
-
-  onFrontImageSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
-    this.selectedFrontImageFile = file;
-    this.Mandir.FrontImage = '';   // clear previous saved name
-    const reader = new FileReader();
-    reader.onload = (e: any) => (this.frontImagePreview = e.target.result);
-    reader.readAsDataURL(file);
-  }
-
-  onInsideImageSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
-    this.selectedInsideImageFile = file;
-    this.Mandir.InsideImage = '';
-    const reader = new FileReader();
-    reader.onload = (e: any) => (this.insideImagePreview = e.target.result);
-    reader.readAsDataURL(file);
-  }
-
-
-  // ── 6. Upload helpers ───────────────────────────────────────────
-  //  Matches your existing uploadImage signature:
-  //    api.uploadImage(files[], folder, refId, type)
-  //  Returns { Status: 'Success', FileName: '...' }
-
-  uploadFrontImage() {
-    if (!this.selectedFrontImageFile) return;
-    this.isUploadingFront = true;
-
-    this.api.uploadImage(
-      [this.selectedFrontImageFile],
-      'ProfilePhoto',     // folder / type
-      'mandir',           // refId — no MandirID yet (insert hasn't happened)
-      'ProfilePhoto'        // label
-    ).subscribe({
-      next: (res: any) => {
-        this.isUploadingFront = false;
-        if (res?.Status === 'Success') {
-          this.Mandir.FrontImage = res.FileName;   // ← save filename
-          this.frontImagePreview = null;            // hide local preview
-          this.selectedFrontImageFile = null;
-          this.showToast('Front photo uploaded ✅', 'success');
-        } else {
-          this.showToast('Front photo upload failed', 'danger');
-        }
-      },
-      error: () => {
-        this.isUploadingFront = false;
-        this.showToast('Front photo upload error', 'danger');
-      },
-    });
-  }
-
-  uploadInsideImage() {
-    if (!this.selectedInsideImageFile) return;
-    this.isUploadingInside = true;
-
-    this.api.uploadImage(
-      [this.selectedInsideImageFile],
-      'ProfilePhoto',
-      'mandir',
-      'ProfilePhoto'
-    ).subscribe({
-      next: (res: any) => {
-        this.isUploadingInside = false;
-        if (res?.Status === 'Success') {
-          this.Mandir.InsideImage = res.FileName;
-          this.insideImagePreview = null;
-          this.selectedInsideImageFile = null;
-          this.showToast('Inside photo uploaded ✅', 'success');
-        } else {
-          this.showToast('Inside photo upload failed', 'danger');
-        }
-      },
-      error: () => {
-        this.isUploadingInside = false;
-        this.showToast('Inside photo upload error', 'danger');
-      },
-    });
-  }
-
-
-  // ── 7. Submit Mandir ────────────────────────────────────────────
-
-  async submitMandir() {
-    if (!this.Mandir.MandirName?.trim())
-      return this.showToast('Please enter the Mandir name 🛕', 'warning');
-    if (!this.Mandir.GodName?.trim())
-      return this.showToast('Please enter the presiding deity 🌸', 'warning');
-    if (!this.Mandir.City?.trim() || !this.Mandir.State?.trim())
-      return this.showToast('Please enter city and state 📍', 'warning');
-
-    // Warn if photo was chosen but not yet uploaded
-    if (this.selectedFrontImageFile && !this.Mandir.FrontImage)
-      return this.showToast('Please upload the front photo first ⬆', 'warning');
-    if (this.selectedInsideImageFile && !this.Mandir.InsideImage)
-      return this.showToast('Please upload the inside photo first ⬆', 'warning');
-
-    this.isSubmittingMandir = true;
-    this.Mandir.DateAdded = new Date();
-    this.Mandir.DateModified = new Date();
-
-    this.apinu.postUrlData('MandirInsert', this.Mandir).subscribe({
-      next: async (res: any) => {
-        this.isSubmittingMandir = false;
-        this.closeAddMandir();
-        await this.showToast('Mandir submitted! Our team will verify it shortly 🙏', 'success');
-        this.loadMandirs();
-      },
-      error: async () => {
-        this.isSubmittingMandir = false;
-        await this.showToast('Something went wrong. Please try again.', 'danger');
-      },
-    });
-  }
-
-
-  // ── 8. Toast helper ─────────────────────────────────────────────
-
-  async showToast(message: string, color = 'primary') {
-    const toast = await this.toastController.create({
-      message, duration: 3000, color, position: 'top',
-    });
-    toast.present();
-  }
 
 }

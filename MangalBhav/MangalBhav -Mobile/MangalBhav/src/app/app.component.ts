@@ -48,11 +48,13 @@ export class AppComponent {
     const accountValue = await this.storage.get('account');
     // Decide the first page before navigation ever happens
     //console.log(accountValue);
+    /*
     if (accountValue) {
       this.lblMessage = 'Login Found.. Opening Dashboard';
       this.routerCtrl.navigateForward('/tabs/tab1', { replaceUrl: true });
     } else {
       this.routerCtrl.navigateForward('/login', { replaceUrl: true });
     }
+      */
   }
 }

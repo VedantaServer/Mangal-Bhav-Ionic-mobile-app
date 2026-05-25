@@ -1,27 +1,49 @@
-<!-- <ion-header [translucent]="true">
-  <ion-toolbar>
-    <div class="inner-header">
-      <button class="inner-back-btn" (click)="routerCtrl.back()">
-        <ion-icon name="chevron-back-outline"></ion-icon>
-      </button>
-      <div class="inner-title-block">
-        <div class="inner-title">Community</div>
-        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
-      </div>
-      <div class="inner-logo">
-        <img src="../../assets/mangalbhavlogo1.jpeg" />
-      </div>
-    </div>
-  </ion-toolbar>
-</ion-header> -->
-
-
-
 <app-tabscommonheader></app-tabscommonheader>
 
-
 <ion-content>
-  <div class="comm-wrap">
+
+  <div style="
+    width:100%;
+    background:#1a0a00;">
+
+    <!-- Hanuman Ji Image -->
+    <img src="assets/hanumanji.png" style="
+            width:100%;
+            height:auto;
+            display:block;
+        " />
+    <!-- Falling Flowers Canvas -->
+    <canvas id="flowerCanvas" style="
+      position:absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      pointer-events:none;
+  "></canvas>
+    <!-- Aarti Button -->
+    <div style="
+        display:flex;
+        justify-content:center;
+        padding:16px 0 20px 0;
+        background:#1a0a00;
+    ">
+      <button (click)="playShankh()" style="
+    background:linear-gradient(135deg, #ff6b00, #ff9500);
+    color:white;
+    border:none;
+    padding:14px 40px;
+    font-size:20px;
+    border-radius:40px;
+    font-weight:bold;
+    box-shadow:0 4px 16px rgba(255,107,0,0.4);
+    letter-spacing:0.5px;
+">
+        🪔 आरती करें
+      </button>
+    </div>
+
+  </div>
+
+ 
 
     <!-- ═══ HERO ═══ -->
     <section class="comm-hero">
@@ -48,347 +70,7 @@
         </div>
       </div>
     </section>
-
-
-    <!-- ═══ THREE PILLARS ═══ -->
-    <section class="comm-section">
-      <p class="comm-eyebrow">Our Three Sacred Pillars</p>
-      <h2 class="comm-heading">The Soul of Mangal.Bhav</h2>
-      <p class="comm-sub">Built on the eternal values that have guided Hindu families for millennia</p>
-
-      <div class="comm-pillars-grid">
-
-        <div class="comm-pillar-card" data-devanagari="शां">
-          <div class="comm-pillar-icon">☮️</div>
-          <div class="comm-pillar-title">Peace</div>
-          <div class="comm-pillar-hindi">शांति</div>
-          <p class="comm-pillar-text">
-            Inner stillness born from sacred ritual. When the sacred fire burns
-            and mantras fill the air, the mind finds its quiet, the heart its home.
-          </p>
-        </div>
-
-        <div class="comm-pillar-card" data-devanagari="समृ">
-          <div class="comm-pillar-icon">🌟</div>
-          <div class="comm-pillar-title">Prosperity</div>
-          <div class="comm-pillar-hindi">समृद्धि</div>
-          <p class="comm-pillar-text">
-            Not merely material wealth, but the richness of a life lived
-            in alignment with dharma. Through Lakshmi Puja and Satyanarayan Katha.
-          </p>
-        </div>
-
-        <div class="comm-pillar-card" data-devanagari="संर">
-          <div class="comm-pillar-icon">🛡️</div>
-          <div class="comm-pillar-title">Protection</div>
-          <div class="comm-pillar-hindi">संरक्षण</div>
-          <p class="comm-pillar-text">
-            The divine shield that surrounds those who walk the sacred path.
-            Ancient armour woven from devotion, chanted by our verified Pandits.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ═══ HANUMAN SECTION ═══ -->
-    <section class="comm-hanuman">
-      <div class="comm-hanuman-bg-om">ॐ</div>
-      <div class="comm-hanuman-inner">
-
-        <span class="comm-hanuman-flame">🙏</span>
-        <h2 class="comm-hanuman-title">Jai Hanuman</h2>
-        <p class="comm-hanuman-sub">जय हनुमान ज्ञान गुण सागर</p>
-
-        <div class="comm-chalisa-strip">
-          <p class="comm-chalisa-verse">
-            भीम रूप धरि असुर सँहारे।<br />
-            रामचंद्र के काज सँवारे॥<br /><br />
-            नासै रोग हरै सब पीरा।<br />
-            जपत निरंतर हनुमत बीरा॥
-          </p>
-        </div>
-
-        <div class="comm-hanuman-attrs">
-          <span class="comm-attr">🔥 Mahaveer</span>
-          <span class="comm-attr">💪 Bajrang Bali</span>
-          <span class="comm-attr">📚 Gyan Gun Sagar</span>
-          <span class="comm-attr">🛡️ Rakshak</span>
-          <span class="comm-attr">🌬️ Pavan Putra</span>
-          <span class="comm-attr">🙏 Ram Bhakt</span>
-          <span class="comm-attr">⭐ Ashta Siddhi</span>
-          <span class="comm-attr">✨ Nav Nidhi</span>
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ═══ STATS ═══ -->
-    <section class="comm-section comm-stats-section">
-      <p class="comm-eyebrow">Mangal.Bhav in Numbers</p>
-      <h2 class="comm-heading">A Growing Sacred Community</h2>
-
-      <div class="comm-stats-grid">
-        <div class="comm-stat-card">
-          <div class="comm-stat-number">10K+</div>
-          <div class="comm-stat-label">Families Blessed</div>
-        </div>
-        <div class="comm-stat-card">
-          <div class="comm-stat-number">500+</div>
-          <div class="comm-stat-label">Verified Pandits</div>
-        </div>
-        <div class="comm-stat-card">
-          <div class="comm-stat-number">22+</div>
-          <div class="comm-stat-label">Sacred Rituals</div>
-        </div>
-        <div class="comm-stat-card">
-          <div class="comm-stat-number">50+</div>
-          <div class="comm-stat-label">Cities Covered</div>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ═══ VALUES ═══ -->
-    <section class="comm-section">
-      <p class="comm-eyebrow">What We Stand For</p>
-      <h2 class="comm-heading">Our Community Values</h2>
-      <p class="comm-sub">The principles that guide every booking, every blessing, every bond</p>
-
-      <div class="comm-values-list">
-
-        <div class="comm-value-row">
-          <div class="comm-value-number">01</div>
-          <div class="comm-value-content">
-            <div class="comm-value-title">Authenticity</div>
-            <div class="comm-value-hindi">प्रामाणिकता</div>
-            <p class="comm-value-text">Every Pandit is verified, every ritual performed with full
-              Vedic vidhi. We do not compromise on the sanctity of tradition.</p>
-          </div>
-        </div>
-
-        <div class="comm-value-row">
-          <div class="comm-value-number">02</div>
-          <div class="comm-value-content">
-            <div class="comm-value-title">Inclusivity</div>
-            <div class="comm-value-hindi">समावेशिता</div>
-            <p class="comm-value-text">From the first breath to the final farewell — every stage of life
-              matters. We serve every family, every ritual, every sacred moment.</p>
-          </div>
-        </div>
-
-        <div class="comm-value-row">
-          <div class="comm-value-number">03</div>
-          <div class="comm-value-content">
-            <div class="comm-value-title">Devotion</div>
-            <div class="comm-value-hindi">भक्ति</div>
-            <p class="comm-value-text">Inspired by the unwavering devotion of Hanuman Ji — we bring
-              that same dedication to connecting Yajmans with their Pandits.</p>
-          </div>
-        </div>
-
-        <div class="comm-value-row">
-          <div class="comm-value-number">04</div>
-          <div class="comm-value-content">
-            <div class="comm-value-title">Community</div>
-            <div class="comm-value-hindi">समुदाय</div>
-            <p class="comm-value-text">We are not just a platform — we are a sangha. A gathering of
-              families, priests, and seekers united by the sacred thread of dharma.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-
-
-    <!-- ═══ INSERT THIS ENTIRE BLOCK BEFORE .comm-footer-strip ═══ -->
-
-    <!-- ═══ MODAL BACKDROP ═══ -->
-    <div class="mandir-modal-backdrop" [class.active]="showAddMandirForm" (click)="closeAddMandir()"></div>
-    <!-- ═══ ADD MANDIR BOTTOM SHEET ═══ -->
-    <div class="mandir-modal" [class.active]="showAddMandirForm">
-
-      <div class="mandir-modal-header">
-        <div class="mandir-modal-title">🛕 Add a Mandir</div>
-        <div class="mandir-modal-sub">Anyone can add — our team will verify</div>
-        <button class="mandir-modal-close" (click)="closeAddMandir()">✕</button>
-      </div>
-
-      <div class="mandir-modal-body">
-
-        <!-- Basic Info -->
-        <div class="mandir-form-section-label">Basic Information</div>
-
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Mandir Name *</label>
-            <input type="text" [(ngModel)]="Mandir.MandirName" placeholder="e.g. Shri Ram Mandir" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Presiding Deity *</label>
-            <input type="text" [(ngModel)]="Mandir.GodName" placeholder="e.g. Shri Ram, Hanuman Ji, Durga Maa" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row two-col">
-          <div class="mandir-form-group">
-            <label>Pujari / Pandit Name</label>
-            <input type="text" [(ngModel)]="Mandir.PujariName" placeholder="Pandit ji's name" />
-          </div>
-          <div class="mandir-form-group">
-            <label>Pujari Phone</label>
-            <input type="tel" [(ngModel)]="Mandir.PujariPhoneNumber" placeholder="+91 xxxxxxxxxx" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>History / About</label>
-            <textarea [(ngModel)]="Mandir.History" rows="3" placeholder="Brief history or significance..."></textarea>
-          </div>
-        </div>
-
-        <!-- Address -->
-        <div class="mandir-form-section-label">Address</div>
-
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Street Address *</label>
-            <input type="text" [(ngModel)]="Mandir.Address" placeholder="Street / Mohalla / Locality" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row two-col">
-          <div class="mandir-form-group">
-            <label>City *</label>
-            <input type="text" [(ngModel)]="Mandir.City" placeholder="City" />
-          </div>
-          <div class="mandir-form-group">
-            <label>State *</label>
-            <input type="text" [(ngModel)]="Mandir.State" placeholder="State" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row two-col">
-          <div class="mandir-form-group">
-            <label>Pincode</label>
-            <input type="text" [(ngModel)]="Mandir.Pincode" placeholder="e.g. 110001" maxlength="6" />
-          </div>
-          <div class="mandir-form-group">
-            <label>Latitude</label>
-            <input type="number" [(ngModel)]="Mandir.Latitude" placeholder="e.g. 28.6139" />
-          </div>
-        </div>
-
-        <div class="mandir-form-row two-col">
-          <div class="mandir-form-group">
-            <label>Longitude</label>
-            <input type="number" [(ngModel)]="Mandir.Longitude" placeholder="e.g. 77.2090" />
-          </div>
-          <div class="mandir-form-group">
-            <label></label>
-            <button class="mandir-location-btn " (click)="getCurrentLocation()">📍 Use Current Location</button>
-          </div>
-
-        </div>
-
-
-        <!-- Added By -->
-        <div class="mandir-form-section-label">Your Info (Optional)</div>
-
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Your Name</label>
-            <input type="text" [(ngModel)]="Mandir.AddedByName" placeholder="So we can credit you" />
-          </div>
-        </div>
-
-        <!-- ── Photos ── -->
-        <div class="mandir-form-section-label">Photos (Optional)</div>
-
-        <!-- Front Image -->
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Front / Outside Photo</label>
-
-            <div class="mandir-upload-box" (click)="frontImageInput.click()">
-              <img *ngIf="frontImagePreview" [src]="frontImagePreview" class="mandir-upload-preview" />
-              <div *ngIf="!frontImagePreview && !Mandir.FrontImage" class="mandir-upload-placeholder">
-                <span class="mandir-upload-icon">📷</span>
-                <span>Tap to choose photo</span>
-              </div>
-              <div *ngIf="Mandir.FrontImage && !frontImagePreview" class="mandir-upload-saved">
-                ✅ Uploaded: {{ Mandir.FrontImage }}
-              </div>
-            </div>
-
-            <!-- hidden file input -->
-            <input #frontImageInput type="file" accept="image/*" style="display:none"
-              (change)="onFrontImageSelected($event)" />
-
-            <!-- show after file picked, before upload -->
-            <div class="mandir-upload-actions" *ngIf="selectedFrontImageFile && !Mandir.FrontImage">
-              <span class="mandir-file-name">📄 {{ selectedFrontImageFile.name }}</span>
-              <button class="mandir-upload-btn" (click)="uploadFrontImage()" [disabled]="isUploadingFront">{{
-                isUploadingFront ? 'Uploading…' : '⬆ Upload' }}</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Inside Image -->
-        <div class="mandir-form-row">
-          <div class="mandir-form-group full">
-            <label>Inside / Garbhagriha Photo</label>
-
-            <div class="mandir-upload-box" (click)="insideImageInput.click()">
-              <img *ngIf="insideImagePreview" [src]="insideImagePreview" class="mandir-upload-preview" />
-              <div *ngIf="!insideImagePreview && !Mandir.InsideImage" class="mandir-upload-placeholder">
-                <span class="mandir-upload-icon">🛕</span>
-                <span>Tap to choose photo</span>
-              </div>
-              <div *ngIf="Mandir.InsideImage && !insideImagePreview" class="mandir-upload-saved">
-                ✅ Uploaded: {{ Mandir.InsideImage }}
-              </div>
-            </div>
-
-            <input #insideImageInput type="file" accept="image/*" style="display:none"
-              (change)="onInsideImageSelected($event)" />
-
-            <div class="mandir-upload-actions" *ngIf="selectedInsideImageFile && !Mandir.InsideImage">
-              <span class="mandir-file-name">📄 {{ selectedInsideImageFile.name }}</span>
-              <button class="mandir-upload-btn" (click)="uploadInsideImage()" [disabled]="isUploadingInside">{{
-                isUploadingInside ? 'Uploading…' : '⬆ Upload' }}</button>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /modal-body -->
-
-      <div class="mandir-modal-footer">
-        <button class="mandir-cancel-btn" (click)="closeAddMandir()">Cancel</button>
-        <button class="mandir-submit-btn" (click)="submitMandir()"
-          [disabled]="isSubmittingMandir || isUploadingFront || isUploadingInside">
-          <span *ngIf="!isSubmittingMandir">🙏 Submit Mandir</span>
-          <span *ngIf="isSubmittingMandir">Submitting…</span>
-        </button>
-      </div>
-
-    </div><!-- /mandir-modal -->
-
-    <!-- ═══ FOOTER STRIP ═══ -->
-    <div class="comm-footer-strip">
-      <div class="comm-footer-logo">🔥 Mangal.Bhav</div>
-      <div class="comm-footer-tag">मंगल.भव: — शांति · समृद्धि · संरक्षण</div>
-      <div class="comm-footer-copy">© 2026 Mangal.Bhav by <span>SM Defenso</span>. Made with 🙏 in India.</div>
-    </div>
-
-  </div>
+    
 </ion-content>
 
 
@@ -397,4 +79,4 @@
 <app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 
 
-<app-loggedoutbottomtabs *ngIf="!userLoggedIn" ></app-loggedoutbottomtabs>
+<app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>
