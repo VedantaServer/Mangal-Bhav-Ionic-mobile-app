@@ -8,12 +8,13 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 @Component({
   selector: 'app-jajman-requested-pooja',
   templateUrl: './jajman-requested-pooja.component.html',
   styleUrls: ['./jajman-requested-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class JajmanRequestedPoojaComponent implements OnInit {
 

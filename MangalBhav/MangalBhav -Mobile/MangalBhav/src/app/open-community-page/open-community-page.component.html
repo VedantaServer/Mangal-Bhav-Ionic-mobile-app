@@ -1,82 +1,200 @@
 <app-tabscommonheader></app-tabscommonheader>
 
-<ion-content>
+<ion-content [scrollEvents]="true">
 
-  <div style="
-    width:100%;
-    background:#1a0a00;">
+  <!-- ═══ DIVINE HERO SECTION ═══ -->
+  <div class="hero-wrapper">
 
     <!-- Hanuman Ji Image -->
-    <img src="assets/hanumanji.png" style="
-            width:100%;
-            height:auto;
-            display:block;
-        " />
-    <!-- Falling Flowers Canvas -->
-    <canvas id="flowerCanvas" style="
-      position:absolute;
-      top:0; left:0;
-      width:100%; height:100%;
-      pointer-events:none;
-  "></canvas>
-    <!-- Aarti Button -->
-    <div style="
-        display:flex;
-        justify-content:center;
-        padding:16px 0 20px 0;
-        background:#1a0a00;
-    ">
-      <button (click)="playShankh()" style="
-    background:linear-gradient(135deg, #ff6b00, #ff9500);
-    color:white;
-    border:none;
-    padding:14px 40px;
-    font-size:20px;
-    border-radius:40px;
-    font-weight:bold;
-    box-shadow:0 4px 16px rgba(255,107,0,0.4);
-    letter-spacing:0.5px;
-">
-        🪔 आरती करें
-      </button>
+    <div class="hanuman-container" [class.glowing]="isGlowing">
+      <img src="assets/hanumanji.png" class="hanuman-img" />
+      <div class="divine-aura" [class.active]="isGlowing"></div>
+      <canvas id="flowerCanvas" class="flower-canvas"></canvas>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="seva-toast" [class.show]="toastVisible">
+      <span class="toast-icon">{{ toastIcon }}</span>
+      <span class="toast-text">{{ toastMessage }}</span>
+    </div>
+
+    <!-- Live Darshan Counter -->
+    <div class="darshan-pill">
+      <span class="live-dot"></span>
+      <span class="darshan-text">
+        <span class="darshan-count">{{ darshanaCount | number }}</span> भक्त अभी दर्शन कर रहे हैं
+      </span>
+    </div>
+
+    <!-- Mantra Strip -->
+    <div class="mantra-strip" (click)="playMantra()" [class.playing]="mantraPlaying">
+      <div class="mantra-text">{{ currentMantra.sanskrit }}</div>
+      <div class="mantra-meaning">{{ currentMantra.meaning }} · सुनें 🔊</div>
     </div>
 
   </div>
 
- 
+  <!-- ═══ 3-BUTTON AARTI ROW ═══ -->
+  <div class="action-row">
 
-    <!-- ═══ HERO ═══ -->
-    <section class="comm-hero">
-      <div class="comm-hero-bg-om">ॐ</div>
-      <div class="comm-diya d1">🪔</div>
-      <div class="comm-diya d2">🪔</div>
-      <div class="comm-diya d3">🔥</div>
-      <div class="comm-diya d4">🔥</div>
+    <button class="action-btn primary" (click)="performAarti()" [class.active]="aartiActive">
+      <div class="action-icon">🪔</div>
+      <div class="action-label">{{ aartiActive ? 'रोकें' : 'आरती करें' }}</div>
+      <div class="action-sub">{{ aartiActive ? 'Tap to Stop' : 'Shankh + Flowers' }}</div>
+    </button>
 
-      <div class="comm-hero-inner">
-        <div class="comm-hero-badge">🙏 &nbsp; Mangal.Bhav Community</div>
-        <h1 class="comm-hero-title">मंगल भवः</h1>
-        <p class="comm-hero-devanagari">शांति · समृद्धि · संरक्षण</p>
-        <p class="comm-hero-desc">
-          A sacred community rooted in the timeless wisdom of Vedic tradition —
-          where every family finds peace, every home finds prosperity,
-          and every soul finds protection.
-        </p>
-        <div class="comm-hero-pills">
-          <span class="comm-pill">🌸 Peace</span>
-          <span class="comm-pill">🌟 Prosperity</span>
-          <span class="comm-pill">🛡️ Protection</span>
-          <span class="comm-pill">🔥 Sacred Fire</span>
+    <button class="action-btn" (click)="ringBell()" [class.ringing]="bellRinging">
+      <div class="action-icon bell-icon" [class.ring]="bellRinging">🔔</div>
+      <div class="action-label">घंटी बजाएं</div>
+      <div class="action-sub">Ring Bell</div>
+    </button>
+
+    <button class="action-btn" (click)="offerFlowers()">
+      <div class="action-icon">🌺</div>
+      <div class="action-label">पुष्पांजलि</div>
+      <div class="action-sub">Offer Flowers</div>
+    </button>
+
+  </div>
+
+  <!-- ═══ VIRTUAL SEVA ═══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🌸 Virtual Seva</span>
+      <span class="section-sub">पूजा अर्चना करें</span>
+    </div>
+    <div class="seva-grid">
+      <button class="seva-item" *ngFor="let seva of sevaItems" (click)="offerSeva(seva)">
+        <div class="seva-icon">{{ seva.icon }}</div>
+        <div class="seva-name">{{ seva.name }}</div>
+        <div class="seva-count">{{ seva.count }}</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ HANUMAN CHALISA PLAYER ═══ -->
+  <div class="section">
+    <div class="chalisa-player" [class.playing]="chalisaPlaying">
+      <div class="chalisa-cover">
+        <div class="chalisa-spinner" [class.spin]="chalisaPlaying">📿</div>
+      </div>
+      <div class="chalisa-info">
+        <div class="chalisa-title">हनुमान चालीसा</div>
+        <div class="chalisa-verse" *ngIf="!chalisaPlaying">40 Chaupais · 8:24 min</div>
+        <div class="chalisa-verse playing-text" *ngIf="chalisaPlaying">
+          {{ chalisaVerses[currentVerse] }}
+        </div>
+        <div class="chalisa-progress" *ngIf="chalisaPlaying">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="chalisaProgress"></div>
+          </div>
+          <div class="progress-time">{{ chalisaTimeDisplay }}</div>
         </div>
       </div>
-    </section>
-    
+      <div class="chalisa-controls">
+        <button class="ctrl-btn" (click)="previousVerse()" *ngIf="chalisaPlaying">⏮</button>
+        <button class="play-btn" (click)="toggleChalisa()">
+          {{ chalisaPlaying ? '⏸' : '▶' }}
+        </button>
+        <button class="ctrl-btn" (click)="nextVerse()" *ngIf="chalisaPlaying">⏭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AAJ KA PANCHANG ═══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">📅 आज का पंचांग</span>
+      <span class="section-sub">{{ todayDate }}</span>
+    </div>
+    <div class="panchang-grid">
+      <div class="panchang-card" *ngFor="let p of panchangData">
+        <div class="panchang-label">{{ p.label }}</div>
+        <div class="panchang-value">{{ p.value }}</div>
+        <div class="panchang-sub" [class.auspicious]="p.auspicious" [class.avoid]="p.avoid">
+          {{ p.sub }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ UPCOMING PUJAS ═══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🗓️ Upcoming Pujas</span>
+      <a class="section-link">सभी देखें →</a>
+    </div>
+    <div class="events-list">
+      <div class="event-card" *ngFor="let event of upcomingEvents">
+        <div class="event-date-box">
+          <div class="event-day">{{ event.day }}</div>
+          <div class="event-month">{{ event.month }}</div>
+        </div>
+        <div class="event-details">
+          <div class="event-title">{{ event.title }}</div>
+          <div class="event-meta">🕐 {{ event.time }} · {{ event.location }}</div>
+        </div>
+        <button class="event-rsvp" [class.free]="event.free" (click)="rsvpEvent(event)">
+          {{ event.free ? 'Free' : 'RSVP' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRAYER WALL ═══ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🙏 Prayer Wall</span>
+      <button class="add-prayer-btn" (click)="openPrayerModal()">+ Add Prayer</button>
+    </div>
+    <div class="prayer-list">
+      <div class="prayer-card" *ngFor="let prayer of prayerWall">
+        <div class="prayer-header">
+          <div class="prayer-avatar">{{ prayer.initials }}</div>
+          <div class="prayer-meta">
+            <div class="prayer-name">{{ prayer.name }}</div>
+            <div class="prayer-time">{{ prayer.time }} · {{ prayer.city }}</div>
+          </div>
+          <div class="prayer-blessings" (click)="blessings(prayer)" [class.blessed]="prayer.userBlessed">
+            🙏 {{ prayer.blessingsCount }}
+          </div>
+        </div>
+        <div class="prayer-text">{{ prayer.text }}</div>
+        <button class="reply-btn" (click)="replyPrayer(prayer)">💬 Reply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ COMMUNITY HERO (existing, keep below) ═══ -->
+  <section class="comm-hero">
+    <div class="comm-hero-bg-om">ॐ</div>
+    <div class="comm-diya d1">🪔</div>
+    <div class="comm-diya d2">🪔</div>
+    <div class="comm-diya d3">🔥</div>
+    <div class="comm-diya d4">🔥</div>
+    <div class="comm-hero-inner">
+      <div class="comm-hero-badge">🙏 &nbsp; Mangal.Bhav Community</div>
+      <h1 class="comm-hero-title">मंगल भवः</h1>
+      <p class="comm-hero-devanagari">शांति · समृद्धि · संरक्षण</p>
+      <p class="comm-hero-desc">
+        A sacred community rooted in the timeless wisdom of Vedic tradition —
+        where every family finds peace, every home finds prosperity,
+        and every soul finds protection.
+      </p>
+      <div class="comm-hero-pills">
+        <span class="comm-pill">🌸 Peace</span>
+        <span class="comm-pill">🌟 Prosperity</span>
+        <span class="comm-pill">🛡️ Protection</span>
+        <span class="comm-pill">🔥 Sacred Fire</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom padding for tabs -->
+  <div style="height: 80px;"></div>
+
 </ion-content>
 
-
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
-
-
+<app-jajmanbottomtabs   *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 <app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>
