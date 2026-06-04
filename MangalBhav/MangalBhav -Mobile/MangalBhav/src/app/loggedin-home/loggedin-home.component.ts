@@ -959,7 +959,7 @@ export class LoggedinHomeComponent implements OnInit {
           languages: '',
           basePrice: 0,
           profilePhotoUrl: '',
-          verificationStatus: 'PENDING',
+          verificationStatus: 'APPROVED',
           isActive: Boolean(1),
           dateAdded: new Date().toISOString(),
           dateModified: new Date().toISOString(),

@@ -1380,6 +1380,7 @@ ion-modal {
   background: #000000;
   display: flex;
   flex-direction: column;
+  
 }
 
 .qr-overlay-header {
@@ -1387,6 +1388,7 @@ ion-modal {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
+ padding-top: 15vh;
   background: linear-gradient(135deg, #FF9500, #E07B00);
   box-shadow: 0 4px 20px rgba(224, 123, 0, 0.35);
 }
@@ -1497,7 +1499,7 @@ ion-modal {
 
 .qr-close-fixed {
   position: fixed;
-  top: 20px;
+  top: 12vh;
   right: 20px;
   z-index: 9999;
   width: 42px;

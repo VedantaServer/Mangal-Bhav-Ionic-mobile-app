@@ -29,7 +29,11 @@
     <!-- <div class="mb-tab-avatar">
       {{ userDetails?.FullName?.split(' ')?.[0]?.[0]?.toUpperCase() || 'M' }}
     </div> -->
-    <img src="/assets/user.png" class="mb-center-fab-img" />
+    <img 
+    [src]="profilePhotoUrl" 
+    class="mb-center-fab-img mb-tab-avatar-img"
+    (error)="profilePhotoUrl = 'assets/user.png'"
+  />
     <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
   </ion-tab-button>
 

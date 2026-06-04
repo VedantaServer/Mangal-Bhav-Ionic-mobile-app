@@ -413,3 +413,11 @@ ion-tab-button.mb-tab-btn::part(native) {
   transform: scale(1); // ← increase this number to make it bigger
   transform-origin: center center;
 }
+
+.mb-tab-avatar-img {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--ion-color-primary);
+}

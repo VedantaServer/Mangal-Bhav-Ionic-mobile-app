@@ -51,11 +51,10 @@ export class MandirfulldetailsComponent implements OnInit {
   activeSlide = 0;
 
   // ── Donate sheet ───────────────────────────
-  showDonateSheet = false;
-  showPreviewSheet = false;
+
 
   donateAmount = '';
-  donateCustomAmount: any = 21; 
+  donateCustomAmount: any = 21;
   donateName: any = null;
   donateMobile: any = null;
   donateMessage = '';
@@ -71,12 +70,14 @@ export class MandirfulldetailsComponent implements OnInit {
 
   userDetails: any;
   MandirTransactionList: any = [];
-  showDonationSuccessModal = false;
   successDonationData: any = null;
+  currentSection: 'main' | 'donate' | 'preview' | 'success' = 'main';
 
   showStampPopup = false;
   supportMangalBhav = true;
   platformFee = 5;
+  paidTransactionIds = new Set<number>();
+
 
   /** Purpose options shown in the dropdown */
   purposeOptions = [
@@ -103,14 +104,19 @@ export class MandirfulldetailsComponent implements OnInit {
 
   // ─────────────────────────────────────────────────────────────
   async ngOnInit() {
-    this.createSparks();
+    // this.createSparks();
     this.userDetails = await this.storage.get('account');
     if (this.userDetails) {
       this.donateMobile = this.userDetails.LoginID;
       this.donateName = this.userDetails.FullName;
     }
 
-    this.mandirID = this.route.snapshot.paramMap.get('id');
+  //  this.mandirID = this.route.snapshot.paramMap.get('id');
+
+
+    this.mandirID = this.route.snapshot.paramMap.get('id') 
+    || this.route.snapshot.params['id'];
+
     if (this.mandirID) this.loadMandir();
 
     this.loadTransaction();
@@ -156,16 +162,40 @@ export class MandirfulldetailsComponent implements OnInit {
   }
 
   // ─────────────────────────────────────────────────────────────
+
+  checkPaidToMandir(transactions: any[]) {
+    if (!transactions?.length) return;
+  
+    const ids = transactions.map(t => t.TransactionID).join(',');
+    const query = `TransactionID IN (${ids}) AND IsPaid = 1 AND IsCancelled <> 1`;
+  
+    this.apinu
+      .postUrlData(`MandirLedgerSelectByQuery?Query=${encodeURIComponent(query)}`, null)
+      .subscribe({
+        next: (res: any) => {
+          const ledgerRows: any[] = res?.MandirLedgerList ?? [];
+          this.paidTransactionIds = new Set(ledgerRows.map(r => r.TransactionID));
+        },
+        error: () => {
+          this.paidTransactionIds = new Set();
+        }
+      });
+  }
+  
+  // Update loadTransaction() to call it after fetch
   loadTransaction() {
     this.apinu
       .postUrlData(
-        `MandirTransactionsSelectByQuery?Query= MandirID = '${this.mandirID}' order by dateAdded desc`,
+        `MandirTransactionsSelectByQuery?Query= MandirID = '${this.mandirID}' and transactiontype = 'Donation' and paymentstatus = 'Success' order by dateAdded desc`,
         null
       )
       .subscribe((res: any) => {
         this.MandirTransactionList = res.MandirTransactionList;
+        this.checkPaidToMandir(this.MandirTransactionList); // ← add this
       });
   }
+
+
 
   loadMandir() {
     this.isLoading = true;
@@ -258,20 +288,29 @@ export class MandirfulldetailsComponent implements OnInit {
   }
 
   // ── Sheet controls ────────────────────────────────────────────
-  openDonate() { 
-    this.showDonateSheet = true; 
-    this.showPreviewSheet = false; 
-    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'none';
+  openDonate() {
+    this.currentSection = 'donate';
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'none';
   }
   closeDonate() {
-    
-    this.showDonateSheet = false; 
-    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'flex';
+    this.currentSection = 'main';
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'flex';
   }
-  backToDonate() { this.showPreviewSheet = false; this.showDonateSheet = true; }
-  closeAll() { this.showDonateSheet = false; this.showPreviewSheet = false; 
+  backToDonate() { this.currentSection = 'donate'; }
 
-    (document.querySelector('.custom-fab-wrap') as HTMLElement).style.display = 'flex';
+
+  closeAll() {
+    this.currentSection = 'main';
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'flex';
+  }
+
+  backToMain() {
+    this.currentSection = 'main';
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'flex';
   }
 
   selectPreset(amount: number) {
@@ -301,9 +340,8 @@ export class MandirfulldetailsComponent implements OnInit {
       return;
     }
 
-    // All valid — switch to preview
-    this.showDonateSheet = false;
-    this.showPreviewSheet = true;
+    this.currentSection = 'preview';
+
   }
 
   // ── STEP 2: Initiate payment from preview sheet ───────────────
@@ -379,13 +417,15 @@ export class MandirfulldetailsComponent implements OnInit {
 
                           this.isProcessingPayment = false;
 
-                          this.showPreviewSheet = false;
+                          //   this.showPreviewSheet = false;
 
-                          this.showDonateSheet = false;
+                          //  this.showDonateSheet = false;
 
+                          // this.isDonating = false;
+
+                          //this.showDonationSuccessModal = true;
                           this.isDonating = false;
-
-                          this.showDonationSuccessModal = true;
+                          this.currentSection = 'success';
 
                         });
 
@@ -404,7 +444,7 @@ export class MandirfulldetailsComponent implements OnInit {
             name: this.donateName,
             contact: this.donateMobile,
           },
-          notes: { contact: this.donateMobile, wish: this.donateWish },
+          notes: { contact: this.donateMobile, wish: this.donateWish, mandirID: this.mandirID },
           theme: { color: '#FF9500' },
         };
 
@@ -473,7 +513,7 @@ export class MandirfulldetailsComponent implements OnInit {
 
   shareDonationOnWhatsApp() {
 
-    this.showDonationSuccessModal = false
+    this.currentSection = 'main';
     const amount = this.successDonationData?.amount || 0;
 
     const purpose = this.successDonationData?.purpose || 'General Donation';
@@ -513,11 +553,11 @@ ${shareUrl}
 
   lightboxImageUrl: string | null = null;
 
-openLightbox(url: string) {
-  this.lightboxImageUrl = url;
-}
+  openLightbox(url: string) {
+    this.lightboxImageUrl = url;
+  }
 
-closeLightbox() {
-  this.lightboxImageUrl = null;
-}
+  closeLightbox() {
+    this.lightboxImageUrl = null;
+  }
 }

@@ -505,11 +505,29 @@ export class OpenfindmandirComponent implements OnInit {
     this.showScanner = !this.showScanner;
   }
 
+ 
+
   onQrScanSuccess(result: string) {
-    const match = result.match(/mandirID=(\d+)/);
-    if (match && match[1]) {
+    console.log('QR scanned:', result);
+  
+    let mandirId: string | null = null;
+  
+    // Format 1: full URL — https://mangalbhav.com/mandirfulldetails/123
+    const urlMatch = result.match(/mandirfulldetails\/(\d+)/);
+    if (urlMatch && urlMatch[1]) {
+      mandirId = urlMatch[1];
+    }
+  
+    // Format 2: old short format — mandirID=123
+    if (!mandirId) {
+      const oldMatch = result.match(/mandirID=(\d+)/);
+      if (oldMatch && oldMatch[1]) {
+        mandirId = oldMatch[1];
+      }
+    }
+  
+    if (mandirId) {
       this.showScanner = false;
-      const mandirId = match[1];
       this.routerCtrl.navigateForward(`/mandirfulldetails/${mandirId}`);
     } else {
       this.showToast('Invalid QR — not a Mandir QR code 🛕', 'warning');

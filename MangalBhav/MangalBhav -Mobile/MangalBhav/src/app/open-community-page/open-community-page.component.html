@@ -3,27 +3,57 @@
 <ion-content [scrollEvents]="true">
 
   <!-- ═══ DIVINE HERO SECTION ═══ -->
+  <!-- ═══ DIVINE HERO SECTION ═══ -->
   <div class="hero-wrapper">
 
-    <!-- Hanuman Ji Image -->
     <div class="hanuman-container" [class.glowing]="isGlowing">
       <img src="assets/hanumanji.png" class="hanuman-img" />
       <div class="divine-aura" [class.active]="isGlowing"></div>
       <canvas id="flowerCanvas" class="flower-canvas"></canvas>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="seva-toast" [class.show]="toastVisible">
       <span class="toast-icon">{{ toastIcon }}</span>
       <span class="toast-text">{{ toastMessage }}</span>
     </div>
 
-    <!-- Live Darshan Counter -->
+    <!-- Live Counter -->
     <div class="darshan-pill">
       <span class="live-dot"></span>
       <span class="darshan-text">
-        <span class="darshan-count">{{ darshanaCount | number }}</span> भक्त अभी दर्शन कर रहे हैं
+        <span class="darshan-count">{{ darshanaCount | number }}</span>
       </span>
+    </div>
+
+    <!-- ✅ LEFT SIDEBAR — replaces action-row + seva-grid -->
+    <div class="reel-sidebar">
+
+      <!-- 3 Action buttons -->
+      <button class="reel-btn reel-btn--primary" (click)="performAarti()" [class.active]="aartiActive">
+        <span class="reel-icon">🪔</span>
+        <span class="reel-label">{{ aartiActive ? 'रोकें' : 'आरती' }}</span>
+      </button>
+
+      <button class="reel-btn" (click)="ringBell()" [class.ringing]="bellRinging">
+        <span class="reel-icon bell-icon" [class.ring]="bellRinging">🔔</span>
+        <span class="reel-label">घंटी</span>
+      </button>
+
+      <button class="reel-btn" (click)="offerFlowers()">
+        <span class="reel-icon">🌺</span>
+        <span class="reel-label">पुष्प</span>
+      </button>
+
+      <div class="reel-divider"></div>
+
+      <!-- Seva items -->
+      <button class="reel-btn reel-btn--seva" *ngFor="let seva of sevaItems" (click)="offerSeva(seva)">
+        <span class="reel-icon">{{ seva.icon }}</span>
+        <span class="reel-label">{{ seva.name }}</span>
+        <!-- <span class="reel-count">{{ seva.count }}</span> -->
+      </button>
+
     </div>
 
     <!-- Mantra Strip -->
@@ -33,6 +63,8 @@
     </div>
 
   </div>
+
+  <!-- ═══ Remove the old action-row and seva section entirely ═══ -->
 
   <!-- ═══ 3-BUTTON AARTI ROW ═══ -->
   <div class="action-row">
@@ -196,5 +228,5 @@
 </ion-content>
 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-<app-jajmanbottomtabs   *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 <app-loggedoutbottomtabs *ngIf="!userLoggedIn"></app-loggedoutbottomtabs>

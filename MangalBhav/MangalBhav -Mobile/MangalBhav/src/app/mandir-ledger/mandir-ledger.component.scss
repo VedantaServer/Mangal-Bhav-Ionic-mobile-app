@@ -1,0 +1,249 @@
+:host { --ion-background-color: #FFFBF0; }
+ion-content { --background: #FFFBF0; }
+
+// ── Header ─────────────────────────────────────────────────
+ion-header { background: linear-gradient(135deg, #FF9500, #E07B00); box-shadow: 0 4px 20px rgba(224,123,0,0.35); &::after { display: none; } }
+ion-toolbar { --background: transparent; --border-width: 0; --padding-start:0; --padding-end:0; --padding-top:0; --padding-bottom:0; }
+.inner-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; gap:12px; }
+.inner-back-btn { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; ion-icon { font-size:20px; color:#fff; } &:active { background:rgba(255,255,255,0.28); } }
+.inner-title-block { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.inner-title { font-size:18px; color:#fff; font-weight:800; letter-spacing:0.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
+.inner-title-sub { font-size:8px; letter-spacing:2px; text-transform:uppercase; font-weight:600; color:rgba(255,240,180,0.85); }
+.inner-logo { width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35); display:flex; align-items:center; justify-content:center; img { width:28px; height:28px; object-fit:contain; border-radius:8px; } }
+
+// ── Wrap ───────────────────────────────────────────────────
+.ml-wrap { padding-bottom:60px; background:#FFFBF0; }
+
+// ── Hero ───────────────────────────────────────────────────
+.ml-hero { background:linear-gradient(135deg,#FF9500,#E07B00); padding:28px 20px 32px; text-align:center; }
+.ml-hero-om { font-size:44px; margin-bottom:8px; display:block; }
+.ml-hero-title { font-size:22px; font-weight:800; color:#fff; letter-spacing:0.5px; }
+.ml-hero-sub { font-size:11px; letter-spacing:2px; color:rgba(255,255,255,0.75); margin-top:6px; }
+
+// ── Ledger hero strip ──────────────────────────────────────
+.ml-ledger-hero {
+  margin:16px 16px 0; background:#fff; border-radius:18px;
+  padding:16px; display:flex; align-items:center; gap:14px;
+  border:1.5px solid rgba(255,184,0,0.25);
+  box-shadow:0 2px 10px rgba(255,149,0,0.07);
+  position:relative; overflow:hidden;
+  &::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#FF9500,#FFB800); }
+}
+.ml-ledger-hero-icon { font-size:36px; flex-shrink:0; }
+.ml-ledger-hero-body { flex:1; min-width:0; }
+.ml-ledger-hero-name { font-size:16px; font-weight:800; color:#2B1A00; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ml-ledger-hero-god  { font-size:12px; color:#E07B00; font-weight:600; margin-top:3px; }
+.ml-ledger-hero-addr { font-size:11px; color:#9A7A50; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ml-ledger-verified  { background:rgba(43,138,62,0.1); color:#2B8A3E; font-size:9px; font-weight:700; padding:3px 10px; border-radius:20px; border:1px solid rgba(43,138,62,0.2); letter-spacing:0.5px; white-space:nowrap; align-self:flex-start; }
+
+// ── Loading ────────────────────────────────────────────────
+.ml-loading { display:flex; flex-direction:column; align-items:center; padding:48px 0; gap:12px; p { font-size:13px; color:#9A7A50; } }
+
+// ── Section label ──────────────────────────────────────────
+.ml-section-label { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#FF9500; padding:22px 18px 10px; }
+
+// ── Results meta ───────────────────────────────────────────
+.ml-results-meta { padding:16px 18px 4px; display:flex; align-items:center; gap:6px; }
+.ml-results-count { font-size:13px; font-weight:700; color:#2B1A00; }
+.ml-results-query { font-size:13px; color:#9A7A50; }
+
+// ── Empty ──────────────────────────────────────────────────
+.ml-empty { text-align:center; padding:60px 24px; }
+.ml-empty-icon  { font-size:56px; margin-bottom:14px; }
+.ml-empty-title { font-size:18px; font-weight:700; color:#2B1A00; margin-bottom:8px; }
+.ml-empty-sub   { font-size:13px; color:#9A7A50; line-height:1.7; strong { color:#E07B00; } }
+
+// ── Mandir card (pending list) ─────────────────────────────
+.ml-mandir-card {
+  margin:0 16px 12px; background:#fff; border-radius:18px;
+  padding:16px; display:flex; align-items:center; gap:14px;
+  border:1.5px solid rgba(255,184,0,0.2);
+  box-shadow:0 2px 10px rgba(255,149,0,0.07);
+  cursor:pointer; transition:all 0.18s; position:relative; overflow:hidden;
+  &::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#FF9500,#FFB800); }
+  &:active { transform:scale(0.98); background:#FFFBF5; }
+}
+.ml-card-avatar { width:52px; height:52px; border-radius:14px; flex-shrink:0; background:linear-gradient(135deg,#FFF5D6,#FFE8A0); display:flex; align-items:center; justify-content:center; font-size:26px; border:1px solid rgba(255,184,0,0.3); }
+.ml-card-body   { flex:1; min-width:0; }
+.ml-card-name   { font-size:15px; font-weight:700; color:#2B1A00; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ml-card-god    { font-size:12px; color:#E07B00; font-weight:600; margin-top:3px; }
+.ml-card-addr   { font-size:11px; color:#9A7A50; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ml-card-due-badge { display:inline-block; margin-top:5px; background:rgba(224,80,50,0.1); color:#c0392b; font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; border:1px solid rgba(224,80,50,0.2); letter-spacing:0.3px; }
+.ml-card-right  { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+.ml-card-due-amount { font-size:18px; font-weight:800; color:#c0392b; }
+.ml-card-due-label  { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#e07b00; }
+.ml-card-arrow  { color:#D4B896; font-size:18px; margin-top:4px; }
+
+// ── Due Summary card ───────────────────────────────────────
+.ml-due-summary-card {
+  margin:0 16px 4px; background:#fff3f0; border-radius:18px;
+  padding:16px; display:flex; align-items:center; gap:14px;
+  border:1.5px solid rgba(224,80,50,0.2);
+  box-shadow:0 2px 10px rgba(192,57,43,0.07);
+  position:relative; overflow:hidden;
+  &::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#c0392b,#e74c3c); }
+}
+.ml-due-icon  { font-size:30px; flex-shrink:0; }
+.ml-due-body  { flex:1; min-width:0; }
+.ml-due-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#9A7A50; margin-bottom:4px; }
+.ml-due-amount { font-size:24px; font-weight:800; color:#c0392b; line-height:1; }
+.ml-due-count  { font-size:11px; color:#e74c3c; margin-top:4px; }
+.ml-pay-now-btn {
+  flex-shrink:0; padding:10px 14px;
+  background:linear-gradient(135deg,#2B8A3E,#52c41a);
+  border:none; border-radius:14px; color:#fff;
+  font-size:13px; font-weight:800; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  box-shadow:0 3px 12px rgba(43,138,62,0.3);
+  ion-icon { font-size:18px; }
+  &:active { transform:scale(0.97); }
+}
+
+// ── Transaction card ───────────────────────────────────────
+.ml-txn-card {
+  display:flex; align-items:flex-start; gap:12px;
+  margin:0 16px 10px; background:#fff;
+  padding:13px 14px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  &--pending { border-left:4px solid #c0392b; border-radius:0 14px 14px 0; }
+}
+.ml-txn-left { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; }
+.ml-txn-avatar {
+  width:40px; height:40px; border-radius:50%;
+  color:#fff; font-weight:700; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  &--pending { background:linear-gradient(135deg,#c0392b,#e74c3c); }
+}
+.ml-txn-type-badge {
+  font-size:8px; font-weight:800; padding:2px 6px; border-radius:6px;
+  letter-spacing:0.5px; white-space:nowrap;
+  &.pending-badge { background:#ffeaea; color:#c0392b; }
+}
+.ml-txn-body    { flex:1; min-width:0; }
+.ml-txn-name    { font-size:14px; font-weight:700; color:#2d1a00; }
+.ml-txn-service { font-size:11px; color:#888; margin-top:2px; }
+.ml-txn-ref     { font-size:10px; color:#B08050; margin-top:2px; font-family:monospace; }
+.ml-txn-remarks { font-size:11px; color:#7A4D00; font-style:italic; margin-top:3px; }
+.ml-txn-date    { font-size:10px; color:#aaa; margin-top:3px; }
+.ml-txn-right   { text-align:right; flex-shrink:0; }
+.ml-txn-id      { font-size:9px; color:#C4A882; margin-top:4px; }
+.ml-txn-amount {
+  font-size:17px; font-weight:800;
+  &--due { color:#c0392b; }
+}
+
+// ── Footer ─────────────────────────────────────────────────
+.ml-divider { text-align:center; padding:32px 0 8px; font-size:13px; color:#FFB800; letter-spacing:10px; opacity:0.6; }
+.ml-mantra  { text-align:center; font-size:12px; color:#C45E00; padding-bottom:20px; }
+
+// ── Pay Entry section ──────────────────────────────────────
+.sec-wrap { display:flex; flex-direction:column; min-height:100vh; background:#FFFBF0; animation:fadeIn 0.22s ease; }
+.sec-body { flex:1; overflow-y:auto; padding:16px; padding-bottom:40px; }
+.sec-footer { flex-shrink:0; padding:14px 16px 20px; border-top:1px solid rgba(255,184,0,0.2); background:#FFFBF0; display:flex; gap:12px; position:sticky; bottom:0; z-index:10; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+// ── Pay context card ───────────────────────────────────────
+.ml-pay-context-card {
+  background:#fff; border-radius:16px; padding:14px 16px;
+  display:flex; align-items:center; gap:12px;
+  border:1.5px solid rgba(255,184,0,0.25);
+  box-shadow:0 2px 8px rgba(255,149,0,0.07);
+  position:relative; overflow:hidden;
+  &::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#FF9500,#FFB800); }
+}
+.ml-pay-context-icon { font-size:32px; flex-shrink:0; }
+.ml-pay-context-body { flex:1; min-width:0; }
+.ml-pay-context-name { font-size:15px; font-weight:800; color:#2B1A00; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ml-pay-context-god  { font-size:11px; color:#E07B00; font-weight:600; margin-top:3px; }
+.ml-pay-context-due  { text-align:right; flex-shrink:0; }
+.ml-pay-context-due-label  { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#9A7A50; }
+.ml-pay-context-due-amount { font-size:18px; font-weight:800; color:#c0392b; }
+
+// ── Pay hint ───────────────────────────────────────────────
+.ml-pay-hint {
+  font-size:11px; color:#E07B00; padding:4px 16px 0; font-weight:500;
+}
+
+// ── Amount input ───────────────────────────────────────────
+.mfd-amount-input-wrap {
+  display:flex; align-items:center; background:#fff;
+  border:1.5px solid rgba(255,184,0,0.35); border-radius:14px;
+  overflow:hidden; margin:0 16px;
+  box-shadow:0 2px 6px rgba(255,149,0,0.07);
+  &:focus-within { border-color:#FF9500; box-shadow:0 0 0 3px rgba(255,149,0,0.1); }
+}
+.mfd-rupee {
+  padding:0 12px; font-size:20px; font-weight:700; color:#E07B00;
+  border-right:1px solid rgba(255,184,0,0.25); background:rgba(255,184,0,0.06);
+  align-self:stretch; display:flex; align-items:center;
+}
+.mfd-amount-input {
+  flex:1; border:none; outline:none; background:transparent;
+  color:#2B1A00; font-size:18px; font-weight:700; padding:13px 14px;
+  &::placeholder { color:#C4A882; font-weight:400; font-size:14px; }
+}
+
+// ── Text input ─────────────────────────────────────────────
+.mfd-text-input {
+  width:calc(100% - 32px); box-sizing:border-box; background:#fff;
+  border:1.5px solid rgba(255,184,0,0.35); border-radius:14px;
+  color:#2B1A00; font-size:14px; padding:13px 16px; outline:none;
+  font-family:inherit; margin:0 16px;
+  &::placeholder { color:#C4A882; }
+  &:focus { border-color:#FF9500; box-shadow:0 0 0 3px rgba(255,149,0,0.1); }
+}
+
+// ── Remarks textarea ───────────────────────────────────────
+.mfd-wish-wrap {
+  position:relative; background:#fff;
+  border:1.5px solid rgba(255,184,0,0.35); border-radius:14px;
+  overflow:hidden; margin:0 16px;
+  box-shadow:0 2px 6px rgba(255,149,0,0.07);
+  &:focus-within { border-color:#FF9500; box-shadow:0 0 0 3px rgba(255,149,0,0.1); }
+}
+.mfd-wish-input {
+  width:100%; box-sizing:border-box; border:none; outline:none;
+  background:transparent; color:#2B1A00; font-size:13px;
+  padding:13px 14px 28px; font-family:inherit; resize:none;
+  line-height:1.6; display:block;
+  &::placeholder { color:#C4A882; font-size:13px; }
+}
+.mfd-wish-count { position:absolute; bottom:7px; right:12px; font-size:10px; color:#C4A882; font-weight:500; }
+
+// ── Entry preview ──────────────────────────────────────────
+.ml-entry-preview {
+  margin:16px 16px 0;
+  background:linear-gradient(135deg,#f0fff4,#d4edda);
+  border:1.5px solid rgba(43,138,62,0.2);
+  border-radius:16px; padding:16px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.ml-entry-preview-title { font-size:12px; font-weight:700; color:#2B8A3E; letter-spacing:1px; text-transform:uppercase; padding-bottom:4px; border-bottom:1px solid rgba(43,138,62,0.15); }
+.ml-entry-preview-row {
+  display:flex; justify-content:space-between; align-items:center;
+  span { font-size:12px; color:#9A7A50; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+  strong { font-size:14px; color:#2B1A00; font-weight:700; &.green { color:#2B8A3E; } &.red { color:#c0392b; } }
+}
+
+// ── Section label inside sec-body ─────────────────────────
+.sec-body .ml-section-label { padding-left:0; padding-right:0; }
+
+// ── Optional label ─────────────────────────────────────────
+.opt-label { font-size:10px; color:#C4A882; font-weight:400; letter-spacing:0; }
+
+// ── Footer buttons ─────────────────────────────────────────
+.mfd-cancel-btn {
+  flex:1; padding:14px; background:#fff;
+  border:1.5px solid rgba(255,184,0,0.35); border-radius:14px;
+  color:#7A4D00; font-size:14px; font-weight:600; cursor:pointer;
+  &:active { background:#FFF5D6; }
+}
+.mfd-donate-submit-btn {
+  flex:2; padding:14px;
+  background:linear-gradient(135deg,#2B8A3E,#52c41a);
+  border:none; border-radius:14px; color:#fff;
+  font-size:14px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 16px rgba(43,138,62,0.3);
+  &:active { transform:scale(0.97); }
+  &:disabled { opacity:0.5; cursor:not-allowed; }
+}

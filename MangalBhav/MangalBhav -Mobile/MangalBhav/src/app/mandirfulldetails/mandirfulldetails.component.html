@@ -15,21 +15,21 @@
   </ion-toolbar>
 </ion-header>
 
+
+
 <ion-content>
 
-  <!-- ── LOADING ── -->
+  <!-- ══════════════════════════════════
+       SECTION: MAIN MANDIR DETAIL
+  ══════════════════════════════════ -->
   <div class="mfd-loading" *ngIf="isLoading">
     <ion-spinner name="crescent" color="warning"></ion-spinner>
     <p>Loading mandir details…</p>
   </div>
 
-  <div *ngIf="!isLoading && mandir" class="mfd-wrap">
+  <div *ngIf="!isLoading && mandir && currentSection === 'main'" class="mfd-wrap">
 
-    <!-- ══════════════════════════════════
-         IMAGE SLIDER HERO
-    ══════════════════════════════════ -->
     <div class="mfd-hero-images">
-
       <div class="mfd-img-tile" *ngIf="FrontImageUrl" (click)="openLightbox(FrontImageUrl)">
         <img [src]="FrontImageUrl" class="mfd-tile-img" alt="Front" />
         <div class="mfd-tile-overlay">
@@ -38,7 +38,6 @@
         </div>
         <div class="mfd-verified" *ngIf="mandir.IsVerified">✦ Verified</div>
       </div>
-
       <div class="mfd-img-tile" *ngIf="InsideImageUrl" (click)="openLightbox(InsideImageUrl)">
         <img [src]="InsideImageUrl" class="mfd-tile-img" alt="Inside" />
         <div class="mfd-tile-overlay">
@@ -46,15 +45,12 @@
           <span>Inside</span>
         </div>
       </div>
-
-      <!-- placeholder if neither image loaded yet -->
       <div class="mfd-hero-placeholder" *ngIf="!FrontImageUrl && !InsideImageUrl">
         <span>🛕</span>
         <span class="mfd-placeholder-label">मंदिर</span>
       </div>
-
       <div class="mfd-hero-bottom">
-        <h1 class="mfd-hero-name">{{ mandir.MandirName }}</h1>
+        <!-- <h1 class="mfd-hero-name">{{ mandir.MandirName }}</h1> -->
         <p class="mfd-hero-god">✦ {{ mandir.GodName }}</p>
       </div>
     </div>
@@ -68,9 +64,6 @@
       <p class="mfd-lightbox-hint">Tap outside to close</p>
     </div>
 
-    <!-- ══════════════════════════════════
-         DONATE BANNER
-    ══════════════════════════════════ -->
     <div class="mfd-donate-banner" (click)="openDonate()">
       <div class="mfd-donate-banner-left">
         <span class="mfd-donate-icon">🪔</span>
@@ -79,14 +72,20 @@
           <div class="mfd-donate-sub">Support the sacred upkeep & seva</div>
         </div>
       </div>
-      <!-- <button class="mfd-donate-cta">Donate ₹</button> -->
     </div>
 
-    <!-- ══════════════════════════════════
-         INFO CARDS
-    ══════════════════════════════════ -->
     <div class="mfd-section-label">About</div>
 
+    <!-- Mandir Name card -->
+    <div class="mfd-info-card">
+      <div class="mfd-info-icon">🛕</div>
+      <div class="mfd-info-body">
+        <div class="mfd-info-label">Mandir</div>
+        <div class="mfd-info-value">{{ mandir.MandirName }}</div>
+      </div>
+    </div>
+
+    <!-- Presiding Deity card -->
     <div class="mfd-info-card">
       <div class="mfd-info-icon">🌸</div>
       <div class="mfd-info-body">
@@ -113,10 +112,6 @@
       <div class="mfd-info-body">
         <div class="mfd-info-label">Address</div>
         <div class="mfd-info-value">{{ mandir.Address }}</div>
-        <!-- <div class="mfd-info-sub" *ngIf="mandir.City || mandir.State">
-          {{ mandir.City }}{{ mandir.City && mandir.State ? ', ' : '' }}{{ mandir.State }}
-          {{ mandir.Pincode ? ' – ' + mandir.Pincode : '' }}
-        </div> -->
       </div>
       <ion-icon name="chevron-forward-outline" class="mfd-info-arrow"></ion-icon>
     </div>
@@ -133,7 +128,6 @@
       </div>
     </ng-container>
 
-    <!-- Status -->
     <div class="mfd-section-label">Details</div>
     <div class="mfd-details-row">
       <div class="mfd-detail-box">
@@ -180,7 +174,6 @@
           <ng-template #pendingIcon>⏳</ng-template>
         </div>
 
-        <!-- STAMP POPUP -->
         <div class="stamp-backdrop" *ngIf="showStampPopup" (click)="showStampPopup = false">
           <div class="stamp-popup" (click)="$event.stopPropagation()">
             <button class="stamp-popup-close" (click)="showStampPopup = false">✕</button>
@@ -245,13 +238,11 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         QR CODE SECTION
-    ══════════════════════════════════ -->
     <div class="mfd-section-label">Share This Mandir</div>
     <div class="mfd-qr-card">
       <div class="mfd-qr-label">Scan to visit this mandir's page</div>
-      <qrcode [qrdata]="'mandirID=' + mandirID" [width]="180" errorCorrectionLevel="M"></qrcode>
+      <qrcode [qrdata]="'https://mangalbhav.com/mandirfulldetails/' + mandirID" [width]="180" errorCorrectionLevel="M">
+      </qrcode>
       <div class="mfd-qr-sub">{{ mandir?.MandirName }}</div>
       <div class="mfd-share-row">
         <button class="mfd-share-btn whatsapp" (click)="shareOnWhatsApp()">
@@ -266,62 +257,72 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         DONATIONS RECEIVED
-    ══════════════════════════════════ -->
+
     <ng-container *ngIf="MandirTransactionList?.length > 0">
       <div class="mfd-section-label">🪔 Donations Received</div>
       <div class="mfd-donate-count-badge">
         {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this
         mandir
       </div>
-      <div class="mfd-txn-card" *ngFor="let txn of MandirTransactionList">
+
+      <div class="mfd-txn-card" *ngFor="let txn of MandirTransactionList" style="position: relative; overflow: hidden;">
+
         <div class="mfd-txn-left">
           <div class="mfd-txn-avatar">{{ txn.DonorName?.charAt(0)?.toUpperCase() || '🙏' }}</div>
         </div>
         <div class="mfd-txn-body">
           <div class="mfd-txn-name">{{ txn.DonorName || 'Anonymous' }}</div>
-          <div class="mfd-txn-service">
-            {{ txn.ServiceName }} &nbsp;·&nbsp;
-            📱 ******{{ txn.Phone | slice:-4 }}
-          </div>
+          <div class="mfd-txn-service">{{ txn.ServiceName }} &nbsp;·&nbsp; 📱 ******{{ txn.Phone | slice:-4 }}</div>
           <div class="mfd-txn-date">{{ txn.DateAdded | date:'dd MMM yyyy, h:mm a' }}</div>
         </div>
         <div class="mfd-txn-right">
           <div class="mfd-txn-amount">₹{{ txn.Amount }}</div>
-          <div class="mfd-txn-status" [class.mfd-txn-success]="txn.PaymentStatus === 'Success'"
-            [class.mfd-txn-pending]="txn.PaymentStatus !== 'Success'">
-            {{ txn.PaymentStatus === 'Success' ? '✔ Paid' : '⏳ ' + txn.PaymentStatus }}
-          </div>
+          <!-- removed paid/pending status badge as per requirement -->
+        </div>
+
+        <!-- ✅ Paid to Mandir stamp -->
+
+        <!-- ✅ Paid to Mandir stamp -->
+        <div class="paid-stamp" *ngIf="paidTransactionIds.has(txn.TransactionID)">
+          <svg viewBox="0 0 90 36" width="90" height="36" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="88" height="34" rx="4" fill="none" stroke="#b45309" stroke-width="1.5"
+              stroke-dasharray="3 2" />
+            <text x="45" y="13" text-anchor="middle" font-size="8" font-family="serif" fill="#b45309"
+              letter-spacing="1">🕉 MANGAL BHAV</text>
+            <line x1="10" y1="17" x2="80" y2="17" stroke="#b45309" stroke-width="0.5" opacity="0.5" />
+            <text x="45" y="28" text-anchor="middle" font-size="9" font-family="serif" fill="#b45309" font-weight="bold"
+              letter-spacing="0.5">PAID TO MANDIR</text>
+          </svg>
         </div>
       </div>
     </ng-container>
+
 
     <div class="mfd-divider">✦ ॐ ✦ ॐ ✦</div>
     <div class="mfd-slogan">
       <p>हर हर महादेव · जय श्री राम · जय माता दी</p>
     </div>
 
-  </div><!-- /mfd-wrap -->
+  </div><!-- /main section -->
 
 
   <!-- ══════════════════════════════════
-       DONATE BOTTOM SHEET
+       SECTION: DONATE FORM
   ══════════════════════════════════ -->
-  <div class="mfd-backdrop" [class.active]="showDonateSheet || showPreviewSheet" (click)="closeAll()"></div>
+  <div *ngIf="!isLoading && mandir && currentSection === 'donate'" class="sec-wrap">
 
-  <!-- ─── DONATE SHEET ─── -->
-  <div class="mfd-donate-sheet" [class.active]="showDonateSheet">
+    <!-- <div class="sec-header sec-header--orange">
+      <button class="sec-back-btn" (click)="closeDonate()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="sec-header-text">
+        <div class="sec-header-title">🪔 Donate to Mandir</div>
+        <div class="sec-header-sub">{{ mandir?.MandirName }}</div>
+      </div>
+    </div> -->
 
-    <div class="mfd-sheet-header">
-      <div class="mfd-sheet-title">🪔 Donate to Mandir</div>
-      <div class="mfd-sheet-sub">{{ mandir?.MandirName }}</div>
-      <button class="mfd-sheet-close" (click)="closeDonate()">✕</button>
-    </div>
+    <div class="sec-body">
 
-    <div class="mfd-sheet-body">
-
-      <!-- Preset amounts -->
       <div class="mfd-donate-label">Select Amount</div>
       <div class="mfd-preset-grid">
         <button class="mfd-preset-btn" *ngFor="let amt of presetAmounts" [class.selected]="donateAmount === (amt + '')"
@@ -330,16 +331,13 @@
         </button>
       </div>
 
-      <!-- Custom amount -->
-      <!-- <div class="mfd-donate-label" style="margin-top: 14px;">Custom Amount</div> -->
-      <div class="mfd-amount-input-wrap" style="margin-top: 5px;">
+      <div class="mfd-amount-input-wrap" style="margin-top: 12px;">
         <span class="mfd-rupee">₹</span>
         <input type="number" class="mfd-amount-input" [(ngModel)]="donateCustomAmount" placeholder="e.g. 750"
           (input)="donateAmount = ''" />
       </div>
 
-      <!-- Purpose Dropdown -->
-      <div class="mfd-donate-label" style="margin-top: 5px;">Purpose of Donation</div>
+      <div class="mfd-donate-label" style="margin-top: 14px;">Purpose of Donation</div>
       <div class="mfd-select-wrap">
         <select class="mfd-select" [(ngModel)]="donatePurpose">
           <option value="" disabled>Select a purpose…</option>
@@ -348,36 +346,28 @@
         <span class="mfd-select-arrow">▾</span>
       </div>
 
-      <!-- Name + Mobile -->
-      <div class="mfd-two-col" style="margin-top: 5px;">
+      <div class="mfd-two-col" style="margin-top: 12px;">
         <div>
-          <!-- <div class="mfd-donate-label">Your Name</div> -->
-          <input class="mfd-text-input" type="text" [(ngModel)]="donateName" placeholder="Name" />
+          <input class="mfd-text-input" type="text" [(ngModel)]="donateName" placeholder="Your Name" />
         </div>
         <div>
-          <!-- <div class="mfd-donate-label">Mobile No.</div> -->
-          <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile" placeholder="10-digit" maxlength="10" />
+          <input class="mfd-text-input" type="text" [(ngModel)]="donateMobile" placeholder="10-digit mobile"
+            maxlength="10" />
         </div>
       </div>
 
-      <!-- Make a Wish Box -->
-      <!-- <div class="mfd-donate-label" style="margin-top: 14px;">🌟 Make a Wish (Optional)</div> -->
-      <div class="mfd-wish-wrap" style="margin-top: 5px;">
-        <textarea class="mfd-wish-input" [(ngModel)]="donateWish"
-          placeholder="Write your wish or prayer here… 🙏&#10;"
-          rows="1" maxlength="200"></textarea>
+      <div class="mfd-wish-wrap" style="margin-top: 12px;">
+        <textarea class="mfd-wish-input" [(ngModel)]="donateWish" placeholder="Write your wish or prayer here… 🙏"
+          rows="2" maxlength="200"></textarea>
         <div class="mfd-wish-count">{{ donateWish.length || 0 }}/200</div>
       </div>
 
-      <!-- Summary -->
       <div class="mfd-donate-summary" *ngIf="finalAmount > 0">
         <div class="mfd-summary-row">
           <span>🙏 Donation Amount</span>
           <strong>₹{{ finalAmount }}</strong>
         </div>
-      
         <div class="mfd-summary-divider"></div>
-      
         <div class="mfd-summary-row platform">
           <label class="mfd-platform-label">
             <input type="checkbox" [(ngModel)]="supportMangalBhav" />
@@ -385,24 +375,18 @@
           </label>
           <span class="platform-fee">₹{{ supportMangalBhav ? platformFee : 0 }}</span>
         </div>
-      
         <div class="mfd-summary-divider"></div>
-      
         <div class="mfd-summary-row total">
           <span>💰 Total Donation</span>
-          <strong class="total-amt">
-            ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}
-          </strong>
+          <strong class="total-amt">₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}</strong>
         </div>
       </div>
 
-      <!-- Donor history teaser -->
       <div class="mfd-donor-teaser" *ngIf="MandirTransactionList?.length === 0">
         <span class="mfd-donor-teaser-icon">🌟</span>
         <div>
           <div class="mfd-donor-teaser-title">Be the First Donor!</div>
-          <div class="mfd-donor-teaser-sub">Your name will be forever remembered as the founding donor of this mandir.
-          </div>
+          <div class="mfd-donor-teaser-sub">Your name will be forever remembered as the founding donor.</div>
         </div>
       </div>
       <div class="mfd-donor-teaser" *ngIf="MandirTransactionList?.length > 0">
@@ -410,76 +394,56 @@
         <div>
           <div class="mfd-donor-teaser-title">Join {{ MandirTransactionList.length }} generous donor{{
             MandirTransactionList.length > 1 ? 's' : '' }}</div>
-          <div class="mfd-donor-teaser-sub">Your support keeps this sacred place alive. Your name will be listed with
-            honour.</div>
+          <div class="mfd-donor-teaser-sub">Your support keeps this sacred place alive.</div>
         </div>
       </div>
+      <div class="sec-footer">
+        <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
+        <button class="mfd-donate-submit-btn" (click)="proceedToPreview()" [disabled]="finalAmount < 1">
+          🪔 Preview &amp; Confirm ₹{{ finalAmount > 0 ? finalAmount + (supportMangalBhav ? platformFee : 0) : 0 }}
+        </button>
+      </div>
 
-    </div><!-- /sheet-body -->
+    </div><!-- /sec-body -->
 
-    <div class="mfd-sheet-footer">
+    <!-- <div class="sec-footer">
       <button class="mfd-cancel-btn" (click)="closeDonate()">Cancel</button>
       <button class="mfd-donate-submit-btn" (click)="proceedToPreview()" [disabled]="finalAmount < 1">
         🪔 Preview &amp; Confirm ₹{{ finalAmount > 0 ? finalAmount + (supportMangalBhav ? platformFee : 0) : 0 }}
       </button>
-    </div>
+    </div> -->
 
-  </div><!-- /donate-sheet -->
+  </div><!-- /donate section -->
 
 
-  <!-- ─── PREVIEW / CONFIRMATION SHEET ─── -->
-  <div class="mfd-preview-sheet" [class.active]="showPreviewSheet">
+  <!-- ══════════════════════════════════
+       SECTION: PREVIEW / CONFIRM
+  ══════════════════════════════════ -->
+  <div *ngIf="!isLoading && mandir && currentSection === 'preview'" class="sec-wrap">
 
-    <div class="mfd-preview-header">
-      <button class="mfd-preview-back" (click)="backToDonate()">
-        <ion-icon name="chevron-back-outline"></ion-icon>
-      </button>
-      <div class="mfd-preview-header-text">
-        <div class="mfd-preview-header-title">Confirm Donation</div>
-        <div class="mfd-preview-header-sub">Review before payment</div>
-      </div>
-      <button class="mfd-sheet-close" (click)="closeAll()">✕</button>
-    </div>
+    <div class="sec-body">
 
-    <div class="mfd-preview-body">
-
-      <!-- Temple image + Deity side by side -->
       <div class="mfd-preview-temple-row">
-
-        <!-- Front Image -->
         <div class="mfd-preview-temple-img-wrap" *ngIf="FrontImageUrl" (click)="openLightbox(FrontImageUrl)">
           <img [src]="FrontImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
-          <div class="mfd-preview-tile-overlay">
-            <ion-icon name="expand-outline"></ion-icon>
-          </div>
+          <div class="mfd-preview-tile-overlay"><ion-icon name="expand-outline"></ion-icon></div>
           <div class="mfd-preview-img-label">🏛 Outside</div>
         </div>
-
-        <!-- Inside Image -->
         <div class="mfd-preview-temple-img-wrap" *ngIf="InsideImageUrl" (click)="openLightbox(InsideImageUrl)">
           <img [src]="InsideImageUrl" class="mfd-preview-temple-img" [alt]="mandir?.MandirName" />
-          <div class="mfd-preview-tile-overlay">
-            <ion-icon name="expand-outline"></ion-icon>
-          </div>
+          <div class="mfd-preview-tile-overlay"><ion-icon name="expand-outline"></ion-icon></div>
           <div class="mfd-preview-img-label">🛕 Inside</div>
         </div>
-
-        <!-- Placeholder if no images -->
         <div class="mfd-preview-temple-img-wrap placeholder-tile" *ngIf="!FrontImageUrl && !InsideImageUrl">
           <div class="mfd-preview-temple-placeholder">🛕</div>
           <div class="mfd-preview-img-label">{{ mandir?.MandirName }}</div>
         </div>
-
-        <!-- Deity info -->
         <div class="mfd-preview-deity-wrap">
           <div class="mfd-preview-deity-icon">🙏</div>
           <div class="mfd-preview-deity-name">{{ mandir?.GodName }}</div>
           <div class="mfd-preview-deity-label">Presiding Deity</div>
-          <div class="mfd-preview-verified-badge" *ngIf="mandir?.IsVerified">
-            ✦ Verified Mandir
-          </div>
+          <div class="mfd-preview-verified-badge" *ngIf="mandir?.IsVerified">✦ Verified Mandir</div>
         </div>
-
       </div>
 
       <div class="mfd-preview-card mfd-preview-card--amount">
@@ -514,23 +478,6 @@
         <div class="mfd-preview-charges-note">* Payment gateway charges may apply</div>
       </div>
 
-
-      <!-- Mandir Address Card -->
-      <!-- <div class="mfd-preview-card">
-        <div class="mfd-preview-card-title">📍 Mandir Location</div>
-        <div class="mfd-preview-card-body">
-          <div class="mfd-preview-address" *ngIf="mandir?.Address">{{ mandir.Address }}</div>
-          <div class="mfd-preview-city" *ngIf="mandir?.City || mandir?.State">
-            {{ mandir.City }}{{ mandir.City && mandir.State ? ', ' : '' }}{{ mandir.State }}
-            {{ mandir.Pincode ? ' – ' + mandir.Pincode : '' }}
-          </div>
-          <button class="mfd-preview-maps-link" *ngIf="mandir?.Latitude && mandir?.Longitude" (click)="openMaps()">
-            🗺️ View on Google Maps
-          </button>
-        </div>
-      </div> -->
-
-      <!-- Bank Account Info -->
       <div class="mfd-preview-card mfd-preview-card--bank">
         <div class="mfd-preview-card-title">🏦 Funds Go Directly to Temple</div>
         <div class="mfd-preview-bank-row">
@@ -542,8 +489,6 @@
         </div>
       </div>
 
-
-      <!-- Caretaker (if available) -->
       <div class="mfd-preview-card" *ngIf="mandir?.PujariName">
         <div class="mfd-preview-card-title">🙏 Caretaker / Pujari</div>
         <div class="mfd-preview-card-body">
@@ -559,121 +504,56 @@
         </div>
       </div>
 
-      <!-- Refund Promise -->
-      <!-- <div class="mfd-preview-card mfd-preview-card--refund">
-        <div class="mfd-preview-card-title">🔄 Refund Promise</div>
-        <div class="mfd-preview-refund-body">
-          <div class="mfd-preview-refund-icon">🛡️</div>
-          <div>
-            <div class="mfd-preview-refund-text">If you face any payment issue, we promise a full refund within</div>
-            <div class="mfd-preview-refund-days">11 Days</div>
-            <div class="mfd-preview-refund-sub">No questions asked. Contact us within 11 days of donation.</div>
-          </div>
-        </div>
-      </div> -->
+      <div class="sec-footer">
 
-      <!-- Contact Support -->
+        <button class="mfd-cancel-btn" (click)="backToDonate()">
+          Cancel
+        </button>
+
+        <button class="mfd-preview-pay-btn" (click)="initiatePayment()" [disabled]="isDonating">
+          <span *ngIf="!isDonating">🪔 Make Secure Payment · ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0)
+            }}</span>
+          <span *ngIf="isDonating">Processing…</span>
+        </button>
+      </div>
+
+
       <div class="mfd-preview-support-strip">
-        <div class="mfd-preview-support-item" (click)="openWhatsApp()">
-          💬 Support
-        </div>
-        <!-- <div class="mfd-preview-support-item">🔄 11-Day Refund</div> -->
+        <div class="mfd-preview-support-item" (click)="openWhatsApp()">💬 Support</div>
         <div class="mfd-preview-support-item">📞 Mon–Sat 9–6 PM</div>
       </div>
 
-      <!-- Donation Summary -->
-
-      <!-- Make a wish (on preview too) -->
-      <!-- <ng-container *ngIf="!donateWish">
-        <div class="mfd-donate-label" style="padding: 0 4px 8px;">🌟 Add a Wish / Prayer</div>
-        <div class="mfd-wish-wrap">
-          <textarea class="mfd-wish-input" [(ngModel)]="donateWish" placeholder="Write your wish or prayer… 🙏" rows="2"
-            maxlength="200"></textarea>
-          <div class="mfd-wish-count">{{ donateWish.length || 0 }}/200</div>
-        </div>
-      </ng-container> -->
-
-      <!-- Donor history teaser -->
-      <!-- <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length === 0">
-        <div class="mfd-preview-honor-icon">🌟</div>
-        <div class="mfd-preview-honor-text">
-          <strong>You could be the first donor!</strong>
-          <p>Your name will be recorded in the mandir's history as the founding donor. A true blessing.</p>
-        </div>
-      </div> -->
-      <!-- <div class="mfd-preview-honor-card" *ngIf="MandirTransactionList?.length > 0">
-        <div class="mfd-preview-honor-icon">🪔</div>
-        <div class="mfd-preview-honor-text">
-          <strong>{{ MandirTransactionList.length }} people have donated</strong>
-          <p>Join this family of devotees. Your name will be listed with pride among all donors.</p>
-        </div>
-      </div> -->
-
-      <!-- Secure badges -->
       <div class="mfd-preview-secure-strip">
         <div class="mfd-preview-secure-item">🔒 Safe &amp; Secure</div>
         <div class="mfd-preview-secure-item">✦ Verified Temple</div>
         <div class="mfd-preview-secure-item">🛡️ 11-Day Refund</div>
       </div>
 
-    </div><!-- /preview-body -->
-
-    <!-- Footer with trust seals -->
-    <div class="mfd-preview-footer">
-      <!-- <div class="mfd-preview-trust-row">
-        <div class="mfd-preview-trust-item">
-          <span class="mfd-preview-trust-icon">🔒</span>
-          <span>Secure<br>Payment</span>
-        </div>
-        <div class="mfd-preview-trust-divider"></div>
-        <div class="mfd-preview-trust-item">
-          <span class="mfd-preview-trust-icon">✅</span>
-          <span>Instant<br>Receipt</span>
-        </div>
-        <div class="mfd-preview-trust-divider"></div>
-        <div class="mfd-preview-trust-item">
-          <span class="mfd-preview-trust-icon">✅</span>
-          <span>Donation<br>Recorded</span>
-        </div>
-        <div class="mfd-preview-trust-divider"></div>
-        <div class="mfd-preview-trust-item">
-          <span class="mfd-preview-trust-icon">✅</span>
-          <span>Temple<br>Verified</span>
-        </div>
-      </div> -->
-
-      <button class="mfd-preview-pay-btn" (click)="initiatePayment()" [disabled]="isDonating">
-        <span *ngIf="!isDonating">
-          🪔 Make Secure Payment · ₹{{ finalAmount + (supportMangalBhav ? platformFee : 0) }}
-        </span>
-        <span *ngIf="isDonating">Processing…</span>
-      </button>
-    </div>
-
-  </div><!-- /preview-sheet -->
-
-</ion-content>
+    </div><!-- /sec-body -->
 
 
-<div class="modal-bg" *ngIf="showDonationSuccessModal">
-  <div class="modal-wrap">
 
-    <div class="modal-header">
-      <div class="sparkles-wrap" id="sparks"></div>
+  </div><!-- /preview section -->
 
+
+  <!-- ══════════════════════════════════
+       SECTION: SUCCESS RECEIPT
+  ══════════════════════════════════ -->
+  <div *ngIf="!isLoading && mandir && currentSection === 'success'" class="sec-wrap sec-wrap--success">
+
+    <div class="sec-header sec-header--temple">
       <div class="diya-row">
         <span class="diya">🪔</span>
         <span class="diya">🙏</span>
         <span class="diya">🪔</span>
       </div>
-
       <span class="modal-god-icon">🛕</span>
       <div class="modal-title">जय श्री राम 🙏</div>
       <p class="modal-subtitle">आपका दान पुण्यकारी है।<br>May your blessings multiply a thousand-fold.</p>
-      <div class="mandir-name-banner">✦ Shri Ram Mandir, Ayodhya ✦</div>
+      <div class="mandir-name-banner">✦ {{ mandir?.MandirName }} ✦</div>
     </div>
 
-    <div class="modal-body">
+    <div class="sec-body">
 
       <div class="receipt-card">
         <div class="receipt-top">
@@ -684,7 +564,6 @@
           </div>
           <div class="receipt-diya-stamp">🪔</div>
         </div>
-
         <div class="receipt-rows">
           <div class="receipt-row">
             <span class="rr-label">Donor</span>
@@ -703,15 +582,15 @@
           <div class="receipt-divider"></div>
           <div class="receipt-row">
             <span class="rr-label">Txn ID</span>
-            <span class="rr-value" style="font-family: monospace; font-size: 11px; color: #B08050;">{{
-              successDonationData?.paymentId }}</span>
+            <span class="rr-value" style="font-family: monospace; font-size: 11px; color: #B08050;">
+              {{ successDonationData?.paymentId }}
+            </span>
           </div>
         </div>
-
         <div style="padding: 0 16px 14px;">
           <div class="wish-box">
             <span class="wish-icon">🌟</span>
-            "Bless my family with good health, peace, and prosperity. Jai Shri Ram!"
+            {{ successDonationData?.wish || donateWish || 'Your prayer has been recorded. 🙏' }}
           </div>
         </div>
       </div>
@@ -726,8 +605,10 @@
 
       <div class="honor-strip">
         <span class="honor-icon">🌟</span>
-        <div class="honor-text">You are among 12 generous souls who have blessed this mandir.<br>Your name is now part
-          of its sacred history.</div>
+        <div class="honor-text">
+          You are among {{ (MandirTransactionList?.length || 0) + 1 }} generous souls who have blessed this mandir.<br>
+          Your name is now part of its sacred history.
+        </div>
       </div>
 
       <div class="share-row">
@@ -740,11 +621,17 @@
           </svg>
           Share Seva
         </button>
-        <button class="share-btn close-btn" (click)="showDonationSuccessModal = false">Jai Shri Ram 🙏</button>
+        <button class="share-btn close-btn" (click)="backToMain()">Jai Shri Ram 🙏</button>
       </div>
+
+      <button class="sec-back-to-mandir-btn" (click)="backToMain()">
+        <ion-icon name="home-outline"></ion-icon>
+        Back to {{ mandir?.MandirName }}
+      </button>
 
       <div class="bottom-mantra">हर हर महादेव · जय माता दी · जय श्री राम</div>
 
     </div>
-  </div>
-</div>
+  </div><!-- /success section -->
+
+</ion-content>

@@ -109,99 +109,100 @@
         </button>
       </div>
     </div>
-    <!-- PANDIT LIST -->
-    <div class="pandit-list" *ngIf="!isLoading && panditProfiles.length > 0">
 
-      <p class="result-count">
+
+    <!-- PANDIT CARDS GRID -->
+    <div class="pandit-cards-grid" *ngIf="!isLoading && panditProfiles.length > 0">
+
+      <p class="result-count" style="grid-column: 1/-1;">
         {{ panditProfiles.length }} {{ t.pandit }}{{ panditProfiles.length > 1 ? 's' : '' }} available
       </p>
 
-      <div class="pandit-card" *ngFor="let pandit of panditProfiles">
+      <div class="pandit-card" *ngFor="let pandit of panditProfiles" (click)="openPanditModal(pandit)">
 
-        <div class="pandit-top-row">
+        <!-- ✅ Verified stamp (same SVG as find-pandit) -->
+        <div class="card-stamp-wrap" *ngIf="pandit.VerificationStatus === 'APPROVED'">
+          <svg class="card-stamp-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <path id="topArc-{{pandit.UserID}}" d="M 80,80 m -55,0 a 55,55 0 0,1 110,0" />
+              <path id="botArc-{{pandit.UserID}}" d="M 80,80 m  55,0 a 55,55 0 0,1 -110,0" />
+            </defs>
+            <circle cx="80" cy="80" r="72" fill="none" stroke="#b85c00" stroke-width="3" />
+            <circle cx="80" cy="80" r="65" fill="none" stroke="#b85c00" stroke-width="1" stroke-dasharray="4 3" />
+            <circle cx="80" cy="80" r="51" fill="none" stroke="#b85c00" stroke-width="1.5" />
+            <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+              <textPath [attr.href]="'#topArc-' + pandit.UserID" startOffset="50%" text-anchor="middle">MANGAL BHAV
+              </textPath>
+            </text>
+            <text font-family="serif" font-size="11" font-weight="700" fill="#b85c00" letter-spacing="4">
+              <textPath [attr.href]="'#botArc-' + pandit.UserID" startOffset="50%" text-anchor="middle">MANGAL BHAV
+              </textPath>
+            </text>
+            <text x="80" y="72" text-anchor="middle" font-family="serif" font-size="20" font-weight="700"
+              fill="#b85c00">ॐ</text>
+            <text x="80" y="88" text-anchor="middle" font-family="serif" font-size="12" font-weight="700" fill="#b85c00"
+              letter-spacing="3">VERIFIED</text>
+            <line x1="54" y1="93" x2="106" y2="93" stroke="#b85c00" stroke-width="0.8" />
+            <text x="80" y="103" text-anchor="middle" font-family="serif" font-size="7.5" fill="#b85c00"
+              letter-spacing="2">SACRED PLACE</text>
+          </svg>
+        </div>
 
-          <div class="pandit-photo-wrap">
-            <img [src]="getProfileImage(pandit.UserID)" class="pandit-photo" />
-          </div>
+        <!-- ✅ Cover Banner -->
+        <div class="card-cover">
+          <div class="card-cover-pattern"></div>
+        </div>
 
-          <div class="pandit-headline">
-            <div class="pandit-name-row">
-              <h3 class="pandit-name clickable-name" style="text-transform: capitalize;" (click)="openPanditModal(pandit)">
-                {{ pandit.FullName || 'Pandit Ji' }}
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </h3>
-              <span class="verified-pill" *ngIf="pandit.VerificationStatus === 'APPROVED'">
-                {{ t.verifiedBadge }}
-              </span>
-              <span class="unverified-pill" *ngIf="pandit.VerificationStatus !== 'APPROVED'">
-                {{ t.pendingBadge }}
-              </span>
+        <!-- ✅ Avatar -->
+        <div class="card-avatar-wrap">
+          <div class="card-avatar-ring" [class.verified-ring]="pandit.VerificationStatus === 'APPROVED'">
+            <div class="card-avatar-initials" *ngIf="!getProfileImage(pandit.UserID)">
+              {{ pandit.FullName?.charAt(0) || '🙏' }}
             </div>
-
-            <div class="pandit-meta">
-              <span class="meta-chip">
-                <ion-icon name="person-outline"></ion-icon>
-                {{ pandit.Gender || 'Male' }}
-              </span>
-              <span class="meta-chip">
-                <ion-icon name="time-outline"></ion-icon>
-                {{ pandit.ExperienceYears || '5+' }} {{ t.yrsExp }}
-              </span>
-              <span class="meta-chip">
-                <ion-icon name="language-outline"></ion-icon>
-                {{ pandit.Languages || 'Hindi' }}
-              </span>
-            </div>
-
-            <!-- Still fetching -->
-            <div class="pandit-location-row muted" *ngIf="locationLoadingPending">
-              <ion-icon name="location-outline"></ion-icon>
-              <span>Loading...</span>
-            </div>
-
-            <!-- Loaded with data -->
-            <div class="pandit-location-row" *ngIf="!locationLoadingPending && panditLocationMap[pandit.UserID]">
-              <ion-icon name="location-outline"></ion-icon>
-              <span>
-                {{ panditLocationMap[pandit.UserID]?.Name }}
-                <ng-container *ngIf="panditLocationMap[pandit.UserID]?.City">
-                  , {{ panditLocationMap[pandit.UserID]?.City }}
-                </ng-container>
-              </span>
-            </div>
-
-            <!-- Loaded but no location -->
-            <div class="pandit-location-row muted" *ngIf="!locationLoadingPending && !panditLocationMap[pandit.UserID]">
-              <ion-icon name="location-outline"></ion-icon>
-              <span>India</span>
-            </div>
-
+            <img *ngIf="getProfileImage(pandit.UserID)" [src]="getProfileImage(pandit.UserID)" class="card-avatar-img"
+              (error)="onImgError($event)" />
           </div>
         </div>
 
-        <!-- Bio -->
-        <!-- <p class="pandit-bio">
-          {{ pandit.Bio || 'Experienced Vedic Pandit available for all sacred rituals and ceremonies at your home.' }}
-        </p> -->
+        <!-- ✅ Card Body -->
+        <div class="card-body">
 
-        <div class="pandit-divider"></div>
-
-        <div class="pandit-bottom-row">
-          <div class="pandit-details">
-            <div class="detail-item">
-              <span class="detail-label">{{ t.dakshina }}</span>
-              <span class="detail-value price">
-                ₹{{ pandit.ServicePrice || pandit.BasePrice || 1100 }}
-              </span>
-            </div>
+          <div class="card-name-row">
+            <h3 class="card-name" style="text-transform: capitalize;">
+              {{ pandit.FullName || 'Pandit Ji' }}
+            </h3>
           </div>
-          <button class="book-now-btn" (click)="bookNow(pandit)">
-            {{ t.bookNow }}
-          </button>
-        </div>
 
+          <!-- Chips -->
+          <div class="card-chips">
+            <span class="card-chip exp">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ pandit.ExperienceYears ? pandit.ExperienceYears + ' yrs exp' : '5+ yrs exp' }}
+            </span>
+            <span class="card-chip lang">
+              <ion-icon name="language-outline"></ion-icon>
+              {{ (pandit.Languages | slice:0:14) || 'Hindi' }}
+            </span>
+            <span class="card-chip loc">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ panditLocationMap[pandit.UserID]?.City || 'India' }}
+            </span>
+          </div>
+
+          <!-- Divider -->
+          <div class="card-divider"></div>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <span></span>
+            <button class="card-cta-btn" (click)="bookNow(pandit); $event.stopPropagation()">
+              Book Now
+            </button>
+            <span></span>
+          </div>
+
+        </div>
       </div>
-
     </div>
     <!-- Remove the load-more-wrap div entirely, add this at the bottom of ion-content, just before closing </div> of page-wrap -->
 

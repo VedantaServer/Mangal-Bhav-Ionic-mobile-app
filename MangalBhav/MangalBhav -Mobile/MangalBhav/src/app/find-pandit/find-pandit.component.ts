@@ -295,6 +295,7 @@ export class FindPanditComponent implements OnInit {
   openPanditModal(item: any) {
     this.activePandit = item;
     this.activePanditServices = item.panditServices || [];
+    this.lightboxImageUrl = null;
     this.isPanditModalOpen = true;
 
     if (!item._servicesLoaded) {
@@ -390,7 +391,13 @@ export class FindPanditComponent implements OnInit {
   }
 
   openQrScanner() { this.isScannerOpen = true; }
-  closeQrScanner() { this.isScannerOpen = false; }
+  closeQrScanner() { 
+    
+    this.isScannerOpen = false; 
+  
+    this.loadPanditProfiles(`1=1 ORDER BY U.UserID DESC`);
+
+  }
 
   onScanSuccess(result: string) {
     this.scannedQrData = result;

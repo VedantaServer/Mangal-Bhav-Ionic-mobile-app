@@ -43,6 +43,7 @@ import { MandirfulldetailsComponent } from './mandirfulldetails/mandirfulldetail
 import { PanditFulldetailsComponent } from './pandit-fulldetails/pandit-fulldetails.component';
 import { DeleteAccountComponent } from './delete-account/delete-account.component';
 import { MytransactionComponent } from './mytransaction/mytransaction.component';
+import { MandirLedgerComponent } from './mandir-ledger/mandir-ledger.component';
 
 const routes: Routes = [
 
@@ -267,6 +268,12 @@ const routes: Routes = [
   {
     path: 'mytransaction',
     component: MytransactionComponent // directly use the standalone component
+  }
+
+  ,
+  {
+    path: 'mandirledger',
+    component: MandirLedgerComponent // directly use the standalone component
   }
 
 

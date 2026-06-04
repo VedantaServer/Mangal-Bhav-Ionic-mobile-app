@@ -1,17 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonContent, IonicModule, NavController, Platform } from '@ionic/angular';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { IonicModule, NavController, Platform } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
-import { Browser } from '@capacitor/browser';
-import { App } from '@capacitor/app';
 import { Storage } from '@ionic/storage-angular';
-import { firstValueFrom } from 'rxjs';
-import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ValueLookUpComponent } from 'src/components/value-look-up/value-look-up';
-import { IndiaDateComponent } from 'src/components/india-date/india-date';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -19,33 +13,69 @@ import { Router } from '@angular/router';
   selector: 'app-panditjibottomtabs',
   templateUrl: './panditjibottomtabs.component.html',
   styleUrls: ['./panditjibottomtabs.component.scss'],
-   standalone: true,
+  standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class PanditjibottomtabsComponent  implements OnInit {
+export class PanditjibottomtabsComponent implements OnInit {
   userDetails: any;
+  profilePhotoUrl: string = 'assets/user.png';  // ← add this
 
-  constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
-    public api: Api, private router: Router,
-    public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient){
-   
-  }
-
+  constructor(
+    private alertCtrl: AlertController,
+    private storage: Storage,
+    public apinu: ApiNU,
+    public api: Api,
+    private router: Router,
+    public platform: Platform,
+    private common: CommonProvider,
+    public routerCtrl: NavController,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef  // ← add this
+  ) {}
 
   async ngOnInit() {
-       this.userDetails = await this.storage.get("account");
+    await this.storage.create();
+    this.userDetails = await this.storage.get("account");
+
+    if (!this.userDetails?.UserID) return;
+
+    this.apinu.postUrlData(
+      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.ProfileList && res.ProfileList.length > 0) {
+        const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
+        if (rawUrl) {
+          this.loadProfileImage(rawUrl);  // ← load as blob
+        }
+      }
+    });
   }
 
+  loadProfileImage(imageName: string) {
+    this.api.getImage('DownloadImages', {
+      imageName: imageName,
+      imagePurpose: 'ProfilePhoto'
+    }).subscribe({
+      next: (blob: any) => {
+        if (blob?.type?.startsWith('image/')) {
+          this.profilePhotoUrl = URL.createObjectURL(blob);
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error loading profile image:', err);
+        this.profilePhotoUrl = 'assets/user.png';
+      }
+    });
+  }
 
-    openPage(pageName: any) {
+  openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
-    async action4() {
-    console.log('Location clicked');
+  async action4() {
     await localStorage.setItem('findPanditThroghtFloating', 'findPanditThroghtFloating');
-
     this.routerCtrl.navigateForward(`/find-pandit`);
-
   }
 }

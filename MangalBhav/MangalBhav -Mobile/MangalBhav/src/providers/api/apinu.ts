@@ -18,7 +18,7 @@ export class ApiNU {
 
 
   //public baseURL: string='https://nu.vedantaerpserver.com/';
-  public baseURL: string = 'https://mangalbhav.com/';
+  public baseURL: string = 'https://app.mangalbhav.com/';
   // public baseURL: string = 'https://localhost:44305/';
 
   httpClient: any;
