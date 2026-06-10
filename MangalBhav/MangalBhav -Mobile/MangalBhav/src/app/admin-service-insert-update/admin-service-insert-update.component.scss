@@ -1,0 +1,142 @@
+:host {
+    --theme-primary: #ff9800;
+    --theme-dark: #e65100;
+    --theme-bg: #fffaf1;
+  }
+  
+  ion-content {
+    --background: var(--theme-bg);
+  }
+  
+  .top-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+  }
+  
+  .top-tabs button {
+    flex: 1;
+    border: none;
+    height: 44px;
+    border-radius: 12px;
+    background: white;
+    color: #666;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  }
+  
+  .top-tabs button.active {
+    background: linear-gradient(
+      135deg,
+      var(--theme-primary),
+      var(--theme-dark)
+    );
+  
+    color: white;
+  }
+  
+  .admin-card {
+    background: white;
+    margin: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.05);
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--theme-dark);
+    margin-bottom: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 14px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+  }
+  
+  .form-control {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #fafafa;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+  
+  textarea.form-control {
+    min-height: 90px;
+  }
+  
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .save-btn {
+    flex: 1;
+    height: 46px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(
+      135deg,
+      #ff9800,
+      #e65100
+    );
+  
+    color: white;
+    font-weight: 700;
+  }
+  
+  .cancel-btn {
+    width: 110px;
+    border: none;
+    border-radius: 12px;
+    background: #ececec;
+  }
+  
+  .list-card {
+    margin-top: 20px;
+    border: 1px solid #f0f0f0;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  
+  .list-item {
+    padding: 14px;
+    border-bottom: 1px solid #f2f2f2;
+  
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .list-item:last-child {
+    border-bottom: none;
+  }
+  
+  .item-title {
+    font-weight: 600;
+  }
+  
+  .item-subtitle {
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .edit-btn {
+    border: none;
+    background: #fff3e0;
+    color: #ff9800;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }

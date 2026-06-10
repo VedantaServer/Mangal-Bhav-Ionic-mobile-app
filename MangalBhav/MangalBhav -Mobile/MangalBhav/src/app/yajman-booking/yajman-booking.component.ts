@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 
 @Component({
@@ -15,7 +15,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './yajman-booking.component.html',
   styleUrls: ['./yajman-booking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule, IonicModule, PanditjibottomtabsComponent]
 })
 export class YajmanBookingComponent implements OnInit {
   userDetails: any;

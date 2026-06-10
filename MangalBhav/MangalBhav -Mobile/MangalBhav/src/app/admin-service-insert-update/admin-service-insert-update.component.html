@@ -1,0 +1,269 @@
+<ion-header>
+  <ion-toolbar color="warning">
+
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>
+      Pooja Management
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="top-tabs">
+
+    <button [class.active]="selectedTab=='CATEGORY'" (click)="selectedTab='CATEGORY'">
+
+      Categories
+
+    </button>
+
+    <button [class.active]="selectedTab=='SERVICE'" (click)="selectedTab='SERVICE'">
+
+      Services
+
+    </button>
+
+    <button [class.active]="selectedTab=='MAPPING'" (click)="selectedTab='MAPPING'">
+
+      Mapping
+
+    </button>
+
+  </div>
+
+
+
+  <div *ngIf="selectedTab == 'CATEGORY'">
+
+    <ion-item>
+      <ion-input placeholder="Category Name" [(ngModel)]="Category.CategoryName">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input placeholder="Category Name Hindi" [(ngModel)]="Category.CategoryName_HI">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea placeholder="Description" [(ngModel)]="Category.Description">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea placeholder="Description Hindi" [(ngModel)]="Category.Description_HI">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-input type="number" placeholder="Minimum Age" [(ngModel)]="Category.MinAge">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input type="number" placeholder="Maximum Age" [(ngModel)]="Category.MaxAge">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input placeholder="Age Text" [(ngModel)]="Category.AgeText">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-select placeholder="Gender" [(ngModel)]="Category.Gender">
+
+        <ion-select-option value="Male">
+          Male
+        </ion-select-option>
+
+        <ion-select-option value="Female">
+          Female
+        </ion-select-option>
+
+        <ion-select-option value="All">
+          All
+        </ion-select-option>
+
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-input placeholder="Ritual Type" [(ngModel)]="Category.RitualType">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Life Event</ion-label>
+      <ion-toggle [(ngModel)]="Category.IsLifeEvent">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Festival Related</ion-label>
+      <ion-toggle [(ngModel)]="Category.IsFestivalRelated">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-button expand="block" (click)="saveCategory()">
+      {{ Category.CategoryID > 0 ? 'Update Category' : 'Save Category' }}
+    </ion-button>
+
+
+    <div class="list-card">
+
+      <div class="list-item" *ngFor="let item of poojaCategoryList">
+
+        <div>
+
+          <div class="item-title">
+            {{item.CategoryName}}
+          </div>
+
+          <div class="item-subtitle">
+            {{item.RitualType}}
+          </div>
+
+        </div>
+
+        <button class="edit-btn" (click)="editCategory(item)">
+
+          Edit
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SERVICE -->
+  <div *ngIf="selectedTab == 'SERVICE'">
+
+    <ion-item>
+      <ion-input placeholder="Service Name" [(ngModel)]="Service.Name">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea placeholder="Description" [(ngModel)]="Service.Description">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-input type="number" placeholder="Duration Minutes" [(ngModel)]="Service.DurationMinutes">
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Active</ion-label>
+      <ion-toggle [(ngModel)]="Service.IsActive">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-button expand="block" (click)="saveService()">
+      {{ Service.ServiceID > 0 ? 'Update Service' : 'Save Service' }}
+    </ion-button>
+
+    <div class="list-card">
+
+      <div class="list-item" *ngFor="let item of poojaServiceList">
+
+        <div>
+
+          <div class="item-title">
+            {{item.Name}}
+          </div>
+
+          <div class="item-subtitle">
+            {{item.DurationMinutes}} mins
+          </div>
+
+        </div>
+
+        <button class="edit-btn" (click)="editService(item)">
+
+          Edit
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <!-- MAPPING -->
+  <div *ngIf="selectedTab == 'MAPPING'">
+
+    <ion-item>
+
+      <ion-select placeholder="Select Category" [(ngModel)]="Mapping.CategoryID">
+
+        <ion-select-option *ngFor="let c of poojaCategoryList" [value]="c.CategoryID">
+
+          {{c.CategoryName}}
+
+        </ion-select-option>
+
+      </ion-select>
+
+    </ion-item>
+
+    <ion-item>
+
+      <ion-select placeholder="Select Service" [(ngModel)]="Mapping.ServiceID">
+
+        <ion-select-option *ngFor="let s of poojaServiceList" [value]="s.ServiceID">
+
+          {{s.Name}}
+
+        </ion-select-option>
+
+      </ion-select>
+
+    </ion-item>
+
+    <ion-button expand="block" (click)="saveMapping()">
+      {{ Mapping.MappingID > 0 ? 'Update Mapping' : 'Map Service' }}
+    </ion-button>
+
+    <div class="list-card">
+
+      <div class="list-item" *ngFor="let item of mappingList">
+
+        <div>
+          <div class="item-title">
+            {{item.CategoryName}}
+          </div>
+
+          <div class="item-subtitle">
+            → {{item.ServiceName}}
+          </div>
+
+        </div>
+
+        <button class="edit-btn" (click)="editMapping(item)">
+
+          Edit
+
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>

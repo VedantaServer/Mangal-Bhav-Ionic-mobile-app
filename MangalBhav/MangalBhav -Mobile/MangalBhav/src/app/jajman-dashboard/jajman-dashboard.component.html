@@ -66,7 +66,16 @@
         <span>{{ t.myTransactions }}</span>
       </div>
 
+      <div class="dash-card" (click)="openPage('myfamily')">
+        <div class="dash-icon">👨‍👩‍👧‍👦</div>
+        <span>{{ t.myFamily }}</span>
+      </div>
 
+      <div class="dash-card" (click)="openPage('my-mandirs')">
+        <div class="dash-icon">🛕</div>
+        <span>{{ t.myMandirs }}</span>
+      </div>
+      
 
     </div>
 
@@ -89,7 +98,7 @@
 
 
     <div class="social-share-section">
-      <p class="social-share-label">{{ t.followUs }}</p>
+      <!-- <p class="social-share-label">{{ t.followUs }}</p> -->
       <div class="social-share-row">
     
         <button class="social-btn facebook" (click)="followOn('facebook')">
@@ -103,8 +112,8 @@
         </button>
     
         <button class="social-btn linkedin" (click)="followOn('linkedin')">
-          <img src="assets/linkdin.webp" class="social-icon" />
-          <span>LinkedIn</span>
+          <img src="assets/youtube.jpg" class="social-icon" />
+          <span>Youtube</span>
         </button>
     
       </div>
@@ -116,5 +125,6 @@
 
 
 
-
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+<app-common-bottom-tabs
+  *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs>

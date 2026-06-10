@@ -131,9 +131,7 @@
 
 
     <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($event)">
-      <ion-infinite-scroll-content
-        loadingSpinner="crescent"
-        loadingText="Loading more mandirs...">
+      <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more mandirs...">
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>
 
@@ -285,10 +283,10 @@
 
         <div class="mandir-form-row">
           <div class="mandir-form-group full">
-            <label>UPI ID</label>
+            <!-- <label>UPI ID</label> -->
 
             <!-- Existing UPI shown -->
-            <div *ngIf="bankDetails && !showBankForm"
+            <!-- <div *ngIf="bankDetails && !showBankForm"
               style="display:flex; align-items:center; justify-content:space-between; border:1px solid var(--ion-color-medium); border-radius:8px; padding: 8px 12px;">
               <span style="font-size:15px;">{{ bankDetails.UPIId }}</span>
               <button
@@ -296,10 +294,25 @@
                 (click)="showBankForm = true">
                 Edit
               </button>
+            </div> -->
+            <div *ngIf="bankDetails && !showBankForm" class="bank-summary">
+
+              <div><strong>Account Holder:</strong> {{ bankDetails.AccountHolderName }}</div>
+              <div><strong>Bank:</strong> {{ bankDetails.BankName }}</div>
+              <div><strong>Account No:</strong> {{ bankDetails.AccountNumber }}</div>
+              <div><strong>IFSC:</strong> {{ bankDetails.IFSCCode }}</div>
+              <div><strong>Branch:</strong> {{ bankDetails.BranchName }}</div>
+              <div><strong>Account Type:</strong> {{ bankDetails.AccountType }}</div>
+              <div><strong>UPI:</strong> {{ bankDetails.UPIId }}</div>
+
+              <button class="edit-bank-btn" (click)="showBankForm = true">
+                Edit
+              </button>
+
             </div>
 
             <!-- Add / Edit UPI form -->
-            <div *ngIf="showBankForm" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- <div *ngIf="showBankForm" style="display:flex; flex-direction:column; gap:10px;">
               <input type="text" [(ngModel)]="upiId" placeholder="e.g. mandirname@upi" />
               <div style="display:flex; gap:8px;">
                 <button class="mandir-submit-btn" style="flex:1; font-size:14px;" (click)="saveBankDetails()">
@@ -310,12 +323,96 @@
                   Cancel
                 </button>
               </div>
-            </div>
+            </div> -->
+            <div *ngIf="showBankForm" class="bank-form">
 
+              <input type="text" [(ngModel)]="accountHolderName" placeholder="Account Holder Name" />
+
+              <input type="text" [(ngModel)]="bankName" placeholder="Bank Name" />
+
+              <input type="text" [(ngModel)]="accountNumber" placeholder="Account Number" />
+
+              <input type="text" [(ngModel)]="ifscCode" placeholder="IFSC Code" />
+
+              <input type="text" [(ngModel)]="branchName" placeholder="Branch Name" />
+
+              <input type="text" [(ngModel)]="accountType" placeholder="Account Type (Savings / Current)" />
+
+              <input type="text" [(ngModel)]="upiId" placeholder="UPI ID" />
+
+              <div class="bank-buttons">
+                <button class="mandir-submit-btn" (click)="saveBankDetails()">
+                  {{ bankDetails ? 'Update Bank Details' : 'Save Bank Details' }}
+                </button>
+
+                <button *ngIf="bankDetails" class="mandir-cancel-btn" (click)="showBankForm = false">
+                  Cancel
+                </button>
+              </div>
+
+            </div>
           </div>
         </div>
       </ng-container>
+      <ng-container *ngIf="isEditMode">
+        <div class="mandir-form-section-label">
+          Social Media Profiles
+        </div>
 
+        <div class="social-card" *ngFor="let item of socialMediaList">
+
+          <div class="social-header">
+
+            <div class="social-left">
+
+              <ion-icon [name]="getPlatformIcon(item.Platform)">
+              </ion-icon>
+
+              <div>
+
+                <div class="platform-name">
+                  {{item.Platform}}
+                </div>
+
+                <div class="platform-user">
+                  {{item.Username}}
+                </div>
+
+                <div class="platform-link">
+                  {{item.Link}}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="social-actions">
+
+            <button class="social-edit-btn" (click)="editSocialMedia(item)">
+
+              Edit
+
+            </button>
+<!-- 
+            <button class="social-delete-btn" (click)="deleteSocialMedia(item)">
+
+              Delete
+
+            </button> -->
+
+          </div>
+
+        </div>
+
+        <button class="add-social-btn" (click)="openAddSocialMedia()">
+
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Add Social Media
+
+        </button>
+      </ng-container>
 
       <!-- Added By -->
       <div class="mandir-form-section-label">Added By</div>
@@ -397,3 +494,75 @@
 
   </div>
 </ion-content>
+
+
+<div class="mandir-modal-backdrop" [class.active]="showSocialMediaForm">
+</div>
+
+<div class="mandir-modal" [class.active]="showSocialMediaForm">
+
+  <div class="mandir-modal-header">
+
+    <div class="mandir-modal-title">
+      Social Media Profile
+    </div>
+
+    <button class="mandir-modal-close" (click)="showSocialMediaForm=false">
+
+      ✕
+
+    </button>
+
+  </div>
+
+  <div class="mandir-modal-body">
+
+    <div class="mandir-form-group">
+
+      <label>Platform</label>
+
+      <select [(ngModel)]="socialMedia.Platform">
+
+        <option *ngFor="let p of platforms" [value]="p">
+
+          {{p}}
+
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="mandir-form-group">
+
+      <label>Username</label>
+
+      <input [(ngModel)]="socialMedia.Username">
+
+    </div>
+
+    <div class="mandir-form-group">
+
+      <label>Display Name</label>
+
+      <input [(ngModel)]="socialMedia.DisplayName">
+
+    </div>
+
+    <div class="mandir-form-group">
+
+      <label>Link</label>
+
+      <input [(ngModel)]="socialMedia.Link">
+
+    </div>
+
+    <button class="mandir-submit-btn" (click)="saveSocialMedia()">
+
+      Save
+
+    </button>
+
+  </div>
+
+</div>

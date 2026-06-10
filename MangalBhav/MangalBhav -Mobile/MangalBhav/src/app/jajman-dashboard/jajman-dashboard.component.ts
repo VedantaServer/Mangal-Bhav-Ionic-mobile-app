@@ -16,13 +16,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-jajman-dashboard',
   templateUrl: './jajman-dashboard.component.html',
   styleUrls: ['./jajman-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, JajmanbottomtabsComponent, TabscommonheaderComponent]
+  imports: [CommonModule, IonicModule, FormsModule, CommonBottomTabsComponent,JajmanbottomtabsComponent, TabscommonheaderComponent]
 })
 export class JajmanDashboardComponent implements OnInit {
   userDetails: any;
@@ -32,6 +33,7 @@ export class JajmanDashboardComponent implements OnInit {
   pendingPanditServiceID: any;
   labels = {
     en: {
+      myFamily: 'My Family',
       greeting: 'Namaste 🙏',
       greetingTitle: "Let's Plan Your Next Puja",
       followUs: 'Follow us on social media',
@@ -44,9 +46,12 @@ export class JajmanDashboardComponent implements OnInit {
       explore: 'Explore Life',
       me: 'Me',
       myTransactions: 'My Transactions',
+      myMandirs: 'My Mandirs',
     },
 
     hi: {
+      myFamily: 'मेरा परिवार',
+      myMandirs: 'मेरे मंदिर',
       myTransactions: 'मेरे लेन-देन',
       greeting: 'नमस्ते 🙏',
       greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
@@ -184,10 +189,12 @@ export class JajmanDashboardComponent implements OnInit {
   }
 
   followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
+
+    
     const urls: any = {
-      facebook:  'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
-      instagram: 'https://www.instagram.com/mangalbhav',  // 🔁 your handle
-      linkedin:  'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
+      facebook:  'https://www.facebook.com/profile.php?id=61575446319952',   // 🔁 your page URL
+      instagram: 'https://www.instagram.com/mangal_bhav_official/',  // 🔁 your handle
+      linkedin:  'https://www.youtube.com/@mangal_bhav_official' // 🔁 your company page
     };
     Browser.open({ url: urls[platform] });
   }

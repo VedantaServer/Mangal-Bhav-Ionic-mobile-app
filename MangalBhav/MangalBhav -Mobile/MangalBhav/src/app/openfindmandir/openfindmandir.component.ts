@@ -13,6 +13,7 @@ import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbo
 import { Router } from '@angular/router';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { Capacitor } from '@capacitor/core';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-openfindmandir',
@@ -27,7 +28,7 @@ import { Capacitor } from '@capacitor/core';
     TabscommonheaderComponent,
     JajmanbottomtabsComponent,
     PanditjibottomtabsComponent,
-    LoggedoutbottomtabsComponent
+    LoggedoutbottomtabsComponent,CommonBottomTabsComponent
   ]
 })
 export class OpenfindmandirComponent implements OnInit {
@@ -512,7 +513,7 @@ export class OpenfindmandirComponent implements OnInit {
   
     let mandirId: string | null = null;
   
-    // Format 1: full URL — https://mangalbhav.com/mandirfulldetails/123
+    // Format 1: full URL — https://app.mangalbhav.com/mandirfulldetails/123
     const urlMatch = result.match(/mandirfulldetails\/(\d+)/);
     if (urlMatch && urlMatch[1]) {
       mandirId = urlMatch[1];

@@ -137,7 +137,7 @@
   </div>
 
   <!-- FAB -->
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed" style="margin-bottom: 5vh;">
     <ion-fab-button class="fab-add" (click)="openModal()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
@@ -332,11 +332,33 @@
 
           <!-- SAVE BUTTON -->
           <div class="modal-footer">
-            <ion-button expand="block" class="save-btn" (click)="save()">
-              <ion-icon [name]="isEditMode ? 'checkmark-circle-outline' : 'add-circle-outline'" slot="start">
+
+            <!-- Show only in Create Mode -->
+            <ion-item lines="none" *ngIf="!isEditMode" class="terms-item">
+              <ion-checkbox
+                slot="start"
+                [(ngModel)]="agreeToCharges">
+              </ion-checkbox>
+            
+              <ion-label class="terms-label">
+                I agree that Mangal Bhav will charge ₹21 for every booking.
+              </ion-label>
+            </ion-item>
+          
+            <ion-button
+              expand="block"
+              class="save-btn"
+              (click)="save()"
+              [disabled]="!isEditMode && !agreeToCharges">
+          
+              <ion-icon
+                [name]="isEditMode ? 'checkmark-circle-outline' : 'add-circle-outline'"
+                slot="start">
               </ion-icon>
+          
               {{ isEditMode ? t.updateService : t.createService }}
             </ion-button>
+          
           </div>
 
         </div>
@@ -347,7 +369,7 @@
 
 </ion-content>
 
-<app-panditjibottomtabs></app-panditjibottomtabs>
+<!-- <app-panditjibottomtabs></app-panditjibottomtabs> -->
 
 
 

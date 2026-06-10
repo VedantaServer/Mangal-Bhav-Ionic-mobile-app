@@ -1,0 +1,257 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">My family</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+
+
+<ion-content [scrollEvents]="true">
+
+  <!-- ═══ LOADING ═══ -->
+  <div class="loading-state" *ngIf="loading">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <span>लोड हो रहा है...</span>
+  </div>
+
+  <!-- ═══ NO FAMILY STATE ═══ -->
+  <div class="empty-state" *ngIf="!loading && !family">
+    <div class="empty-bg-om">ॐ</div>
+    <div class="empty-inner">
+      <div class="empty-icon-wrap">
+        <div class="empty-icon">🏠</div>
+        <div class="empty-icon-ring"></div>
+      </div>
+      <h2 class="empty-title">मंगल परिवार</h2>
+      <p class="empty-sub">Join your family on Mangal Bhav — celebrate pujas, festivals & prayers together.</p>
+
+      <div class="choice-row">
+        <button class="choice-btn primary" (click)="showCreateForm = true">
+          <span class="choice-icon">🏠</span>
+          <span class="choice-label">परिवार बनाएं</span>
+          <span class="choice-sub">Create Family</span>
+        </button>
+        <button class="choice-btn secondary" (click)="openJoinScanner()">
+          <span class="choice-icon">📷</span>
+          <span class="choice-label">जुड़ें</span>
+          <span class="choice-sub">Scan & Join</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CREATE FAMILY FORM (bottom sheet) ═══ -->
+  <div class="sheet-overlay" *ngIf="showCreateForm" (click)="showCreateForm = false">
+    <div class="sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">🏠 परिवार बनाएं</span>
+        <button class="sheet-close" (click)="showCreateForm = false">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div class="form-group">
+          <label class="form-label">परिवार का नाम <span class="req">*</span></label>
+          <input class="form-input" [(ngModel)]="newFamily.FamilyName" placeholder="e.g. Sharma Parivar" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">विवरण</label>
+          <textarea class="form-input form-textarea" [(ngModel)]="newFamily.FamilyDescription"
+                    placeholder="About your family..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">पता / Address</label>
+          <input class="form-input" [(ngModel)]="newFamily.FamilyAddress" placeholder="City, State" />
+        </div>
+        <button class="submit-btn" (click)="createFamily()" [disabled]="creating">
+          <ion-spinner name="crescent" *ngIf="creating" color="light"></ion-spinner>
+          <span *ngIf="!creating">🚩 परिवार बनाएं</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ QR SCANNER SHEET ═══ -->
+  <div class="sheet-overlay" *ngIf="showScanner" (click)="closeScanner()">
+    <div class="sheet scanner-sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">📷 QR स्कैन करें</span>
+        <button class="sheet-close" (click)="closeScanner()">✕</button>
+      </div>
+      <div class="scanner-body">
+        <div class="scanner-frame-wrap">
+          <video #scannerVideo class="scanner-video" autoplay playsinline></video>
+          <div class="scanner-frame">
+            <div class="sf-corner tl"></div>
+            <div class="sf-corner tr"></div>
+            <div class="sf-corner bl"></div>
+            <div class="sf-corner br"></div>
+            <div class="sf-laser"></div>
+          </div>
+          <canvas #scannerCanvas style="display:none"></canvas>
+        </div>
+        <p class="scanner-hint">परिवार के QR कोड को frame में रखें</p>
+        <div class="scanner-error" *ngIf="scannerError">{{ scannerError }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FAMILY PREVIEW SHEET (after scan / manual ID) ═══ -->
+  <div class="sheet-overlay" *ngIf="showJoinPreview && joinPreviewFamily" (click)="showJoinPreview = false">
+    <div class="sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">🚩 परिवार में जुड़ें</span>
+        <button class="sheet-close" (click)="showJoinPreview = false">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div class="preview-card">
+          <div class="preview-icon">🏠</div>
+          <div class="preview-name">{{ joinPreviewFamily.FamilyName }}</div>
+          <div class="preview-desc" *ngIf="joinPreviewFamily.FamilyDescription">
+            {{ joinPreviewFamily.FamilyDescription }}
+          </div>
+          <div class="preview-addr" *ngIf="joinPreviewFamily.FamilyAddress">
+            📍 {{ joinPreviewFamily.FamilyAddress }}
+          </div>
+          <div class="preview-stats">
+            <span>👥 {{ joinPreviewMemberCount }} सदस्य</span>
+            <span>🆔 ID: {{ joinPreviewFamily.FamilyID }}</span>
+          </div>
+        </div>
+        <div class="already-member-msg" *ngIf="alreadyMember">
+          ✅ आप पहले से इस परिवार के सदस्य हैं।
+        </div>
+        <button class="submit-btn" *ngIf="!alreadyMember"
+                (click)="joinFamily()" [disabled]="joining">
+          <ion-spinner name="crescent" *ngIf="joining" color="light"></ion-spinner>
+          <span *ngIf="!joining">🙏 परिवार में जुड़ें · Join Family</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FAMILY DASHBOARD ═══ -->
+  <div class="family-dash" *ngIf="!loading && family">
+
+    <!-- Family Hero -->
+    <div class="family-hero">
+      <div class="fh-bg-om">ॐ</div>
+      <div class="fh-diya d1">🪔</div>
+      <div class="fh-diya d2">🪔</div>
+      <div class="fh-inner">
+        <div class="fh-icon">🏠</div>
+        <h1 class="fh-name">{{ family.FamilyName }}</h1>
+        <p class="fh-desc" *ngIf="family.FamilyDescription">{{ family.FamilyDescription }}</p>
+        <p class="fh-addr" *ngIf="family.FamilyAddress">
+          <ion-icon name="location-outline"></ion-icon> {{ family.FamilyAddress }}
+        </p>
+        <div class="fh-stats">
+          <div class="fh-stat">
+            <div class="fh-stat-val">{{ members.length }}</div>
+            <div class="fh-stat-lbl">सदस्य</div>
+          </div>
+          <div class="fh-stat-div"></div>
+          <div class="fh-stat">
+            <div class="fh-stat-val">{{ MangalMudraPoints }}</div>
+            <div class="fh-stat-lbl">Mangal Points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Row -->
+    <div class="action-row">
+      <!-- WhatsApp Invite -->
+      <div class="action-card whatsapp" (click)="inviteOnWhatsApp()">
+        <div class="ac-icon">💚</div>
+        <div class="ac-text">
+          <div class="ac-title">WhatsApp Invite</div>
+          <div class="ac-sub">लिंक भेजें</div>
+        </div>
+      </div>
+      <!-- Show QR -->
+      <div class="action-card qr" (click)="showFamilyQR()">
+        <div class="ac-icon">📲</div>
+        <div class="ac-text">
+          <div class="ac-title">QR कोड</div>
+          <div class="ac-sub">स्कैन कर जुड़ें</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members Section -->
+    <div class="members-section">
+      <div class="members-header">
+        <span class="members-title">👨‍👩‍👧‍👦 परिवार के सदस्य</span>
+        <span class="members-count">{{ members.length }} सदस्य</span>
+      </div>
+      <div class="members-loading" *ngIf="membersLoading">
+        <ion-spinner name="dots" color="warning"></ion-spinner>
+      </div>
+      <div class="members-list" *ngIf="!membersLoading">
+        <div class="member-card" *ngFor="let m of members; let i = index"
+             [style.animation-delay]="i * 60 + 'ms'">
+          <div class="member-avatar" [style.background]="avatarColor(i)">
+            {{ m.initials || '?' }}
+          </div>
+          <div class="member-info">
+            <div class="member-name">{{ m.Name || m.UserName || 'सदस्य' }}</div>
+            <div class="member-meta">
+              <span class="member-badge" *ngIf="m.UserID === family.UserID">👑 संस्थापक</span>
+              <span class="member-date" *ngIf="m.UserID !== family.UserID">
+                {{ m.DateAdded | date:'dd MMM yyyy' }}
+              </span>
+            </div>
+          </div>
+          <div class="member-active" [class.inactive]="!m.IsActive">
+            {{ m.IsActive ? '✓' : '○' }}
+          </div>
+        </div>
+        <div class="no-members" *ngIf="members.length === 0">
+          <p>अभी कोई सदस्य नहीं है।</p>
+          <p class="no-members-sub">QR या WhatsApp से invite करें 👆</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ QR CODE SHEET (owner shows QR) ═══ -->
+  <div class="sheet-overlay" *ngIf="showQRSheet" (click)="showQRSheet = false">
+    <div class="sheet qr-sheet" (click)="$event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">📲 Family QR Code</span>
+        <button class="sheet-close" (click)="showQRSheet = false">✕</button>
+      </div>
+      <div class="qr-sheet-body">
+        <p class="qr-hint">इस QR को scan करने पर family details आएंगी और member join कर सकते हैं</p>
+        <div class="qr-box">
+          <canvas #qrCanvas class="qr-canvas"></canvas>
+        </div>
+        <div class="qr-family-name">{{ family?.FamilyName }}</div>
+        <div class="qr-family-id">Family ID: {{ family?.FamilyID }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 100px;"></div>
+
+</ion-content>
+
+<!-- 
+
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'"></app-common-bottom-tabs> -->

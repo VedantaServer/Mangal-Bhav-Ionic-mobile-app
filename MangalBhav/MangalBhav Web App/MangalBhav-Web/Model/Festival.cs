@@ -6,8 +6,13 @@ namespace FaceUPAI.Models
 		#region Fields
 
 		private int festivalID;
+		private int tenantID;
 		private string festivalName;
+		private string festivalNameHindi;
 		private string description;
+		private string descriptionHindi;
+		private string festivalDay;
+		private string festivalDayHindi;
 		private DateTime festivalDate;
 		private int year;
 		private string countryCode;
@@ -19,6 +24,7 @@ namespace FaceUPAI.Models
 		private string canonicalURL;
 		private string urlID;
 		private DateTime dateAdded;
+		private DateTime dateModified;
 
 		#endregion
 
@@ -34,10 +40,15 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the Festival class.
 		/// </summary>
-		public Festival(string festivalName, string description, DateTime festivalDate, int year, string countryCode, string countryName, string type, string primaryType, string locations, string states, string canonicalURL, string urlID, DateTime dateAdded)
+		public Festival(int tenantID, string festivalName, string festivalNameHindi, string description, string descriptionHindi, string festivalDay, string festivalDayHindi, DateTime festivalDate, int year, string countryCode, string countryName, string type, string primaryType, string locations, string states, string canonicalURL, string urlID, DateTime dateAdded, DateTime dateModified)
 		{
+			this.tenantID = tenantID;
 			this.festivalName = festivalName;
+			this.festivalNameHindi = festivalNameHindi;
 			this.description = description;
+			this.descriptionHindi = descriptionHindi;
+			this.festivalDay = festivalDay;
+			this.festivalDayHindi = festivalDayHindi;
 			this.festivalDate = festivalDate;
 			this.year = year;
 			this.countryCode = countryCode;
@@ -49,16 +60,22 @@ namespace FaceUPAI.Models
 			this.canonicalURL = canonicalURL;
 			this.urlID = urlID;
 			this.dateAdded = dateAdded;
+			this.dateModified = dateModified;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the Festival class.
 		/// </summary>
-		public Festival(int festivalID, string festivalName, string description, DateTime festivalDate, int year, string countryCode, string countryName, string type, string primaryType, string locations, string states, string canonicalURL, string urlID, DateTime dateAdded)
+		public Festival(int festivalID, int tenantID, string festivalName, string festivalNameHindi, string description, string descriptionHindi, string festivalDay, string festivalDayHindi, DateTime festivalDate, int year, string countryCode, string countryName, string type, string primaryType, string locations, string states, string canonicalURL, string urlID, DateTime dateAdded, DateTime dateModified)
 		{
 			this.festivalID = festivalID;
+			this.tenantID = tenantID;
 			this.festivalName = festivalName;
+			this.festivalNameHindi = festivalNameHindi;
 			this.description = description;
+			this.descriptionHindi = descriptionHindi;
+			this.festivalDay = festivalDay;
+			this.festivalDayHindi = festivalDayHindi;
 			this.festivalDate = festivalDate;
 			this.year = year;
 			this.countryCode = countryCode;
@@ -70,6 +87,7 @@ namespace FaceUPAI.Models
 			this.canonicalURL = canonicalURL;
 			this.urlID = urlID;
 			this.dateAdded = dateAdded;
+			this.dateModified = dateModified;
 		}
 
 		#endregion
@@ -85,6 +103,15 @@ namespace FaceUPAI.Models
 		}
 
 		/// <summary>
+		/// Gets or sets the TenantID value.
+		/// </summary>
+		public  int TenantID
+		{
+			get { return tenantID; }
+			set { tenantID = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the FestivalName value.
 		/// </summary>
 		public  string FestivalName
@@ -94,12 +121,48 @@ namespace FaceUPAI.Models
 		}
 
 		/// <summary>
+		/// Gets or sets the FestivalNameHindi value.
+		/// </summary>
+		public  string FestivalNameHindi
+		{
+			get { return festivalNameHindi; }
+			set { festivalNameHindi = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets the Description value.
 		/// </summary>
 		public  string Description
 		{
 			get { return description; }
 			set { description = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the DescriptionHindi value.
+		/// </summary>
+		public  string DescriptionHindi
+		{
+			get { return descriptionHindi; }
+			set { descriptionHindi = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the FestivalDay value.
+		/// </summary>
+		public  string FestivalDay
+		{
+			get { return festivalDay; }
+			set { festivalDay = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the FestivalDayHindi value.
+		/// </summary>
+		public  string FestivalDayHindi
+		{
+			get { return festivalDayHindi; }
+			set { festivalDayHindi = value; }
 		}
 
 		/// <summary>
@@ -199,6 +262,15 @@ namespace FaceUPAI.Models
 		{
 			get { return dateAdded; }
 			set { dateAdded = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the DateModified value.
+		/// </summary>
+		public  DateTime DateModified
+		{
+			get { return dateModified; }
+			set { dateModified = value; }
 		}
 
 		#endregion

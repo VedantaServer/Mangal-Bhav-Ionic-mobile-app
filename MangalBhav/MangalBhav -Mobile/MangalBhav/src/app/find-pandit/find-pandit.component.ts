@@ -15,6 +15,8 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
+import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-find-pandit',
@@ -22,7 +24,7 @@ import { Capacitor } from '@capacitor/core';
   styleUrls: ['./find-pandit.component.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, TabscommonheaderComponent,
-    PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+    PanditjibottomtabsComponent, JajmanbottomtabsComponent, LoggedoutbottomtabsComponent, CommonBottomTabsComponent]
 })
 export class FindPanditComponent implements OnInit {
 
@@ -69,7 +71,7 @@ export class FindPanditComponent implements OnInit {
   pageSize = 10;
   searchTimeout: any;
   private infiniteScrollEvent: any = null;
-
+  userLoggedIn = false;
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
@@ -87,22 +89,82 @@ export class FindPanditComponent implements OnInit {
     }
 
     this.userDetails = await this.storage.get('account');
+
+    // this.userDetails = await this.storage.get('account');
+
+    this.userLoggedIn = !!this.userDetails?.LoginID;
+
+    const url = new URL(window.location.href);
     this.language = await this.storage.get('Language');
 
-    if (localStorage.getItem('findPanditThroghtFloating') !== 'findPanditThroghtFloating'
-      && this.router.url !== '/tabs/find-pandit') {
+    const pandituserid =
+      url.searchParams.get('pandituserid');
+
+    const isDeepLink =
+      this.checkPanditDeepLink();
+
+    if (isDeepLink) {
+      return;
+    }
+
+   
+
+    if (
+      !pandituserid &&
+      this.userLoggedIn &&
+      localStorage.getItem('findPanditThroghtFloating') !== 'findPanditThroghtFloating' &&
+      this.router.url !== '/tabs/find-pandit'
+    ) {
       this.openQrScanner();
-    } else {
+    }
+    else {
       localStorage.removeItem('findPanditThroghtFloating');
 
-      // ✅ On init: load all pandits by date — NO location fetch
       this.locationState = 'idle';
       this.query = `1=1 ORDER BY U.UserID DESC`;
       this.pageNumber = 1;
       this.panditList = [];
       this.loadPanditProfiles(this.query);
     }
+    // if (localStorage.getItem('findPanditThroghtFloating') !== 'findPanditThroghtFloating'
+    //   && this.router.url !== '/tabs/find-pandit') {
+    //   this.openQrScanner();
+    // } else {
+    //   localStorage.removeItem('findPanditThroghtFloating');
+
+
+    //   this.locationState = 'idle';
+    //   this.query = `1=1 ORDER BY U.UserID DESC`;
+    //   this.pageNumber = 1;
+    //   this.panditList = [];
+    //   this.loadPanditProfiles(this.query);
+    // }
   }
+
+
+  checkPanditDeepLink(): boolean {
+
+    const url = new URL(window.location.href);
+
+    const pandituserid =
+      url.searchParams.get('pandituserid');
+
+    if (!pandituserid) {
+      return false;
+    }
+
+    this.query =
+      `U.UserID = ${Number(pandituserid)}
+        ORDER BY U.UserID DESC`;
+
+    this.pageNumber = 1;
+    this.panditList = [];
+
+    this.loadPanditProfiles(this.query);
+
+    return true;
+  }
+
 
   // ── Called when user taps "📍 Show Nearby Pandits" or "Tap to retry" ──
   async onShowNearby() {
@@ -186,13 +248,36 @@ export class FindPanditComponent implements OnInit {
         ? `ORDER BY (6371 * ACOS(COS(RADIANS(${this.currentLat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng})) + SIN(RADIANS(${this.currentLat})) * SIN(RADIANS(L.Latitude)))) ASC`
         : `ORDER BY U.UserID DESC`;
 
-      this.query = `U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${q}%') ${orderBy}`;
+      // this.query = `U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${q}%') ${orderBy}`;
+      this.query = `
+(
+    U.UserID IN (
+        SELECT UserID
+        FROM Profiles
+        WHERE FullName LIKE '%${q}%'
+    )
+    OR
+    U.UserID IN (
+        SELECT PS.ProfileID
+        FROM PanditServices PS
+        INNER JOIN Locations L
+            ON L.LocationID = PS.LocationID
+        WHERE
+            L.Name LIKE '%${q}%'
+            OR L.City LIKE '%${q}%'
+            OR L.State LIKE '%${q}%'
+    )
+)
+${orderBy}`;
       this.loadPanditProfiles(this.query);
     }, 500);
   }
 
+
   loadPanditProfiles(query: string, loadMore = false) {
     if (!loadMore) this.isLoading = true;
+
+    console.log(query);
 
     const body = {
       query: query.replace(/\s+/g, ' ').trim(),
@@ -230,7 +315,7 @@ export class FindPanditComponent implements OnInit {
                       return of({ user, profile, _city: null, panditServices: [], _servicesLoaded: false });
                     }
                     return this.apinu.postUrlData(
-                      `LocationSelect?locationID=${firstSvc.LocationID}&tenantID=${this.userDetails.TenantID}`, null
+                      `LocationSelect?locationID=${firstSvc.LocationID}&tenantID=1`, null
                     ).pipe(
                       map((locRes: any) => {
                         const loc = locRes?.LocationList?.[0];
@@ -251,6 +336,25 @@ export class FindPanditComponent implements OnInit {
           toArray()
         ).subscribe((result: any[]) => {
           this.panditList = loadMore ? [...this.panditList, ...result] : result;
+          const url = new URL(window.location.href);
+
+          const pandituserid =
+            url.searchParams.get('pandituserid');
+
+          if (
+            pandituserid &&
+            this.panditList.length > 0
+          ) {
+
+            setTimeout(() => {
+
+              this.openPanditModal(
+                this.panditList[0]
+              );
+
+            }, 500);
+
+          }
           this.isLoading = false;
           this.panditList.forEach(item => {
             if (item.profile) this.loadProfileImage(item.profile);
@@ -281,14 +385,32 @@ export class FindPanditComponent implements OnInit {
     this.loadPanditProfiles(this.query, true);
   }
 
+  // get filteredPanditList(): any[] {
+  //   const q = this.searchQuery?.trim().toLowerCase();
+  //   if (!q) return this.panditList;
+  //   return this.panditList.filter(item => {
+  //     const name = (item.profile?.FullName || '').toLowerCase();
+  //     const lang = (item.profile?.Languages || '').toLowerCase();
+  //     const city = (item.profile?.City || '').toLowerCase();
+  //     return name.includes(q) || lang.includes(q) || city.includes(q);
+  //   });
+  // }
+
   get filteredPanditList(): any[] {
     const q = this.searchQuery?.trim().toLowerCase();
+
     if (!q) return this.panditList;
+
     return this.panditList.filter(item => {
       const name = (item.profile?.FullName || '').toLowerCase();
       const lang = (item.profile?.Languages || '').toLowerCase();
-      const city = (item.profile?.City || '').toLowerCase();
-      return name.includes(q) || lang.includes(q) || city.includes(q);
+      const city = (item._city || '').toLowerCase();
+
+      return (
+        name.includes(q) ||
+        lang.includes(q) ||
+        city.includes(q)
+      );
     });
   }
 
@@ -321,8 +443,8 @@ export class FindPanditComponent implements OnInit {
         from(services).pipe(
           mergeMap((ps: any) =>
             forkJoin({
-              serviceDetail: this.apinu.postUrlData(`ServiceSelect?serviceID=${ps.ServiceID}&tenantID=${this.userDetails.TenantID}`, null),
-              locationDetail: this.apinu.postUrlData(`LocationSelect?locationID=${ps.LocationID}&tenantID=${this.userDetails.TenantID}`, null),
+              serviceDetail: this.apinu.postUrlData(`ServiceSelect?serviceID=${ps.ServiceID}&tenantID=1`, null),
+              locationDetail: this.apinu.postUrlData(`LocationSelect?locationID=${ps.LocationID}&tenantID=1`, null),
               categoryMapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`, null)
             }).pipe(
               mergeMap((res: any) => {
@@ -338,7 +460,7 @@ export class FindPanditComponent implements OnInit {
                 return from(mappings).pipe(
                   mergeMap((mapItem: any) =>
                     this.apinu.postUrlData(
-                      `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=${this.userDetails.TenantID}`, null
+                      `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=1`, null
                     ).pipe(
                       map((catRes: any) => ({
                         ...mapItem,
@@ -383,18 +505,41 @@ export class FindPanditComponent implements OnInit {
     setTimeout(() => { this.isExploreModalOpen = true; }, 250);
   }
 
-  goToBooking(selectedService: any) {
+  // goToBooking(selectedService: any) {
+  //   this.isExploreModalOpen = false;
+  //   setTimeout(() => {
+  //     this.router.navigateByUrl(`/book-pooja?id=${selectedService.PanditServiceID}`);
+  //   }, 200);
+  // }
+
+
+
+  async goToBooking(selectedService: any) {
+
     this.isExploreModalOpen = false;
-    setTimeout(() => {
-      this.router.navigateByUrl(`/book-pooja?id=${selectedService.PanditServiceID}`);
-    }, 200);
+
+    if (!this.userLoggedIn) {
+
+      await this.storage.set(
+        'pendingPanditServiceID',
+        selectedService.PanditServiceID
+      );
+
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.router.navigateByUrl(
+      `/book-pooja?id=${selectedService.PanditServiceID}`
+    );
   }
 
+
   openQrScanner() { this.isScannerOpen = true; }
-  closeQrScanner() { 
-    
-    this.isScannerOpen = false; 
-  
+  closeQrScanner() {
+
+    this.isScannerOpen = false;
+
     this.loadPanditProfiles(`1=1 ORDER BY U.UserID DESC`);
 
   }
@@ -404,7 +549,7 @@ export class FindPanditComponent implements OnInit {
     this.isScannerOpen = false;
     const match = result.toLowerCase().match(/pandituserid=(\d+)/);
     if (match) {
-      this.loadPanditProfiles(`U.UserID = ${Number(match[1])}`);
+      this.loadPanditProfiles(`U.UserID = ${Number(match[1])} ORDER BY U.UserID DESC`);
     }
   }
   onScanError(error: any) { console.error('Scan error:', error); }
@@ -468,11 +613,37 @@ export class FindPanditComponent implements OnInit {
 
   lightboxImageUrl: string | null = null;
 
-openLightbox(url: string) {
-  this.lightboxImageUrl = url;
-}
+  openLightbox(url: string) {
+    this.lightboxImageUrl = url;
+  }
 
-closeLightbox() {
-  this.lightboxImageUrl = null;
-}
+  closeLightbox() {
+    this.lightboxImageUrl = null;
+  }
+
+  sharePandit(item: any) {
+
+    const panditName =
+      item.profile?.FullName || 'Pandit Ji';
+
+    const panditUserID =
+      item.profile?.UserID;
+
+    const link =
+      `https://app.mangalbhav.com/open-find-pandit?pandituserid=${panditUserID}`;
+
+    const message =
+      `🙏 ${panditName}
+  
+  View Pandit Profile on Mangal Bhav
+  
+  ${link}
+  
+  🪔 Jai Shri Ram`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      '_blank'
+    );
+  }
 }

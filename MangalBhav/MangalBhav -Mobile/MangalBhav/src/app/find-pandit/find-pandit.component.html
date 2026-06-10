@@ -147,7 +147,8 @@
 
             <!-- Name + Verified tick -->
             <div class="card-name-row">
-              <h3 class="card-name" style="text-transform: capitalize;">{{ item.profile?.FullName || item.user?.Username }}</h3>
+              <h3 class="card-name" style="text-transform: capitalize;">{{ item.profile?.FullName || item.user?.Username
+                }}</h3>
               <!-- <span class="card-verified-tick" *ngIf="item.profile?.VerificationStatus === 'APPROVED'"
                 title="Verified Pandit">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -174,12 +175,12 @@
                 <ion-icon name="time-outline"></ion-icon>
                 {{ item.profile?.ExperienceYears ? item.profile.ExperienceYears + ' yrs exp' : '5+ yrs exp' }}
               </span>
-            
+
               <span class="card-chip lang">
                 <ion-icon name="language-outline"></ion-icon>
                 {{ (item.profile?.Languages | slice:0:14) || 'Hindi' }}
               </span>
-            
+
               <span class="card-chip loc">
                 <ion-icon name="location-outline"></ion-icon>
                 {{ item._city || 'India' }}
@@ -221,9 +222,9 @@
   </div>
 </ion-content>
 
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomtab"></app-panditjibottomtabs>
-
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs>
 
 <!-- ═══════════════════════════════════════════════════════════════
      PANDIT DETAIL MODAL
@@ -256,6 +257,8 @@
               {{ activePandit.profile?.FullName?.charAt(0) || '🙏' }}
             </div>
 
+
+
             <!-- Photo — tap to open lightbox -->
             <img *ngIf="profileImages[activePandit.profile?.UserID]"
               [src]="getProfileImage(activePandit.profile?.UserID)" class="pandit-modal-photo photo-tappable"
@@ -269,13 +272,19 @@
 
           </div>
           <h2 class="pandit-modal-name">{{ activePandit.profile?.FullName }}</h2>
-          <span class="verified-pill" *ngIf="activePandit.profile?.VerificationStatus === 'APPROVED'">
+          <div class="pandit-share-btn" (click)="sharePandit(activePandit)">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </div>
+          <!-- <span class="verified-pill" *ngIf="activePandit.profile?.VerificationStatus === 'APPROVED'">
             ✓ Verified Pandit
           </span>
           <span class="unverified-pill" *ngIf="activePandit.profile?.VerificationStatus !== 'APPROVED'">
             ⏳ Verification Pending
-          </span>
+          </span> -->
         </div>
+
+
+
 
         <!-- ══ QUICK STATS ══ -->
         <div class="detail-info-grid">

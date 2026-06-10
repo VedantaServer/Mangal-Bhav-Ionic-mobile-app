@@ -23,6 +23,7 @@ export class PanditServicesComponent implements OnInit {
   userDetails: any;
   isUploadModalOpen = false;
   selectedServiceID: number | null = null;
+  agreeToCharges: boolean = false;
 
   selectedServiceIDs: number[] = [];
 

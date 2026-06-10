@@ -15,6 +15,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { FcmService } from 'src/providers/fcm/fcm';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-user-profile',
@@ -22,11 +23,33 @@ import { FcmService } from 'src/providers/fcm/fcm';
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, CommonBottomTabsComponent,PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;
   userDetails: any;
+  socialMediaList: any[] = [];
+
+showSocialModal = false;
+
+isEditSocialMedia = false;
+
+socialMedia: any = {
+  EntitySocialMediaID: -1,
+  TenantID: '',
+  EntityType: 'USER',
+  EntityID: '',
+  Platform: '',
+  Link: '',
+  Username: '',
+  DisplayName: '',
+  IsVerified: true,
+  IsActive: true,
+  DateAdded: new Date(),
+  DateModified: new Date(),
+  AddedByUser: '',
+  UpdatedByUser: ''
+};
   profile: any = {
     TenantID: null,
     UserID: null,
@@ -196,6 +219,22 @@ export class UserProfileComponent implements OnInit {
     private http: HttpClient, public toastController: ToastController,
     private alertCtrl: AlertController) { }
 
+
+    loadSocialMedia() {
+
+      this.apinu.postUrlData(
+        `EntitySocialMediaSelectByQuery?Query=EntityType='USER' and EntityID = ${this.userDetails.UserID}`,
+        null
+      ).subscribe((res: any) => {
+    
+        this.socialMediaList =
+          res.EntitySocialMediaList || [];
+    
+      });
+    
+    }
+
+
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
     this.language = this.userDetails.Languages;
@@ -205,6 +244,8 @@ export class UserProfileComponent implements OnInit {
     this.profile.PhoneNumber = this.userDetails.LoginID;
 
     // console.log(this.userDetails.Role === 'PANDIT')
+
+    this.loadSocialMedia();
 
     this.apinu.postUrlData(
       `UsersNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
@@ -527,4 +568,108 @@ export class UserProfileComponent implements OnInit {
     this.routerCtrl.navigateForward('/deleteaccount');
   }
 
+  openAddSocialMedia() {
+
+    this.isEditSocialMedia = false;
+  
+    this.socialMedia = {
+      EntitySocialMediaID: -1,
+      TenantID: Number( this.userDetails.TenantID),
+      EntityType: 'USER',
+      EntityID: Number( this.userDetails.UserID),
+      Platform: '',
+      Link: '',
+      Username: '',
+      DisplayName: '',
+      IsVerified: true,
+      IsActive: true,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      AddedByUser: this.userDetails.FullName,
+      UpdatedByUser: this.userDetails.FullName
+    };
+  
+    this.showSocialModal = true;
+  }
+
+  editSocialMedia(item: any) {
+
+    this.isEditSocialMedia = true;
+  
+    this.socialMedia = {
+      ...item
+    };
+  
+    this.showSocialModal = true;
+  }
+
+  saveSocialMedia() {
+
+    const action =
+      this.isEditSocialMedia
+        ? 'EntitySocialMediaUpdate'
+        : 'EntitySocialMediaInsert';
+  
+    this.socialMedia.DateModified = new Date();
+  
+    this.apinu.postUrlData(
+      action,
+      this.socialMedia
+    ).subscribe((res: any) => {
+  
+      this.showToast(
+        this.isEditSocialMedia
+          ? 'Social media updated'
+          : 'Social media added',
+        'success'
+      );
+  
+      this.showSocialModal = false;
+  
+      this.loadSocialMedia();
+  
+    });
+  
+  }
+  deleteSocialMedia(item: any) {
+
+    this.apinu.postUrlData(
+      'EntitySocialMediaDelete',
+      item
+    ).subscribe(() => {
+  
+      this.showToast(
+        'Deleted successfully',
+        'success'
+      );
+  
+      this.loadSocialMedia();
+  
+    });
+  
+  }
+
+  getPlatformIcon(platform: string) {
+
+    switch (platform) {
+      case 'Instagram':
+        return 'logo-instagram';
+  
+      case 'Facebook':
+        return 'logo-facebook';
+  
+      case 'YouTube':
+        return 'logo-youtube';
+  
+      case 'LinkedIn':
+        return 'logo-linkedin';
+  
+      case 'WhatsApp':
+        return 'logo-whatsapp';
+  
+      default:
+        return 'share-social-outline';
+    }
+  
+  }
 }

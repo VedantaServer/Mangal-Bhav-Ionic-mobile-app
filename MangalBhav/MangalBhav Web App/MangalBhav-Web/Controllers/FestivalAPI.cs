@@ -26,8 +26,8 @@ namespace FaceUPAI.API
 		/// Saves a record to the Festivals table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalsInsert")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalsInsert")]
 		public  IActionResult FestivalsInsert([FromBody] Festival festival)
 		{
 			return ApiHandler.Handle(() =>
@@ -35,8 +35,13 @@ namespace FaceUPAI.API
 
 			SqlParameter[] parameters = new SqlParameter[]
 			{
+				new SqlParameter("@TenantID", festival.TenantID == 0 ? SqlInt32.Null : festival.TenantID ),
 				new SqlParameter("@FestivalName", festival.FestivalName),
+				new SqlParameter("@FestivalNameHindi", festival.FestivalNameHindi),
 				new SqlParameter("@Description", festival.Description),
+				new SqlParameter("@DescriptionHindi", festival.DescriptionHindi),
+				new SqlParameter("@FestivalDay", festival.FestivalDay),
+				new SqlParameter("@FestivalDayHindi", festival.FestivalDayHindi),
 				new SqlParameter("@FestivalDate", festival.FestivalDate == DateTime.MinValue ? SqlDateTime.Null : festival.FestivalDate ),
 				new SqlParameter("@Year", festival.Year == 0 ? SqlInt32.Null : festival.Year ),
 				new SqlParameter("@CountryCode", festival.CountryCode),
@@ -47,7 +52,8 @@ namespace FaceUPAI.API
 				new SqlParameter("@States", festival.States),
 				new SqlParameter("@CanonicalURL", festival.CanonicalURL),
 				new SqlParameter("@UrlID", festival.UrlID),
-				new SqlParameter("@DateAdded", festival.DateAdded == DateTime.MinValue ? SqlDateTime.Null : festival.DateAdded )
+				new SqlParameter("@DateAdded", festival.DateAdded == DateTime.MinValue ? SqlDateTime.Null : festival.DateAdded ),
+				new SqlParameter("@DateModified", festival.DateModified == DateTime.MinValue ? SqlDateTime.Null : festival.DateModified )
 			};
 
 			festival.FestivalID = Convert.ToInt32(DataAccess.ExecuteScalar(CommandType.StoredProcedure, "FestivalsInsert", parameters));
@@ -59,8 +65,8 @@ namespace FaceUPAI.API
 		/// Updates a record in the Festivals table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalsUpdate")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalsUpdate")]
 		public  IActionResult FestivalsUpdate([FromBody] Festival festival)
 		{
 			return ApiHandler.Handle(() =>
@@ -69,8 +75,13 @@ namespace FaceUPAI.API
 			SqlParameter[] parameters = new SqlParameter[]
 			{
 				new SqlParameter("@FestivalID", festival.FestivalID == 0 ? SqlInt32.Null : festival.FestivalID ),
+				new SqlParameter("@TenantID", festival.TenantID == 0 ? SqlInt32.Null : festival.TenantID ),
 				new SqlParameter("@FestivalName", festival.FestivalName),
+				new SqlParameter("@FestivalNameHindi", festival.FestivalNameHindi),
 				new SqlParameter("@Description", festival.Description),
+				new SqlParameter("@DescriptionHindi", festival.DescriptionHindi),
+				new SqlParameter("@FestivalDay", festival.FestivalDay),
+				new SqlParameter("@FestivalDayHindi", festival.FestivalDayHindi),
 				new SqlParameter("@FestivalDate", festival.FestivalDate == DateTime.MinValue ? SqlDateTime.Null : festival.FestivalDate ),
 				new SqlParameter("@Year", festival.Year == 0 ? SqlInt32.Null : festival.Year ),
 				new SqlParameter("@CountryCode", festival.CountryCode),
@@ -81,7 +92,8 @@ namespace FaceUPAI.API
 				new SqlParameter("@States", festival.States),
 				new SqlParameter("@CanonicalURL", festival.CanonicalURL),
 				new SqlParameter("@UrlID", festival.UrlID),
-				new SqlParameter("@DateAdded", festival.DateAdded == DateTime.MinValue ? SqlDateTime.Null : festival.DateAdded )
+				new SqlParameter("@DateAdded", festival.DateAdded == DateTime.MinValue ? SqlDateTime.Null : festival.DateAdded ),
+				new SqlParameter("@DateModified", festival.DateModified == DateTime.MinValue ? SqlDateTime.Null : festival.DateModified )
 			};
 
 			 var FestivalID = Convert.ToInt32(DataAccess.ExecuteNonQuery(CommandType.StoredProcedure, "FestivalsUpdate", parameters));
@@ -93,8 +105,8 @@ namespace FaceUPAI.API
 		/// Deletes a record from the Festivals table by its primary key.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalsDelete")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalsDelete")]
 		public  IActionResult FestivalsDelete(int festivalID, int tenantID)
 		{
 			return ApiHandler.Handle(() =>
@@ -114,8 +126,8 @@ namespace FaceUPAI.API
 		/// Selects a single record from the Festivals table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalSelect")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalSelect")]
 		public IActionResult FestivalSelect(int festivalID,int tenantID)
 		{
 			return ApiHandler.Handle(() =>
@@ -144,8 +156,8 @@ namespace FaceUPAI.API
 		/// Selects a single record from the Festivals table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalSelectAll")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalSelectAll")]
 		public IActionResult FestivalSelectAll(int tenantID){
 			return ApiHandler.Handle(() =>
 	{
@@ -171,8 +183,8 @@ namespace FaceUPAI.API
 		/// Selects all query records from the Festivals table by a ak=ll query.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("FestivalsSelectByQuery")]
+	[EnableCors("AllowAll")]
+	[Route("FestivalsSelectByQuery")]
 		public  IActionResult FestivalsSelectByQuery(int tenantID,int schoolID,string Query)
 		{
 			return ApiHandler.Handle(() =>
@@ -204,8 +216,13 @@ namespace FaceUPAI.API
 		{
 			Festival festival = new Festival();
 			festival.FestivalID = DataAccess.GetInt32(dataReader, "FestivalID", 0);
+			festival.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
 			festival.FestivalName = DataAccess.GetString(dataReader, "FestivalName", String.Empty);
+			festival.FestivalNameHindi = DataAccess.GetString(dataReader, "FestivalNameHindi", String.Empty);
 			festival.Description = DataAccess.GetString(dataReader, "Description", String.Empty);
+			festival.DescriptionHindi = DataAccess.GetString(dataReader, "DescriptionHindi", String.Empty);
+			festival.FestivalDay = DataAccess.GetString(dataReader, "FestivalDay", String.Empty);
+			festival.FestivalDayHindi = DataAccess.GetString(dataReader, "FestivalDayHindi", String.Empty);
 			festival.FestivalDate = DataAccess.GetDateTime(dataReader, "FestivalDate", DateTime.MinValue);
 			festival.Year = DataAccess.GetInt32(dataReader, "Year", 0);
 			festival.CountryCode = DataAccess.GetString(dataReader, "CountryCode", String.Empty);
@@ -217,6 +234,7 @@ namespace FaceUPAI.API
 			festival.CanonicalURL = DataAccess.GetString(dataReader, "CanonicalURL", String.Empty);
 			festival.UrlID = DataAccess.GetString(dataReader, "UrlID", String.Empty);
 			festival.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
+			festival.DateModified = DataAccess.GetDateTime(dataReader, "DateModified", DateTime.MinValue);
 
 			return festival;
 		}

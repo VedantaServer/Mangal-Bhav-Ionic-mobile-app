@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="header-inner">
-      <div class="nav-logo">
+      <div class="nav-logo"     routerLink="/open-community-page"    >
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">
           <div class="nav-logo-text">Mangal Bhav</div>
@@ -160,10 +160,11 @@
 
 
 
-
+<!-- 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showpanditbottomtab"></app-panditjibottomtabs>
 
 
-
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+<app-common-bottom-tabs
+  *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs> -->
 

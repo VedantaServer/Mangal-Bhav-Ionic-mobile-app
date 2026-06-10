@@ -1096,7 +1096,7 @@ export class Tab3Page {
 
   shareReferCode() {
     const code = `MANGAL${this.userReferCode}`;
-    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
+    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://app.mangalbhav.com`;
 
     if (navigator.share) {
       navigator.share({ title: 'Mangal.Bhav Referral', text: msg });

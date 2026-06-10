@@ -1,0 +1,151 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>🛕 Pending Mandir Approvals</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fma-content">
+
+  <!-- Loading -->
+  <div class="fma-loading" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <span>लोड हो रहा है...</span>
+  </div>
+
+  <!-- Empty -->
+  <div class="fma-empty" *ngIf="!isLoading && pendingMandirs.length === 0">
+    <div class="fma-empty-icon">🛕</div>
+    <div class="fma-empty-text">कोई pending mandir नहीं है</div>
+  </div>
+
+  <!-- Pending list -->
+  <div class="fma-list" *ngIf="!isLoading && pendingMandirs.length > 0">
+
+    <div class="fma-count-bar">
+      📋 {{ pendingMandirs.length }} mandir approval pending
+    </div>
+
+    <div class="fma-card" *ngFor="let m of pendingMandirs" (click)="openDetail(m)">
+
+      <!-- Photo strip -->
+      <div class="fma-photo-strip">
+        <img *ngIf="m.Photo1Url" [src]="m.Photo1Url" class="fma-photo" />
+        <img *ngIf="m.Photo2Url" [src]="m.Photo2Url" class="fma-photo" />
+        <img *ngIf="m.Photo3Url" [src]="m.Photo3Url" class="fma-photo" />
+        <div class="fma-no-photo" *ngIf="!m.Photo1Url && !m.Photo2Url && !m.Photo3Url">
+          🛕
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="fma-card-body">
+        <div class="fma-mandir-name">{{ m.MandirName }}</div>
+        <div class="fma-god-name">🪷 {{ m.GodName }}</div>
+        <div class="fma-meta" *ngIf="m.MandirDescription">{{ m.MandirDescription }}</div>
+
+        <!-- Audio indicators -->
+        <div class="fma-audio-chips">
+          <span class="fma-audio-chip" *ngIf="m.AartiName1">🎵 आरती 1</span>
+          <span class="fma-audio-chip" *ngIf="m.AartiName2">🎵 आरती 2</span>
+          <span class="fma-audio-chip" *ngIf="m.AartiName3">🎵 आरती 3</span>
+        </div>
+
+        <div class="fma-date">📅 {{ m.DateAdded | date:'dd MMM yyyy, hh:mm a' }}</div>
+      </div>
+
+      <div class="fma-card-arrow">›</div>
+    </div>
+
+  </div>
+
+</ion-content>
+
+
+<!-- ═══ DETAIL BOTTOM SHEET ═══ -->
+<div class="fma-overlay" [class.visible]="showDetailSheet" (click)="closeDetail()">
+  <div class="fma-sheet" (click)="$event.stopPropagation()" *ngIf="selectedMandir">
+
+    <!-- Header -->
+    <div class="fma-sheet-header">
+      <button class="fma-sheet-close" (click)="closeDetail()">✕</button>
+      <div class="fma-sheet-title">🛕 {{ selectedMandir.MandirName }}</div>
+      <div class="fma-sheet-sub">{{ selectedMandir.GodName }}</div>
+    </div>
+
+    <!-- Body -->
+    <div class="fma-sheet-body">
+
+      <!-- Photos -->
+      <div class="fma-detail-photos" *ngIf="selectedMandir.Photo1Url || selectedMandir.Photo2Url || selectedMandir.Photo3Url">
+        <img *ngIf="selectedMandir.Photo1Url" [src]="selectedMandir.Photo1Url" class="fma-detail-photo" />
+        <img *ngIf="selectedMandir.Photo2Url" [src]="selectedMandir.Photo2Url" class="fma-detail-photo" />
+        <img *ngIf="selectedMandir.Photo3Url" [src]="selectedMandir.Photo3Url" class="fma-detail-photo" />
+      </div>
+
+      <!-- Description -->
+      <div class="fma-detail-row" *ngIf="selectedMandir.MandirDescription">
+        <div class="fma-detail-label">विवरण</div>
+        <div class="fma-detail-value">{{ selectedMandir.MandirDescription }}</div>
+      </div>
+
+      <!-- Family ID -->
+      <div class="fma-detail-row">
+        <div class="fma-detail-label">Family ID</div>
+        <div class="fma-detail-value">{{ selectedMandir.FamilyID }}</div>
+      </div>
+
+      <!-- Submitted on -->
+      <div class="fma-detail-row">
+        <div class="fma-detail-label">Submitted On</div>
+        <div class="fma-detail-value">{{ selectedMandir.DateAdded | date:'dd MMM yyyy, hh:mm a' }}</div>
+      </div>
+
+      <!-- Audio players -->
+      <div class="fma-audio-section" *ngIf="selectedMandir.AartiName1 || selectedMandir.AartiName2 || selectedMandir.AartiName3">
+        <div class="fma-detail-label">🎵 आरती ऑडियो</div>
+
+        <div class="fma-audio-player" *ngIf="selectedMandir.AartiName1">
+          <span class="fma-audio-name">{{ selectedMandir.AartiName1 }}</span>
+          <button class="fma-play-btn"
+            [class.playing]="playingSlot === 'slot1'"
+            (click)="toggleAudio(selectedMandir.AartiName1, 'slot1')">
+            {{ playingSlot === 'slot1' ? '⏸' : '▶' }}
+          </button>
+        </div>
+
+        <div class="fma-audio-player" *ngIf="selectedMandir.AartiName2">
+          <span class="fma-audio-name">{{ selectedMandir.AartiName2 }}</span>
+          <button class="fma-play-btn"
+            [class.playing]="playingSlot === 'slot2'"
+            (click)="toggleAudio(selectedMandir.AartiName2, 'slot2')">
+            {{ playingSlot === 'slot2' ? '⏸' : '▶' }}
+          </button>
+        </div>
+
+        <div class="fma-audio-player" *ngIf="selectedMandir.AartiName3">
+          <span class="fma-audio-name">{{ selectedMandir.AartiName3 }}</span>
+          <button class="fma-play-btn"
+            [class.playing]="playingSlot === 'slot3'"
+            (click)="toggleAudio(selectedMandir.AartiName3, 'slot3')">
+            {{ playingSlot === 'slot3' ? '⏸' : '▶' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="fma-actions">
+        <button class="fma-reject-btn" (click)="rejectMandir(selectedMandir)">
+          ✕ अस्वीकृत करें
+        </button>
+        <button class="fma-approve-btn" (click)="approveMandir(selectedMandir)">
+          ✓ अनुमोदित करें
+        </button>
+      </div>
+
+      <div style="height: 32px;"></div>
+    </div>
+  </div>
+</div>

@@ -44,12 +44,18 @@ import { PanditFulldetailsComponent } from './pandit-fulldetails/pandit-fulldeta
 import { DeleteAccountComponent } from './delete-account/delete-account.component';
 import { MytransactionComponent } from './mytransaction/mytransaction.component';
 import { MandirLedgerComponent } from './mandir-ledger/mandir-ledger.component';
+import { AdminServiceInsertUpdateComponent } from './admin-service-insert-update/admin-service-insert-update.component';
+import { FamilyComponent } from './family/family.component';
+import { FamilyMandirPendingApprovalComponent } from './family-mandir-pending-approval/family-mandir-pending-approval.component';
+import { MyMandirComponent } from './my-mandir/my-mandir.component';
+import { AdminEventVerificationComponent } from './admin-event-verification/admin-event-verification.component';
 
 const routes: Routes = [
 
   {
     path: '',
-    component: OpenCommunityPageComponent
+    redirectTo: 'open-community-page',
+    pathMatch: 'full'
   },
 
 
@@ -122,7 +128,7 @@ const routes: Routes = [
   ,
   {
     path: 'open-find-pandit',
-    component: OpenFindPanditComponent  // directly use the standalone component
+    component: FindPanditComponent  // directly use the standalone component
   }
 
   ,
@@ -197,6 +203,11 @@ const routes: Routes = [
   }
   ,
   {
+    path: 'adminservicecinsertupdate',
+    component: AdminServiceInsertUpdateComponent  // directly use the standalone component
+  }
+  ,
+  {
     path: 'upcoming-booking',
     component: JajmanUpcomingPoojaComponent  // directly use the standalone component
   }
@@ -204,6 +215,23 @@ const routes: Routes = [
   {
     path: 'completed-booking',
     component: JajmanCompletedPoojaComponent  // directly use the standalone component
+  } ,
+  {
+    path: 'my-mandirs',
+    component: MyMandirComponent  // directly use the standalone component
+  },
+  {
+    path: 'admin-event-verification',
+    component: AdminEventVerificationComponent  // directly use the standalone component
+  }
+  ,
+  {
+    path: 'myfamily',
+    component: FamilyComponent  // directly use the standalone component
+  },
+  {
+    path: 'familymandirpendingapproval',
+    component: FamilyMandirPendingApprovalComponent  // directly use the standalone component
   }
   ,
   {

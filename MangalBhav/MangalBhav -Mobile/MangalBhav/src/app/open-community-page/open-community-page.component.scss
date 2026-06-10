@@ -1,44 +1,27 @@
-// ═══════════════════════════════════════════════════════════
-//  Mangal.Bhav — Community Page Styles
-//  Color Palette:
-//    Deep Saffron  #FF8C00
-//    Gold          #FFD700
-//    Temple Red    #8B1A00
-//    Dark BG       #0f0500
-//    Card BG       #1a0800
-//    Border        #3d1000
-// ═══════════════════════════════════════════════════════════
-
-// ── Reset / Page Base ──────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+//  Mangal.Bhav — Community Page
+// ══════════════════════════════════════════════════════════
 :host {
-  --page-bg:    #0f0500;
-  --card-bg:    #1a0800;
-  --border:     #3d1000;
-  --border-hi:  #8B1A00;
-  --gold:       #FFD700;
-  --saffron:    #FF8C00;
-  --amber:      #FFA050;
-  --muted:      #cc6020;
-  --red-deep:   #8B1A00;
-  --red-mid:    #5c1000;
+  --page-bg:   #0f0500;
+  --card-bg:   #1a0800;
+  --border:    #3d1000;
+  --border-hi: #8B1A00;
+  --gold:      #FFD700;
+  --saffron:   #FF8C00;
+  --amber:     #FFA050;
+  --muted:     #cc6020;
+  --red-deep:  #8B1A00;
+  --red-mid:   #5c1000;
 }
 
-ion-content {
-  --background: var(--page-bg);
-}
+ion-content { --background: var(--page-bg); }
+* { box-sizing: border-box; }
 
-* {
-  box-sizing: border-box;
-}
-
-// ── Section Shared ─────────────────────────────────────────
+// ── Section Shared ─────────────────────────────────────
 .section {
   padding: 16px 14px 4px;
   background: var(--page-bg);
-
-  & + .section {
-    border-top: 1px solid var(--border);
-  }
+  & + .section { border-top: 1px solid var(--border); }
 }
 
 .section-header {
@@ -48,29 +31,13 @@ ion-content {
   margin-bottom: 14px;
 }
 
-.section-title {
-  color: var(--gold);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
+.section-title { color: var(--gold);    font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+.section-sub   { color: var(--muted);   font-size: 10px; }
+.section-link  { color: var(--saffron); font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: none; }
 
-.section-sub {
-  color: var(--muted);
-  font-size: 10px;
-}
-
-.section-link {
-  color: var(--saffron);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 //  HERO
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 .hero-wrapper {
   position: relative;
   width: 100%;
@@ -96,16 +63,10 @@ ion-content {
 .divine-aura {
   position: absolute;
   inset: 0;
-  border-radius: 0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.4s;
-  background: radial-gradient(
-    ellipse at 50% 60%,
-    rgba(255, 215, 0, 0.22) 0%,
-    rgba(255, 140, 0, 0.12) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse at 50% 60%, rgba(255,215,0,0.22) 0%, rgba(255,140,0,0.12) 40%, transparent 70%);
 
   &.active {
     opacity: 1;
@@ -114,8 +75,8 @@ ion-content {
 }
 
 @keyframes divineGlow {
-  from { filter: brightness(1)    drop-shadow(0 0 12px rgba(255, 215, 0, 0.5)); }
-  to   { filter: brightness(1.12) drop-shadow(0 0 36px rgba(255, 140, 0, 0.9)); }
+  from { filter: brightness(1)    drop-shadow(0 0 12px rgba(255,215,0,0.5)); }
+  to   { filter: brightness(1.12) drop-shadow(0 0 36px rgba(255,140,0,0.9)); }
 }
 
 @keyframes auraPulse {
@@ -123,24 +84,67 @@ ion-content {
   to   { opacity: 1;   }
 }
 
-// Falling flowers canvas
 .flower-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   z-index: 10;
 }
 
-// Toast
+// ── Darshan pill ───────────────────────────────────────
+.darshan-pill {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(10,2,0,0.78);
+  border: 1px solid var(--saffron);
+  border-radius: 20px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  z-index: 5;
+}
+
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #ff3333;
+  animation: livePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%,100% { opacity: 1;   box-shadow: 0 0 0 0   rgba(255,51,51,0.4); }
+  50%     { opacity: 0.5; box-shadow: 0 0 0 4px rgba(255,51,51,0); }
+}
+
+.darshan-text  { color: var(--amber);   font-size: 10px; white-space: nowrap; }
+.darshan-count { color: var(--saffron); font-weight: 700; }
+
+// ── Mantra strip ───────────────────────────────────────
+.mantra-strip {
+  background: #150600;
+  border-top: 1px solid var(--border-hi);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 10px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:active       { background: #220a00; }
+  &.playing      { background: #1f0a00; border-color: var(--gold); }
+  &.playing .mantra-meaning { color: var(--gold); }
+}
+
+.mantra-text    { color: var(--gold);  font-size: 16px; letter-spacing: 2px; font-family: 'Noto Sans Devanagari', serif; }
+.mantra-meaning { color: var(--amber); font-size: 10px; margin-top: 3px; letter-spacing: 0.5px; }
+
+// ── Regular Toast ──────────────────────────────────────
 .seva-toast {
   position: absolute;
-  bottom: 100px;
-  left: 50%;
+  bottom: 60px; left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(26, 8, 0, 0.92);
+  background: rgba(26,8,0,0.92);
   border: 1px solid var(--saffron);
   border-radius: 30px;
   padding: 10px 20px;
@@ -153,168 +157,343 @@ ion-content {
   transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
 
-  &.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
+  &.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast-icon { font-size: 18px; }
+  .toast-text { color: var(--gold); font-size: 13px; font-weight: 600; }
+}
 
-  .toast-text {
-    color: var(--gold);
-    font-size: 13px;
-    font-weight: 600;
+// ── Mini Toast (आरती रोकी गई — no background, tiny) ──
+.mini-toast {
+  position: absolute;
+  bottom: 56px; left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  color: rgba(255, 190, 100, 0.65);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  opacity: 0;
+  z-index: 25;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  &.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+// ══════════════════════════════════════════════════════════
+//  21-SEC AARTI SEQUENCE OVERLAY
+// ══════════════════════════════════════════════════════════
+.aarti-seq-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 52%;
+  background: linear-gradient(to top,
+    rgba(6,1,0,0.95) 0%,
+    rgba(12,3,0,0.80) 55%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 14px;
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
-// Darshan pill
-.darshan-pill {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(10, 2, 0, 0.78);
-  border: 1px solid var(--saffron);
-  border-radius: 20px;
-  padding: 5px 12px;
+.seq-icon {
+  font-size: 54px;
+  line-height: 1;
+  margin-bottom: 6px;
+  animation: seqPulse 1.6s ease-in-out infinite alternate;
+  display: block;
+
+  &.bell-ring {
+    animation: bellShake 0.4s ease-in-out 3;
+  }
+}
+
+@keyframes seqPulse {
+  from { transform: scale(1);    filter: drop-shadow(0 0 6px  rgba(255,215,0,0.35)); }
+  to   { transform: scale(1.08); filter: drop-shadow(0 0 18px rgba(255,140,0,0.8)); }
+}
+
+.seq-label {
+  color: var(--gold);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  font-family: 'Noto Sans Devanagari', serif;
+  text-shadow: 0 0 14px rgba(255,215,0,0.5);
+  margin-bottom: 3px;
+  text-align: center;
+}
+
+.seq-sub {
+  color: var(--saffron);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Noto Sans Devanagari', serif;
+  letter-spacing: 0.4px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.seq-sub2 {
+  color: var(--amber);
+  font-size: 11px;
+  font-style: italic;
+  font-family: 'Noto Sans Devanagari', serif;
+  opacity: 0.75;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.seq-progress-wrap {
   display: flex;
   align-items: center;
-  gap: 7px;
-  z-index: 5;
+  gap: 8px;
+  margin-top: 10px;
+  width: 78%;
 }
 
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ff3333;
+.seq-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.seq-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-deep), var(--saffron), var(--gold));
+  border-radius: 2px;
+  transition: width 0.15s linear;
+}
+
+.seq-pct {
+  color: var(--muted);
+  font-size: 9px;
+  min-width: 26px;
+  text-align: right;
   flex-shrink: 0;
-  animation: livePulse 1.2s ease-in-out infinite;
 }
 
-@keyframes livePulse {
-  0%, 100% { opacity: 1;   box-shadow: 0 0 0   0 rgba(255,51,51,0.4); }
-  50%       { opacity: 0.5; box-shadow: 0 0 0 4px rgba(255,51,51,0); }
+// ══════════════════════════════════════════════════════════
+//  BLESSING OVERLAY
+// ══════════════════════════════════════════════════════════
+.blessing-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, rgba(28,7,0,0.97) 0%, rgba(8,1,0,0.99) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+    animation: blessAppear 0.5s ease forwards;
+  }
 }
 
-.darshan-text {
-  color: var(--amber);
-  font-size: 10px;
-  white-space: nowrap;
+@keyframes blessAppear {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1);    }
 }
 
-.darshan-count {
-  color: var(--saffron);
-  font-weight: 700;
-}
-
-// Mantra strip
-.mantra-strip {
-  background: #150600;
-  border-top:    1px solid var(--border-hi);
-  border-bottom: 1px solid var(--border-hi);
-  padding: 10px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:active { background: #220a00; }
-}
-
-.mantra-text {
+.bl-bg-om {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 160px;
   color: var(--gold);
-  font-size: 16px;
-  letter-spacing: 2px;
+  opacity: 0.055;
+  pointer-events: none;
+  user-select: none;
   font-family: 'Noto Sans Devanagari', serif;
 }
 
-.mantra-meaning {
-  color: var(--amber);
-  font-size: 10px;
-  margin-top: 3px;
-  letter-spacing: 0.5px;
+.bl-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 24px;
+  text-align: center;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  ACTION ROW  (Aarti / Bell / Flowers)
-// ═══════════════════════════════════════════════════════════
-.action-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 14px;
+.bl-star {
+  font-size: 42px;
+  animation: starPulse 1.3s ease-in-out infinite alternate;
+}
+
+@keyframes starPulse {
+  from { transform: scale(1);   filter: drop-shadow(0 0 8px  rgba(255,215,0,0.5)); }
+  to   { transform: scale(1.1); filter: drop-shadow(0 0 22px rgba(255,215,0,0.95)); }
+}
+
+.bl-tathaastu {
+  color: var(--gold);
+  font-size: 30px;
+  font-weight: 800;
+  font-family: 'Noto Sans Devanagari', serif;
+  text-shadow: 0 0 22px rgba(255,215,0,0.5);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.bl-grace {
+  color: var(--saffron);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  font-family: 'Noto Sans Devanagari', serif;
+}
+
+.bl-divider {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--saffron), transparent);
+  margin: 6px 0;
+}
+
+.bl-mudra-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,149,0,0.08);
+  border: 1px solid rgba(255,149,0,0.22);
+  border-radius: 14px;
+  padding: 10px 18px;
+}
+
+.bl-coin         { font-size: 30px; }
+.bl-mudra-title  { color: var(--gold);  font-size: 17px; font-weight: 700; }
+.bl-mudra-sub    { color: var(--amber); font-size: 11px; margin-top: 2px; font-family: 'Noto Sans Devanagari', serif; }
+
+.bl-sanchay {
+  color: var(--saffron);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+// ══════════════════════════════════════════════════════════
+//  MANGAL AARTI BAR (single centered button)
+// ══════════════════════════════════════════════════════════
+.mangal-aarti-bar {
+  padding: 12px 16px;
   background: var(--page-bg);
   border-bottom: 1px solid var(--border);
 }
 
-.action-btn {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px 6px;
-  text-align: center;
+.mangal-aarti-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #8B1A00 0%, #5c1000 100%);
+  border: 1.5px solid var(--saffron);
+  border-radius: 18px;
+  padding: 14px 18px;
   cursor: pointer;
-  transition: transform 0.15s, background 0.2s, border-color 0.2s;
   outline: none;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 22px rgba(255,140,0,0.2);
 
   &:active {
-    transform: scale(0.95);
-    background: #250c00;
+    transform: scale(0.98);
+    box-shadow: 0 2px 10px rgba(255,140,0,0.12);
   }
 
-  // Primary button (Aarti)
-  &.primary {
-    background: linear-gradient(145deg, #8B1A00 0%, #5c1000 100%);
-    border-color: var(--saffron);
-    box-shadow: 0 0 14px rgba(255, 140, 0, 0.25);
-
-    &.active {
-      animation: aartiPulse 0.7s ease-in-out infinite alternate;
-    }
-  }
-
-  &.ringing {
-    .bell-icon { animation: bellShake 0.4s ease-in-out 3; }
+  &.running {
+    background: linear-gradient(135deg, #6a1100 0%, #3a0700 100%);
+    border-color: var(--gold);
+    animation: aartiPulse 0.85s ease-in-out infinite alternate;
   }
 }
 
 @keyframes aartiPulse {
-  from { box-shadow: 0 0 12px rgba(255, 140, 0, 0.3); }
-  to   { box-shadow: 0 0 28px rgba(255, 215, 0, 0.7); }
+  from { box-shadow: 0 0 12px rgba(255,140,0,0.25); }
+  to   { box-shadow: 0 0 30px rgba(255,215,0,0.6);  }
 }
 
-@keyframes bellShake {
-  0%   { transform: rotate(0deg);   }
-  20%  { transform: rotate(-18deg); }
-  40%  { transform: rotate(18deg);  }
-  60%  { transform: rotate(-10deg); }
-  80%  { transform: rotate(10deg);  }
-  100% { transform: rotate(0deg);   }
+.mab-diya {
+  font-size: 32px;
+  flex-shrink: 0;
 }
 
-.action-icon {
-  font-size: 26px;
-  margin-bottom: 5px;
-  display: block;
-  transition: transform 0.2s;
+.mab-center {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.action-label {
+.mab-title {
   color: var(--gold);
-  font-size: 11px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Noto Sans Devanagari', serif;
+  letter-spacing: 0.4px;
+  display: block;
+}
+
+.mab-sub {
+  color: var(--amber);
+  font-size: 10px;
+  opacity: 0.8;
+  display: block;
+}
+
+.mab-right {
+  color: var(--gold);
+  font-size: 18px;
   font-weight: 700;
-  display: block;
+  flex-shrink: 0;
+  min-width: 38px;
+  text-align: right;
 }
 
-.action-sub {
-  color: var(--muted);
-  font-size: 9px;
-  margin-top: 2px;
-  display: block;
+// ── Cooldown card (shown during blessed phase) ─────────
+.aarti-cooldown-card {
+  background: linear-gradient(135deg, rgba(38,10,0,0.9), rgba(18,5,0,0.9));
+  border: 1px solid rgba(255,149,0,0.28);
+  border-radius: 16px;
+  padding: 14px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-// ═══════════════════════════════════════════════════════════
+.acc-line1 { color: var(--gold);    font-size: 14px; font-weight: 700; font-family: 'Noto Sans Devanagari', serif; }
+.acc-line2 { color: var(--saffron); font-size: 12px; font-weight: 600; font-family: 'Noto Sans Devanagari', serif; }
+.acc-line3 { color: var(--amber);   font-size: 11px; }
+.acc-timer { color: var(--muted);   font-size: 10px; margin-top: 4px; font-style: italic; }
+
+// ══════════════════════════════════════════════════════════
 //  VIRTUAL SEVA
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 .seva-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -332,33 +511,16 @@ ion-content {
   transition: transform 0.15s, background 0.2s, border-color 0.2s;
   outline: none;
 
-  &:active {
-    transform: scale(0.92);
-    background: #250c00;
-    border-color: var(--saffron);
-  }
+  &:active { transform: scale(0.92); background: #250c00; border-color: var(--saffron); }
 }
 
-.seva-icon {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
+.seva-icon  { font-size: 24px; margin-bottom: 5px; }
+.seva-name  { color: var(--amber); font-size: 10px; font-weight: 600; }
+.seva-count { color: var(--muted); font-size: 9px;  margin-top: 2px; }
 
-.seva-name {
-  color: var(--amber);
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.seva-count {
-  color: var(--muted);
-  font-size: 9px;
-  margin-top: 2px;
-}
-
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 //  CHALISA PLAYER
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 .chalisa-player {
   background: var(--card-bg);
   border: 1px solid var(--border);
@@ -370,30 +532,21 @@ ion-content {
   margin-bottom: 14px;
   transition: border-color 0.3s;
 
-  &.playing {
-    border-color: var(--saffron);
-    box-shadow: 0 0 16px rgba(255, 140, 0, 0.18);
-  }
+  &.playing { border-color: var(--saffron); box-shadow: 0 0 16px rgba(255,140,0,0.18); }
 }
 
 .chalisa-cover {
-  width: 50px;
-  height: 50px;
+  width: 50px; height: 50px;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--red-deep), var(--red-mid));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 
 .chalisa-spinner {
   font-size: 26px;
   display: block;
-
-  &.spin {
-    animation: rotateSlow 4s linear infinite;
-  }
+  &.spin { animation: rotateSlow 4s linear infinite; }
 }
 
 @keyframes rotateSlow {
@@ -401,17 +554,8 @@ ion-content {
   to   { transform: rotate(360deg); }
 }
 
-.chalisa-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.chalisa-title {
-  color: var(--gold);
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 3px;
-}
+.chalisa-info  { flex: 1; min-width: 0; }
+.chalisa-title { color: var(--gold);  font-size: 14px; font-weight: 700; margin-bottom: 3px; }
 
 .chalisa-verse {
   color: var(--amber);
@@ -430,12 +574,10 @@ ion-content {
 
 @keyframes fadeVerse {
   from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.chalisa-progress {
-  margin-top: 6px;
-}
+.chalisa-progress { margin-top: 6px; }
 
 .progress-bar {
   height: 3px;
@@ -451,109 +593,146 @@ ion-content {
   transition: width 1s linear;
 }
 
-.progress-time {
-  color: var(--muted);
-  font-size: 9px;
-  margin-top: 3px;
-}
+.progress-time { color: var(--muted); font-size: 9px; margin-top: 3px; }
 
-.chalisa-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
+.chalisa-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .ctrl-btn {
   background: var(--border);
   border: none;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   color: var(--amber);
   font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: background 0.2s;
   outline: none;
-
   &:active { background: var(--border-hi); }
 }
 
 .play-btn {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--saffron), #cc5500);
   border: none;
   color: white;
   font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  box-shadow: 0 3px 12px rgba(255, 140, 0, 0.45);
+  box-shadow: 0 3px 12px rgba(255,140,0,0.45);
   transition: transform 0.15s, box-shadow 0.2s;
   outline: none;
-
-  &:active {
-    transform: scale(0.93);
-    box-shadow: 0 1px 6px rgba(255, 140, 0, 0.3);
-  }
+  &:active { transform: scale(0.93); box-shadow: 0 1px 6px rgba(255,140,0,0.3); }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PANCHANG
-// ═══════════════════════════════════════════════════════════
-.panchang-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding-bottom: 14px;
-}
-
-.panchang-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
-  transition: border-color 0.2s;
-}
-
-.panchang-label {
-  color: var(--muted);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 3px;
-}
-
-.panchang-value {
-  color: var(--gold);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.panchang-sub {
-  font-size: 10px;
-  margin-top: 2px;
-  color: var(--muted);
-
-  &.auspicious { color: #4caf50; }
-  &.avoid      { color: #ff6b6b; }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  UPCOMING EVENTS
-// ═══════════════════════════════════════════════════════════
-.events-list {
+// ══════════════════════════════════════════════════════════
+//  TODAY'S FESTIVALS
+// ══════════════════════════════════════════════════════════
+.today-festivals-wrap {
+  margin: 0 0 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-bottom: 14px;
 }
+
+.today-festival-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C45E00;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 2px;
+}
+
+.today-festival-card {
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(135deg, #FFF8E7, #FFF3D6);
+  border: 1.5px solid rgba(255,184,0,0.3);
+  border-radius: 16px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #FF9500, #FFB800, #FF9500);
+  }
+}
+
+.tf-date-badge {
+  flex-shrink: 0;
+  width: 48px; min-height: 56px;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1px; padding: 6px 4px;
+  box-shadow: 0 3px 10px rgba(224,123,0,0.3);
+
+  .tf-date-dd  { font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
+  .tf-date-mon { font-size: 9px;  font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.8px; line-height: 1; }
+  .tf-date-yr  { font-size: 8px;  color: rgba(255,255,255,0.7); line-height: 1; margin-top: 1px; }
+}
+
+.tf-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+
+.tf-name-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.tf-name       { font-size: 14px; font-weight: 700; color: #2B1A00; line-height: 1.3; flex: 1; }
+.tf-emoji      { font-size: 18px; flex-shrink: 0; }
+.tf-name-hindi { font-size: 12px; font-weight: 600; color: #C45E00; }
+
+.tf-day-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #9A7A50;
+  background: rgba(255,149,0,0.08);
+  border-radius: 50px;
+  padding: 2px 8px;
+  width: fit-content;
+  ion-icon { font-size: 10px; color: #FF9500; }
+}
+
+.tf-desc {
+  font-size: 11px;
+  color: #9A7A50;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.no-festival-today { text-align: center; font-size: 12px; color: #C45E00; font-weight: 600; padding: 10px 0 14px; opacity: 0.7; }
+
+.tf-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 4px;
+  font-size: 12px;
+  color: #C45E00;
+  font-weight: 600;
+}
+
+// ══════════════════════════════════════════════════════════
+//  UPCOMING EVENTS
+// ══════════════════════════════════════════════════════════
+.events-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; }
 
 .event-card {
   background: var(--card-bg);
@@ -563,50 +742,15 @@ ion-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: border-color 0.2s;
-
   &:active { border-color: var(--saffron); }
 }
 
-.event-date-box {
-  background: var(--red-mid);
-  border-radius: 10px;
-  padding: 8px 10px;
-  text-align: center;
-  min-width: 46px;
-  flex-shrink: 0;
-}
-
-.event-day {
-  color: var(--saffron);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.event-month {
-  color: var(--amber);
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.event-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.event-title {
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-
-.event-meta {
-  color: var(--muted);
-  font-size: 10px;
-}
+.event-date-box { background: var(--red-mid); border-radius: 10px; padding: 8px 10px; text-align: center; min-width: 46px; flex-shrink: 0; }
+.event-day      { color: var(--saffron); font-size: 20px; font-weight: 800; line-height: 1; }
+.event-month    { color: var(--amber);   font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+.event-details  { flex: 1; min-width: 0; }
+.event-title    { color: var(--gold); font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.event-meta     { color: var(--muted); font-size: 10px; }
 
 .event-rsvp {
   background: var(--border);
@@ -621,73 +765,38 @@ ion-content {
   outline: none;
   flex-shrink: 0;
 
-  &.free {
-    background: rgba(76, 175, 80, 0.15);
-    border-color: #4caf50;
-    color: #4caf50;
-  }
-
-  &:active {
-    background: var(--red-deep);
-    color: var(--gold);
-  }
+  &.free  { background: rgba(76,175,80,0.15); border-color: #4caf50; color: #4caf50; }
+  &:active { background: var(--red-deep); color: var(--gold); }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 //  PRAYER WALL
-// ═══════════════════════════════════════════════════════════
-.prayer-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 14px;
-}
+// ══════════════════════════════════════════════════════════
+.prayer-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; }
 
 .prayer-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px;
-  transition: border-color 0.2s;
 }
 
-.prayer-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.prayer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 
 .prayer-avatar {
-  width: 34px;
-  height: 34px;
+  width: 34px; height: 34px;
   border-radius: 50%;
   background: var(--red-mid);
   border: 1px solid var(--border-hi);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   color: var(--saffron);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 14px; font-weight: 700;
   flex-shrink: 0;
 }
 
-.prayer-meta {
-  flex: 1;
-}
-
-.prayer-name {
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.prayer-time {
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 1px;
-}
+.prayer-meta { flex: 1; }
+.prayer-name { color: var(--gold);  font-size: 12px; font-weight: 600; }
+.prayer-time { color: var(--muted); font-size: 10px; margin-top: 1px; }
 
 .prayer-blessings {
   color: var(--amber);
@@ -701,23 +810,11 @@ ion-content {
   transition: all 0.2s;
   white-space: nowrap;
 
-  &.blessed {
-    background: rgba(255, 140, 0, 0.15);
-    border-color: var(--saffron);
-    color: var(--saffron);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  &.blessed { background: rgba(255,140,0,0.15); border-color: var(--saffron); color: var(--saffron); }
+  &:active  { transform: scale(0.95); }
 }
 
-.prayer-text {
-  color: #cc9060;
-  font-size: 12px;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
+.prayer-text { color: #cc9060; font-size: 12px; line-height: 1.6; margin-bottom: 8px; }
 
 .reply-btn {
   background: transparent;
@@ -727,8 +824,6 @@ ion-content {
   cursor: pointer;
   padding: 0;
   outline: none;
-  transition: color 0.2s;
-
   &:active { color: var(--amber); }
 }
 
@@ -738,18 +833,15 @@ ion-content {
   border-radius: 20px;
   padding: 5px 14px;
   color: var(--gold);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 11px; font-weight: 600;
   cursor: pointer;
   outline: none;
-  transition: background 0.2s;
-
   &:active { background: var(--red-deep); }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  COMMUNITY HERO (existing styles — keep unchanged below)
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+//  COMMUNITY HERO
+// ══════════════════════════════════════════════════════════
 .comm-hero {
   position: relative;
   overflow: hidden;
@@ -761,8 +853,7 @@ ion-content {
 
 .comm-hero-bg-om {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 180px;
   opacity: 0.05;
@@ -771,183 +862,860 @@ ion-content {
   user-select: none;
 }
 
-.comm-diya {
-  position: absolute;
-  font-size: 20px;
-  animation: diyaFloat 3s ease-in-out infinite alternate;
-}
-
-.d1 { top: 16px;  left: 16px;  animation-delay: 0s;    }
-.d2 { top: 16px;  right: 16px; animation-delay: 0.5s;  }
-.d3 { bottom: 16px; left: 16px;  animation-delay: 1s;  }
-.d4 { bottom: 16px; right: 16px; animation-delay: 1.5s;}
+.comm-diya { position: absolute; font-size: 20px; animation: diyaFloat 3s ease-in-out infinite alternate; }
+.d1 { top: 16px;    left: 16px;   animation-delay: 0s;   }
+.d2 { top: 16px;    right: 16px;  animation-delay: 0.5s; }
+.d3 { bottom: 16px; left: 16px;   animation-delay: 1s;   }
+.d4 { bottom: 16px; right: 16px;  animation-delay: 1.5s; }
 
 @keyframes diyaFloat {
   from { transform: translateY(0)    scale(1);    }
   to   { transform: translateY(-6px) scale(1.08); }
 }
 
-.comm-hero-inner {
-  position: relative;
-  z-index: 1;
-}
+.comm-hero-inner { position: relative; z-index: 1; }
 
 .comm-hero-badge {
   display: inline-block;
-  background: rgba(139, 26, 0, 0.6);
+  background: rgba(139,26,0,0.6);
   border: 1px solid var(--saffron);
   border-radius: 20px;
   padding: 5px 16px;
   color: var(--gold);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 11px; font-weight: 600;
   margin-bottom: 16px;
   letter-spacing: 0.5px;
 }
 
 .comm-hero-title {
   color: var(--gold);
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 32px; font-weight: 800;
   margin: 0 0 6px;
   font-family: 'Noto Sans Devanagari', serif;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  text-shadow: 0 0 20px rgba(255,215,0,0.4);
 }
 
-.comm-hero-devanagari {
-  color: var(--saffron);
-  font-size: 14px;
-  letter-spacing: 2px;
-  margin: 0 0 14px;
-}
+.comm-hero-devanagari { color: var(--saffron); font-size: 14px; letter-spacing: 2px; margin: 0 0 14px; }
+.comm-hero-desc        { color: #cc9060; font-size: 13px; line-height: 1.7; max-width: 320px; margin: 0 auto 20px; }
 
-.comm-hero-desc {
-  color: #cc9060;
-  font-size: 13px;
-  line-height: 1.7;
-  max-width: 320px;
-  margin: 0 auto 20px;
-}
-
-.comm-hero-pills {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
+.comm-hero-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 
 .comm-pill {
-  background: rgba(139, 26, 0, 0.5);
+  background: rgba(139,26,0,0.5);
   border: 1px solid var(--border-hi);
   border-radius: 20px;
   padding: 5px 14px;
   color: var(--amber);
-  font-size: 12px;
-  font-weight: 600;
-}
-.mantra-strip.playing {
-  background: #1f0a00;
-  border-color: var(--gold);
-  .mantra-meaning { color: var(--gold); }
+  font-size: 12px; font-weight: 600;
 }
 
-.hanuman-container {
-  position: relative;   // ← ADD THIS — canvas needs a positioned parent
-  width: 100%;
-
-  &.glowing .hanuman-img {
-    animation: divineGlow 0.6s ease-in-out infinite alternate;
-  }
+// ── Shared bell shake (used by seq-icon.bell-ring) ─────
+@keyframes bellShake {
+  0%   { transform: rotate(0deg);   }
+  20%  { transform: rotate(-18deg); }
+  40%  { transform: rotate(18deg);  }
+  60%  { transform: rotate(-10deg); }
+  80%  { transform: rotate(10deg);  }
+  100% { transform: rotate(0deg);   }
 }
 
-.flower-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10;          // sits above image and aura
+.mudra-balance-card {
+  margin: 12px 16px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fff7e0, #ffe5b4);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-// ═══════════════════════════════════════════════════════════
-//  REEL SIDEBAR (left overlay on hero image)
-// ═══════════════════════════════════════════════════════════
-.reel-sidebar {
-  position: absolute;
-  left: 10px;
-  top: 60%;
-  transform: translateY(-50%);
+.mudra-icon {
+  font-size: 34px;
+}
+
+.mudra-content {
+  flex: 1;
+}
+
+.mudra-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.mudra-points {
+  font-size: 24px;
+  font-weight: 700;
+  color: #8B4513;
+}
+
+.mudra-badge {
+  font-size: 24px;
+}
+
+// ══════════════════════════════════════════════════════════
+//  AARTI RUNNING CARD (replaces overlay in image)
+// ══════════════════════════════════════════════════════════
+.aarti-running-card {
+  background: linear-gradient(135deg, #6a1100 0%, #3a0700 100%);
+  border: 1.5px solid var(--gold);
+  border-radius: 18px;
+  padding: 14px 18px;
+  animation: aartiPulse 0.85s ease-in-out infinite alternate;
+}
+
+.arc-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.arc-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+  animation: seqPulse 1.6s ease-in-out infinite alternate;
+
+  &.bell-ring { animation: bellShake 0.4s ease-in-out 3; }
+}
+
+.arc-text {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  z-index: 10;
+  gap: 2px;
 }
 
-.reel-btn {
-  display: flex;
- 
-  align-items: center;
-  gap: 3px;
-  background: rgba(26, 8, 0, 0.82);
-  border: 1px solid var(--border);
-  border-radius: 50px;
-  padding: 6px;
-  width: 82px;
+.arc-label {
+  color: var(--gold);
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Noto Sans Devanagari', serif;
+  letter-spacing: 0.4px;
+}
+
+.arc-sub {
+  color: var(--saffron);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Noto Sans Devanagari', serif;
+}
+
+.arc-sub2 {
+  color: var(--amber);
+  font-size: 10px;
+  font-style: italic;
+  font-family: 'Noto Sans Devanagari', serif;
+  opacity: 0.8;
+}
+
+.arc-stop-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50%;
+  width: 30px; height: 30px;
+  color: var(--amber);
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   outline: none;
-  transition: transform 0.15s, border-color 0.2s, background 0.2s;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  flex-shrink: 0;
+  transition: background 0.2s;
 
-  &:active {
-    transform: scale(0.92);
-    background: rgba(60, 16, 0, 0.9);
+  &:active { background: rgba(255,255,255,0.22); }
+}
+
+.arc-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arc-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.arc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-deep), var(--saffron), var(--gold));
+  border-radius: 2px;
+  transition: width 0.15s linear;
+}
+
+.arc-pct {
+  color: var(--muted);
+  font-size: 9px;
+  min-width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.mudra-mini {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  opacity: 0.72;
+  letter-spacing: 0.3px;
+}
+
+// ══════════════════════════════════════════════════════════
+//  ADD YOUR OWN MANDIR — CTA
+// ══════════════════════════════════════════════════════════
+.family-mandir-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #1f0700, #2e1000);
+  border: 1.5px solid var(--saffron);
+  border-radius: 18px;
+  padding: 16px 18px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red-deep), var(--saffron), var(--gold));
   }
 
-  &--primary {
-    background: rgba(139, 26, 0, 0.88);
-    border-color: var(--saffron);
+  &:active { transform: scale(0.98); }
+}
 
-    &.active {
-      animation: aartiPulse 0.7s ease-in-out infinite alternate;
-    }
-  }
+.fmc-icon    { font-size: 32px; flex-shrink: 0; }
+.fmc-content { flex: 1; }
+.fmc-title   { color: var(--gold);   font-size: 15px; font-weight: 700; font-family: 'Noto Sans Devanagari', serif; }
+.fmc-sub     { color: var(--amber);  font-size: 11px; margin-top: 2px; opacity: 0.8; }
+.fmc-arrow   { color: var(--saffron); font-size: 20px; font-weight: 700; flex-shrink: 0; }
 
-  &--seva {
-    background: rgba(15, 5, 0, 0.78);
-    border-color: var(--border);
-  }
+// ══════════════════════════════════════════════════════════
+//  FAMILY MANDIR INSERT FORM (bottom sheet)
+// ══════════════════════════════════════════════════════════
+.fm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 
-  &.ringing .bell-icon {
-    animation: bellShake 0.4s ease-in-out 3;
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+
+    .fm-sheet { transform: translateY(0); }
   }
 }
 
-.reel-icon {
-  font-size: 22px;
+.fm-sheet {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  max-height: 90vh;
+  background: var(--card-bg);
+  border-top: 2px solid var(--saffron);
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+}
+
+.fm-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.fm-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: var(--border);
+  border: none;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  color: var(--amber);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.fm-header-title { color: var(--gold);  font-size: 16px; font-weight: 700; font-family: 'Noto Sans Devanagari', serif; }
+.fm-header-sub   { color: var(--muted); font-size: 10px; margin-top: 3px; }
+
+.fm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fm-field    { margin-bottom: 16px; }
+.fm-label    { display: block; color: var(--amber); font-size: 11px; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.3px; }
+.fm-mt       { margin-top: 8px; }
+
+.fm-input {
+  width: 100%;
+  background: #120500;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--gold);
+  font-size: 13px;
+  outline: none;
+  font-family: 'Noto Sans Devanagari', serif;
   display: block;
+
+  &::placeholder { color: var(--muted); opacity: 0.6; }
+  &:focus        { border-color: var(--saffron); }
+}
+
+.fm-textarea { min-height: 80px; resize: none; }
+
+// ── Photo rows ────────────────────────────────────────
+.fm-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #100400;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.fm-thumb {
+  width: 50px; height: 50px;
+  border-radius: 8px;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.fm-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+
+.fm-tick {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  font-size: 11px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
   line-height: 1;
 }
 
-.reel-label {
+.fm-photo-actions { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.fm-pick-btn {
+  display: block;
+  background: var(--border);
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: var(--amber);
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+
+.fm-upload-btn {
+  background: linear-gradient(135deg, var(--saffron), #cc5500);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  &:disabled { opacity: 0.6; }
+}
+
+// ── Submit ────────────────────────────────────────────
+.fm-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #8B1A00, #5c1000);
+  border: 1.5px solid var(--saffron);
+  border-radius: 16px;
+  padding: 14px;
   color: var(--gold);
-  font-size: 9px;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.2;
+  font-size: 15px; font-weight: 700;
+  font-family: 'Noto Sans Devanagari', serif;
+  cursor: pointer;
+  outline: none;
+  margin-top: 8px;
+  transition: transform 0.15s;
+
+  &:active   { transform: scale(0.98); }
+  &:disabled { opacity: 0.6; }
 }
 
-.reel-count {
+.fm-note {
+  text-align: center;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 10px;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.fm-aarti-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fm-audio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 153, 0, 0.3);
+}
+
+.fm-audio-icon { font-size: 16px; }
+
+.fm-audio-filename {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-audio-done {
+  font-size: 12px;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.fm-audio-pick { font-size: 11px; padding: 4px 10px; }
+
+// ══════════════════════════════════════════════════════════
+//  FAMILY MANDIR INSERT FORM (bottom sheet) — LIGHT THEME
+// ══════════════════════════════════════════════════════════
+.fm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+    .fm-sheet { transform: translateY(0); }
+  }
+}
+
+.fm-sheet {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  max-height: 90vh;
+  background: #FFF8F0;                          // ← warm white
+  border-top: 2px solid #FF8C00;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+}
+
+.fm-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #F0D9B5;
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+  background: linear-gradient(135deg, #FFF3DC, #FFE8C0);  // ← saffron tint
+  border-radius: 20px 20px 0 0;
+}
+
+.fm-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: #F0D0A0;
+  border: none;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  color: #8B1A00;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+
+.fm-header-title { color: #8B1A00; font-size: 16px; font-weight: 700; font-family: 'Noto Sans Devanagari', serif; }
+.fm-header-sub   { color: #B06020; font-size: 10px; margin-top: 3px; }
+
+.fm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  -webkit-overflow-scrolling: touch;
+  background: #FFF8F0;
+}
+
+.fm-field    { margin-bottom: 16px; }
+.fm-label    { display: block; color: #8B1A00; font-size: 11px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.3px; }
+.fm-mt       { margin-top: 8px; }
+
+.fm-input {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1.5px solid #E8C080;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #3A1A00;
+  font-size: 13px;
+  outline: none;
+  font-family: 'Noto Sans Devanagari', serif;
+  display: block;
+
+  &::placeholder { color: #C09060; opacity: 0.8; }
+  &:focus        { border-color: #FF8C00; box-shadow: 0 0 0 3px rgba(255,140,0,0.12); }
+}
+
+.fm-textarea { min-height: 80px; resize: none; }
+
+// ── Photo rows ────────────────────────────────────────
+.fm-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFF3DC;
+  border: 1px solid #E8C080;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.fm-thumb {
+  width: 50px; height: 50px;
+  border-radius: 8px;
+  background: #F0D9B5;
+  border: 1px solid #E8C080;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.fm-thumb-img { width: 100%; height: 100%; object-fit: cover; }
+
+.fm-tick {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  font-size: 11px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.fm-photo-actions { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.fm-pick-btn {
+  display: block;
+  background: #F0D9B5;
+  border: 1px solid #D4A060;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #8B1A00;
+  font-size: 11px; font-weight: 700;
+  cursor: pointer;
   text-align: center;
 }
 
-.reel-divider {
-  width: 28px;
-  height: 1px;
-  background: var(--border-hi);
-  margin: 2px 0;
+.fm-upload-btn {
+  background: linear-gradient(135deg, #FF8C00, #cc5500);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  &:disabled { opacity: 0.6; }
+}
+
+// ── Audio rows ────────────────────────────────────────
+.fm-audio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  background: #FFF3DC;
+  border-radius: 8px;
+  border: 1px dashed #D4A060;
+}
+
+.fm-audio-icon { font-size: 16px; }
+
+.fm-audio-filename {
+  font-size: 11px;
+  color: #8B5E30;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-audio-done {
+  font-size: 12px;
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.fm-audio-pick { font-size: 11px; padding: 4px 10px; }
+
+// ── Submit ────────────────────────────────────────────
+.fm-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #8B1A00, #C43D00);
+  border: 1.5px solid #FF8C00;
+  border-radius: 16px;
+  padding: 14px;
+  color: #FFD700;
+  font-size: 15px; font-weight: 700;
+  font-family: 'Noto Sans Devanagari', serif;
+  cursor: pointer;
+  outline: none;
+  margin-top: 8px;
+  transition: transform 0.15s;
+  box-shadow: 0 4px 16px rgba(139,26,0,0.25);
+
+  &:active   { transform: scale(0.98); }
+  &:disabled { opacity: 0.6; }
+}
+
+.fm-note {
+  text-align: center;
+  color: #B06020;
+  font-size: 10px;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+// ── Mandir hero image ─────────────────────────────────
+.mandir-hero-img {
+  object-fit: cover;
+  object-position: center top;
+  transition: opacity 0.6s ease;
+}
+
+// ── Mandir info overlay ───────────────────────────────
+.mandir-info-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 40px 20px 18px;
+  background: linear-gradient(to top,
+    rgba(6,1,0,0.92) 0%,
+    rgba(10,2,0,0.60) 50%,
+    transparent 100%
+  );
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.mio-badge {
+  background: rgba(139,26,0,0.75);
+  border: 1px solid var(--saffron);
+  border-radius: 20px;
+  padding: 3px 12px;
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.mio-name {
+  color: var(--gold);
+  font-size: 20px;
+  font-weight: 800;
+  font-family: 'Noto Sans Devanagari', serif;
+  text-shadow: 0 0 16px rgba(255,215,0,0.5);
+  letter-spacing: 0.5px;
+}
+
+.mio-god {
+  color: var(--saffron);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Noto Sans Devanagari', serif;
+}
+
+.mio-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mio-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transition: background 0.3s, transform 0.3s;
+
+  &.active {
+    background: var(--gold);
+    transform: scale(1.3);
+  }
+}
+
+// ── Active mandir CTA variant ─────────────────────────
+.family-mandir-cta.active-mandir {
+  background: linear-gradient(135deg, #0a1f00, #152e00);
+  border-color: #4caf50;
+
+  &::before {
+    background: linear-gradient(90deg, #2E7D32, #4caf50, #2E7D32);
+  }
+
+  .fmc-title { color: #81C784; }
+  .fmc-sub   { color: #A5D6A7; }
+}
+
+// ══════════════════════════════════════════════════════════
+//  FAMILY MANDIR AARTI PLAYERS
+// ══════════════════════════════════════════════════════════
+.family-aarti-section {
+  padding-bottom: 14px;
+}
+
+.fa-mandir-god {
+  color: var(--saffron);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.fa-player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.3s;
+
+  &:has(.fa-playing) {
+    border-color: var(--saffron);
+    box-shadow: 0 0 12px rgba(255,140,0,0.15);
+  }
+}
+
+.fa-player-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+
+  &.fa-spinning {
+    animation: diyaFloat 1.2s ease-in-out infinite alternate;
+  }
+}
+
+.fa-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fa-player-name {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Noto Sans Devanagari', serif;
+  margin-bottom: 2px;
+}
+
+.fa-player-file {
+  color: var(--muted);
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+// ── Animated progress bar (indeterminate while playing) ──
+.fa-progress-bar {
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.fa-progress-fill {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--red-deep), var(--saffron), var(--gold));
+  border-radius: 2px;
+
+  &.fa-anim {
+    animation: faSlide 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes faSlide {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(160%);  }
+  100% { transform: translateX(-100%); }
+}
+
+// ── Play button ───────────────────────────────────────────
+.fa-play-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--saffron), #cc5500);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  outline: none;
+  box-shadow: 0 3px 10px rgba(255,140,0,0.35);
+  transition: transform 0.15s, box-shadow 0.2s;
+
+  &.fa-playing {
+    background: linear-gradient(135deg, #cc5500, #8B1A00);
+    box-shadow: 0 0 18px rgba(255,140,0,0.5);
+    animation: aartiPulse 0.85s ease-in-out infinite alternate;
+  }
+
+  &.fa-loading {
+    background: var(--border);
+    box-shadow: none;
+    cursor: wait;
+  }
+
+  &:active { transform: scale(0.93); }
 }

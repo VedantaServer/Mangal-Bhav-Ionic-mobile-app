@@ -11,7 +11,7 @@
         <div class="inner-title-sub">{{t.appTitle}}</div>
       </div>
 
-      <div class="inner-logo">
+      <div class="inner-logo"     routerLink="/open-community-page"    >
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
 
@@ -187,8 +187,9 @@
   </div>
 </ion-content>
 
+<!-- 
+<app-common-bottom-tabs
+  *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs>
 
-
-
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
-<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs> -->

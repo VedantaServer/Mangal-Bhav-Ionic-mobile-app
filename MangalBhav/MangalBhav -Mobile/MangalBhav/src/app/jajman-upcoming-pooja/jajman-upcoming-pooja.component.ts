@@ -9,13 +9,15 @@ import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-jajman-upcoming-pooja',
   templateUrl: './jajman-upcoming-pooja.component.html',
   styleUrls: ['./jajman-upcoming-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule, CommonBottomTabsComponent,IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class JajmanUpcomingPoojaComponent implements OnInit {
   userDetails: any;

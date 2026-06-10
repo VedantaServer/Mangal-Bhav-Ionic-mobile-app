@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './loggedin-panditsearch.component.html',
   styleUrls: ['./loggedin-panditsearch.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, CommonBottomTabsComponent,IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent]
 })
 export class LoggedinPanditsearchComponent implements OnInit {
 

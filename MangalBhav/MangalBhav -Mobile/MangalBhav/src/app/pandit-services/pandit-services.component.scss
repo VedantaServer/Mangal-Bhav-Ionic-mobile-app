@@ -1650,3 +1650,26 @@ ion-modal {
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.terms-item {
+  --background: #f8f9fa;
+  --border-radius: 10px;
+  margin-bottom: 16px;
+  padding: 8px 4px;
+
+  ion-checkbox {
+    margin-right: 10px;
+    --size: 20px;
+  }
+}
+
+.terms-label {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+  white-space: normal;
+}
+
+.save-btn {
+  margin-top: 8px;
+}

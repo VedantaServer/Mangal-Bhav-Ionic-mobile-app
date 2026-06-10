@@ -52,6 +52,9 @@ export class MandirfulldetailsComponent implements OnInit {
 
   // ── Donate sheet ───────────────────────────
 
+  donationSummary: any = null;
+  showDonorList = false;
+  donorListLoaded = false;
 
   donateAmount = '';
   donateCustomAmount: any = 21;
@@ -77,7 +80,12 @@ export class MandirfulldetailsComponent implements OnInit {
   supportMangalBhav = true;
   platformFee = 5;
   paidTransactionIds = new Set<number>();
-
+  // ── Community / Membership ───────────────────────────
+  isMember = false;
+  isJoining = false;
+  isMembershipLoading = true;
+  memberCount = 0;
+  memberSince: Date | null = null;
 
   /** Purpose options shown in the dropdown */
   purposeOptions = [
@@ -91,6 +99,7 @@ export class MandirfulldetailsComponent implements OnInit {
     'Maintenance & Upkeep',
     'Other',
   ];
+  events: any = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -111,16 +120,20 @@ export class MandirfulldetailsComponent implements OnInit {
       this.donateName = this.userDetails.FullName;
     }
 
-  //  this.mandirID = this.route.snapshot.paramMap.get('id');
+    //  this.mandirID = this.route.snapshot.paramMap.get('id');
 
 
-    this.mandirID = this.route.snapshot.paramMap.get('id') 
-    || this.route.snapshot.params['id'];
+    this.mandirID = this.route.snapshot.paramMap.get('id')
+      || this.route.snapshot.params['id'];
 
-    if (this.mandirID) this.loadMandir();
-
-    this.loadTransaction();
-
+    if (this.mandirID) {
+      
+      this.loadMandir(); 
+      this.loadUpcomingEvents();
+    }
+    // this.loadTransaction();
+    this.loadDonationSummary();
+    this.checkMembership();
     this.MandirTransaction.MandirID = Number(this.mandirID);
 
     this.apinu
@@ -161,14 +174,86 @@ export class MandirfulldetailsComponent implements OnInit {
       });
   }
 
+
+  checkMembership() {
+    if (!this.userDetails?.UserID) {
+      this.isMembershipLoading = false;
+      this.loadMemberCount(); // still show member count to guests
+      return;
+    }
+  
+    const query = `MandirID = ${this.mandirID} AND UserID = ${this.userDetails.UserID} AND IsActive = 1`;
+    this.apinu
+      .postUrlData(`MandirMemberSelectByQuery?tenantID=1&schoolID=0&Query=${encodeURIComponent(query)}`, null)
+      .subscribe({
+        next: (res: any) => {
+          const list: any[] = res?.MandirMemberList ?? [];
+          this.isMember = list.length > 0;
+          this.memberSince = list.length > 0 ? new Date(list[0].DateAdded) : null;
+          this.isMembershipLoading = false;
+          this.loadMemberCount();
+        },
+        error: () => {
+          this.isMembershipLoading = false;
+          this.loadMemberCount();
+        }
+      });
+  }
+  
+  loadMemberCount() {
+    const query = `MandirID = ${this.mandirID} AND IsActive = 1`;
+    this.apinu
+      .postUrlData(`MandirMemberSelectByQuery?tenantID=1&schoolID=0&Query=${encodeURIComponent(query)}`, null)
+      .subscribe({
+        next: (res: any) => {
+          this.memberCount = res?.MandirMemberList?.length ?? 0;
+        }
+      });
+  }
+  
+  joinMandir() {
+    if (!this.userDetails?.UserID) {
+      this.showToast('Please login to join this mandir community 🙏', 'warning');
+      return;
+    }
+  
+    this.isJoining = true;
+  
+    const member = {
+      MandirMemberID: 0,
+      TenantID: 1,
+      MandirID: Number(this.mandirID),
+      UserID: Number(this.userDetails.UserID),
+      MemberRole: 'Member',
+      IsActive: true,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      UpdatedByUser: this.userDetails.FullName || ''
+    };
+  
+    this.apinu.postUrlData('MandirMemberInsert', member).subscribe({
+      next: () => {
+        this.isMember = true;
+        this.memberSince = new Date();
+        this.memberCount++;
+        this.isJoining = false;
+        this.showToast('🙏 You have joined this mandir\'s community!', 'success');
+      },
+      error: () => {
+        this.isJoining = false;
+        this.showToast('Could not join. Please try again 🙏', 'danger');
+      }
+    });
+  }
+
   // ─────────────────────────────────────────────────────────────
 
   checkPaidToMandir(transactions: any[]) {
     if (!transactions?.length) return;
-  
+
     const ids = transactions.map(t => t.TransactionID).join(',');
     const query = `TransactionID IN (${ids}) AND IsPaid = 1 AND IsCancelled <> 1`;
-  
+
     this.apinu
       .postUrlData(`MandirLedgerSelectByQuery?Query=${encodeURIComponent(query)}`, null)
       .subscribe({
@@ -181,7 +266,7 @@ export class MandirfulldetailsComponent implements OnInit {
         }
       });
   }
-  
+
   // Update loadTransaction() to call it after fetch
   loadTransaction() {
     this.apinu
@@ -192,6 +277,25 @@ export class MandirfulldetailsComponent implements OnInit {
       .subscribe((res: any) => {
         this.MandirTransactionList = res.MandirTransactionList;
         this.checkPaidToMandir(this.MandirTransactionList); // ← add this
+      });
+  }
+
+  loadUpcomingEvents() {
+
+    const today = new Date().toISOString().split('T')[0];
+  
+    const query =
+      `MandirID=${this.mandirID} AND IsVerified = 1
+       AND CONVERT(date, EventDate, 23) >= CONVERT(date, GETDATE())
+       ORDER BY CONVERT(date, EventDate, 23) ASC`;
+  
+    this.apinu
+      .postUrlData(
+        `MandirEventSelectByQuery?Query=${encodeURIComponent(query)}`,
+        null
+      )
+      .subscribe((res: any) => {
+        this.events = res?.MandirEventList || [];
       });
   }
 
@@ -298,7 +402,12 @@ export class MandirfulldetailsComponent implements OnInit {
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
     if (fab) fab.style.display = 'flex';
   }
-  backToDonate() { this.currentSection = 'donate'; }
+  backToDonate() {
+    this.currentSection = 'donate';
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'flex';
+
+  }
 
 
   closeAll() {
@@ -313,6 +422,16 @@ export class MandirfulldetailsComponent implements OnInit {
     if (fab) fab.style.display = 'flex';
   }
 
+
+  goBack() {
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+
+    if (fab) {
+      fab.style.display = 'flex';
+    }
+
+    this.routerCtrl.back();
+  }
   selectPreset(amount: number) {
     this.donateAmount = String(amount);
     this.donateCustomAmount = Number(amount);
@@ -373,7 +492,7 @@ export class MandirfulldetailsComponent implements OnInit {
           currency: 'INR',
           name: 'Mangal Bhav',
           description: this.donatePurpose || 'Mangal Bhav Donation',
-          image: 'https://mangalbhav.com/assets/mangalbhavlogo1.jpeg',
+          image: 'https://app.mangalbhav.com/assets/mangalbhavlogo1.jpeg',
           order_id: or,
           webview_intent: true,
 
@@ -479,7 +598,7 @@ export class MandirfulldetailsComponent implements OnInit {
   }
 
   async shareMandir() {
-    const shareUrl = `https://mangalbhav.com/mandirfulldetails/${this.mandirID}`;
+    const shareUrl = `https://app.mangalbhav.com/mandirfulldetails/${this.mandirID}`;
     const name = this.mandir?.MandirName || 'Mandir';
     const god = this.mandir?.GodName || '';
     const canShare = await Share.canShare();
@@ -497,7 +616,7 @@ export class MandirfulldetailsComponent implements OnInit {
   }
 
   shareOnWhatsApp() {
-    const shareUrl = `https://mangalbhav.com/mandirfulldetails/${this.mandirID}`;
+    const shareUrl = `https://app.mangalbhav.com/mandirfulldetails/${this.mandirID}`;
     const name = this.mandir?.MandirName || 'Mandir';
     const god = this.mandir?.GodName || '';
     const text = encodeURIComponent(`🛕 *${name}*${god ? '\n✦ ' + god : ''}\n\nVisit on Mangal Bhav 🙏\n${shareUrl}`);
@@ -509,6 +628,15 @@ export class MandirfulldetailsComponent implements OnInit {
     await Browser.open({
       url: 'https://wa.me/918796917944?text=' + encodeURIComponent('Need help'),
     });
+  }
+
+  formatEventDate(dateStr: string) {
+    const d = new Date(dateStr);
+  
+    return {
+      dd: d.toLocaleDateString('en-IN', { day: '2-digit' }),
+      mon: d.toLocaleDateString('en-IN', { month: 'short' }).toUpperCase()
+    };
   }
 
   shareDonationOnWhatsApp() {
@@ -524,7 +652,7 @@ export class MandirfulldetailsComponent implements OnInit {
 
     const mandirName = this.mandir?.MandirName || 'Mandir';
 
-    const shareUrl = `https://mangalbhav.com/mandirfulldetails/${this.mandirID}`;
+    const shareUrl = `https://app.mangalbhav.com/mandirfulldetails/${this.mandirID}`;
 
     const message =
       `
@@ -559,5 +687,30 @@ ${shareUrl}
 
   closeLightbox() {
     this.lightboxImageUrl = null;
+  }
+  loadDonationSummary() {
+    this.apinu
+      .postUrlData(
+        `MandirDonationSummary?mandirID=${this.mandirID}`,
+        null
+      )
+      .subscribe((res: any) => {
+
+        this.donationSummary = res[0];
+
+        console.log(this.donationSummary);
+      });
+  }
+
+  showDonors() {
+
+    this.showDonorList = true;
+
+    if (!this.donorListLoaded) {
+
+      this.loadTransaction();
+
+      this.donorListLoaded = true;
+    }
   }
 }

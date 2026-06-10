@@ -8,13 +8,14 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-pending-pooja',
   templateUrl: './pending-pooja.component.html',
   styleUrls: ['./pending-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,RouterModule, PanditjibottomtabsComponent]
 })
 export class PendingPoojaComponent implements OnInit {
   userDetails: any;

@@ -5,13 +5,14 @@ import { Storage } from '@ionic/storage-angular';
 import { Api, ApiNU } from '../../providers';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { concatMap, forkJoin, map, of } from 'rxjs';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-mytransaction',
   templateUrl: './mytransaction.component.html',
   styleUrls: ['./mytransaction.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, JajmanbottomtabsComponent]
+  imports: [CommonModule, IonicModule, CommonBottomTabsComponent,JajmanbottomtabsComponent]
 })
 export class MytransactionComponent implements OnInit {
 

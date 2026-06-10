@@ -74,9 +74,9 @@
 
 
 
-
-
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
+<app-common-bottom-tabs
+  *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs>
 
 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>

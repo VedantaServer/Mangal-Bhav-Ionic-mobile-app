@@ -8,12 +8,13 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-cancelled-pooja',
   templateUrl: './cancelled-pooja.component.html',
   styleUrls: ['./cancelled-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule, IonicModule,PanditjibottomtabsComponent]
 })
 export class CancelledPoojaComponent implements OnInit {
   userDetails: any;

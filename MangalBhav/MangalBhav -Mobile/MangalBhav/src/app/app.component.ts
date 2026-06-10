@@ -15,16 +15,54 @@ export class AppComponent {
   lblMessage: string = 'Please waiting, setting up!';
 
 
+  // constructor(
+  //   private platform: Platform,
+  //   private storage: Storage,
+  //   public routerCtrl: NavController,private router: Router
+  // ) {
+  //   this.initializeApp();
+  //   this.handleDeepLinks();
+  // }
+
   constructor(
+    private router: Router,
     private platform: Platform,
     private storage: Storage,
-    public routerCtrl: NavController,private router: Router
+    public routerCtrl: NavController
   ) {
+
     this.initializeApp();
-    this.handleDeepLinks();
+
+    this.setupDeepLinks();
   }
 
+  async setupDeepLinks() {
 
+    // App already running
+    App.addListener('appUrlOpen', (event) => {
+
+      console.log('Deep Link:', event.url);
+
+      const url = new URL(event.url);
+
+      this.router.navigateByUrl(url.pathname);
+
+    });
+
+    // App opened from closed state
+    const launchUrl = await App.getLaunchUrl();
+
+    if (launchUrl?.url) {
+
+      console.log('Launch URL:', launchUrl.url);
+
+      const url = new URL(launchUrl.url);
+
+      this.router.navigateByUrl(url.pathname);
+
+    }
+
+  }
   handleDeepLinks() {
 
     App.addListener('appUrlOpen', (event: any) => {

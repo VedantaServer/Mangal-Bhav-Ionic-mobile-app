@@ -9,13 +9,15 @@ import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-bookings',
   templateUrl: './bookings.component.html',
   styleUrls: ['./bookings.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule, CommonBottomTabsComponent,IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class BookingsComponent implements OnInit {
 

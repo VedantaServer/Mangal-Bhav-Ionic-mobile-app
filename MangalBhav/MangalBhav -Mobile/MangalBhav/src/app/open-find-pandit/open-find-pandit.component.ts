@@ -18,7 +18,7 @@ import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.
   templateUrl: './open-find-pandit.component.html',
   styleUrls: ['./open-find-pandit.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,TabscommonheaderComponent, LoggedoutbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, TabscommonheaderComponent, LoggedoutbottomtabsComponent]
 })
 export class OpenFindPanditComponent implements OnInit {
 
@@ -71,9 +71,12 @@ export class OpenFindPanditComponent implements OnInit {
   async ngOnInit() {
 
     this.userDetails = await this.storage.get("account");
+
     if (this.userDetails?.LoginID) {
       this.userLoggedIn = true;
     }
+
+    this.checkPanditDeepLink();
 
     if (localStorage.getItem('openfindPanditThroghtFloating') !== 'openfindPanditThroghtFloating') {
       this.openQrScanner();
@@ -81,6 +84,28 @@ export class OpenFindPanditComponent implements OnInit {
       localStorage.removeItem('openfindPanditThroghtFloating');
       this.loadPanditProfiles(`Role='PANDIT'`);
     }
+  }
+
+  checkPanditDeepLink() {
+
+    const url =
+      new URL(window.location.href);
+
+    const panditUserID =
+      url.searchParams.get('panditUserID');
+
+    if (panditUserID) {
+
+      this.loadPanditProfiles(
+        `Role='PANDIT' and UserID=${panditUserID}`
+      );
+
+      return;
+    }
+
+    this.loadPanditProfiles(
+      `Role='PANDIT'`
+    );
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -110,6 +135,24 @@ export class OpenFindPanditComponent implements OnInit {
           toArray()
         ).subscribe((result: any[]) => {
           this.panditList = result;
+          const url = new URL(window.location.href);
+
+          const panditUserID =
+            url.searchParams.get('panditUserID');
+
+          if (
+            panditUserID &&
+            this.panditList.length > 0
+          ) {
+
+            setTimeout(() => {
+
+              this.openPanditModal(
+                this.panditList[0]
+              );
+
+            }, 500);
+          }
           this.panditList.forEach(item => {
             if (item.profile) this.loadProfileImage(item.profile);
           });
@@ -324,5 +367,32 @@ export class OpenFindPanditComponent implements OnInit {
       }, 3000000);
     }
     return images[this.currentImageIndex[key] || 0];
+  }
+
+  sharePandit(item: any) {
+
+    const panditName =
+      item.profile?.FullName || 'Pandit Ji';
+
+    const userID =
+      item.profile?.UserID;
+
+    const link =
+      `https://app.mangalbhav.com/open-find-pandit?panditUserID=${userID}`;
+
+    const message =
+      `🙏 ${panditName}
+  
+  Book verified pujas and rituals through Mangal Bhav.
+  
+  View Profile:
+  ${link}
+  
+  🪔 Jai Shri Ram`;
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(message)}`,
+      '_blank'
+    );
   }
 }

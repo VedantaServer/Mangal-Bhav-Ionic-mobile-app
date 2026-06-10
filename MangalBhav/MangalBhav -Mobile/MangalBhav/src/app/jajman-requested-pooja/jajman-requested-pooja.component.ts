@@ -9,12 +9,14 @@ import { AlertController } from '@ionic/angular';
 import { concatMap, forkJoin, map, of } from 'rxjs';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-jajman-requested-pooja',
   templateUrl: './jajman-requested-pooja.component.html',
   styleUrls: ['./jajman-requested-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,RouterModule, CommonBottomTabsComponent,PanditjibottomtabsComponent,JajmanbottomtabsComponent]
 })
 export class JajmanRequestedPoojaComponent implements OnInit {
 

@@ -1091,8 +1091,14 @@ namespace FaceUPAI.Controllers
                 }
 
                 var folderPath = getServerPathByPurpose(filePurpose);
-                string fileExtension = Path.GetExtension(file.FileName);
-                string uniqueFileName = $"{DateTime.Now.Ticks}.png"; // Unique file name
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+                if (fileExtension != ".mp3")
+                {
+                    fileExtension = ".png";
+                }
+
+                string uniqueFileName = $"{DateTime.Now.Ticks}{fileExtension}"; // Unique file name
                 string fileFolderPath = Path.Combine(folderPath);
                 string filePath = Path.Combine(fileFolderPath, uniqueFileName);
 
@@ -1302,7 +1308,6 @@ namespace FaceUPAI.Controllers
         }
 
 
-
         [HttpPost]
         [Route("rptAttendanceSummary")]
         public IActionResult GetAttendanceSummary(int tenantID)
@@ -1320,6 +1325,50 @@ namespace FaceUPAI.Controllers
                 using (SqlDataReader dataReader = DataAccess.ExecuteReader(
                     CommandType.StoredProcedure,
                     "rptAttendanceSummary",
+                    parameters))
+                {
+                    var dataTable = new DataTable();
+                    dataTable.Load(dataReader);
+
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        // Convert DataTable to JSON string
+                        var jsonResult = JsonConvert.SerializeObject(dataTable);
+                        return Ok(jsonResult);
+                    }
+                    else
+                    {
+                        return NotFound("No data found.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return 500 status code in case of errors
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("MandirDonationSummary")]
+        public IActionResult MandirDonationSummary(int mandirID)
+        {
+            try
+            {
+                // Define parameters for the stored procedure
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@MandirID", mandirID),
+           
+                };
+
+                // Execute the stored procedure and load results into a DataTable
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure,
+                    "MandirDonationSummary",
                     parameters))
                 {
                     var dataTable = new DataTable();
@@ -1496,6 +1545,28 @@ namespace FaceUPAI.Controllers
             }
         }
 
+        [HttpGet]
+        [EnableCors("AllowAll")]
+        [Route("DownloadAudio")]
+        public IActionResult DownloadAudio(string audioName, string audioPurpose)
+        {
+            try
+            {
+                var folderPath = getServerPathByPurpose(audioPurpose);
+                audioName = audioName == "undefined" ? "" : audioName;
+
+                if (!System.IO.File.Exists(@folderPath + audioName))
+                    return NotFound("Audio file not found");
+
+                byte[] b = System.IO.File.ReadAllBytes(@folderPath + audioName);
+                return File(b, "audio/mpeg");   // ← mp3 MIME type
+            }
+            catch (Exception err)
+            {
+                return Ok(err.Message);
+            }
+        }
+
         private string getServerPathByPurpose(string imagePurpose)
         {
             string PathData = string.Empty;
@@ -1523,10 +1594,12 @@ namespace FaceUPAI.Controllers
                 PathData = "ClientApp\\dist\\assets\\PanditService\\";
             if (imagePurpose == "BookingPhoto")
                 PathData = "ClientApp\\dist\\assets\\BookingPhoto\\";
+            if (imagePurpose == "AartiAudio")
+                PathData = "ClientApp\\dist\\assets\\AartiAudio\\";
 
 
 
-            
+
 
             return imagePurpose == "logo" ? "Resources\\Logos\\" : PathData;  //check what is purpose of file upload 
         }

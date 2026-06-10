@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "mobile.mangalbhav.com",
+      "sha256_cert_fingerprints": [
+        "4E:62:05:5E:58:9C:6D:75:D1:2C:83:7F:A9:F9:C1:09:79:F3:B6:1F:97:2E:A3:F9:F4:B5:D6:1C:66:01:A7:BD"
+      ]
+    }
+  }
+]

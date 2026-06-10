@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="inner-header">
-      <button class="inner-back-btn" (click)="routerCtrl.back()">
+      <button class="inner-back-btn" (click)="goBack()">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
       <div class="inner-title-block">
@@ -72,6 +72,89 @@
           <div class="mfd-donate-sub">Support the sacred upkeep & seva</div>
         </div>
       </div>
+    </div>
+
+    <!-- ── Community Card ─────────────────────────── -->
+    <div class="mfd-community-card" *ngIf="!isMembershipLoading">
+
+      <!-- ✅ Already a member -->
+      <ng-container *ngIf="isMember">
+        <div class="community-member-row">
+          <div class="community-member-avatar">🛕</div>
+          <div class="community-member-body">
+            <div class="community-member-title">You're a Member ✦</div>
+            <div class="community-member-sub" *ngIf="memberSince">
+              Joined {{ memberSince | date:'MMMM yyyy' }}
+            </div>
+            <div class="community-member-count" *ngIf="memberCount > 0">
+              👥 {{ memberCount }} member{{ memberCount > 1 ? 's' : '' }} in this community
+            </div>
+          </div>
+          <div class="community-check-badge">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- 🔔 Not yet a member -->
+      <ng-container *ngIf="!isMember">
+        <div class="community-join-header">
+          <div class="community-join-icon">🕌</div>
+          <div class="community-join-text">
+            <div class="community-join-title">Join this Mandir Community</div>
+            <div class="community-join-sub">
+              Stay connected · Get updates · Be part of seva
+            </div>
+            <div class="community-member-count" *ngIf="memberCount > 0">
+              👥 {{ memberCount }} devotee{{ memberCount > 1 ? 's' : '' }} have already joined
+            </div>
+          </div>
+        </div>
+        <button class="community-join-btn" (click)="joinMandir()" [disabled]="isJoining">
+          <ion-icon name="people-outline" *ngIf="!isJoining"></ion-icon>
+          <ion-spinner name="crescent" *ngIf="isJoining" style="width:18px;height:18px;"></ion-spinner>
+          {{ isJoining ? 'Joining…' : 'Join Community' }}
+        </button>
+      </ng-container>
+
+    </div>
+
+    <div class="mfd-section-label" *ngIf="events?.length">
+      📅 Upcoming Events
+    </div>
+    
+    <div class="mfd-event-card" *ngFor="let ev of events">
+
+      <div class="mfd-event-date">
+        <div class="mfd-event-day">
+          {{ formatEventDate(ev.EventDate).dd }}
+        </div>
+    
+        <div class="mfd-event-month">
+          {{ formatEventDate(ev.EventDate).mon }}
+        </div>
+      </div>
+    
+      <div class="mfd-event-body">
+    
+        <div class="mfd-event-name">
+          {{ ev.EventName }}
+        </div>
+    
+        <div class="mfd-event-type">
+          {{ ev.EventType }}
+        </div>
+    
+        <div class="mfd-event-desc" *ngIf="ev.EventDescription">
+          {{ ev.EventDescription }}
+        </div>
+    
+        <div class="mfd-event-time">
+          🕐 {{ ev.EventTime }}
+        </div>
+    
+      </div>
+    
     </div>
 
     <div class="mfd-section-label">About</div>
@@ -238,27 +321,57 @@
       </div>
     </div>
 
-    <div class="mfd-section-label">Share This Mandir</div>
-    <div class="mfd-qr-card">
-      <div class="mfd-qr-label">Scan to visit this mandir's page</div>
-      <qrcode [qrdata]="'https://mangalbhav.com/mandirfulldetails/' + mandirID" [width]="180" errorCorrectionLevel="M">
-      </qrcode>
-      <div class="mfd-qr-sub">{{ mandir?.MandirName }}</div>
-      <div class="mfd-share-row">
-        <button class="mfd-share-btn whatsapp" (click)="shareOnWhatsApp()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-            <path
-              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-          </svg>
-          Share on WhatsApp
-        </button>
+
+
+
+    <div class="mfd-summary-card" *ngIf="donationSummary">
+
+      <div class="mfd-section-label">
+        🪔 Donation Summary
       </div>
+
+      <div class="summary-balance">
+        ₹{{ donationSummary.DonationBalance }}
+      </div>
+
+      <div class="summary-balance-label">
+        Donation Balance
+      </div>
+
+      <div class="summary-grid">
+
+        <div class="summary-item">
+          <div class="summary-value">
+            ₹{{ donationSummary.DonationReceived }}
+          </div>
+          <div class="summary-label">
+            Received
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-value">
+            ₹{{ donationSummary.DonationPaid }}
+          </div>
+          <div class="summary-label">
+            Paid
+          </div>
+        </div>
+
+      </div>
+
+      <button class="view-donors-btn" (click)="showDonors()">
+
+        👥 View Donors
+        <span *ngIf="MandirTransactionList?.length">
+          ({{ MandirTransactionList.length }})
+        </span>
+
+      </button>
+
     </div>
 
-
-    <ng-container *ngIf="MandirTransactionList?.length > 0">
+    <ng-container *ngIf="showDonorList && MandirTransactionList?.length > 0">
       <div class="mfd-section-label">🪔 Donations Received</div>
       <div class="mfd-donate-count-badge">
         {{ MandirTransactionList.length }} donor{{ MandirTransactionList.length > 1 ? 's' : '' }} have supported this
@@ -296,6 +409,29 @@
         </div>
       </div>
     </ng-container>
+
+
+    <div class="mfd-section-label">Share This Mandir</div>
+    <div class="mfd-qr-card">
+      <div class="mfd-qr-label">Scan to visit this mandir's page</div>
+      <qrcode [qrdata]="'https://app.mangalbhav.com/mandirfulldetails/' + mandirID" [width]="180"
+        errorCorrectionLevel="M">
+      </qrcode>
+      <div class="mfd-qr-sub">{{ mandir?.MandirName }}</div>
+      <div class="mfd-share-row">
+        <button class="mfd-share-btn whatsapp" (click)="shareOnWhatsApp()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.854L.057 23.082c-.066.245.169.48.413.413l5.228-1.467A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.418l-.371-.22-3.844 1.079 1.079-3.844-.22-.371A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+          </svg>
+          Share on WhatsApp
+        </button>
+      </div>
+    </div>
+
+
 
 
     <div class="mfd-divider">✦ ॐ ✦ ॐ ✦</div>

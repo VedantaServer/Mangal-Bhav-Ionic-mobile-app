@@ -17,6 +17,39 @@ export class MandirInsertUpdateComponent implements OnInit {
 
   isEditMode = false;   // ← NEW
 
+
+  socialMediaList: any[] = [];
+
+  showSocialMediaForm = false;
+
+  socialMedia: any = {
+    EntitySocialMediaID: -1,
+    TenantID: 1,
+    EntityType: 'MANDIR',
+    EntityID: '',
+    Platform: '',
+    Link: '',
+    Username: '',
+    DisplayName: '',
+    IsVerified: true,
+    IsActive: true,
+    DateAdded: new Date(),
+    DateModified: new Date(),
+    AddedByUser: '',
+    UpdatedByUser: ''
+  };
+
+  platforms = [
+    'Instagram',
+    'Facebook',
+    'YouTube',
+    'WhatsApp',
+    'LinkedIn',
+    'Twitter',
+    'Website'
+  ];
+
+
   Mandir = {
     TenantID: Number(1),
     MandirID: "-1",
@@ -65,6 +98,12 @@ export class MandirInsertUpdateComponent implements OnInit {
 
   // slider state per card
   cardSlideIndex: { [mandirID: number]: number } = {};
+  accountHolderName: any;
+  bankName: any;
+  accountNumber: any;
+  ifscCode: any;
+  branchName: any;
+  accountType: any;
 
   constructor(
     public api: Api,
@@ -76,6 +115,25 @@ export class MandirInsertUpdateComponent implements OnInit {
 
   ngOnInit() { this.loadMandirs(); }
 
+
+  loadSocialMedia() {
+
+    if (!this.Mandir.MandirID ||
+        this.Mandir.MandirID === '-1') {
+      return;
+    }
+  
+    this.apinu.postUrlData(
+      `EntitySocialMediaSelectByQuery?Query=EntityType='MANDIR' AND EntityID=${this.Mandir.MandirID}`,
+      null
+    ).subscribe((res:any)=>{
+  
+      this.socialMediaList =
+        res.EntitySocialMediaList || [];
+  
+    });
+  
+  }
   // ── Location ───────────────────────────────────────────────────
 
   async getCurrentLocation() {
@@ -308,7 +366,7 @@ export class MandirInsertUpdateComponent implements OnInit {
     this.upiId = '';
     this.showBankForm = true;
     this.loadBankDetails();
-
+    this.loadSocialMedia();
 
     // Show existing image previews from loaded URLs
     const existing = this.filteredMandirs.find(x => x.MandirID === m.MandirID);
@@ -455,11 +513,21 @@ export class MandirInsertUpdateComponent implements OnInit {
     this.apinu.postUrlData(
       `BankDetailsSelectByQuery?Query= MandirID = ${mandirId}`, null
     ).subscribe((res: any) => {
+
       if (res.BankDetailList && res.BankDetailList.length > 0) {
         this.bankDetails = res.BankDetailList[0];
+
+        this.accountHolderName = this.bankDetails.AccountHolderName || '';
+        this.bankName = this.bankDetails.BankName || '';
+        this.accountNumber = this.bankDetails.AccountNumber || '';
+        this.ifscCode = this.bankDetails.IFSCCode || '';
+        this.branchName = this.bankDetails.BranchName || '';
         this.upiId = this.bankDetails.UPIId || '';
-        this.showBankForm = false; // ← hide form, show saved UPI instead
+        this.accountType = this.bankDetails.AccountType || '';
+
+        this.showBankForm = false;
       }
+
       // ✅ No else needed — showBankForm is already true from openEditMandir
     });
   }
@@ -470,19 +538,21 @@ export class MandirInsertUpdateComponent implements OnInit {
     const body: any = {
       BankDetailsId: Number(this.bankDetails?.BankDetailsId || 0),
       TenantId: Number(this.Mandir.TenantID || 1),
-      UserID: Number(0),                           // ← null for mandir
+      UserID: 0,
       MandirID: Number(this.Mandir.MandirID),
-      AccountHolderName: '',
-      BankName: '',
-      AccountNumber: '',
-      IFSCCode: '',
-      BranchName: '',
-      UPIId: String(this.upiId),
-      AccountType: '',
+
+      AccountHolderName: this.accountHolderName,
+      BankName: this.bankName,
+      AccountNumber: this.accountNumber,
+      IFSCCode: this.ifscCode,
+      BranchName: this.branchName,
+      UPIId: this.upiId,
+      AccountType: this.accountType,
+
       IsActive: true,
       DateAdded: new Date(),
       DateModified: new Date(),
-      UpdatedByUser: Number(0)
+      UpdatedByUser: 0
     };
 
     const action = this.bankDetails ? 'BankDetailsUpdate' : 'BankDetailsInsert';
@@ -496,4 +566,105 @@ export class MandirInsertUpdateComponent implements OnInit {
     });
   }
 
+
+  openAddSocialMedia() {
+
+    this.socialMedia = {
+      EntitySocialMediaID: -1,
+      TenantID: 1,
+      EntityType: 'MANDIR',
+      EntityID: this.Mandir.MandirID,
+      Platform: '',
+      Link: '',
+      Username: '',
+      DisplayName: '',
+      IsVerified: true,
+      IsActive: true,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      AddedByUser: '',
+      UpdatedByUser: ''
+    };
+  
+    this.showSocialMediaForm = true;
+  }
+
+  editSocialMedia(item:any) {
+
+    this.socialMedia = {
+      ...item
+    };
+  
+    this.showSocialMediaForm = true;
+  }
+
+  saveSocialMedia() {
+
+    const action =
+      this.socialMedia.EntitySocialMediaID > 0
+        ? 'EntitySocialMediaUpdate'
+        : 'EntitySocialMediaInsert';
+  
+    this.apinu.postUrlData(
+      action,
+      this.socialMedia
+    ).subscribe(()=>{
+  
+      this.showToast(
+        'Saved Successfully',
+        'success'
+      );
+  
+      this.showSocialMediaForm = false;
+  
+      this.loadSocialMedia();
+  
+    });
+  
+  }
+
+  deleteSocialMedia(item:any) {
+
+    this.apinu.postUrlData(
+      'EntitySocialMediaDelete',
+      item
+    ).subscribe(()=>{
+  
+      this.showToast(
+        'Deleted Successfully',
+        'success'
+      );
+  
+      this.loadSocialMedia();
+  
+    });
+  
+  }
+
+
+
+  
+  getPlatformIcon(platform: string) {
+
+    switch (platform) {
+      case 'Instagram':
+        return 'logo-instagram';
+  
+      case 'Facebook':
+        return 'logo-facebook';
+  
+      case 'YouTube':
+        return 'logo-youtube';
+  
+      case 'LinkedIn':
+        return 'logo-linkedin';
+  
+      case 'WhatsApp':
+        return 'logo-whatsapp';
+  
+      default:
+        return 'share-social-outline';
+    }
+  
+  }
 }

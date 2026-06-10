@@ -1,0 +1,52 @@
+<div class="mb-nav-wrapper">
+  <svg class="mb-curve-svg" [attr.viewBox]="'0 0 ' + navWidth + ' 70'"
+       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path [attr.d]="currentPath"  fill="#ffffff"/>
+  </svg>
+
+  <div class="mb-tab-row">
+
+    <div class="mb-tab-btn" [class.tab-active]="isPoojaActive()" (click)="openPooja()">
+      <div class="mb-active-fab">
+        <img src="/assets/pooja.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/pooja.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Pooja</span>
+    </div>
+
+    <div class="mb-tab-btn" [class.tab-active]="isActive('openfindmandir')" (click)="openPage('openfindmandir')">
+      <div class="mb-active-fab">
+        <img src="/assets/temple.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/temple.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Temple</span>
+    </div>
+
+    <div class="mb-tab-btn" [class.tab-active]="isActive('open-community-page')" (click)="openPage('open-community-page')">
+      <div class="mb-active-fab">
+        <img src="/assets/yagna2.png" class="mb-fab-img" style="border-radius:50%;"/>
+      </div>
+      <img src="/assets/yagna2.png" class="mb-tab-img" style="border-radius:50%;width: 46px;height: 46px;"/>
+      <!-- <span class="mb-tab-label">Seva</span> -->
+    </div>
+
+    <div class="mb-tab-btn" [class.tab-active]="isActive('open-find-pandit')" (click)="action5()">
+      <div class="mb-active-fab">
+        <img src="/assets/pandit.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/pandit.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Pandit ji</span>
+    </div>
+
+    <div class="mb-tab-btn" [class.tab-active]="isProfileActive()" (click)="openProfile()">
+      <div class="mb-active-fab">
+        <img src="/assets/user.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/user.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">
+        {{ isLoggedIn ? (userDetails?.FullName?.split(' ')[0] || 'Me') : 'Signup' }}
+      </span>
+    </div>
+
+  </div>
+</div>

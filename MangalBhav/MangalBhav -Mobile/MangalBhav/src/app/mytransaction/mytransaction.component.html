@@ -120,9 +120,10 @@
   </div>
 </ion-content>
 
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
-
-
+<!-- 
+<app-common-bottom-tabs
+  *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs> -->
 
 <!-- ══════════════ DETAIL MODAL ══════════════ -->
 <div class="detail-backdrop" *ngIf="selectedTxn" (click)="closeDetail()"></div>

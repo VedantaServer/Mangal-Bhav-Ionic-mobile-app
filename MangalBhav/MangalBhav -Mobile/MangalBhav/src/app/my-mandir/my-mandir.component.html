@@ -1,0 +1,268 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <!-- <div class="inner-title">{{ t.appTitle }}</div>
+        <div class="inner-title-sub">{{ t.appSub }}</div> -->
+        <div class="inner-title">Mangal.Bhav</div>
+        <div class="inner-title-sub">✦ Peace · Prosperity · Protection ✦</div>
+      </div>
+
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="true">
+
+  <!-- ═══ LIST VIEW ═══ -->
+  <ng-container *ngIf="view === 'list'">
+
+    <div class="page-header">
+      <div class="ph-title">🛕 मेरे मंदिर</div>
+      <div class="ph-sub">आपके सभी मंदिर जिनके आप सदस्य हैं</div>
+    </div>
+
+    <div class="list-loading" *ngIf="listLoading">
+      <ion-spinner name="crescent" color="warning"></ion-spinner>
+      <span>मंदिर लोड हो रहे हैं...</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!listLoading && mandirMembers.length === 0">
+      <div class="es-icon">🛕</div>
+      <div class="es-title">कोई मंदिर नहीं मिला</div>
+      <div class="es-sub">आप अभी तक किसी मंदिर के सदस्य नहीं हैं।</div>
+    </div>
+
+    <div class="mandir-list" *ngIf="!listLoading && mandirMembers.length > 0">
+      <div class="mandir-card" *ngFor="let m of mandirMembers" (click)="openDetail(m)">
+
+        <div class="mc-image-wrap">
+          <img *ngIf="m.imageUrl"  [src]="m.imageUrl" class="mc-image" />
+          <div *ngIf="!m.imageUrl" class="mc-image-placeholder">🛕</div>
+          <div class="mc-image-overlay"></div>
+        </div>
+
+        <div class="mc-info">
+          <div class="mc-name">{{ m.MandirName }}</div>
+          <div class="mc-god">🪷 {{ m.GodName }}</div>
+          <div class="mc-location" *ngIf="m.City || m.State">
+            📍 {{ m.City }}{{ m.City && m.State ? ', ' : '' }}{{ m.State }}
+          </div>
+          <div class="mc-role-row">
+            <span class="mc-role">{{ m.MemberType || m.Role || 'सदस्य' }}</span>
+            <span class="mc-arrow">→</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+  </ng-container>
+
+  <!-- ═══ DETAIL VIEW ═══ -->
+  <ng-container *ngIf="view === 'detail'">
+
+    <!-- Hero image with back button overlay -->
+    <div class="detail-hero">
+      <img *ngIf="selectedMember?.imageUrl"  [src]="selectedMember.imageUrl" class="detail-hero-img" />
+      <div *ngIf="!selectedMember?.imageUrl" class="detail-hero-placeholder">🛕</div>
+      <div class="detail-hero-overlay">
+        <button class="back-btn" (click)="goBack()">← वापस</button>
+        <div class="detail-hero-name">{{ selectedMember?.MandirName }}</div>
+        <div class="detail-hero-god">{{ selectedMember?.GodName }}</div>
+      </div>
+    </div>
+
+    <!-- Info chips -->
+    <div class="detail-chips">
+      <div class="chip" *ngIf="selectedMember?.City || selectedMember?.State">
+        📍 {{ selectedMember?.City }}{{ selectedMember?.City && selectedMember?.State ? ', ' : '' }}{{ selectedMember?.State }}
+      </div>
+      <div class="chip" *ngIf="selectedMember?.Address">
+        🏠 {{ selectedMember?.Address }}
+      </div>
+      <div class="chip" *ngIf="selectedMember?.PujariName">
+        🙏 {{ selectedMember?.PujariName }}
+      </div>
+      <div class="chip chip-role">
+        👤 {{ selectedMember?.MemberType || selectedMember?.Role || 'सदस्य' }}
+      </div>
+    </div>
+
+    <!-- Pujari contact -->
+    <div class="detail-section" *ngIf="selectedMember?.PujariPhoneNumber">
+      <div class="ds-title">📞 पुजारी संपर्क</div>
+      <a class="ds-phone" [href]="'tel:' + selectedMember.PujariPhoneNumber">
+        {{ selectedMember.PujariPhoneNumber }}
+      </a>
+    </div>
+
+    <!-- History -->
+    <div class="detail-section" *ngIf="selectedMember?.History">
+      <div class="ds-title">📖 इतिहास</div>
+      <div class="ds-text">{{ selectedMember.History }}</div>
+    </div>
+
+    <!-- ── Events ── -->
+    <div class="events-section">
+      <div class="events-header">
+        <span class="events-title">📅 इवेंट्स</span>
+        <button class="add-event-btn" (click)="openEventForm()">+ इवेंट जोड़ें</button>
+      </div>
+
+      <div class="list-loading" *ngIf="eventsLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>इवेंट लोड हो रहे हैं...</span>
+      </div>
+
+      <div class="no-events" *ngIf="!eventsLoading && events.length === 0">
+        📆 अभी कोई इवेंट नहीं है
+      </div>
+
+      <div class="event-cards" *ngIf="!eventsLoading && events.length > 0">
+        <div class="event-card" *ngFor="let ev of events">
+
+          <div class="ec-date-box">
+            <div class="ec-dd">{{ formatEventDate(ev.EventDate).dd }}</div>
+            <div class="ec-mon">{{ formatEventDate(ev.EventDate).mon }}</div>
+          </div>
+
+          <div class="ec-info">
+            <div class="ec-name">{{ ev.EventName }}</div>
+            <div class="ec-meta">
+              <span class="ec-type-pill">{{ ev.EventType }}</span>
+              <span *ngIf="ev.EventTime"> · 🕐 {{ ev.EventTime }}</span>
+              <span *ngIf="ev.EventDay">  · {{ ev.EventDay }}</span>
+            </div>
+            <div class="ec-desc" *ngIf="ev.EventDescription">{{ ev.EventDescription }}</div>
+            <div class="ec-organizer" *ngIf="ev.EventOrganizerName1">
+              👤 {{ ev.EventOrganizerName1 }}
+              <span *ngIf="ev.EventOrganizerPhone1"> · {{ ev.EventOrganizerPhone1 }}</span>
+            </div>
+          </div>
+
+          <div class="ec-status-wrap">
+            <span class="ec-status" [ngClass]="getStatusClass(ev.EventStatus)">
+              {{ ev.EventStatus }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+  </ng-container>
+
+</ion-content>
+
+<!-- ═══ ADD EVENT FORM OVERLAY ═══ -->
+<div class="ev-form-overlay" [class.visible]="showEventForm">
+  <div class="ev-sheet">
+
+    <div class="ev-header">
+      <button class="ev-close" (click)="showEventForm = false">✕</button>
+      <div class="ev-header-title">📅 इवेंट जोड़ें</div>
+      <div class="ev-header-sub">{{ selectedMember?.MandirName }}</div>
+    </div>
+
+    <div class="ev-body">
+
+      <div class="ev-field">
+        <label class="ev-label">इवेंट का नाम *</label>
+        <input class="ev-input" type="text" [(ngModel)]="newEvent.EventName"
+          placeholder="जैसे: श्री हनुमान जयंती महोत्सव" />
+      </div>
+
+      <div class="ev-field">
+        <label class="ev-label">इवेंट प्रकार *</label>
+        <select class="ev-input ev-select" [(ngModel)]="newEvent.EventType">
+          <option value="">-- प्रकार चुनें --</option>
+          <option *ngFor="let t of eventTypes" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+
+      <div class="ev-row">
+        <div class="ev-field ev-half">
+          <label class="ev-label">तारीख *</label>
+          <input class="ev-input" type="date" [(ngModel)]="newEvent.EventDate"
+            (change)="onEventDateChange()" />
+        </div>
+        <div class="ev-field ev-half">
+          <label class="ev-label">समय</label>
+          <input class="ev-input" type="time" [(ngModel)]="newEvent.EventTime" />
+        </div>
+      </div>
+
+      <div class="ev-field" *ngIf="newEvent.EventDay">
+        <label class="ev-label">दिन (स्वतः)</label>
+        <input class="ev-input ev-readonly" readonly [value]="newEvent.EventDay" />
+      </div>
+
+      <div class="ev-field">
+        <label class="ev-label">विवरण</label>
+        <textarea class="ev-input ev-textarea" [(ngModel)]="newEvent.EventDescription"
+          placeholder="इवेंट का विवरण..."></textarea>
+      </div>
+
+      <div class="ev-field">
+        <label class="ev-label">आयोजक</label>
+        <input class="ev-input" type="text" [(ngModel)]="newEvent.EventOrganizerName1"
+          placeholder="आयोजक 1 का नाम" />
+        <input class="ev-input ev-mt" type="text" [(ngModel)]="newEvent.EventOrganizerName2"
+          placeholder="आयोजक 2 (वैकल्पिक)" />
+      </div>
+
+      <div class="ev-field">
+        <label class="ev-label">आयोजक फ़ोन</label>
+        <input class="ev-input" type="tel" [(ngModel)]="newEvent.EventOrganizerPhone1"
+          placeholder="फ़ोन 1" />
+        <input class="ev-input ev-mt" type="tel" [(ngModel)]="newEvent.EventOrganizerPhone2"
+          placeholder="फ़ोन 2 (वैकल्पिक)" />
+      </div>
+
+      <div class="ev-field">
+        <label class="ev-label">इवेंट फ़ोटो (वैकल्पिक)</label>
+        <div class="ev-photo-row">
+          <div class="ev-thumb">
+            <img *ngIf="eventPhotoPreview" [src]="eventPhotoPreview" class="ev-thumb-img" />
+            <span *ngIf="!eventPhotoPreview">🖼️</span>
+            <span class="ev-tick" *ngIf="newEvent.EventCardPhoto1">✅</span>
+          </div>
+          <div class="ev-photo-actions">
+            <label class="ev-pick-btn">
+              फ़ोटो चुनें
+              <input type="file" accept="image/*" style="display:none"
+                (change)="onEventPhotoSelected($event)" />
+            </label>
+            <button class="ev-upload-btn"
+              *ngIf="eventPhotoFile && !newEvent.EventCardPhoto1"
+              [disabled]="isUploadingEventPhoto"
+              (click)="uploadEventPhoto()">
+              {{ isUploadingEventPhoto ? 'अपलोड...' : '⬆ Upload' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button class="ev-submit-btn" [disabled]="isSubmittingEvent" (click)="submitEvent()">
+        {{ isSubmittingEvent ? 'जमा हो रहा है...' : '📅 इवेंट जमा करें' }}
+      </button>
+
+      <div class="ev-note">📋 Admin अनुमोदन के बाद इवेंट दिखाई देगा।</div>
+      <div style="height: 48px;"></div>
+    </div>
+
+  </div>
+</div>
+ 

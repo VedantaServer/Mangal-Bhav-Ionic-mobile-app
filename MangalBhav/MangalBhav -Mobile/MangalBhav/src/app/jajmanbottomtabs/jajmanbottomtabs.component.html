@@ -35,12 +35,13 @@
   </ion-tab-button>
 
   <ion-tab-button (click)="openPage('jajmandashboard')" class="mb-tab-btn">
-    <img 
+    <!-- <img 
     [src]="profilePhotoUrl" 
     class="mb-center-fab-img mb-tab-avatar-img"
     (error)="profilePhotoUrl = 'assets/user.png'"
-  />
-    <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
+  /> -->
+  <img src="/assets/user.png" class="mb-center-fab-img" />
+  <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
   </ion-tab-button>
 
 </ion-tab-bar>

@@ -3,7 +3,7 @@ import { Api, ApiNU } from '../../providers';
 import { Capacitor } from '@capacitor/core';
 import { Storage } from '@ionic/storage-angular';
 import { FcmService } from '../../providers/fcm/fcm';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, IonInput, NavController, Platform, ToastController } from '@ionic/angular';
@@ -15,11 +15,11 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { forkJoin } from 'rxjs';
+import { filter, forkJoin } from 'rxjs';
 import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 
-
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -116,13 +116,12 @@ export class LoginPage {
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
-    private storage: Storage,
+    private storage: Storage, private cdr: ChangeDetectorRef,
     private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient,
-    private toastCtrl: ToastController,
-
-    private alertCtrl: AlertController
+    private toastCtrl: ToastController,private router: Router,
+    private alertCtrl: AlertController,private route: ActivatedRoute
   ) {
     // this.lblSchoolName = this.api.SchoolName;
     // this.forgetPassword = this.api.getForgetPasswordLink();
@@ -173,27 +172,64 @@ export class LoginPage {
   }
 
 
+  async ionViewWillEnter() {
+   
+
+    const openLogin = await this.storage.get('openLoginSection');
+    if (openLogin === 'true') {
+      await this.storage.remove('openLoginSection'); // ← clear immediately
+      this.openLoginSection();
+      this.cdr.detectChanges();
+    }
+
+
+
+    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+  
+    if (
+      Number(this.pendingPanditServiceID) > 0 ||
+      (this.pendingPanditCategoryID && this.pendingPanditUserID)
+    ) {
+      this.openLoginSection();
+    }
+  }
+
+
   async ngOnInit() {
 
     if (await this.storage.get('adminloggedin') == 'true') {
       this.routerCtrl.navigateForward('/admindashboard');
     }
 
-    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
-    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
-    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+    // this.router.events.pipe(
+    //   filter(e => e instanceof NavigationEnd)
+    // ).subscribe(() => {
+    //   const showLogin = this.route.snapshot.queryParamMap.get('showLogin');
+    //   if (showLogin === 'true') {
+    //     this.openLoginSection();
+    //     this.cdr.detectChanges();
+    //   }
+    // });
+
+    // this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    // this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+    // this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+  //  alert('ss')
 
 
 
 
+    // if (Number(this.pendingPanditServiceID) > 0) {
+    //   this.openLoginSection();
+    // }
 
-    if (Number(this.pendingPanditServiceID) > 0) {
-      this.openLoginSection();
-    }
-
-    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
-      this.openLoginSection();
-    }
+    // if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+    //   this.openLoginSection();
+    // }
 
     //  this.sendWhatsApp();
 
@@ -410,7 +446,7 @@ export class LoginPage {
 
 
   async action5() {
-    await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
+   // await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
 
     this.routerCtrl.navigateForward(`/open-find-pandit`);
   }
@@ -524,13 +560,13 @@ export class LoginPage {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateForward('/tabs/tab1');
+            this.routerCtrl.navigateRoot('/open-community-page');
           } else {
 
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
             await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateForward('/jajmandashboard');
+            this.routerCtrl.navigateRoot('/open-community-page');
           }
         }
       })
@@ -954,12 +990,36 @@ export class LoginPage {
     this.showRegisterSection = false;
   }
 
+
   openLoginSection() {
+
+    //console.log('Before', this.showLoginSection);
+  
     this.showMainSection = false;
     this.showAuthLanding = false;
-    this.showLoginSection = true;
     this.showRegisterSection = false;
+    this.showLoginSection = true;
+
+    this.cdr.detectChanges();
+  
+   // console.log('After', this.showLoginSection);
   }
+  // openLoginSection() {
+
+  //   console.log('OPEN LOGIN');
+  
+  //   this.showMainSection = false;
+  //   this.showAuthLanding = false;
+  //   this.showLoginSection = true;
+  //   this.showRegisterSection = false;
+  
+  //   console.log({
+  //     main: this.showMainSection,
+  //     auth: this.showAuthLanding,
+  //     login: this.showLoginSection,
+  //     register: this.showRegisterSection
+  //   });
+  // }
 
 
   loadAllServiceCounts() {
@@ -1029,7 +1089,7 @@ export class LoginPage {
 
   shareReferCode() {
     const code = `MANGAL${this.userReferCode}`;
-    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://mangalbhav.com`;
+    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://app.mangalbhav.com`;
 
     if (navigator.share) {
       navigator.share({ title: 'Mangal.Bhav Referral', text: msg });

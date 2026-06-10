@@ -1,41 +1,62 @@
+<div class="mb-nav-wrapper">
+  <!-- Animated SVG curve -->
+  <svg class="mb-curve-svg" [attr.viewBox]="'0 0 ' + navWidth + ' 70'"
+       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path [attr.d]="currentPath" fill="#ffffff"/>
+  </svg>
+
+  <div class="mb-tab-row">
+
+    <!-- 1. Pooja -->
+    <div class="mb-tab-btn" [class.tab-active]="isActive('tab3')" (click)="openTab('tab3')">
+      <div class="mb-active-fab">
+        <img src="/assets/pooja.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/pooja.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Pooja</span>
+    </div>
+
+    <!-- 2. Temple -->
+    <div class="mb-tab-btn" [class.tab-active]="isActive('openfindmandir')" (click)="openTab('openfindmandir')">
+      <div class="mb-active-fab">
+        <img src="/assets/temple.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/temple.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Temple</span>
+    </div>
+
+    <!-- 3. Center (Seva/Yagna) -->
+    <div class="mb-tab-btn" [class.tab-active]="isActive('open-community-page')" (click)="openPage('open-community-page')">
+      <div class="mb-active-fab">
+        <img src="/assets/yagna2.png" class="mb-fab-img" style="border-radius:50%;"/>
+      </div>
+      <img src="/assets/yagna2.png" class="mb-tab-img" style="border-radius:50%; width:46px; height:46px;"/>
+    </div>
+
+    <!-- 4. Pandit -->
+    <div class="mb-tab-btn" [class.tab-active]="isActive('find-pandit')" (click)="action4()">
+      <div class="mb-active-fab">
+        <img src="/assets/pandit.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/pandit.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Pandit Ji</span>
+    </div>
+
+    <!-- 5. Profile -->
+    <div class="mb-tab-btn" [class.tab-active]="isActive('tab1')" (click)="openTab('tab1')">
+      <div class="mb-active-fab">
+        <img src="/assets/user.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/user.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">
+        {{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}
+      </span>
+    </div>
+
+  </div>
+</div>
+
+<!-- The actual router outlet — ion-tabs still handles routing, just hidden visually -->
 <ion-tabs>
-  <ion-tab-bar slot="bottom" class="mb-tab-bar">
-
-    <!-- 1. Explore Life -->
-    <ion-tab-button class="mb-tab-btn" tab="tab3" href="/tabs/tab3">
-      <img src="/assets/pooja.png" class="mb-center-fab-img" />
-      <ion-label>Pooja</ion-label>
-    </ion-tab-button>
-
-    <!-- 2. Temples -->
-    <ion-tab-button tab="openfindmandir" class="mb-tab-btn" href="/tabs/openfindmandir">
-      <img src="/assets/temple.png" class="mb-center-fab-img" />
-      <ion-label>Temple</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button class="mb-tab-btn mb-tab-center" (click)="openPage('open-community-page')">
-      <img src="/assets/yagna2.png" class="mb-center-fab-img" style="
-        width: 49px;
-        height: 49px;
-        border-radius: 50%;
-        object-fit: cover;
-      " />
-    </ion-tab-button>
-
-    <!-- 4. Dan / Dakshina -->
-    <ion-tab-button class="mb-tab-btn" tab="find-pandit" href="/tabs/find-pandit">
-      <img src="/assets/pandit.png" class="mb-center-fab-img" />
-      <ion-label>Pandit Ji</ion-label>
-    </ion-tab-button>
-
-    <!-- 5. Profile / Me -->
-    <ion-tab-button class="mb-tab-btn" tab="tab1" href="/tabs/tab1">
-      <!-- <div class="mb-tab-avatar">
-        {{ userDetails?.FullName?.split(' ')?.[0]?.[0]?.toUpperCase() || 'M' }}
-      </div> -->
-      <img src="/assets/user.png" class="mb-center-fab-img" />
-      <ion-label>{{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}</ion-label>
-    </ion-tab-button>
-
-  </ion-tab-bar>
+  <ion-tab-bar slot="bottom" style="display:none;"></ion-tab-bar>
 </ion-tabs>

@@ -1,0 +1,287 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Mangal.Bhav</div>
+        <div class="inner-title-sub">✦ Admin Panel ✦</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="true">
+
+  <!-- ── Page Hero Header ── -->
+  <div class="page-hero">
+    <div class="ph-left">
+      <div class="ph-icon">🔔</div>
+      <div class="ph-text">
+        <div class="ph-title">इवेंट सत्यापन</div>
+        <div class="ph-sub">Event Verification Panel</div>
+      </div>
+    </div>
+    <button class="refresh-btn" (click)="loadPendingEvents()" [disabled]="isLoading">
+      <ion-icon name="refresh-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <div class="tabs-bar">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'Pending'"
+      (click)="switchTab('Pending')"
+    >
+      ⏳ Pending
+      <span class="tab-count" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'Rejected'"
+      (click)="switchTab('Rejected')"
+    >
+      ❌ Rejected
+      <span class="tab-count rejected-count" *ngIf="rejectedCount > 0">{{ rejectedCount }}</span>
+    </button>
+  </div>
+
+  <!-- ── Search Bar ── -->
+  <div class="search-bar">
+    <ion-icon name="search-outline" class="search-icon"></ion-icon>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="इवेंट / मंदिर / शहर / आयोजक खोजें..."
+      [(ngModel)]="searchQuery"
+      (input)="onSearchChange()"
+    />
+    <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()">✕</button>
+  </div>
+
+  <!-- ── Loading ── -->
+  <div class="list-loading" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <span>इवेंट लोड हो रहे हैं...</span>
+  </div>
+
+  <!-- ── Empty State ── -->
+  <div class="empty-state" *ngIf="!isLoading && filteredEvents.length === 0">
+    <div class="es-icon">{{ activeTab === 'Pending' ? '🎉' : '📭' }}</div>
+    <div class="es-title">
+      {{ activeTab === 'Pending' ? 'कोई Pending इवेंट नहीं' : 'कोई Rejected इवेंट नहीं' }}
+    </div>
+    <div class="es-sub">
+      {{ activeTab === 'Pending' ? 'सभी इवेंट सत्यापित हो चुके हैं' : 'कोई अस्वीकृत इवेंट नहीं है' }}
+    </div>
+  </div>
+
+  <!-- ── Event Cards ── -->
+  <div class="event-list" *ngIf="!isLoading && filteredEvents.length > 0">
+
+    <div class="results-info">
+      {{ filteredEvents.length }} इवेंट मिले
+    </div>
+
+    <div
+      class="event-card"
+      *ngFor="let ev of filteredEvents; trackBy: trackById"
+      [class.expanded]="isExpanded(ev.MandirEventID)"
+      [class.card-rejected]="ev.EventStatus === 'Rejected'"
+    >
+
+      <!-- ── Card Header (always visible, tap to expand) ── -->
+      <div class="card-head" (click)="toggleExpand(ev.MandirEventID)">
+
+        <div class="ch-left">
+          <div class="ch-pills">
+            <span class="ch-type-pill">{{ ev.EventType || 'अन्य' }}</span>
+            <span class="ch-days-badge"
+              [class.badge-past]="getEventDaysLeft(ev.EventDate) < 0"
+              [class.badge-soon]="getEventDaysLeft(ev.EventDate) >= 0 && getEventDaysLeft(ev.EventDate) <= 3"
+              [class.badge-ok]="getEventDaysLeft(ev.EventDate) > 3"
+            >
+              {{ getEventDaysLeft(ev.EventDate) < 0
+                  ? (-getEventDaysLeft(ev.EventDate)) + ' दिन पहले'
+                  : getEventDaysLeft(ev.EventDate) + ' दिन बाकी' }}
+            </span>
+          </div>
+
+          <div class="ch-name">{{ ev.EventName }}</div>
+
+          <div class="ch-mandir">
+            🛕 {{ ev._mandir?.MandirName || '—' }}
+            <ng-container *ngIf="ev._mandir?.City">
+              · 📍 {{ ev._mandir?.City }}{{ ev._mandir?.State ? ', ' + ev._mandir?.State : '' }}
+            </ng-container>
+          </div>
+
+          <div class="ch-date">
+            📅 {{ formatDate(ev.EventDate) }}
+            <span *ngIf="ev.EventTime"> · 🕐 {{ ev.EventTime }}</span>
+            <span *ngIf="ev.EventDay"> · {{ ev.EventDay }}</span>
+          </div>
+
+          <div class="ch-organizer" *ngIf="ev.EventOrganizerName1">
+            👤 {{ ev.EventOrganizerName1 }}
+            <span *ngIf="ev.EventOrganizerPhone1"> · 📞 {{ ev.EventOrganizerPhone1 }}</span>
+          </div>
+        </div>
+
+        <div class="ch-right">
+          <div class="ch-chevron" [class.rotated]="isExpanded(ev.MandirEventID)">›</div>
+        </div>
+
+      </div>
+
+      <!-- ── Expanded Detail Panel ── -->
+      <div class="card-detail" *ngIf="isExpanded(ev.MandirEventID)">
+
+        <!-- Event Photo -->
+        <div class="cd-photo-wrap" *ngIf="ev.photoUrl">
+          <img [src]="ev.photoUrl" class="cd-photo-img" alt="Event Photo" />
+        </div>
+
+        <!-- Description -->
+        <div class="cd-block" *ngIf="ev.EventDescription">
+          <div class="cd-section-label">📝 विवरण</div>
+          <div class="cd-desc-text">{{ ev.EventDescription }}</div>
+        </div>
+
+        <!-- Mandir Details -->
+        <div class="cd-section-label">🛕 मंदिर विवरण</div>
+        <div class="cd-mandir-box">
+          <div class="cd-row">
+            <div class="cd-key">मंदिर</div>
+            <div class="cd-val bold">{{ ev._mandir?.MandirName || '—' }}</div>
+          </div>
+          <div class="cd-row" *ngIf="ev._mandir?.GodName">
+            <div class="cd-key">🪷 देवता</div>
+            <div class="cd-val">{{ ev._mandir?.GodName }}</div>
+          </div>
+          <div class="cd-row" *ngIf="ev._mandir?.City || ev._mandir?.State">
+            <div class="cd-key">📍 शहर</div>
+            <div class="cd-val">
+              {{ ev._mandir?.City }}{{ ev._mandir?.City && ev._mandir?.State ? ', ' : '' }}{{ ev._mandir?.State }}
+            </div>
+          </div>
+          <div class="cd-row" *ngIf="ev._mandir?.Address">
+            <div class="cd-key">🏠 पता</div>
+            <div class="cd-val">{{ ev._mandir?.Address }}</div>
+          </div>
+          <div class="cd-row" *ngIf="ev._mandir?.PujariName">
+            <div class="cd-key">🙏 पुजारी</div>
+            <div class="cd-val">{{ ev._mandir?.PujariName }}</div>
+          </div>
+          <div class="cd-row" *ngIf="ev._mandir?.PujariPhoneNumber">
+            <div class="cd-key">📞 पुजारी फ़ोन</div>
+            <div class="cd-val">
+              <a [href]="'tel:' + ev._mandir?.PujariPhoneNumber" class="phone-link">
+                {{ ev._mandir?.PujariPhoneNumber }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Organizer Contact Cards (with Call button) -->
+        <div class="cd-section-label">📞 आयोजक संपर्क</div>
+
+        <div class="organizer-card" *ngIf="ev.EventOrganizerName1 || ev.EventOrganizerPhone1">
+          <div class="oc-avatar">👤</div>
+          <div class="oc-info">
+            <div class="oc-name">{{ ev.EventOrganizerName1 || 'आयोजक 1' }}</div>
+            <div class="oc-phone">{{ ev.EventOrganizerPhone1 || 'नंबर नहीं' }}</div>
+          </div>
+          <button
+            class="call-btn"
+            *ngIf="ev.EventOrganizerPhone1"
+            (click)="callOrganizer(ev.EventOrganizerPhone1)"
+          >
+            <ion-icon name="call-outline"></ion-icon>
+            Call
+          </button>
+        </div>
+
+        <div class="organizer-card" *ngIf="ev.EventOrganizerName2 || ev.EventOrganizerPhone2">
+          <div class="oc-avatar">👤</div>
+          <div class="oc-info">
+            <div class="oc-name">{{ ev.EventOrganizerName2 || 'आयोजक 2' }}</div>
+            <div class="oc-phone">{{ ev.EventOrganizerPhone2 }}</div>
+          </div>
+          <button
+            class="call-btn"
+            *ngIf="ev.EventOrganizerPhone2"
+            (click)="callOrganizer(ev.EventOrganizerPhone2)"
+          >
+            <ion-icon name="call-outline"></ion-icon>
+            Call
+          </button>
+        </div>
+
+        <!-- Existing Admin Remarks (if any) -->
+        <div class="cd-block" *ngIf="ev.AdminRemarks">
+          <div class="cd-section-label">📋 पिछली टिप्पणी</div>
+          <div class="cd-prev-remark">{{ ev.AdminRemarks }}</div>
+        </div>
+
+        <!-- Admin Remarks Input -->
+        <div class="cd-section-label">✏️ Admin टिप्पणी</div>
+        <textarea
+          class="remarks-textarea"
+          [placeholder]="'कॉल के बाद यहाँ टिप्पणी लिखें...'"
+          [(ngModel)]="adminRemarksMap[ev.MandirEventID]"
+        ></textarea>
+
+        <!-- Action Buttons -->
+        <div class="action-row" *ngIf="ev.EventStatus === 'Pending'">
+          <button
+            class="action-btn btn-reject"
+            [disabled]="updatingEventID === ev.MandirEventID"
+            (click)="updateEventStatus(ev, 'Rejected')"
+          >
+            <ng-container *ngIf="updatingEventID !== ev.MandirEventID">❌ अस्वीकार</ng-container>
+            <ion-spinner *ngIf="updatingEventID === ev.MandirEventID" name="crescent"></ion-spinner>
+          </button>
+          <button
+            class="action-btn btn-verify"
+            [disabled]="updatingEventID === ev.MandirEventID"
+            (click)="updateEventStatus(ev, 'Verified')"
+          >
+            <ng-container *ngIf="updatingEventID !== ev.MandirEventID">✅ सत्यापित करें</ng-container>
+            <ion-spinner *ngIf="updatingEventID === ev.MandirEventID" name="crescent"></ion-spinner>
+          </button>
+        </div>
+
+        <!-- Re-open rejected events -->
+        <div class="action-row" *ngIf="ev.EventStatus === 'Rejected'">
+          <button
+            class="action-btn btn-restore"
+            [disabled]="updatingEventID === ev.MandirEventID"
+            (click)="restoreEvent(ev)"
+          >
+            <ng-container *ngIf="updatingEventID !== ev.MandirEventID">↩ Pending में वापस भेजें</ng-container>
+            <ion-spinner *ngIf="updatingEventID === ev.MandirEventID" name="crescent"></ion-spinner>
+          </button>
+          <button
+            class="action-btn btn-verify"
+            [disabled]="updatingEventID === ev.MandirEventID"
+            (click)="updateEventStatus(ev, 'Verified')"
+          >
+            <ng-container *ngIf="updatingEventID !== ev.MandirEventID">✅ सत्यापित करें</ng-container>
+            <ion-spinner *ngIf="updatingEventID === ev.MandirEventID" name="crescent"></ion-spinner>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div style="height: 80px;"></div>
+
+</ion-content>

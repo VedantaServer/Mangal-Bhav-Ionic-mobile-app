@@ -449,6 +449,13 @@ export class Api {
     });
   }
 
+  getAudio(endpoint: string, params: any = {}) {
+    return this.http.get(this.url + '/' + endpoint, {
+      params,
+      responseType: 'blob'
+    });
+  }
+
 
   post(endpoint: string, body: any) {
     // console.log(this.url + '/' + endpoint)

@@ -3588,3 +3588,45 @@ select {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.pandit-share-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(224, 123, 0, 0.18);
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(224, 123, 0, 0.12);
+
+  cursor: pointer;
+  z-index: 10;
+
+  transition: all 0.25s ease;
+}
+
+.pandit-share-btn ion-icon {
+  font-size: 20px;
+  color: #E07B00;
+}
+
+.pandit-share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(224, 123, 0, 0.18);
+}
+
+.pandit-share-btn:active {
+  transform: scale(0.92);
+}

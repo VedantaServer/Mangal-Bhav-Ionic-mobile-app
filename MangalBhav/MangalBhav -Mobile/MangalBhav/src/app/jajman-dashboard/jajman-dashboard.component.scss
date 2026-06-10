@@ -1190,8 +1190,9 @@ ion-fab-button.fab-item {
 
 
 .social-share-section {
-  padding: 16px;
+  padding: 10px;
   text-align: center;
+  margin-bottom: 3vh;
 
   .social-share-label {
     font-size: 13px;
@@ -1223,7 +1224,7 @@ ion-fab-button.fab-item {
 
     &.facebook  { background: #e8f0fe; color: #1877f2; }
     &.instagram { background: #fce8f3; color: #e1306c; }
-    &.linkedin  { background: #e8f4fd; color: #0a66c2; }
+    &.linkedin  { background: #fdd0d0; color: #df1b1b; }
 
     .social-icon {
       width: 28px;

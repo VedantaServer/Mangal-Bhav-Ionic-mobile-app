@@ -7,19 +7,20 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { concatMap, elementAt, forkJoin, map, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-book-pooja',
   templateUrl: './book-pooja.component.html',
   styleUrls: ['./book-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+  imports: [CommonModule,RouterModule, CommonBottomTabsComponent,FormsModule, IonicModule, ZXingScannerModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
 })
 export class BookPoojaComponent implements OnInit {
   userDetails: any;
@@ -534,7 +535,7 @@ export class BookPoojaComponent implements OnInit {
       : this.labels.en;
   }
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
 
     this.userDetails = await this.storage.get('account');
 
@@ -614,6 +615,9 @@ export class BookPoojaComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    this.ionViewWillEnter();
+  }
   // Call this once for each item after list loads
   loadBookingCount(panditServiceID: any) {
     const key = String(panditServiceID);
@@ -815,7 +819,7 @@ export class BookPoojaComponent implements OnInit {
         currency: 'INR',
         name: 'Mangal Bhav',
         description: `Advance for ${this.selectedBooking?.ServiceName?.split('/')[0]?.trim()}`,
-        image: 'https://mangalbhav.com/assets/mangalbhavlogo1.jpeg',
+        image: 'https://app.mangalbhav.com/assets/mangalbhavlogo1.jpeg',
         order_id: or,
         webview_intent: true,
 

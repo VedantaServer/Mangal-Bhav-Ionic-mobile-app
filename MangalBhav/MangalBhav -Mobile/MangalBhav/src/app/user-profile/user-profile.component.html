@@ -223,6 +223,68 @@
       </div> -->
     </div>
 
+    <div class="section-label">
+      <ion-icon name="share-social-outline"></ion-icon>
+      Social Media Profiles
+    </div>
+
+    <div class="form-container">
+
+      <div class="social-card" *ngFor="let item of socialMediaList">
+
+        <div class="social-header">
+
+          <div class="social-left">
+
+            <ion-icon [name]="getPlatformIcon(item.Platform)">
+            </ion-icon>
+
+            <div>
+
+              <div class="platform-name">
+                {{item.Platform}}
+              </div>
+
+              <div class="platform-user">
+                {{item.Username}}
+              </div>
+
+              <div class="platform-link">
+                {{item.Link}}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="social-actions">
+
+          <ion-button fill="clear" size="small" (click)="editSocialMedia(item)">
+            Edit
+          </ion-button>
+
+          <!-- <ion-button fill="clear" color="danger" size="small" (click)="deleteSocialMedia(item)">
+            Delete
+          </ion-button> -->
+
+        </div>
+
+      </div>
+
+      <button class="submit-btn" (click)="openAddSocialMedia()">
+
+        <ion-icon name="add-circle-outline"></ion-icon>
+
+        Add Social Media
+
+      </button>
+
+    </div>
+
+
+
     <!-- SAVE BUTTON -->
     <div class="submit-wrap">
       <button class="submit-btn" (click)="saveProfile()">
@@ -259,10 +321,10 @@
 
 
 
-<app-jajmanbottomtabs *ngIf="userDetails?.Role == 'BHAKT'"></app-jajmanbottomtabs>
-
+<!-- 
 <app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'">
+</app-common-bottom-tabs> -->
 
 
 <div class="ni-backdrop" *ngIf="showNotInterestedModal" (click)="showNotInterestedModal = false"></div>
@@ -292,6 +354,88 @@
 
   <button class="ni-cancel-btn" (click)="showNotInterestedModal = false">
     {{ t.cancelKeep }}
+  </button>
+
+</div>
+
+
+
+<div class="ni-backdrop" *ngIf="showSocialModal" (click)="showSocialModal = false">
+</div>
+
+<div class="ni-modal" [class.active]="showSocialModal">
+
+  <h3>
+
+    {{isEditSocialMedia
+    ? 'Edit Social Media'
+    : 'Add Social Media'}}
+
+  </h3>
+
+  <ion-item>
+
+    <ion-select placeholder="Select Platform" [(ngModel)]="socialMedia.Platform">
+
+      <ion-select-option value="Instagram">
+        Instagram
+      </ion-select-option>
+
+      <ion-select-option value="Facebook">
+        Facebook
+      </ion-select-option>
+
+      <ion-select-option value="YouTube">
+        YouTube
+      </ion-select-option>
+
+      <ion-select-option value="WhatsApp">
+        WhatsApp
+      </ion-select-option>
+
+      <ion-select-option value="LinkedIn">
+        LinkedIn
+      </ion-select-option>
+
+      <ion-select-option value="Twitter">
+        X (Twitter)
+      </ion-select-option>
+
+      <ion-select-option value="Website">
+        Website
+      </ion-select-option>
+
+    </ion-select>
+
+  </ion-item>
+
+  <ion-item>
+
+    <ion-input placeholder="Username" [(ngModel)]="socialMedia.Username">
+    </ion-input>
+
+  </ion-item>
+
+  <ion-item>
+
+    <ion-input placeholder="Display Name" [(ngModel)]="socialMedia.DisplayName">
+    </ion-input>
+
+  </ion-item>
+
+  <ion-item>
+
+    <ion-input placeholder="Profile URL" [(ngModel)]="socialMedia.Link">
+    </ion-input>
+
+  </ion-item>
+
+  <button class="submit-btn" (click)="saveSocialMedia()">
+
+    {{isEditSocialMedia
+    ? 'Update'
+    : 'Save'}}
+
   </button>
 
 </div>
