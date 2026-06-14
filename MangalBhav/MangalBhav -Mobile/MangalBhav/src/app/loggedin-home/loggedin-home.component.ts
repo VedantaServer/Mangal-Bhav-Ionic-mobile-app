@@ -27,7 +27,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './loggedin-home.component.html',
   styleUrls: ['./loggedin-home.component.scss'],
   //standalone: true,  // 👈 makes it standalone
-  imports: [CommonModule, FormsModule, IonicModule ,CommonBottomTabsComponent, JajmanbottomtabsComponent,TabscommonheaderComponent]
+  imports: [CommonModule, FormsModule, IonicModule ,CommonBottomTabsComponent,TabscommonheaderComponent]
 })
 export class LoggedinHomeComponent implements OnInit {
 

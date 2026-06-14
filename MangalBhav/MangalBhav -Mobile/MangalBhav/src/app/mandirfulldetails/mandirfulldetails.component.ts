@@ -77,7 +77,7 @@ export class MandirfulldetailsComponent implements OnInit {
   currentSection: 'main' | 'donate' | 'preview' | 'success' = 'main';
 
   showStampPopup = false;
-  supportMangalBhav = true;
+  supportMangalBhav = false;
   platformFee = 5;
   paidTransactionIds = new Set<number>();
   // ── Community / Membership ───────────────────────────
@@ -149,7 +149,7 @@ export class MandirfulldetailsComponent implements OnInit {
           (new Date().getTime() - new Date(dateAdded).getTime()) / (1000 * 60 * 60 * 24)
         );
 
-        if (diffDays > 40) {
+        if (diffDays > 70) {
           this.apinu
             .postUrlData('refreshRazorPaySchoolCredentials', null)
             .subscribe((response: any) => {
@@ -688,20 +688,44 @@ ${shareUrl}
   closeLightbox() {
     this.lightboxImageUrl = null;
   }
+  // loadDonationSummary() {
+  //   this.apinu
+  //     .postUrlData(
+  //       `MandirDonationSummary?mandirID=${this.mandirID}`,
+  //       null
+  //     )
+  //     .subscribe((res: any) => {
+
+  //       this.donationSummary = res[0];
+
+  //       console.log(this.donationSummary);
+  //     });
+  // }
+
+
   loadDonationSummary() {
     this.apinu
-      .postUrlData(
-        `MandirDonationSummary?mandirID=${this.mandirID}`,
-        null
-      )
-      .subscribe((res: any) => {
-
-        this.donationSummary = res[0];
-
-        console.log(this.donationSummary);
+      .postUrlData(`MandirDonationSummary?mandirID=${this.mandirID}`, null)
+      .subscribe({
+        next: (res: any) => {
+          let data: any = res;
+  
+          // Unwrap if the response came back as a raw JSON string
+          if (typeof data === 'string') {
+            try { data = JSON.parse(data); } catch { data = null; }
+          }
+  
+          // Defensive: handle accidental double-array wrapping too
+          if (Array.isArray(data) && Array.isArray(data[0])) {
+            data = data[0];
+          }
+  
+          this.donationSummary = data?.[0] ?? null;
+          console.log('donationSummary:', JSON.stringify(this.donationSummary));
+        },
+        error: (err:any) => console.error('donation summary error', err)
       });
   }
-
   showDonors() {
 
     this.showDonorList = true;

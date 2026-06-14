@@ -1200,3 +1200,50 @@ ion-fab-button.fab-item {
     }
   }
 }
+.greeting {
+  position: relative;  // ← required anchor for the bell
+}
+
+.notif-bell-wrap {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);   // frosted white on orange
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 10;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  ion-icon {
+    font-size: 1.2rem;
+    color: #ffffff;       // ← WHITE so it's visible on orange
+  }
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 700;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 8px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
+}

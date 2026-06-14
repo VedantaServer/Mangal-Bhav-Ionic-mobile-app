@@ -7,16 +7,16 @@ import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
 import { Storage } from '@ionic/storage-angular';
 import { firstValueFrom } from 'rxjs';
-import { Share } from '@capacitor/share';
-import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { FormsModule } from '@angular/forms';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
-
-
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 @Component({
   selector: 'app-tab1',
@@ -90,6 +90,9 @@ export class Tab1Page {
   pendingPanditUserID: any;
   pendingPanditCategoryID: any;
   pendingPanditServiceID: any;
+  currentMobileAppVersion: string = '';
+  mobileAppVersion: any;
+  unreadCount: any;
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider,
@@ -102,17 +105,94 @@ export class Tab1Page {
   }
 
 
+  async initializePushNotifications() {
 
+    const permission = await PushNotifications.requestPermissions();
+
+    if (permission.receive !== 'granted') {
+      console.log('Notification permission denied');
+      return;
+    }
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener(
+      'registration',
+      (token) => {
+
+        console.log('FCM TOKEN:', token.value);
+
+        this.saveFCMToken(token.value);
+      }
+    );
+
+    PushNotifications.addListener(
+      'registrationError',
+      (error) => {
+
+        console.log('FCM Error:', error);
+
+      }
+    );
+  }
+
+  saveFCMToken(token: string) {
+
+    const body = {
+      UserID: this.userDetails.UserID,
+      FCMToken: token,
+      Platform: Capacitor.getPlatform()
+    };
+
+    console.log(body);
+
+    this.api.post(
+      'SaveFCMToken',
+      body
+    ).subscribe(
+      (res: any) => {
+
+        console.log(
+          'FCM Token Saved',
+          res
+        );
+
+      },
+      (err: any) => {
+
+        console.log(
+          'FCM Save Failed',
+          err
+        );
+
+      }
+    );
+  }
 
   async ngOnInit() {
     this.getSlogan();
 
+
     this.userDetails = await this.storage.get("account");
+
+
+    this.fetchUnreadCount();
+    this.checkMobileAppVersion();
 
     this.language = this.userDetails.Languages;
     this.FullName = this.userDetails.FullName;
-    console.log('ACCOUNT OBJECT:', this.userDetails);
+   // console.log('ACCOUNT OBJECT:', this.userDetails);
     this.loadProfilePhoto();
+
+    if (
+      await this.storage.get("IsUserLoggedIn") &&
+      this.userDetails?.Role !== 'PANDIT'
+    ) {
+      this.routerCtrl.navigateForward('/login');
+    }
+
+
+
 
     if (this.FullName == null) {
       const alert = await this.alertCtrl.create({
@@ -145,12 +225,6 @@ export class Tab1Page {
       this.routerCtrl.navigateForward('/languagechange');
     }
 
-    if (
-      await this.storage.get("IsUserLoggedIn") &&
-      this.userDetails?.Role !== 'PANDIT'
-    ) {
-      this.routerCtrl.navigateForward('/login');
-    }
 
 
 
@@ -179,7 +253,7 @@ export class Tab1Page {
       });
     }
 
-
+    await this.initializePushNotifications();
 
 
   }
@@ -211,12 +285,12 @@ export class Tab1Page {
     this.copied = false;
   }
 
-  
+
   followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
     const urls: any = {
-      facebook:  'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
+      facebook: 'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
       instagram: 'https://www.instagram.com/mangalbhav',  // 🔁 your handle
-      linkedin:  'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
+      linkedin: 'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
     };
     Browser.open({ url: urls[platform] });
   }
@@ -353,24 +427,41 @@ export class Tab1Page {
 
 
   // ✅ Share QR as image on WhatsApp
+  
+
+
   async shareQROnWhatsApp() {
     try {
+  
       const canvas = this.qrCodeRef.nativeElement.querySelector('canvas');
       if (!canvas) return;
-
-      const dataUrl = canvas.toDataURL('image/png');
-
+  
+      const base64Data = canvas
+        .toDataURL('image/png')
+        .replace('data:image/png;base64,', '');
+  
+      const fileName = `qr_${Date.now()}.png`;
+  
+      const savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Cache
+      });
+  
       await Share.share({
         title: `Book ${this.FullName} on Mangal Bhav`,
-        text: `🙏 Book Pandit Ji directly via Mangal Bhav App!\nScan the QR or use this link: ${this.APP_DOWNLOAD_LINK}`,
-        url: dataUrl,          // shares image on native share sheet
-        dialogTitle: 'Share via WhatsApp',
+        text:
+          `🙏 Book ${this.FullName} directly via Mangal Bhav.\n\n` +
+          `${this.APP_DOWNLOAD_LINK}`,
+        url: savedFile.uri
       });
-
+  
     } catch (err) {
-      console.error('Share failed', err);
+      console.error(err);
     }
   }
+
+
   APP_DOWNLOAD_LINK = 'https://play.google.com/store/apps/details?id=com.mangalbhav.app';
 
 
@@ -404,4 +495,74 @@ export class Tab1Page {
 
   }
 
+
+  checkMobileAppVersion() {
+    this.currentMobileAppVersion = this.api.appVersion;
+
+    // console.log(this.mobileAppVersion)
+    this.api.post(`MasterDataSelectByQuery?Query=masterDataID=13&tenantID=1`, null)
+      .subscribe(async (res: any) => {
+        console.log(res.MasterDataList[0].Description);
+        this.mobileAppVersion = res.MasterDataList[0].Description;
+
+        const result = this.compareVersions(
+          this.currentMobileAppVersion,
+          this.mobileAppVersion
+        );
+
+        if (result === -1) {
+          console.log('🚨 App is outdated — update required');
+
+          alert(`New version available (${this.mobileAppVersion}). Please update.`);
+          await this.showForceUpdateAlert(this.mobileAppVersion);
+          return;
+        }
+      })
+  }
+
+
+  async showForceUpdateAlert(latestVersion: string) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Update Required',
+      message: `Your app version is outdated. Please update to version ${latestVersion} to continue.`,
+      backdropDismiss: false, // 🔒 cannot close by clicking outside
+      // buttons: [
+      //   {
+      //     text: 'Update Now',
+      //     handler: () => {
+      //       this.openStoreLink();
+      //     }
+      //   }
+      // ]
+    });
+
+    await alert.present();
+  }
+
+  compareVersions(current: string, latest: string): number {
+    const currentParts = current.split('.').map(Number);
+    const latestParts = latest.split('.').map(Number);
+
+    const maxLength = Math.max(currentParts.length, latestParts.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const c = currentParts[i] || 0;
+      const l = latestParts[i] || 0;
+
+      if (c > l) return 1;   // current is newer
+      if (c < l) return -1;  // current is older
+    }
+
+    return 0; // equal
+  }
+
+
+  fetchUnreadCount() {
+    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' +Number(this.userDetails.UserID), null)
+      .subscribe((res: any) => {
+        this.unreadCount = res[0]?.UnreadCount ?? 0;
+      });
+  }
+  
 }

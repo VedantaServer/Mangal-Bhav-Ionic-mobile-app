@@ -1,0 +1,302 @@
+// ── Tokens ──────────────────────────────────────────────────
+$saffron:       #FF6F00;
+$saffron-light: #FFA040;
+$saffron-pale:  #FFF3E0;
+$gold:          #C8841A;
+$cream:         #FFFDF8;
+$card-bg:       #FFFFFF;
+$text-dark:     #2D1A00;
+$text-mid:      #7A5C3A;
+$text-light:    #B89070;
+$divider:       #F0E6D6;
+
+// ── Type colors ─────────────────────────────────────────────
+$festival-color: #FF6F00;
+$booking-color:  #2E7D32;
+$seva-color:     #6A1B9A;
+$reminder-color: #1565C0;
+$default-color:  #455A64;
+
+// ── Page wrapper ─────────────────────────────────────────────
+.notif-page {
+  background: $cream;
+  min-height: 100%;
+  padding-bottom: 30px;
+}
+
+// ── Header ──────────────────────────────────────────────────
+.notif-header {
+  background: linear-gradient(135deg, $saffron 0%, $saffron-light 100%);
+  padding: 16px 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+
+  &::after {
+    content: 'ॐ';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: rgba(255,255,255,0.12);
+    font-family: serif;
+    pointer-events: none;
+  }
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &:active { background: rgba(255,255,255,0.35); }
+}
+
+.notif-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notif-header-om {
+  font-size: 1.6rem;
+}
+
+.notif-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.notif-sub {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.75);
+  margin: 2px 0 0;
+}
+
+// ── Notification List ────────────────────────────────────────
+.notif-list {
+  padding: 14px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// ── Notification Card ────────────────────────────────────────
+.notif-card {
+  background: $card-bg;
+  border-radius: 14px;
+  padding: 14px 14px 14px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid $divider;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:active {
+    transform: scale(0.985);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  // Unread state — soft left border glow
+  &.unread {
+    border-left: 3px solid $saffron;
+    background: linear-gradient(135deg, #FFFBF5 0%, #FFFFFF 60%);
+  }
+}
+
+// Unread dot
+.unread-dot {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $saffron;
+  box-shadow: 0 0 0 2px rgba(255,111,0,0.2);
+}
+
+// ── Type Icon ────────────────────────────────────────────────
+.notif-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.3rem;
+
+  &.festival  { background: rgba(255,111,0,0.12); }
+  &.booking   { background: rgba(46,125,50,0.10); }
+  &.seva      { background: rgba(106,27,154,0.10); }
+  &.reminder  { background: rgba(21,101,192,0.10); }
+  &.default   { background: rgba(69,90,100,0.10); }
+}
+
+// ── Card Content ─────────────────────────────────────────────
+.notif-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+// Type badge pill
+.notif-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+
+  &.festival  { background: rgba(255,111,0,0.12); color: $festival-color; }
+  &.booking   { background: rgba(46,125,50,0.10); color: $booking-color; }
+  &.seva      { background: rgba(106,27,154,0.10); color: $seva-color; }
+  &.reminder  { background: rgba(21,101,192,0.10); color: $reminder-color; }
+  &.default   { background: rgba(69,90,100,0.10); color: $default-color; }
+}
+
+.notif-time {
+  font-size: 0.68rem;
+  color: $text-light;
+  flex-shrink: 0;
+}
+
+.notif-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notif-message {
+  font-size: 0.78rem;
+  color: $text-mid;
+  line-height: 1.45;
+  margin: 0;
+  // Show 2 lines max
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Skeleton Loader ──────────────────────────────────────────
+.skeleton-list {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid $divider;
+}
+
+.skeleton-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0e6d6 25%, #fff3e0 50%, #f0e6d6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 4px;
+}
+
+.skeleton-line {
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0e6d6 25%, #fff3e0 50%, #f0e6d6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  &.short  { width: 40%; }
+  &.long   { width: 90%; }
+  &.medium { width: 65%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Empty State ──────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+}
+
+.empty-om {
+  font-size: 4rem;
+  color: $saffron-light;
+  font-family: serif;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin: 0 0 8px;
+}
+
+.empty-sub {
+  font-size: 0.82rem;
+  color: $text-mid;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ── Divider ──────────────────────────────────────────────────
+.page-divider {
+  text-align: center;
+  color: $text-light;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  padding: 28px 0 12px;
+}

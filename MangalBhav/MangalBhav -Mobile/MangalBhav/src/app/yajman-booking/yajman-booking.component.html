@@ -157,11 +157,18 @@
             </div>
             <div class="bhakt-info">
               <h4 class="bhakt-name">{{ booking.BhaktProfile?.FullName }}</h4>
-              <p class="bhakt-phone">
+              <!-- <p class="bhakt-phone">
                 <ion-icon name="call-outline"></ion-icon>
                 {{ booking.BhaktProfile?.PhoneNumber
                   ? '*'.repeat(booking.BhaktProfile.PhoneNumber.length - 4) +
                     booking.BhaktProfile.PhoneNumber.slice(-4)
+                  : '' }}
+              </p> -->
+
+              <p class="bhakt-phone">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ booking.BhaktProfile?.PhoneNumber
+                  ? booking.BhaktProfile?.PhoneNumber
                   : '' }}
               </p>
             </div>

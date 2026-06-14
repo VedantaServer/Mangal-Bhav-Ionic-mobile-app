@@ -1,0 +1,76 @@
+<!-- <app-tabscommonheader></app-tabscommonheader> -->
+
+<ion-content [fullscreen]="true">
+  <div class="notif-page">
+
+    <!-- ── Page Header ── -->
+    <div class="notif-header">
+      <button class="back-btn" (click)="goBack()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="notif-header-title">
+        <span class="notif-header-om">🔔</span>
+        <div>
+          <h1 class="notif-title">Notifications</h1>
+          <p class="notif-sub">{{ notifications.length }} messages</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Loading Skeleton ── -->
+    <div *ngIf="isLoading" class="skeleton-list">
+      <div class="skeleton-card" *ngFor="let s of [1,2,3]">
+        <div class="skeleton-icon"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line medium"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Empty State ── -->
+    <div *ngIf="!isLoading && notifications.length === 0" class="empty-state">
+      <div class="empty-om">ॐ</div>
+      <h3 class="empty-title">All caught up!</h3>
+      <p class="empty-sub">No new notifications at the moment.<br>Check back after your next pooja 🙏</p>
+    </div>
+
+    <!-- ── Notification List ── -->
+    <div *ngIf="!isLoading && notifications.length > 0" class="notif-list">
+
+      <div
+        class="notif-card"
+        *ngFor="let n of notifications"
+        [class.unread]="!n.IsSeen"
+        [class.festival]="n.NotificationType === 'FESTIVAL'"
+        [class.booking]="n.NotificationType === 'BOOKING_STATUS'"
+      >
+        <!-- Unread dot -->
+        <div class="unread-dot" *ngIf="!n.IsSeen"></div>
+
+        <!-- Icon -->
+        <div class="notif-icon-wrap" [ngClass]="getTypeConfig(n.NotificationType).color">
+          <span class="notif-type-icon">{{ getTypeConfig(n.NotificationType).icon }}</span>
+        </div>
+
+        <!-- Content -->
+        <div class="notif-content">
+          <div class="notif-top-row">
+            <span class="notif-badge" [ngClass]="getTypeConfig(n.NotificationType).color">
+              {{ getTypeConfig(n.NotificationType).label }}
+            </span>
+            <span class="notif-time">{{ getTimeAgo(n.CreatedDate) }}</span>
+          </div>
+          <h3 class="notif-card-title">{{ n.Title }}</h3>
+          <p class="notif-message">{{ n.Message }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Divider ── -->
+    <div class="page-divider" *ngIf="!isLoading && notifications.length > 0">✦ ॐ ✦ ॐ ✦</div>
+
+  </div>
+</ion-content>

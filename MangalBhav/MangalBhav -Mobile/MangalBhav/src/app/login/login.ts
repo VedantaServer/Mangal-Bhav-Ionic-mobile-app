@@ -555,7 +555,7 @@ export class LoginPage {
       .subscribe(async (res: any) => {
         console.log(res)
         if (res) {
-          this.fcm.initPush(res.UserID);
+         // this.fcm.initPush(res.UserID);
           if (res.Role == 'PANDIT') {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");

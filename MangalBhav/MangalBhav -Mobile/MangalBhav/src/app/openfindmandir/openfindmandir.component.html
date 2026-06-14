@@ -299,7 +299,7 @@
         <div class="mandir-form-group full">
           <label>Front / Outside Photo</label>
 
-          <div class="mandir-upload-box" (click)="frontImageInput.click()">
+          <div class="mandir-upload-box" (click)="selectImage('front')" >
             <img *ngIf="frontImagePreview" [src]="frontImagePreview" class="mandir-upload-preview" />
             <div *ngIf="!frontImagePreview && !Mandir.FrontImage" class="mandir-upload-placeholder">
               <span class="mandir-upload-icon">📷</span>
@@ -327,7 +327,7 @@
         <div class="mandir-form-group full">
           <label>Inside / Garbhagriha Photo</label>
 
-          <div class="mandir-upload-box" (click)="insideImageInput.click()">
+          <div class="mandir-upload-box" (click)="selectImage('inside')">
             <img *ngIf="insideImagePreview" [src]="insideImagePreview" class="mandir-upload-preview" />
             <div *ngIf="!insideImagePreview && !Mandir.InsideImage" class="mandir-upload-placeholder">
               <span class="mandir-upload-icon">🛕</span>

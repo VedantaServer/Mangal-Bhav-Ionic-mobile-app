@@ -14,7 +14,8 @@ import { Router } from '@angular/router';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { Capacitor } from '@capacitor/core';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
-
+import { ActionSheetController } from '@ionic/angular';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 @Component({
   selector: 'app-openfindmandir',
   templateUrl: './openfindmandir.component.html',
@@ -26,9 +27,8 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
     IonicModule,
     ZXingScannerModule,
     TabscommonheaderComponent,
-    JajmanbottomtabsComponent,
-    PanditjibottomtabsComponent,
-    LoggedoutbottomtabsComponent,CommonBottomTabsComponent
+    
+    PanditjibottomtabsComponent,CommonBottomTabsComponent
   ]
 })
 export class OpenfindmandirComponent implements OnInit {
@@ -108,7 +108,7 @@ export class OpenfindmandirComponent implements OnInit {
     public routerCtrl: NavController,
     public apinu: ApiNU,
     private storage: Storage,
-    public toastController: ToastController
+    public toastController: ToastController, private actionSheetCtrl: ActionSheetController
   ) { }
 
 
@@ -125,7 +125,7 @@ export class OpenfindmandirComponent implements OnInit {
     // ✅ On init: do NOT fetch location.
     // Just load all mandirs sorted by date. Show "Show Nearby" button.
     this.locationState = 'idle';
-    this.query = `tenantID=1 ORDER BY DateAdded DESC`;
+    this.query = `tenantID=1 ORDER BY DateAdded ASC`;
     this.loadMandirs();
   }
 
@@ -537,6 +537,119 @@ export class OpenfindmandirComponent implements OnInit {
 
   onQrScanError(error: any) {
     console.error('QR Scan Error:', error);
+  }
+
+  // async selectFrontImage() {
+
+  //   const actionSheet = await this.actionSheetCtrl.create({
+  //     header: 'Select Photo',
+  //     buttons: [
+  //       {
+  //         text: 'Take Photo',
+  //         icon: 'camera',
+  //         handler: () => {
+  //           this.captureImage(CameraSource.Camera);
+  //         }
+  //       },
+  //       {
+  //         text: 'Choose from Gallery',
+  //         icon: 'images',
+  //         handler: () => {
+  //           this.captureImage(CameraSource.Photos);
+  //         }
+  //       },
+  //       {
+  //         text: 'Cancel',
+  //         role: 'cancel'
+  //       }
+  //     ]
+  //   });
+  
+  //   await actionSheet.present();
+  // }
+
+
+  async captureImage(source: CameraSource, type: 'front' | 'inside') {
+
+    const image = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: source
+    });
+  
+    if (!image.dataUrl) return;
+  
+    const blob = await fetch(image.dataUrl).then(r => r.blob());
+  
+    const file = new File(
+      [blob],
+      `IMG_${Date.now()}.jpg`,
+      { type: 'image/jpeg' }
+    );
+  
+    if (type === 'front') {
+      this.frontImagePreview = image.dataUrl;
+      this.selectedFrontImageFile = file;
+      this.Mandir.FrontImage = '';
+    } else {
+      this.insideImagePreview = image.dataUrl;
+      this.selectedInsideImageFile = file;
+      this.Mandir.InsideImage = '';
+    }
+  }
+
+  // async captureImage(source: CameraSource) {
+
+  //   const image = await Camera.getPhoto({
+  //     quality: 80,
+  //     allowEditing: false,
+  //     resultType: CameraResultType.DataUrl,
+  //     source: source
+  //   });
+  
+  //   if (image.dataUrl) {
+  
+  //     this.frontImagePreview = image.dataUrl;
+  
+  //     const blob = await fetch(image.dataUrl).then(r => r.blob());
+  
+  //     this.selectedFrontImageFile = new File(
+  //       [blob],
+  //       `IMG_${Date.now()}.jpg`,
+  //       { type: 'image/jpeg' }
+  //     );
+  //   }
+  // }
+
+
+  async selectImage(type: 'front' | 'inside') {
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Select Photo',
+      buttons: [
+        {
+          text: 'Take Photo',
+          icon: 'camera',
+          handler: () => {
+            this.captureImage(CameraSource.Camera, type);
+          }
+        },
+        {
+          text: 'Choose from Gallery',
+          icon: 'images',
+          handler: () => {
+            this.captureImage(CameraSource.Photos, type);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
+    });
+  
+    await actionSheet.present();
   }
 
 }

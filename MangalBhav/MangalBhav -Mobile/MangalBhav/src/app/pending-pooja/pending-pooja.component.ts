@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './pending-pooja.component.html',
   styleUrls: ['./pending-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,RouterModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
 export class PendingPoojaComponent implements OnInit {
   userDetails: any;
@@ -331,7 +331,18 @@ export class PendingPoojaComponent implements OnInit {
 
       next: (finalList: any) => {
         console.log('🔥 Final Fully Enriched List:', finalList);
-        this.PanditServicesList = finalList;
+
+        // Only keep services that have at least one CONFIRMED booking
+        const filtered = finalList.filter((service: any) => service.Bookings?.length > 0);
+
+        // Sort services by their latest booking's DateAdded (newest first)
+        filtered.sort((a: any, b: any) => {
+          const latestA = Math.max(...a.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
+          const latestB = Math.max(...b.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
+          return latestB - latestA;
+        });
+
+        this.PanditServicesList = filtered;
       },
 
       error: (err: any) => {

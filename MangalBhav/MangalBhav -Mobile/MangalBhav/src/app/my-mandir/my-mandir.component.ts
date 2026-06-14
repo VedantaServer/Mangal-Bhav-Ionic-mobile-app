@@ -15,7 +15,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonicModule,
-    TabscommonheaderComponent, CommonBottomTabsComponent, PanditjibottomtabsComponent
+ 
   ]
 })
 export class MyMandirComponent implements OnInit {

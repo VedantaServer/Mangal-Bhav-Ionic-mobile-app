@@ -24,7 +24,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   styleUrls: ['./find-pandit.component.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, TabscommonheaderComponent,
-    PanditjibottomtabsComponent, JajmanbottomtabsComponent, LoggedoutbottomtabsComponent, CommonBottomTabsComponent]
+    PanditjibottomtabsComponent, CommonBottomTabsComponent]
 })
 export class FindPanditComponent implements OnInit {
 
@@ -434,7 +434,7 @@ ${orderBy}`;
 
   async loadServicesForPandit(item: any): Promise<any[]> {
     return new Promise(resolve => {
-      this.apinu.postUrlData(
+      this.apinu.postUrlData( 
         `PanditServicesSelectAllByProfileID?profileID=${item.user.UserID}`, null
       ).subscribe((serviceRes: any) => {
         const services = serviceRes?.PanditServiceList || [];
@@ -518,6 +518,8 @@ ${orderBy}`;
 
     this.isExploreModalOpen = false;
 
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     if (!this.userLoggedIn) {
 
       await this.storage.set(
@@ -528,7 +530,7 @@ ${orderBy}`;
       this.router.navigate(['/login']);
       return;
     }
-
+ 
     this.router.navigateByUrl(
       `/book-pooja?id=${selectedService.PanditServiceID}`
     );

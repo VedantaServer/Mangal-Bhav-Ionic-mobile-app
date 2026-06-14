@@ -12,7 +12,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './mytransaction.component.html',
   styleUrls: ['./mytransaction.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, CommonBottomTabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, IonicModule]
 })
 export class MytransactionComponent implements OnInit {
 

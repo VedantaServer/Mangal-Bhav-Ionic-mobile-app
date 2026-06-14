@@ -20,7 +20,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './book-pooja.component.html',
   styleUrls: ['./book-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule,RouterModule, CommonBottomTabsComponent,FormsModule, IonicModule, ZXingScannerModule, PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+  imports: [CommonModule, RouterModule, FormsModule, IonicModule, ZXingScannerModule]
 })
 export class BookPoojaComponent implements OnInit {
   userDetails: any;
@@ -786,26 +786,48 @@ export class BookPoojaComponent implements OnInit {
   }
 
 
-  openCheckoutPreview() {
-  if (!this.BookingDate) {
-    this.showToast('Please select a Pooja date 📅', 'danger');
-    return;
-  }
-  if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
-    this.showToast('Please enter your name (min 3 characters) 🙏', 'danger');
-    return;
-  }
-  if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
-    this.showToast('Please enter a valid 10-digit mobile number 🙏', 'danger');
-    return;
-  }
+  //   openCheckoutPreview() {
+  //   if (!this.BookingDate) {
+  //     this.showToast('Please select a Pooja date 📅', 'danger');
+  //     return;
+  //   }
+  //   if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
+  //     this.showToast('Please enter your name (min 3 characters) 🙏', 'danger');
+  //     return;
+  //   }
+  //   if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
+  //     this.showToast('Please enter a valid 10-digit mobile number 🙏', 'danger');
+  //     return;
+  //   }
 
-  // ✅ Open checkout FIRST, then close booking after transition
-  this.isCheckoutModalOpen = true;
-  setTimeout(() => { this.isBookingModalOpen = false; }, 150);
-}
+  //   // ✅ Open checkout FIRST, then close booking after transition
+  //   this.isCheckoutModalOpen = true;
+  //   setTimeout(() => { this.isBookingModalOpen = false; }, 150);
+  // }
 
+  async openCheckoutPreview() {
+    if (!this.BookingDate) {
+      this.showToast('Please select a Pooja date 📅', 'danger');
+      return;
+    }
 
+    if (!this.bookingDonorName?.trim() || this.bookingDonorName.trim().length < 3) {
+      this.showToast('Please enter your name (min 3 characters) 🙏', 'danger');
+      return;
+    }
+
+    if (!/^[0-9]{10}$/.test(this.bookingDonorPhone)) {
+      this.showToast('Please enter a valid 10-digit mobile number 🙏', 'danger');
+      return;
+    }
+
+    this.isBookingModalOpen = false;
+
+    // Wait for modal close animation
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    this.isCheckoutModalOpen = true;
+  }
   processBookingPayment(or: any, payload: any) {
     this.apinu.postUrlData(
       `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='RazorPay' and identifier='publictoken'`}`,
@@ -862,11 +884,14 @@ export class BookPoojaComponent implements OnInit {
                   this.MandirTransaction.DateModified = new Date();
 
                   this.apinu.postUrlData('MandirTransactionsInsert', this.MandirTransaction)
-                    .subscribe(() => {
+                    .subscribe(async () => {
                       this.isBookingModalOpen = false;
                       this.isProcessingPayment = false;
-                      this.showToast(`🎉 Booking Confirmed!\n\n✅ Advance of ₹${this.advanceAmount} paid successfully.`, 'success');
-                      setTimeout(() => this.routerCtrl.navigateForward('/booking'), 400);
+                      this.isCheckoutModalOpen = false;
+                      this.showToast(`🎉 Booking Confirmed!\n\n✅ Advance of ₹21 paid successfully.`, 'success');
+                      await new Promise(resolve => setTimeout(resolve, 500));
+
+                      this.routerCtrl.navigateForward('/booking');
                     });
                 });
 

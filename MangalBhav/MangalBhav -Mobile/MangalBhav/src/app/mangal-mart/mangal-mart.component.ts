@@ -35,7 +35,7 @@ export interface Category {
   templateUrl: './mangal-mart.component.html',
   styleUrls: ['./mangal-mart.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, CommonBottomTabsComponent,FormsModule,PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, IonicModule, CommonBottomTabsComponent,FormsModule,PanditjibottomtabsComponent]
 })
 export class MangalMartComponent implements OnInit {
 

@@ -38,6 +38,12 @@
         <h2 class="greeting-title">{{ t.greetingTitle }}</h2>
       </div>
       <div class="greeting-om">ॐ</div>
+      <div class="notif-bell-wrap" (click)="openPage('notifications')">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <span class="notif-badge" *ngIf="unreadCount > 0">
+          {{ unreadCount > 9 ? '9+' : unreadCount }}
+        </span>
+      </div>
     </div>
 
     <!-- ===== QUICK ACTIONS ===== -->

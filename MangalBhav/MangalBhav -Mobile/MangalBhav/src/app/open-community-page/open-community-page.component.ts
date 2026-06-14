@@ -26,8 +26,8 @@ interface AartiStep { icon: string; label: string; sub: string; sub2?: string; }
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonicModule,
-    JajmanbottomtabsComponent, TabscommonheaderComponent,
-    LoggedoutbottomtabsComponent, PanditjibottomtabsComponent, CommonBottomTabsComponent
+     TabscommonheaderComponent,
+     PanditjibottomtabsComponent, CommonBottomTabsComponent
   ]
 })
 export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -970,6 +970,20 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     const yOffset = el.offsetTop - 20;
   
     this.pageContent.scrollToPoint(0, yOffset, 600);
+  }
+
+  ionViewWillEnter() {
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) {
+      fab.style.display = 'none';
+    }
+  }
+  
+  ionViewWillLeave() {
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) {
+      fab.style.display = 'flex';
+    }
   }
 
 }

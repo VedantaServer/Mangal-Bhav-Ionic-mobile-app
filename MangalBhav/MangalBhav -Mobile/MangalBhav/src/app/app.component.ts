@@ -4,6 +4,7 @@ import { Storage } from '@ionic/storage-angular';
 import { Api, ApiNU } from '../providers';
 import { Router } from '@angular/router';
 import { App } from '@capacitor/app';
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,8 @@ export class AppComponent {
     this.initializeApp();
 
     this.setupDeepLinks();
+
+    this.initAnalytics();
   }
 
   async setupDeepLinks() {
@@ -63,6 +66,20 @@ export class AppComponent {
     }
 
   }
+
+
+  async initAnalytics() {
+    await FirebaseAnalytics.setEnabled({
+      enabled: true
+    });
+
+    await FirebaseAnalytics.logEvent({
+      name: 'app_started'
+    });
+    
+  }
+
+
   handleDeepLinks() {
 
     App.addListener('appUrlOpen', (event: any) => {

@@ -16,7 +16,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './all-chats.component.html',
   styleUrls: ['./all-chats.component.scss'],
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule, IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent,CommonBottomTabsComponent]
+  imports: [CommonModule,RouterModule, FormsModule, IonicModule]
 })
 export class AllChatsComponent implements OnInit {
 

@@ -26,7 +26,9 @@ using System.Net;
 using FaceUPAI.Models;
 using System.Security.Cryptography;
 using System.Data.SqlTypes;
-
+using FirebaseAdmin.Messaging;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 namespace FaceUPAI.Controllers
 {
     public class AuthenticationController : Controller
@@ -607,9 +609,334 @@ namespace FaceUPAI.Controllers
             }
         }
 
+        public class SaveFCMTokenRequest
+        {
+            public int UserID { get; set; }
+            public string FCMToken { get; set; }
+            public string Platform { get; set; }
+        }
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("SaveFCMToken")]
+        public IActionResult SaveFCMToken(
+            [FromBody] SaveFCMTokenRequest request)
+        {
+            SqlParameter[] parameters =
+            {
+        new SqlParameter("@UserID", request.UserID),
+        new SqlParameter("@FCMToken", request.FCMToken),
+        new SqlParameter("@Platform", request.Platform)
+    };
+
+            int id = Convert.ToInt32(
+                DataAccess.ExecuteScalar(
+                    CommandType.StoredProcedure,
+                    "UserFCMTokenSave",
+                    parameters
+                )
+            );
+
+            return Ok(new
+            {
+                ID = id
+            });
+        }
+
 
 
         [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("GetUnreadNotificationCount")]
+        public IActionResult GetUnreadNotificationCount(int userID)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@UserID", userID),
+               
+
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "GetUnreadNotificationCount", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("MarkNotificationsSeen")]
+        public IActionResult MarkNotificationsSeen(int userID,int flag)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@UserID", userID),
+                  new SqlParameter("@Flag", flag),
+
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "MarkNotificationsSeen", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+
+
+        [HttpGet]
+        [Route("GenerateFestivalNotifications")]
+        public IActionResult GenerateFestivalNotifications()
+        {
+            try
+            {
+                SqlParameter[] parameters = { };
+
+                DataAccess.ExecuteNonQuery(
+                    CommandType.StoredProcedure,
+                    "GenerateFestivalNotifications",
+                    parameters
+                );
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Festival notifications generated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Error = ex.Message
+                });
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("SendPendingNotifications")]
+        public async Task<IActionResult> SendPendingNotifications()
+        {
+            int sentCount = 0;
+
+            try
+            {
+                SqlParameter[] notificationParams = new SqlParameter[] { };
+
+                DataTable notificationTable =
+                    DataAccess.ExecuteDataSet(
+                        "",
+                        CommandType.Text,
+                        @"SELECT *
+          FROM NotificationQueue
+          WHERE IsSent = 0",
+                        notificationParams
+                    ).Tables[0];
+
+                foreach (DataRow notificationRow in notificationTable.Rows)
+                {
+                    int notificationID =
+                        Convert.ToInt32(notificationRow["ID"]);
+
+                    int userID =
+                        Convert.ToInt32(notificationRow["UserID"]);
+
+                    string title =
+                        notificationRow["Title"].ToString();
+
+                    string message =
+                        notificationRow["Message"].ToString();
+
+                    string notificationType =
+                        notificationRow["NotificationType"].ToString();
+
+                    string referenceID =
+                        notificationRow["ReferenceID"]?.ToString() ?? "";
+
+                    SqlParameter[] tokenParams = new SqlParameter[] { };
+
+                    DataTable tokenTable =
+                        DataAccess.ExecuteDataSet(
+                            "",
+                            CommandType.Text,
+                            $@"SELECT FCMToken
+           FROM UserFCMToken
+           WHERE UserID = {userID}
+           AND IsActive = 1",
+                            tokenParams
+                        ).Tables[0];
+
+                    if (tokenTable.Rows.Count == 0)
+                    {
+                        DataAccess.ExecuteNonQuery(
+                            CommandType.Text,
+                            $@"UPDATE NotificationQueue
+                       SET ErrorMessage = 'No Active Token Found'
+                       WHERE ID = {notificationID}",
+                            new SqlParameter[] { });
+
+                        continue;
+                    }
+
+                    foreach (DataRow tokenRow in tokenTable.Rows)
+                    {
+                        string token =
+                            tokenRow["FCMToken"].ToString();
+
+                        try
+                        {
+                            var firebaseMessage =
+                                new FirebaseAdmin.Messaging.Message()
+                                {
+                                    Token = token,
+
+                                    Notification =
+                                        new FirebaseAdmin.Messaging.Notification()
+                                        {
+                                            Title = title,
+                                            Body = message
+                                        },
+
+                                    Data =
+                                        new Dictionary<string, string>()
+                                        {
+                                    { "NotificationType", notificationType },
+                                    { "ReferenceID", referenceID }
+                                        }
+                                };
+
+                            string firebaseResponse =
+                                await FirebaseMessaging
+                                    .DefaultInstance
+                                    .SendAsync(firebaseMessage);
+
+                            DataAccess.ExecuteNonQuery(
+                                CommandType.Text,
+                                $@"UPDATE NotificationQueue
+                           SET
+                               IsSent = 1,
+                               SentDate = GETDATE(),
+                               FirebaseResponse = '{firebaseResponse.Replace("'", "''")}'
+                           WHERE ID = {notificationID}",
+                                new SqlParameter[] { });
+
+                            sentCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            DataAccess.ExecuteNonQuery(
+                                CommandType.Text,
+                                $@"UPDATE NotificationQueue
+                           SET ErrorMessage = '{ex.Message.Replace("'", "''")}'
+                           WHERE ID = {notificationID}",
+                                new SqlParameter[] { });
+                        }
+                    }
+                }
+
+                return Ok(new
+                {
+                    Success = true,
+                    SentCount = sentCount
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Error = ex.ToString()
+                });
+            }
+        }
+
+
+        [HttpGet]
+    [Route("TestNotification")]
+    public async Task<IActionResult> TestNotification()
+    {
+        try
+        {
+                SqlParameter[] parameters = new SqlParameter[] { };
+
+                object tokenObj = DataAccess.ExecuteScalar(
+                    CommandType.Text,
+                    "SELECT TOP 1 FCMToken FROM UserFCMToken WHERE IsActive = 1",
+                    parameters
+                );
+
+                if (tokenObj == null)
+            {
+                return BadRequest("No FCM Token Found");
+            }
+
+            string token = tokenObj.ToString();
+
+            var firebaseMessage =
+                new FirebaseAdmin.Messaging.Message()
+                {
+                    Token = token,
+
+                    Notification =
+                        new FirebaseAdmin.Messaging.Notification()
+                        {
+                            Title = "Mangal Bhav",
+                            Body = "Firebase Test Successful"
+                        }
+                };
+
+            string response =
+                await FirebaseMessaging
+                    .DefaultInstance
+                    .SendAsync(firebaseMessage);
+
+            return Ok(new
+            {
+                Success = true,
+                FirebaseResponse = response
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                Success = false,
+                Error = ex.ToString()
+            });
+        }
+    }
+
+
+    [HttpPost]
         [EnableCors("AllowAll")]
         [Route("refreshRazorPaySchoolCredentials")]
         public async Task<IActionResult> RefreshRazorPaySchoolCredentials()

@@ -18,7 +18,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './loggedin-panditsearch.component.html',
   styleUrls: ['./loggedin-panditsearch.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, CommonBottomTabsComponent,IonicModule, JajmanbottomtabsComponent, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule,IonicModule]
 })
 export class LoggedinPanditsearchComponent implements OnInit {
 

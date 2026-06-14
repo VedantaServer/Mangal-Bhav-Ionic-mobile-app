@@ -16,6 +16,14 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { FcmService } from 'src/providers/fcm/fcm';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
+import { addIcons } from 'ionicons';
+import {
+  logoInstagram,
+  logoFacebook,
+  logoYoutube,
+  logoWhatsapp,
+  logoLinkedin
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-user-profile',
@@ -23,33 +31,33 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   styleUrls: ['./user-profile.component.scss'],
 
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, CommonBottomTabsComponent,PanditjibottomtabsComponent, JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class UserProfileComponent implements OnInit {
   profilePreview: any | null = null;
   userDetails: any;
   socialMediaList: any[] = [];
 
-showSocialModal = false;
+  showSocialModal = false;
 
-isEditSocialMedia = false;
+  isEditSocialMedia = false;
 
-socialMedia: any = {
-  EntitySocialMediaID: -1,
-  TenantID: '',
-  EntityType: 'USER',
-  EntityID: '',
-  Platform: '',
-  Link: '',
-  Username: '',
-  DisplayName: '',
-  IsVerified: true,
-  IsActive: true,
-  DateAdded: new Date(),
-  DateModified: new Date(),
-  AddedByUser: '',
-  UpdatedByUser: ''
-};
+  socialMedia: any = {
+    EntitySocialMediaID: -1,
+    TenantID: '',
+    EntityType: 'USER',
+    EntityID: '',
+    Platform: '',
+    Link: '',
+    Username: '',
+    DisplayName: '',
+    IsVerified: true,
+    IsActive: true,
+    DateAdded: new Date(),
+    DateModified: new Date(),
+    AddedByUser: '',
+    UpdatedByUser: ''
+  };
   profile: any = {
     TenantID: null,
     UserID: null,
@@ -217,22 +225,42 @@ socialMedia: any = {
     private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient, public toastController: ToastController,
-    private alertCtrl: AlertController) { }
+    private alertCtrl: AlertController) {
+    addIcons({
+      logoInstagram,
+      logoFacebook,
+      logoYoutube,
+      logoWhatsapp,
+      logoLinkedin
+    });
+
+  }
 
 
-    loadSocialMedia() {
+  loadSocialMedia() {
 
-      this.apinu.postUrlData(
-        `EntitySocialMediaSelectByQuery?Query=EntityType='USER' and EntityID = ${this.userDetails.UserID}`,
-        null
-      ).subscribe((res: any) => {
-    
-        this.socialMediaList =
-          res.EntitySocialMediaList || [];
-    
-      });
-    
-    }
+    this.apinu.postUrlData(
+      `EntitySocialMediaSelectByQuery?Query=EntityType='USER' and EntityID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+
+      // this.socialMediaList =
+      //   res.EntitySocialMediaList || [];
+
+      this.socialMediaList = (res.EntitySocialMediaList || []).map((item: any) => ({
+        ...item,
+        IconName:
+          item.Platform === 'Instagram' ? 'logo-instagram' :
+          item.Platform === 'Facebook' ? 'logo-facebook' :
+          item.Platform === 'YouTube' ? 'logo-youtube' :
+          item.Platform === 'WhatsApp' ? 'logo-whatsapp' :
+          item.Platform === 'LinkedIn' ? 'logo-linkedin' :
+          'share-social-outline'
+      }));
+
+    });
+
+  }
 
 
   async ngOnInit() {
@@ -571,12 +599,12 @@ socialMedia: any = {
   openAddSocialMedia() {
 
     this.isEditSocialMedia = false;
-  
+
     this.socialMedia = {
       EntitySocialMediaID: -1,
-      TenantID: Number( this.userDetails.TenantID),
+      TenantID: Number(this.userDetails.TenantID),
       EntityType: 'USER',
-      EntityID: Number( this.userDetails.UserID),
+      EntityID: Number(this.userDetails.UserID),
       Platform: '',
       Link: '',
       Username: '',
@@ -588,18 +616,18 @@ socialMedia: any = {
       AddedByUser: this.userDetails.FullName,
       UpdatedByUser: this.userDetails.FullName
     };
-  
+
     this.showSocialModal = true;
   }
 
   editSocialMedia(item: any) {
 
     this.isEditSocialMedia = true;
-  
+
     this.socialMedia = {
       ...item
     };
-  
+
     this.showSocialModal = true;
   }
 
@@ -609,67 +637,82 @@ socialMedia: any = {
       this.isEditSocialMedia
         ? 'EntitySocialMediaUpdate'
         : 'EntitySocialMediaInsert';
-  
+
     this.socialMedia.DateModified = new Date();
-  
+
     this.apinu.postUrlData(
       action,
       this.socialMedia
     ).subscribe((res: any) => {
-  
+
       this.showToast(
         this.isEditSocialMedia
           ? 'Social media updated'
           : 'Social media added',
         'success'
       );
-  
+
       this.showSocialModal = false;
-  
+
       this.loadSocialMedia();
-  
+
     });
-  
+
+  }
+
+  getPlatformClass(platform: string) {
+    switch (platform) {
+      case 'Instagram': return 'platform-instagram';
+      case 'Facebook': return 'platform-facebook';
+      case 'YouTube': return 'platform-youtube';
+      case 'LinkedIn': return 'platform-linkedin';
+      case 'WhatsApp': return 'platform-whatsapp';
+      case 'Twitter': return 'platform-twitter';
+      case 'Website': return 'platform-website';
+      default: return 'platform-default';
+    }
   }
   deleteSocialMedia(item: any) {
 
     this.apinu.postUrlData(
-      'EntitySocialMediaDelete',
-      item
+      `EntitySocialMediaDelete?entitySocialMediaID=${item.EntitySocialMediaID}`,
+      null
     ).subscribe(() => {
-  
+
       this.showToast(
         'Deleted successfully',
         'success'
       );
-  
-      this.loadSocialMedia();
-  
-    });
-  
-  }
 
+      this.loadSocialMedia();
+
+    });
+
+  }
   getPlatformIcon(platform: string) {
+
+    console.log(platform)
+    platform = (platform || '').trim();
 
     switch (platform) {
       case 'Instagram':
         return 'logo-instagram';
-  
+
       case 'Facebook':
         return 'logo-facebook';
-  
+
       case 'YouTube':
         return 'logo-youtube';
-  
+
       case 'LinkedIn':
         return 'logo-linkedin';
-  
+
       case 'WhatsApp':
         return 'logo-whatsapp';
-  
+
       default:
+        console.log('Unknown platform:', JSON.stringify(platform));
         return 'share-social-outline';
     }
-  
   }
 }

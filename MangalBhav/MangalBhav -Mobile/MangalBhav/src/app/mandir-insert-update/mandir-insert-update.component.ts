@@ -96,6 +96,12 @@ export class MandirInsertUpdateComponent implements OnInit {
   pageNumber = 1;
   pageSize = 10;
 
+ // pageNumber = 1;
+//pageSize = 10;
+query: string = 'tenantID=1 ORDER BY DateAdded DESC';
+searchTimeout: any;
+
+
   // slider state per card
   cardSlideIndex: { [mandirID: number]: number } = {};
   accountHolderName: any;
@@ -194,7 +200,7 @@ export class MandirInsertUpdateComponent implements OnInit {
       schoolID: 0,
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
-      query: 'tenantID=1 ORDER BY DateAdded DESC'
+      query: this.query.replace(/\s+/g, ' ').trim()
     };
 
     this.apinu.postUrlData('MandirSelectByQueryPaging', body).subscribe({
@@ -245,17 +251,21 @@ export class MandirInsertUpdateComponent implements OnInit {
   }
 
   onMandirSearch() {
-    const q = this.mandirSearchQuery.toLowerCase().trim();
-
-    // client-side filter on already loaded data
-    this.filteredMandirs = q
-      ? this.allMandirs.filter(m =>
-        m.MandirName?.toLowerCase().includes(q) ||
-        m.GodName?.toLowerCase().includes(q) ||
-        m.City?.toLowerCase().includes(q) ||
-        m.State?.toLowerCase().includes(q)
-      )
-      : [...this.allMandirs];
+    clearTimeout(this.searchTimeout);
+    const q = this.mandirSearchQuery?.trim();
+  
+    this.searchTimeout = setTimeout(() => {
+      this.pageNumber = 1;
+      this.allMandirs = [];
+      this.filteredMandirs = [];
+      this.infiniteScrollEvent = null;
+  
+      this.query = q
+        ? `tenantID=1 AND (MandirName LIKE '%${q}%' OR GodName LIKE '%${q}%' OR City LIKE '%${q}%' OR State LIKE '%${q}%' OR Address LIKE '%${q}%') ORDER BY DateAdded DESC`
+        : `tenantID=1 ORDER BY DateAdded DESC`;
+  
+      this.loadMandirs();
+    }, 500);
   }
 
 
@@ -379,11 +389,11 @@ export class MandirInsertUpdateComponent implements OnInit {
 
   closeAddMandir() {
     this.showAddMandirForm = false;
-    // ✅ Reset paging so list refreshes cleanly after add/edit
     this.pageNumber = 1;
     this.allMandirs = [];
     this.filteredMandirs = [];
     this.infiniteScrollEvent = null;
+    this.query = 'tenantID=1 ORDER BY DateAdded ASC';   // ← add this
     this.loadMandirs();
   }
 

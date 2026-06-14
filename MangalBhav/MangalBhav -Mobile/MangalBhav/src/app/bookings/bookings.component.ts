@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './bookings.component.html',
   styleUrls: ['./bookings.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule, CommonBottomTabsComponent,IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule,IonicModule]
 })
 export class BookingsComponent implements OnInit {
 
@@ -41,7 +41,7 @@ export class BookingsComponent implements OnInit {
       dakshina: 'Dakshina',
       mins: 'mins',
 
-      payment: 'Payment',
+      payment: 'Booking Amount',
       paid: 'Paid',
       pending: 'Pending',
 
@@ -73,7 +73,7 @@ export class BookingsComponent implements OnInit {
       appTitle: '✦ मंगल भाव ✦',
       mins: 'मिनट',
 
-      payment: 'भुगतान',
+      payment: 'बुकिंग राशि',
       paid: 'भुगतान किया गया',
       pending: 'लंबित',
 
@@ -123,7 +123,11 @@ export class BookingsComponent implements OnInit {
     this.userDetails = await this.storage.get("account");
     this.language = this.userDetails.Languages;
 
-
+    this.apinu.postUrlData(
+      `MarkNotificationsSeen?UserID=${this.userDetails.UserID}&flag=${Number(1)}`,
+      null
+    ).subscribe();
+    
 
     this.loadList();
   }
@@ -260,6 +264,7 @@ export class BookingsComponent implements OnInit {
 
       next: (finalList: any) => {
         this.BookingsList = finalList;
+        this.loadPanditImages(this.BookingsList);
         console.log('Final Enriched Bookings:', this.BookingsList);
       },
 
@@ -396,5 +401,30 @@ export class BookingsComponent implements OnInit {
         }
 
       });
+  }
+
+
+  callPandit(phoneNumber: string) {
+    window.location.href = `tel:${phoneNumber}`;
+  }
+
+
+  loadPanditImages(list: any[]) {
+    list.forEach((item: any) => {
+      const photoUrl = item.Profile?.ProfilePhotoUrl;
+      if (!photoUrl) return;
+  
+      this.api.getImage('DownloadImages', {
+        imageName: photoUrl,
+        imagePurpose: 'ProfilePhoto'
+      }).subscribe({
+        next: (blob: any) => {
+          if (blob?.type?.startsWith('image/')) {
+            item.PanditImageUrl = URL.createObjectURL(blob);
+          }
+        },
+        error: (err) => console.error('Error loading pandit image:', err)
+      });
+    });
   }
 }

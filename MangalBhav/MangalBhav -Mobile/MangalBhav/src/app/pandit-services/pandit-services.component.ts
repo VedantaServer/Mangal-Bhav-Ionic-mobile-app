@@ -16,7 +16,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './pandit-services.component.html',
   styleUrls: ['./pandit-services.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class PanditServicesComponent implements OnInit {
 

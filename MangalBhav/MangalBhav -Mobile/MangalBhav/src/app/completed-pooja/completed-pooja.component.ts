@@ -18,7 +18,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './completed-pooja.component.html',
   styleUrls: ['./completed-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule,CommonBottomTabsComponent ,IonicModule, PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule]
 })
 export class CompletedPoojaComponent implements OnInit {
   userDetails: any;
@@ -28,83 +28,83 @@ export class CompletedPoojaComponent implements OnInit {
   isUploadModalOpen = false;
   isPreviewOpen = false;
   isReviewsModalOpen = false;
- labels = {
-  en: {
-    appTitle: '✦ Mangal.Bhav ✦',
-    pageTitle: 'Bookings',
-    bannerSubCompleted: 'Completed',
-    bannerTitle: 'Seva Bookings',
+  labels = {
+    en: {
+      appTitle: '✦ Mangal.Bhav ✦',
+      pageTitle: 'Bookings',
+      bannerSubCompleted: 'Completed',
+      bannerTitle: 'Seva Bookings',
 
-    requested: 'Requested',
-    accepted: 'Accepted',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
+      requested: 'Requested',
+      accepted: 'Accepted',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
 
-    yourServices: 'Your Services',
-    bookings: 'Bookings',
+      yourServices: 'Your Services',
+      bookings: 'Bookings',
 
-    noBookings: 'No bookings yet for this service',
+      noBookings: 'No bookings yet for this service',
 
-    uploadPhotos: 'Upload Photos',
-    viewReviews: 'View Reviews',
+      uploadPhotos: 'Upload Photos',
+      viewReviews: 'View Reviews',
 
-    noServices: 'No Services Found',
-    noServicesSub: 'Add services first to start receiving bookings',
+      noServices: 'No Services Found',
+      noServicesSub: 'Add services first to start receiving bookings',
 
-    reviews: 'Reviews',
-    loadingReviews: 'Loading reviews...',
-    noReviews: 'No Reviews Yet',
-    noReviewsSub: 'Be the first to review this seva',
+      reviews: 'Reviews',
+      loadingReviews: 'Loading reviews...',
+      noReviews: 'No Reviews Yet',
+      noReviewsSub: 'Be the first to review this seva',
 
-    uploadTitle: 'Seva Photos',
-    tapUpload: 'Tap to Upload Photo',
-    imgSupport: 'JPG, PNG supported',
-    uploadSelected: 'Upload Selected Photo',
+      uploadTitle: 'Seva Photos',
+      tapUpload: 'Tap to Upload Photo',
+      imgSupport: 'JPG, PNG supported',
+      uploadSelected: 'Upload Selected Photo',
 
-    bookingPhotos: 'Booking Photos',
-    noPhotos: 'No Photos Yet',
-    noPhotosSub: 'Upload photos from this booking to preserve sacred memories'
-  },
+      bookingPhotos: 'Booking Photos',
+      noPhotos: 'No Photos Yet',
+      noPhotosSub: 'Upload photos from this booking to preserve sacred memories'
+    },
 
-  hi: {
+    hi: {
 
-     
-    pageTitle: 'बुकिंग्स',
-    bannerSubCompleted: 'पूर्ण',
-    bannerTitle: 'सेवा बुकिंग्स',
-     appTitle: '✦ मंगल भाव ✦',
 
-    requested: 'अनुरोधित',
-    accepted: 'स्वीकृत',
-    completed: 'पूर्ण',
-    cancelled: 'रद्द',
+      pageTitle: 'बुकिंग्स',
+      bannerSubCompleted: 'पूर्ण',
+      bannerTitle: 'सेवा बुकिंग्स',
+      appTitle: '✦ मंगल भाव ✦',
 
-    yourServices: 'आपकी सेवाएँ',
-    bookings: 'बुकिंग्स',
+      requested: 'अनुरोधित',
+      accepted: 'स्वीकृत',
+      completed: 'पूर्ण',
+      cancelled: 'रद्द',
 
-    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+      yourServices: 'आपकी सेवाएँ',
+      bookings: 'बुकिंग्स',
 
-    uploadPhotos: 'फोटो अपलोड करें',
-    viewReviews: 'रिव्यू देखें',
+      noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
 
-    noServices: 'कोई सेवा नहीं मिली',
-    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें',
+      uploadPhotos: 'फोटो अपलोड करें',
+      viewReviews: 'रिव्यू देखें',
 
-    reviews: 'रिव्यू',
-    loadingReviews: 'रिव्यू लोड हो रहे हैं...',
-    noReviews: 'अभी कोई रिव्यू नहीं',
-    noReviewsSub: 'इस सेवा का पहला रिव्यू दें',
+      noServices: 'कोई सेवा नहीं मिली',
+      noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें',
 
-    uploadTitle: 'सेवा फोटो',
-    tapUpload: 'फोटो अपलोड करने के लिए टैप करें',
-    imgSupport: 'JPG, PNG समर्थित',
-    uploadSelected: 'चयनित फोटो अपलोड करें',
+      reviews: 'रिव्यू',
+      loadingReviews: 'रिव्यू लोड हो रहे हैं...',
+      noReviews: 'अभी कोई रिव्यू नहीं',
+      noReviewsSub: 'इस सेवा का पहला रिव्यू दें',
 
-    bookingPhotos: 'बुकिंग फोटो',
-    noPhotos: 'अभी कोई फोटो नहीं',
-    noPhotosSub: 'इस सेवा की यादों को सहेजने के लिए फोटो अपलोड करें'
-  }
-};
+      uploadTitle: 'सेवा फोटो',
+      tapUpload: 'फोटो अपलोड करने के लिए टैप करें',
+      imgSupport: 'JPG, PNG समर्थित',
+      uploadSelected: 'चयनित फोटो अपलोड करें',
+
+      bookingPhotos: 'बुकिंग फोटो',
+      noPhotos: 'अभी कोई फोटो नहीं',
+      noPhotosSub: 'इस सेवा की यादों को सहेजने के लिए फोटो अपलोड करें'
+    }
+  };
   selectedReviewItem: any = null;
   reviewsList: any[] = [];
   reviewsLoading = false;
@@ -116,7 +116,7 @@ export class CompletedPoojaComponent implements OnInit {
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
-    public api: Api,  public toastController: ToastController,
+    public api: Api, public toastController: ToastController,
     private storage: Storage,
     private plt: Platform,
     private http: HttpClient,
@@ -135,11 +135,11 @@ export class CompletedPoojaComponent implements OnInit {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
-    get t() {
-  return this.language === 'Hindi'
-    ? this.labels.hi
-    : this.labels.en;
-}
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
 
 
   loadList() {
@@ -245,10 +245,21 @@ export class CompletedPoojaComponent implements OnInit {
 
       next: (finalList: any) => {
         console.log('🔥 Final Fully Enriched List:', finalList);
-        this.PanditServicesList = finalList;
+
+        // Only keep services that have at least one COMPLETED booking
+        const filtered = finalList.filter((service: any) => service.Bookings?.length > 0);
+
+        // Sort services by their latest booking's DateAdded (newest first)
+        filtered.sort((a: any, b: any) => {
+          const latestA = Math.max(...a.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
+          const latestB = Math.max(...b.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
+          return latestB - latestA;
+        });
+
+        this.PanditServicesList = filtered;
       },
 
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Error loading data:', err);
       }
 
@@ -395,14 +406,14 @@ export class CompletedPoojaComponent implements OnInit {
 
         this.apinu.postUrlData('DocumentInsert', body).subscribe(() => {
           this.selectedFile = null;
-          this.showToast('Success' , 'success');
+          this.showToast('Success', 'success');
           this.getBookingPhotos();   // ← refresh gallery after upload
         });
       }
     });
   }
 
-    async showToast(message: string, color = 'primary') {
+  async showToast(message: string, color = 'primary') {
     const toast = await this.toastController.create({
       message, duration: 4000, color, position: 'top'
     });
@@ -441,7 +452,7 @@ export class CompletedPoojaComponent implements OnInit {
           error: (err) => console.error('Error loading images:', err)
         });
       },
-      error: (err:any) => console.error('Error fetching documents:', err)
+      error: (err: any) => console.error('Error fetching documents:', err)
     });
   }
 

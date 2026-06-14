@@ -85,15 +85,23 @@
           <!-- Pandit info row -->
           <div class="pandit-row">
             <div class="pandit-avatar">
-              {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+              <img *ngIf="item.PanditImageUrl"
+                   [src]="item.PanditImageUrl"
+                   class="pandit-avatar-img"
+                   (error)="item.PanditImageUrl = null" />
+              <span *ngIf="!item.PanditImageUrl">
+                {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+              </span>
             </div>
-            <div class="pandit-details">
+            <div class="pandit-details" style="text-transform: capitalize;">
               <p class="pandit-name">{{ item.Profile?.FullName }}</p>
-              <p class="pandit-phone">
+          
+              <p class="pandit-phone" *ngIf="item.Profile?.PhoneNumber"
+              (click)="callPandit(item.Profile.PhoneNumber)">
                 <ion-icon name="call-outline"></ion-icon>
                 {{
                 item.Profile?.PhoneNumber
-                ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+                ? item.Profile?.PhoneNumber
                 : ''
                 }}
               </p>

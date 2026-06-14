@@ -13,7 +13,7 @@ import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonicModule,
-    TabscommonheaderComponent
+    
   ]
 })
 export class AdminEventVerificationComponent implements OnInit {

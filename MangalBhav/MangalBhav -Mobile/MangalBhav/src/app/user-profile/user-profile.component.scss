@@ -1098,3 +1098,98 @@ ion-icon[name="logo-linkedin"] {
 ion-icon[name="logo-whatsapp"] {
   color: #25D366;
 }
+
+.social-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #f0e4d3;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.social-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.platform-instagram { background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af); }
+.platform-facebook  { background: #1877f2; }
+.platform-youtube   { background: #ff0000; }
+.platform-linkedin  { background: #0a66c2; }
+.platform-whatsapp  { background: #25d366; }
+.platform-twitter   { background: #000; }
+.platform-website   { background: var(--ion-color-primary, #ff9933); }
+.platform-default   { background: #999; }
+
+.social-info {
+  flex: 1;
+  min-width: 0; // allows text-overflow to work
+}
+
+.platform-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #3a2a1a;
+}
+
+.platform-user {
+  font-size: 12.5px;
+  color: #8a7a68;
+  margin-top: 2px;
+}
+
+.platform-link {
+  font-size: 12px;
+  color: #b08968;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.social-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #fdf3e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d98c2b;
+  font-size: 17px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &.danger {
+    color: #e23744;
+    background: #fde8e8;
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.social-icon-wrap ion-icon {
+  font-size: 24px !important;
+  color: white !important;
+  display: block !important;
+}

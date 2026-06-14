@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace FaceUPAI
 {
@@ -18,36 +21,50 @@ namespace FaceUPAI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Firebase Initialization
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile(
+                        Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "firebase-adminsdk.json"))
+                });
+            }
+
             // Define CORS policy
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                   
-
                     builder.WithOrigins(
-                      "http://localhost:8100",
-                      "http://localhost",
-                      "https://localhost",
-                      "https://localhost:8100",
-                      "capacitor://localhost",
-                      "ionic://localhost")
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                        "http://localhost:8100",
+                        "http://localhost",
+                        "https://localhost",
+                        "https://localhost:8100",
+                        "capacitor://localhost",
+                        "ionic://localhost")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
+
             services.AddHttpClient();
+
             services.AddControllersWithViews();
+
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
-            });
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -63,7 +80,9 @@ namespace FaceUPAI
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
+
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
@@ -71,8 +90,8 @@ namespace FaceUPAI
 
             app.UseRouting();
 
-            // Enable CORS before UseAuthorization
-            app.UseCors("AllowLocalDev");
+            // Enable CORS
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 

@@ -181,7 +181,7 @@ export class CommonBottomTabsComponent implements OnInit {
     if (this.currentUrl.includes('login') && this.currentUrl.includes('from=pooja')) return 0;
     if (this.currentUrl.includes('openfindmandir')) return 1;
     if (this.currentUrl.includes('open-community-page')) return 2;
-    if (this.currentUrl.includes('/')) return 2;
+    // if (this.currentUrl.includes('/')) return 2;
     if (this.currentUrl.includes('open-find-pandit')) return 3;
     return 4;
   }

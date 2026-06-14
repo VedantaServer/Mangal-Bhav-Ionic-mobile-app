@@ -15,9 +15,9 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonicModule,
-    TabscommonheaderComponent,
-    CommonBottomTabsComponent,
-    PanditjibottomtabsComponent,
+    
+    
+    
   ],
 })
 export class FamilyComponent implements OnInit, OnDestroy, AfterViewInit {

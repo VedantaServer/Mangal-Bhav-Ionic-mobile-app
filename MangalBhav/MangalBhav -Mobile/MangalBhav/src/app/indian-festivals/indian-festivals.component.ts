@@ -106,6 +106,11 @@ export class IndianFestivalsComponent implements OnInit {
         this.findUpcomingFestival();
         this.isLoading = false;
       });
+
+      this.apinu.postUrlData(
+        `MarkNotificationsSeen?UserID=${account.UserID}&flag=${Number(3)}`,
+        null
+      ).subscribe();
   }
 
   buildMonthFilter() {

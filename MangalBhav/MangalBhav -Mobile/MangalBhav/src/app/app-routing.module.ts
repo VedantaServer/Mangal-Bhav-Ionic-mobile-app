@@ -49,6 +49,7 @@ import { FamilyComponent } from './family/family.component';
 import { FamilyMandirPendingApprovalComponent } from './family-mandir-pending-approval/family-mandir-pending-approval.component';
 import { MyMandirComponent } from './my-mandir/my-mandir.component';
 import { AdminEventVerificationComponent } from './admin-event-verification/admin-event-verification.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 const routes: Routes = [
 
@@ -179,6 +180,11 @@ const routes: Routes = [
   {
     path: 'Cancelled-pooja',
     component: CancelledPoojaComponent  // directly use the standalone component
+  }
+  ,
+  {
+    path: 'notifications',
+    component: NotificationsComponent  // directly use the standalone component
   }
   ,
   {

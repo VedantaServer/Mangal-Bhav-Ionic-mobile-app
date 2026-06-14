@@ -230,45 +230,30 @@
 
     <div class="form-container">
 
+      <!-- <ion-icon name="logo-instagram"></ion-icon>
+<ion-icon name="logo-facebook"></ion-icon>
+<ion-icon name="logo-youtube"></ion-icon>
+<ion-icon name="logo-whatsapp"></ion-icon> -->
+
       <div class="social-card" *ngFor="let item of socialMediaList">
 
-        <div class="social-header">
+        <div class="social-icon-wrap" [ngClass]="getPlatformClass(item.Platform)">
+          <ion-icon [name]="item.IconName"></ion-icon>
+        </div>
 
-          <div class="social-left">
-
-            <ion-icon [name]="getPlatformIcon(item.Platform)">
-            </ion-icon>
-
-            <div>
-
-              <div class="platform-name">
-                {{item.Platform}}
-              </div>
-
-              <div class="platform-user">
-                {{item.Username}}
-              </div>
-
-              <div class="platform-link">
-                {{item.Link}}
-              </div>
-
-            </div>
-
-          </div>
-
+        <div class="social-info">
+          <div class="platform-name">{{ item.Platform }}</div>
+          <div class="platform-user" *ngIf="item.Username">@{{ item.Username }}</div>
+          <div class="platform-link" *ngIf="item.Link">{{ item.Link }}</div>
         </div>
 
         <div class="social-actions">
-
-          <ion-button fill="clear" size="small" (click)="editSocialMedia(item)">
-            Edit
-          </ion-button>
-
-          <!-- <ion-button fill="clear" color="danger" size="small" (click)="deleteSocialMedia(item)">
-            Delete
-          </ion-button> -->
-
+          <button class="icon-btn" (click)="editSocialMedia(item)">
+            <ion-icon name="create-outline"></ion-icon>
+          </button>
+          <button class="icon-btn danger" (click)="deleteSocialMedia(item)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
         </div>
 
       </div>

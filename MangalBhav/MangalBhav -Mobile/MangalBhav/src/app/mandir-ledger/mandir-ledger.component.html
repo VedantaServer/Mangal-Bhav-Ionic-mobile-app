@@ -205,7 +205,7 @@
       <div class="mfd-wish-wrap">
         <textarea class="mfd-wish-input" [(ngModel)]="payForm.Remarks"
           placeholder="Any notes about this payment…" rows="2" maxlength="300"></textarea>
-        <div class="mfd-wish-count">{{ payForm.Remarks?.length || 0 }}/300</div>
+        <div class="mfd-wish-count">{{ payForm.Remarks.length || 0 }}/300</div>
       </div>
 
       <!-- Preview -->

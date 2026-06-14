@@ -15,7 +15,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
   templateUrl: './yajman-booking.component.html',
   styleUrls: ['./yajman-booking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule, IonicModule, PanditjibottomtabsComponent]
+  imports: [CommonModule, FormsModule,RouterModule, IonicModule]
 })
 export class YajmanBookingComponent implements OnInit {
   userDetails: any;
@@ -91,6 +91,11 @@ export class YajmanBookingComponent implements OnInit {
 
     this.userDetails = await this.storage.get("account");
     this.language = this.userDetails.Languages;
+
+    this.apinu.postUrlData(
+      `MarkNotificationsSeen?UserID=${this.userDetails.UserID}&flag=${Number(1)}`,
+      null
+    ).subscribe();
 
 
     if (this.paramID > 0) {
@@ -215,7 +220,18 @@ export class YajmanBookingComponent implements OnInit {
 
       next: (finalList: any) => {
         console.log('🔥 Final Fully Enriched List:', finalList);
-        this.PanditServicesList = finalList;
+      
+        // Only keep services that have at least one REQUESTED booking
+        const filtered = finalList.filter((service: any) => service.Bookings?.length > 0);
+      
+        // Sort services by their latest booking's DateAdded (newest first)
+        filtered.sort((a: any, b: any) => {
+          const latestA = Math.max(...a.Bookings.map((bk: any) => new Date(bk.DateAdded).getTime()));
+          const latestB = Math.max(...b.Bookings.map((bk: any) => new Date(bk.DateAdded).getTime()));
+          return latestB - latestA;
+        });
+      
+        this.PanditServicesList = filtered;
         this.PanditServicesList.forEach((_: any, i: number) => this.expandedIndices.add(i));
       },
 

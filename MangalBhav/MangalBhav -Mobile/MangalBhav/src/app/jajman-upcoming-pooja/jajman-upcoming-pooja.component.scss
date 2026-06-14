@@ -967,3 +967,15 @@ ion-tab-bar.mb-tab-bar::part(native) {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+.pandit-avatar {
+  overflow: hidden; // ensures the image stays inside the circle
+  // (keep existing width/height/border-radius/background/font-size etc.)
+}
+
+.pandit-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

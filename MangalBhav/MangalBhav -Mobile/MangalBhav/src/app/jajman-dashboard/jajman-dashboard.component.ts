@@ -6,7 +6,6 @@ import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
 import { Storage } from '@ionic/storage-angular';
 import { firstValueFrom } from 'rxjs';
-import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -17,13 +16,15 @@ import { Router } from '@angular/router';
 import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-jajman-dashboard',
   templateUrl: './jajman-dashboard.component.html',
   styleUrls: ['./jajman-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, CommonBottomTabsComponent,JajmanbottomtabsComponent, TabscommonheaderComponent]
+  imports: [CommonModule, IonicModule, FormsModule, CommonBottomTabsComponent, TabscommonheaderComponent]
 })
 export class JajmanDashboardComponent implements OnInit {
   userDetails: any;
@@ -68,6 +69,9 @@ export class JajmanDashboardComponent implements OnInit {
     }
   };
   language: any;
+  currentMobileAppVersion: string = '';
+  mobileAppVersion: any;
+  unreadCount: any;
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
@@ -80,18 +84,88 @@ export class JajmanDashboardComponent implements OnInit {
     });
   }
 
+  async initializePushNotifications() {
+
+    const permission = await PushNotifications.requestPermissions();
+
+    if (permission.receive !== 'granted') {
+      console.log('Notification permission denied');
+      return;
+    }
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener(
+      'registration',
+      (token) => {
+
+        console.log('FCM TOKEN:', token.value);
+
+        this.saveFCMToken(token.value);
+      }
+    );
+
+    PushNotifications.addListener(
+      'registrationError',
+      (error) => {
+
+        console.log('FCM Error:', error);
+
+      }
+    );
+  }
+
+  saveFCMToken(token: string) {
+
+    const body = {
+      UserID: this.userDetails.UserID,
+      FCMToken: token,
+      Platform: Capacitor.getPlatform()
+    };
+
+    console.log(body);
+
+    this.api.post(
+      'SaveFCMToken',
+      body
+    ).subscribe(
+      (res: any) => {
+
+        console.log(
+          'FCM Token Saved',
+          res
+        );
+
+      },
+      (err: any) => {
+
+        console.log(
+          'FCM Save Failed',
+          err
+        );
+
+      }
+    );
+  }
   async ngOnInit() {
 
     this.userDetails = await this.storage.get("account");
+
+  
+    this.fetchUnreadCount();
     this.language = this.userDetails.Languages;
+    this.checkMobileAppVersion();
     // console.log(this.userDetails);
+    console.log('IsUserLoggedIn:', await this.storage.get("IsUserLoggedIn"));
+    console.log('Role:', this.userDetails?.Role);
+
     if (
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'BHAKT'
     ) {
+      console.log('Redirecting...');
       this.routerCtrl.navigateForward('/login');
     }
-
 
     if (
       await this.storage.get("languageChange")
@@ -124,6 +198,7 @@ export class JajmanDashboardComponent implements OnInit {
       });
     }
 
+    await this.initializePushNotifications();
 
     this.getSlogan();
 
@@ -190,13 +265,86 @@ export class JajmanDashboardComponent implements OnInit {
 
   followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
 
-    
+
     const urls: any = {
-      facebook:  'https://www.facebook.com/profile.php?id=61575446319952',   // 🔁 your page URL
+      facebook: 'https://www.facebook.com/profile.php?id=61575446319952',   // 🔁 your page URL
       instagram: 'https://www.instagram.com/mangal_bhav_official/',  // 🔁 your handle
-      linkedin:  'https://www.youtube.com/@mangal_bhav_official' // 🔁 your company page
+      linkedin: 'https://www.youtube.com/@mangal_bhav_official' // 🔁 your company page
     };
     Browser.open({ url: urls[platform] });
   }
+
+
+  fetchUnreadCount() {
+    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' +Number(this.userDetails.UserID), null)
+      .subscribe((res: any) => {
+        this.unreadCount = res[0]?.UnreadCount ?? 0;
+      });
+  }
+
+  checkMobileAppVersion() {
+    this.currentMobileAppVersion = this.api.appVersion;
+
+    // console.log(this.mobileAppVersion)
+    this.api.post(`MasterDataSelectByQuery?Query=masterDataID=13&tenantID=1`, null)
+      .subscribe(async (res: any) => {
+        console.log(res.MasterDataList[0].Description);
+        this.mobileAppVersion = res.MasterDataList[0].Description;
+
+        const result = this.compareVersions(
+          this.currentMobileAppVersion,
+          this.mobileAppVersion
+        );
+
+        if (result === -1) {
+          console.log('🚨 App is outdated — update required');
+
+          alert(`New version available (${this.mobileAppVersion}). Please update.`);
+          await this.showForceUpdateAlert(this.mobileAppVersion);
+          return;
+        }
+      })
+  }
+
+
+  async showForceUpdateAlert(latestVersion: string) {
+
+    const alert = await this.alertCtrl.create({
+      header: 'Update Required',
+      message: `Your app version is outdated. Please update to version ${latestVersion} to continue.`,
+      backdropDismiss: false, // 🔒 cannot close by clicking outside
+      // buttons: [
+      //   {
+      //     text: 'Update Now',
+      //     handler: () => {
+      //       this.openStoreLink();
+      //     }
+      //   }
+      // ]
+    });
+
+    await alert.present();
+  }
+
+
+
+  compareVersions(current: string, latest: string): number {
+    const currentParts = current.split('.').map(Number);
+    const latestParts = latest.split('.').map(Number);
+
+    const maxLength = Math.max(currentParts.length, latestParts.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const c = currentParts[i] || 0;
+      const l = latestParts[i] || 0;
+
+      if (c > l) return 1;   // current is newer
+      if (c < l) return -1;  // current is older
+    }
+
+    return 0; // equal
+  }
+
+
 
 }

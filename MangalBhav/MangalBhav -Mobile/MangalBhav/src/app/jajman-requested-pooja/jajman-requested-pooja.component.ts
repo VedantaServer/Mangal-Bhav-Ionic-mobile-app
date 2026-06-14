@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './jajman-requested-pooja.component.html',
   styleUrls: ['./jajman-requested-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,RouterModule, CommonBottomTabsComponent,PanditjibottomtabsComponent,JajmanbottomtabsComponent]
+  imports: [CommonModule, FormsModule, IonicModule,RouterModule, ]
 })
 export class JajmanRequestedPoojaComponent implements OnInit {
 
@@ -54,7 +54,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
       dakshina: 'Dakshina',
       mins: 'mins',
 
-      payment: 'Payment',
+      payment: 'Booking Amount',
       paid: 'Paid',
       pending: 'Pending',
 
@@ -95,7 +95,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
       dakshina: 'दक्षिणा',
       mins: 'मिनट',
 
-      payment: 'भुगतान',
+      payment: 'बुकिंग राशि',
       paid: 'भुगतान किया गया',
       pending: 'लंबित',
 
@@ -319,6 +319,7 @@ export class JajmanRequestedPoojaComponent implements OnInit {
 
       next: (finalList: any) => {
         this.BookingsList = finalList;
+        this.loadPanditImages(this.BookingsList);
         console.log('Final Enriched Bookings:', this.BookingsList);
       },
 
@@ -328,6 +329,25 @@ export class JajmanRequestedPoojaComponent implements OnInit {
 
     });
 
+  }
+
+  loadPanditImages(list: any[]) {
+    list.forEach((item: any) => {
+      const photoUrl = item.Profile?.ProfilePhotoUrl;
+      if (!photoUrl) return;
+  
+      this.api.getImage('DownloadImages', {
+        imageName: photoUrl,
+        imagePurpose: 'ProfilePhoto'
+      }).subscribe({
+        next: (blob: any) => {
+          if (blob?.type?.startsWith('image/')) {
+            item.PanditImageUrl = URL.createObjectURL(blob);
+          }
+        },
+        error: (err) => console.error('Error loading pandit image:', err)
+      });
+    });
   }
   // -----------------------------
   // Open Modal (Add Mode)

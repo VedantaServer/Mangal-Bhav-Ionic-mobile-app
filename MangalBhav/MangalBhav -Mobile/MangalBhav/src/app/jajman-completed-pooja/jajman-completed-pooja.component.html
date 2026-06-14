@@ -8,10 +8,10 @@
 
       <div class="inner-title-block">
         <div class="inner-title">{{ t.pageTitle }}</div>
-       <div class="inner-title-sub">{{t.appTitle}}</div>
+        <div class="inner-title-sub">{{t.appTitle}}</div>
       </div>
 
-      <div class="inner-logo"     routerLink="/open-community-page"    >
+      <div class="inner-logo" routerLink="/open-community-page">
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
 
@@ -87,15 +87,20 @@
           <!-- Pandit info row -->
           <div class="pandit-row">
             <div class="pandit-avatar">
-              {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+              <img *ngIf="item.PanditImageUrl" [src]="item.PanditImageUrl" class="pandit-avatar-img"
+                (error)="item.PanditImageUrl = null" />
+              <span *ngIf="!item.PanditImageUrl">
+                {{ item.Profile?.FullName?.charAt(0) || '🙏' }}
+              </span>
             </div>
-            <div class="pandit-details">
+            <div class="pandit-details" style="text-transform: capitalize;">
               <p class="pandit-name">{{ item.Profile?.FullName }}</p>
-              <p class="pandit-phone">
+
+              <p class="pandit-phone" *ngIf="item.Profile?.PhoneNumber" (click)="callPandit(item.Profile.PhoneNumber)">
                 <ion-icon name="call-outline"></ion-icon>
                 {{
                 item.Profile?.PhoneNumber
-                ? '*'.repeat(item.Profile.PhoneNumber.length - 4) + item.Profile.PhoneNumber.slice(-4)
+                ? item.Profile?.PhoneNumber
                 : ''
                 }}
               </p>
@@ -114,7 +119,7 @@
 
             <div class="info-pill" [ngClass]="item.PaymentStatus === 'PAID' ? 'pill-paid' : 'pill-pending'">
               <ion-icon name="card-outline"></ion-icon>
-              <span style="text-transform: lowercase;">Payment {{ item.PaymentStatus }}</span>
+              <span style="text-transform: capitalize;">{{t.payment}} {{ item.PaymentStatus }}</span>
             </div>
 
           </div>
