@@ -162,37 +162,9 @@
         </span>
       </button>
     </div>
-
+   <br><br>
   </div>
-  <!-- ═══ HANUMAN CHALISA PLAYER ═══ -->
-  <div class="section">
-    <div class="chalisa-player" [class.playing]="chalisaPlaying">
-      <div class="chalisa-cover">
-        <div class="chalisa-spinner" [class.spin]="chalisaPlaying">📿</div>
-      </div>
-      <div class="chalisa-info">
-        <div class="chalisa-title">हनुमान चालीसा</div>
-        <div class="chalisa-verse" *ngIf="!chalisaPlaying">40 Chaupais · 8:24 min</div>
-        <div class="chalisa-verse playing-text" *ngIf="chalisaPlaying">
-          {{ chalisaVerses[currentVerse] }}
-        </div>
-        <div class="chalisa-progress" *ngIf="chalisaPlaying">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="chalisaProgress"></div>
-          </div>
-          <div class="progress-time">{{ chalisaTimeDisplay }}</div>
-        </div>
-      </div>
-      <div class="chalisa-controls">
-        <button class="ctrl-btn" (click)="previousVerse()" *ngIf="chalisaPlaying">⏮</button>
-        <button class="play-btn" (click)="toggleChalisa()">
-          {{ chalisaPlaying ? '⏸' : '▶' }}
-        </button>
-        <button class="ctrl-btn" (click)="nextVerse()" *ngIf="chalisaPlaying">⏭</button>
-      </div>
-    </div>
-  </div>
-
+  
   <!-- ═══ AAJ KA PANCHANG ═══ -->
   <div class="section">
     <div class="section-header">
@@ -238,8 +210,7 @@
     </div>
   </div>
 
-
-  <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
+    <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
   <div class="section">
     <!-- If active mandir exists → show "my mandir" card -->
     <div class="family-mandir-cta active-mandir" *ngIf="familyActiveMandir">
@@ -261,6 +232,36 @@
       <div class="fmc-arrow">→</div>
     </div>
   </div>
+  <!-- ═══ HANUMAN CHALISA PLAYER ═══ -->
+  <div class="section">
+    <div class="chalisa-player" [class.playing]="chalisaPlaying">
+      <div class="chalisa-cover">
+        <div class="chalisa-spinner" [class.spin]="chalisaPlaying">📿</div>
+      </div>
+      <div class="chalisa-info">
+        <div class="chalisa-title">हनुमान चालीसा</div>
+        <div class="chalisa-verse" *ngIf="!chalisaPlaying">40 Chaupais · 8:24 min</div>
+        <div class="chalisa-verse playing-text" *ngIf="chalisaPlaying">
+          {{ chalisaVerses[currentVerse] }}
+        </div>
+        <div class="chalisa-progress" *ngIf="chalisaPlaying">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="chalisaProgress"></div>
+          </div>
+          <div class="progress-time">{{ chalisaTimeDisplay }}</div>
+        </div>
+      </div>
+      <div class="chalisa-controls">
+        <button class="ctrl-btn" (click)="previousVerse()" *ngIf="chalisaPlaying">⏮</button>
+        <button class="play-btn" (click)="toggleChalisa()">
+          {{ chalisaPlaying ? '⏸' : '▶' }}
+        </button>
+        <button class="ctrl-btn" (click)="nextVerse()" *ngIf="chalisaPlaying">⏭</button>
+      </div>
+    </div>
+  </div>
+
+
 
 
   <!-- ═══ COMMUNITY HERO ═══ -->
