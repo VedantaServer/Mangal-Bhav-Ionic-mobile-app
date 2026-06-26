@@ -1193,3 +1193,102 @@ ion-icon[name="logo-whatsapp"] {
   color: white !important;
   display: block !important;
 }
+
+.referral-container {
+  background: linear-gradient(135deg, #fff8ec 0%, #fff3d6 100%);
+  border: 1.5px solid #e8c97a;
+  border-radius: 16px;
+  padding: 16px;
+
+  .referral-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .referral-om {
+      font-size: 28px;
+    }
+
+    .referral-tagline {
+      font-size: 15px;
+      font-weight: 700;
+      color: #7a3e00;
+      margin: 0;
+    }
+
+    .referral-sub {
+      font-size: 12px;
+      color: #a07030;
+      margin: 2px 0 0;
+    }
+  }
+
+  .referral-code-wrap {
+    background: white;
+    border: 1.5px dashed #c8973a;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+
+    .referral-label {
+      font-size: 11px;
+      color: #a07030;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .referral-code-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .referral-code {
+        font-size: 22px;
+        font-weight: 800;
+        color: #c17f24;
+        letter-spacing: 3px;
+      }
+
+      .copy-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #fff3d6;
+        border: 1px solid #e8c97a;
+        border-radius: 8px;
+        color: #7a3e00;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .whatsapp-share-btn {
+    width: 100%;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    &:active {
+      background: #1da851;
+    }
+  }
+}

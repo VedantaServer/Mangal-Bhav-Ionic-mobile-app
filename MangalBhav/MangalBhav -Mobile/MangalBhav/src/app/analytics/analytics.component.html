@@ -1,0 +1,135 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="mb-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" text="" color="light"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="mb-title">
+      <span class="title-main">Dashboard Analytics</span>
+      <span class="title-sub">मंगल भव · विश्लेषण</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="light" (click)="loadStats()" [disabled]="isLoading">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="mb-content">
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadStats($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="खींचें और ताज़ा करें"
+      refreshingSpinner="crescent"
+      refreshingText="लोड हो रहा है...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- ── SKELETON ── -->
+  <ng-container *ngIf="isLoading">
+    <div class="skeleton-banner">
+      <ion-skeleton-text [animated]="true" class="skel-banner-item"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" class="skel-banner-item"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" class="skel-banner-item"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" class="skel-banner-item"></ion-skeleton-text>
+    </div>
+    <div class="skeleton-body">
+      <ng-container *ngFor="let r of skeletonRows">
+        <ion-skeleton-text [animated]="true" class="skel-group-header"></ion-skeleton-text>
+        <div class="skel-card-grid">
+          <ion-skeleton-text [animated]="true" class="skel-card" *ngFor="let c of skeletonCols"></ion-skeleton-text>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <!-- ── ERROR ── -->
+  <ng-container *ngIf="!isLoading && loadError">
+    <div class="error-state">
+      <div class="error-icon-wrap">
+        <ion-icon name="cloud-offline-outline"></ion-icon>
+      </div>
+      <p class="error-title">डेटा लोड नहीं हो सका</p>
+      <p class="error-sub">कृपया इंटरनेट कनेक्शन जांचें।</p>
+      <ion-button (click)="loadStats()" expand="block" class="retry-btn">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        पुनः प्रयास करें
+      </ion-button>
+    </div>
+  </ng-container>
+
+  <!-- ── CONTENT ── -->
+  <ng-container *ngIf="!isLoading && !loadError && stats">
+
+    <!-- Summary Banner -->
+    <div class="summary-banner">
+      <div class="banner-om">ॐ</div>
+      <div class="banner-grid">
+        <div class="banner-item">
+          <span class="banner-val">{{ stats.TotalUsers }}</span>
+          <span class="banner-lbl">Users</span>
+        </div>
+        <div class="banner-sep"></div>
+        <div class="banner-item">
+          <span class="banner-val">{{ stats.TotalMandirs }}</span>
+          <span class="banner-lbl">Mandirs</span>
+        </div>
+        <div class="banner-sep"></div>
+        <div class="banner-item">
+          <span class="banner-val">{{ stats.TotalPandits }}</span>
+          <span class="banner-lbl">Pandits</span>
+        </div>
+        <div class="banner-sep"></div>
+        <div class="banner-item">
+          <span class="banner-val">₹{{ totalRevenue | number }}</span>
+          <span class="banner-lbl">Revenue</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Groups -->
+    <div class="groups-wrap">
+      <div class="stat-group" *ngFor="let group of statGroups">
+
+        <!-- Group Header -->
+        <div class="group-header" [ngClass]="group.colorClass">
+          <span class="group-emoji">{{ group.emoji }}</span>
+          <div class="group-label-wrap">
+            <span class="group-en">{{ group.title }}</span>
+            <span class="group-hi">{{ group.titleHi }}</span>
+          </div>
+          <ion-badge class="group-count" color="light">{{ group.cards.length }}</ion-badge>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid" [class.single-card]="group.cards.length === 1">
+          <div
+            class="stat-card"
+            [ngClass]="group.colorClass + '-card'"
+            *ngFor="let card of group.cards"
+            [class.full-card]="group.cards.length === 1">
+
+            <div class="card-icon-wrap">
+              <ion-icon [name]="card.icon"></ion-icon>
+            </div>
+            <div class="card-value">
+              <span *ngIf="card.prefix" class="card-prefix">{{ card.prefix }}</span>{{ getValue(card.key) | number }}
+            </div>
+            <div class="card-label">{{ card.label }}</div>
+            <div class="card-label-hi">{{ card.labelHi }}</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>मंगल भव · Live Dashboard</span>
+    </div>
+
+  </ng-container>
+
+</ion-content>

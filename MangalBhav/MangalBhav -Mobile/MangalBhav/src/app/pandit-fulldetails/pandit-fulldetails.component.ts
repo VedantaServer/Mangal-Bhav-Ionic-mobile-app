@@ -23,6 +23,8 @@ import { FcmService } from 'src/providers/fcm/fcm';
 })
 export class PanditFulldetailsComponent implements OnInit {
   panditList: any;
+  displayList: any[] = []; 
+  searchQuery: string = '';
 
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
@@ -32,12 +34,43 @@ export class PanditFulldetailsComponent implements OnInit {
     private http: HttpClient,
     private alertCtrl: AlertController) { }
 
+
+
+  get filteredPanditList(): any[] {
+    if (!this.searchQuery?.trim()) return this.panditList;
+    const q = this.searchQuery.toLowerCase().trim();
+    return this.panditList.filter((p:any) =>
+      p.FullName?.toLowerCase().includes(q) ||
+      p.LoginID?.toLowerCase().includes(q)
+    );
+  }
+
+
+  searchPandits() {
+    if (!this.searchQuery?.trim()) {
+      this.displayList = this.panditList;   // empty query → show all
+      return;
+    }
+    const q = this.searchQuery.toLowerCase().trim();
+    this.displayList = this.panditList.filter((p:any) =>
+      p.FullName?.toLowerCase().includes(q) ||
+      p.LoginID?.toLowerCase().includes(q)
+    );
+  }
+
+  // ← ADD THIS (clear button)
+  clearSearch() {
+    this.searchQuery = '';
+    this.displayList = this.panditList;
+  }
+
   ngOnInit() {
 
     this.apinu.postUrlData('GetPanditDetails', null)
       .subscribe((res: any) => {
         console.log(res)
         this.panditList = res;
+        this.displayList = res; 
       })
   }
 
@@ -47,7 +80,7 @@ export class PanditFulldetailsComponent implements OnInit {
       .subscribe(async (res: any) => {
         console.log(res)
         if (res) {
-        //  this.fcm.initPush(res.UserID);
+          //  this.fcm.initPush(res.UserID);
           if (res.Role == 'PANDIT') {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");

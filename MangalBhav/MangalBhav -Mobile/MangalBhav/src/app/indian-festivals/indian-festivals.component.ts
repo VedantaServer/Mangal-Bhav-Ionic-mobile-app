@@ -28,7 +28,7 @@ export class IndianFestivalsComponent implements OnInit {
 
   labels = {
     en: {
-      title: 'Indian Festivals',
+     title: 'Dainik Panchang',
       sub: '✦ Mangal.Bhav ✦',
       all: 'All',
       next: 'Next',
@@ -42,7 +42,7 @@ export class IndianFestivalsComponent implements OnInit {
       states: 'States',
     },
     hi: {
-      title: 'भारतीय त्यौहार',
+      title: 'दैनिक पंचांग',
       sub: '✦ मंगल.भाव ✦',
       all: 'सभी',
       next: 'अगला',

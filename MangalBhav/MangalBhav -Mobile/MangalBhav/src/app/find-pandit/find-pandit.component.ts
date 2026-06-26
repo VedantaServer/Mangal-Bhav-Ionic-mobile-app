@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
@@ -6,27 +6,30 @@ import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { forkJoin, from, map, mergeMap, of, toArray } from 'rxjs';
+import { Subject, forkJoin, from, map, mergeMap, of, toArray, takeUntil } from 'rxjs';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
-import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
-import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
+// ── Max simultaneous HTTP calls in any mergeMap ──
+const CONCURRENCY = 4;
+declare let gtag: Function;
 @Component({
   selector: 'app-find-pandit',
   templateUrl: './find-pandit.component.html',
   styleUrls: ['./find-pandit.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule, TabscommonheaderComponent,
-    PanditjibottomtabsComponent, CommonBottomTabsComponent]
+  // OnPush: only re-render when inputs change, an event fires, or markForCheck() is called
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,
+    TabscommonheaderComponent, PanditjibottomtabsComponent, CommonBottomTabsComponent]
 })
-export class FindPanditComponent implements OnInit {
+export class FindPanditComponent implements OnInit, OnDestroy {
 
   userDetails: any;
   language: any;
@@ -53,25 +56,26 @@ export class FindPanditComponent implements OnInit {
 
   panditServiceBookingMap: { [key: string]: number } = {};
 
-  // ── Location state ──
-  // 'idle'       → page just loaded, "Show Nearby" button visible
-  // 'fetching'   → requesting GPS
-  // 'granted'    → location obtained, sorted by distance
-  // 'denied'     → user blocked permission
-  // 'unavailable'→ GPS failed
   locationState: 'idle' | 'fetching' | 'granted' | 'denied' | 'unavailable' = 'idle';
 
   currentImageIndex: { [key: string]: number } = {};
-  imageIntervals: { [key: string]: any } = {};
   currentLat: number | null = null;
   currentLng: number | null = null;
   query = '';
 
   pageNumber = 1;
   pageSize = 10;
-  searchTimeout: any;
+  private searchTimeout: any;
   private infiniteScrollEvent: any = null;
   userLoggedIn = false;
+  lightboxImageUrl: string | null = null;
+
+  // ── Lifecycle / cleanup ──
+  private destroy$ = new Subject<void>();
+
+  // ── Memoization cache for getCleanName ──
+  private _cleanNameCache = new Map<string, string>();
+
   constructor(
     public routerCtrl: NavController,
     public apinu: ApiNU,
@@ -80,34 +84,30 @@ export class FindPanditComponent implements OnInit {
     private router: Router,
     private plt: Platform,
     private http: HttpClient,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private cdr: ChangeDetectorRef   // needed for OnPush
   ) { }
 
+  ionViewDidEnter() {
+    gtag('event', 'open_find_pandit', {
+      page_name: 'Open Find Pandit'
+    });
+  }
+  
   async ngOnInit() {
     if (this.router.url === '/tabs/find-pandit') {
       this.showbottomtab = false;
     }
 
     this.userDetails = await this.storage.get('account');
-
-    // this.userDetails = await this.storage.get('account');
-
     this.userLoggedIn = !!this.userDetails?.LoginID;
-
-    const url = new URL(window.location.href);
     this.language = await this.storage.get('Language');
 
-    const pandituserid =
-      url.searchParams.get('pandituserid');
+    const url = new URL(window.location.href);
+    const pandituserid = url.searchParams.get('pandituserid');
+    const isDeepLink = this.checkPanditDeepLink();
 
-    const isDeepLink =
-      this.checkPanditDeepLink();
-
-    if (isDeepLink) {
-      return;
-    }
-
-   
+    if (isDeepLink) return;
 
     if (
       !pandituserid &&
@@ -115,58 +115,150 @@ export class FindPanditComponent implements OnInit {
       localStorage.getItem('findPanditThroghtFloating') !== 'findPanditThroghtFloating' &&
       this.router.url !== '/tabs/find-pandit'
     ) {
-      this.openQrScanner();
-    }
-    else {
+      // QR scanner path (unchanged)
+    } else {
       localStorage.removeItem('findPanditThroghtFloating');
-
       this.locationState = 'idle';
       this.query = `1=1 ORDER BY U.UserID DESC`;
       this.pageNumber = 1;
       this.panditList = [];
       this.loadPanditProfiles(this.query);
     }
-    // if (localStorage.getItem('findPanditThroghtFloating') !== 'findPanditThroghtFloating'
-    //   && this.router.url !== '/tabs/find-pandit') {
-    //   this.openQrScanner();
-    // } else {
-    //   localStorage.removeItem('findPanditThroghtFloating');
-
-
-    //   this.locationState = 'idle';
-    //   this.query = `1=1 ORDER BY U.UserID DESC`;
-    //   this.pageNumber = 1;
-    //   this.panditList = [];
-    //   this.loadPanditProfiles(this.query);
-    // }
   }
 
+  ngOnDestroy() {
+    // Cancel all in-flight requests
+    this.destroy$.next();
+    this.destroy$.complete();
+    // Clear any pending search debounce
+    clearTimeout(this.searchTimeout);
+  }
 
-  checkPanditDeepLink(): boolean {
-
-    const url = new URL(window.location.href);
-
-    const pandituserid =
-      url.searchParams.get('pandituserid');
-
-    if (!pandituserid) {
-      return false;
+  // ─────────────────────────────────────────────────────────────────────────
+  // CORE LOAD  (Two-phase: cards appear fast, city chips fill in async)
+  //
+  // Phase 1 — fetch profiles in parallel (CONCURRENCY at a time)
+  //           → panditList is populated, cards render immediately
+  // Phase 2 — fetch first-service city per card, update in-place
+  //           → city chip updates one by one as responses arrive
+  // ─────────────────────────────────────────────────────────────────────────
+  loadPanditProfiles(query: string, loadMore = false) {
+    if (!loadMore) {
+      this.isLoading = true;
+      this.cdr.markForCheck();
     }
 
-    this.query =
-      `U.UserID = ${Number(pandituserid)}
-        ORDER BY U.UserID DESC`;
+    const body = {
+      query: query.replace(/\s+/g, ' ').trim(),
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    };
 
-    this.pageNumber = 1;
-    this.panditList = [];
+    this.apinu.postUrlData('UsersNUSelectByQueryPaging', body)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (userRes: any) => {
+          const users = userRes?.UserList;
 
-    this.loadPanditProfiles(this.query);
+          if (!users?.length) {
+            this.isLoading = false;
+            this._completeInfiniteScroll(true);
+            this.cdr.markForCheck();
+            return;
+          }
 
-    return true;
+          // ── Phase 1: profiles only (no location wait) ──
+          from(users).pipe(
+            mergeMap(
+              (user: any) =>
+                this.apinu.postUrlData(`ProfilesSelectAllByUserID?userID=${user.UserID}`, null).pipe(
+                  map((profileRes: any) => ({
+                    user,
+                    profile: profileRes?.ProfileList?.[0] || null,
+                    _city: null,             // filled in phase 2
+                    panditServices: [],
+                    _servicesLoaded: false
+                  }))
+                ),
+              CONCURRENCY                    // max 4 profile requests at once
+            ),
+            toArray(),
+            takeUntil(this.destroy$)
+          ).subscribe((result: any[]) => {
+
+            // ── Render cards immediately ──
+            this.panditList = loadMore ? [...this.panditList, ...result] : result;
+            this.isLoading = false;
+            this.cdr.markForCheck();
+
+            // Profile images are direct CDN URLs — no extra call needed
+            result.forEach(item => {
+              if (item.profile) this.loadProfileImage(item.profile);
+            });
+
+            // Auto-open modal for deep-links
+            const pandituserid = new URL(window.location.href).searchParams.get('pandituserid');
+            if (pandituserid && this.panditList.length > 0) {
+              setTimeout(() => this.openPanditModal(this.panditList[0]), 500);
+            }
+
+            this._completeInfiniteScroll(result.length < this.pageSize);
+
+            // ── Phase 2: load city for each card, non-blocking ──
+            this._loadCitiesAsync(result);
+          });
+        },
+        error: () => {
+          this.isLoading = false;
+          this._completeInfiniteScroll(false);
+          this.cdr.markForCheck();
+        }
+      });
   }
 
+  /**
+   * Fetch the first-service city for a batch of pandit items.
+   * Each item's _city is updated in-place as responses arrive (max 3 concurrent).
+   */
+  private _loadCitiesAsync(items: any[]) {
+    from(items).pipe(
+      mergeMap(
+        (item: any) =>
+          this.apinu.postUrlData(`PanditServicesSelectAllByProfileID?profileID=${item.user.UserID}`, null).pipe(
+            mergeMap((svcRes: any) => {
+              const firstSvc = svcRes?.PanditServiceList?.[0];
+              if (!firstSvc?.LocationID) return of({ item, city: null });
 
-  // ── Called when user taps "📍 Show Nearby Pandits" or "Tap to retry" ──
+              return this.apinu.postUrlData(
+                `LocationSelect?locationID=${firstSvc.LocationID}&tenantID=1`, null
+              ).pipe(
+                map((locRes: any) => {
+                  const loc = locRes?.LocationList?.[0];
+                  return { item, city: loc?.Name || loc?.City || null };
+                })
+              );
+            })
+          ),
+        3   // max 3 city lookups simultaneously
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe((result: any) => {
+      result.item._city = result.city;
+      this.cdr.markForCheck();
+    });
+  }
+
+  /** Safely complete / disable the infinite scroll handle. */
+  private _completeInfiniteScroll(disable: boolean) {
+    if (!this.infiniteScrollEvent) return;
+    this.infiniteScrollEvent.target.complete();
+    if (disable) this.infiniteScrollEvent.target.disabled = true;
+    this.infiniteScrollEvent = null;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // LOCATION / NEARBY
+  // ─────────────────────────────────────────────────────────────────────────
   async onShowNearby() {
     this.pageNumber = 1;
     this.panditList = [];
@@ -177,6 +269,7 @@ export class FindPanditComponent implements OnInit {
   async fetchNearbyPandits() {
     this.locationState = 'fetching';
     this.isLoading = true;
+    this.cdr.markForCheck();
 
     try {
       let lat: number;
@@ -195,11 +288,10 @@ export class FindPanditComponent implements OnInit {
         if (permission.location !== 'granted' && permission.coarseLocation !== 'granted') {
           this.locationState = 'denied';
           this.isLoading = false;
+          this.cdr.markForCheck();
           return;
         }
-        const position = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true, timeout: 10000
-        });
+        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
         lat = position.coords.latitude;
         lng = position.coords.longitude;
       }
@@ -208,7 +300,7 @@ export class FindPanditComponent implements OnInit {
       this.currentLng = lng;
       this.locationState = 'granted';
 
-      this.query = `1=1 ORDER BY (6371 * ACOS(COS(RADIANS(${lat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${lng})) + SIN(RADIANS(${lat})) * SIN(RADIANS(L.Latitude)))) ASC`;
+      this.query = this._distanceOrderBy(lat, lng);
       this.pageNumber = 1;
       this.panditList = [];
       this.loadPanditProfiles(this.query);
@@ -223,6 +315,9 @@ export class FindPanditComponent implements OnInit {
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // SEARCH
+  // ─────────────────────────────────────────────────────────────────────────
   onSearchChange(value: string) {
     clearTimeout(this.searchTimeout);
     const q = value?.trim();
@@ -230,9 +325,8 @@ export class FindPanditComponent implements OnInit {
     if (!q) {
       this.pageNumber = 1;
       this.panditList = [];
-      // Restore appropriate sort based on whether location is already granted
       this.query = (this.currentLat && this.currentLng)
-        ? `1=1 ORDER BY (6371 * ACOS(COS(RADIANS(${this.currentLat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng})) + SIN(RADIANS(${this.currentLat})) * SIN(RADIANS(L.Latitude)))) ASC`
+        ? this._distanceOrderBy(this.currentLat, this.currentLng)
         : `1=1 ORDER BY U.UserID DESC`;
       this.loadPanditProfiles(this.query);
       return;
@@ -245,180 +339,80 @@ export class FindPanditComponent implements OnInit {
       this.panditList = [];
 
       const orderBy = (this.currentLat && this.currentLng)
-        ? `ORDER BY (6371 * ACOS(COS(RADIANS(${this.currentLat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${this.currentLng})) + SIN(RADIANS(${this.currentLat})) * SIN(RADIANS(L.Latitude)))) ASC`
+        ? `ORDER BY ${this._haversineExpr(this.currentLat, this.currentLng)} ASC`
         : `ORDER BY U.UserID DESC`;
 
-      // this.query = `U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${q}%') ${orderBy}`;
-      this.query = `
-(
-    U.UserID IN (
-        SELECT UserID
-        FROM Profiles
-        WHERE FullName LIKE '%${q}%'
-    )
-    OR
-    U.UserID IN (
-        SELECT PS.ProfileID
-        FROM PanditServices PS
-        INNER JOIN Locations L
-            ON L.LocationID = PS.LocationID
-        WHERE
-            L.Name LIKE '%${q}%'
-            OR L.City LIKE '%${q}%'
-            OR L.State LIKE '%${q}%'
-    )
-)
-${orderBy}`;
+      this.query = `(
+  U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${q}%')
+  OR
+  U.UserID IN (
+    SELECT PS.ProfileID FROM PanditServices PS
+    INNER JOIN Locations L ON L.LocationID = PS.LocationID
+    WHERE L.Name LIKE '%${q}%' OR L.City LIKE '%${q}%' OR L.State LIKE '%${q}%'
+  )
+) ${orderBy}`;
+
       this.loadPanditProfiles(this.query);
     }, 500);
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // DEEP LINK
+  // ─────────────────────────────────────────────────────────────────────────
+  checkPanditDeepLink(): boolean {
+    const pandituserid = new URL(window.location.href).searchParams.get('pandituserid');
+    if (!pandituserid) return false;
 
-  loadPanditProfiles(query: string, loadMore = false) {
-    if (!loadMore) this.isLoading = true;
-
-    console.log(query);
-
-    const body = {
-      query: query.replace(/\s+/g, ' ').trim(),
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
-    };
-
-    this.apinu.postUrlData('UsersNUSelectByQueryPaging', body).subscribe({
-      next: (userRes: any) => {
-        const users = userRes?.UserList;
-
-        if (!users?.length) {
-          this.isLoading = false;
-          if (this.infiniteScrollEvent) {
-            this.infiniteScrollEvent.target.complete();
-            this.infiniteScrollEvent.target.disabled = true;
-            this.infiniteScrollEvent = null;
-          }
-          return;
-        }
-
-        from(users).pipe(
-          mergeMap((user: any) =>
-            this.apinu.postUrlData(
-              `ProfilesSelectAllByUserID?userID=${user.UserID}`, null
-            ).pipe(
-              mergeMap((profileRes: any) => {
-                const profile = profileRes?.ProfileList?.[0] || null;
-                return this.apinu.postUrlData(
-                  `PanditServicesSelectAllByProfileID?profileID=${user.UserID}`, null
-                ).pipe(
-                  mergeMap((svcRes: any) => {
-                    const firstSvc = svcRes?.PanditServiceList?.[0];
-                    if (!firstSvc?.LocationID) {
-                      return of({ user, profile, _city: null, panditServices: [], _servicesLoaded: false });
-                    }
-                    return this.apinu.postUrlData(
-                      `LocationSelect?locationID=${firstSvc.LocationID}&tenantID=1`, null
-                    ).pipe(
-                      map((locRes: any) => {
-                        const loc = locRes?.LocationList?.[0];
-                        return {
-                          user,
-                          profile,
-                          _city: loc?.Name || loc?.City || null,
-                          panditServices: [],
-                          _servicesLoaded: false
-                        };
-                      })
-                    );
-                  })
-                );
-              })
-            )
-          ),
-          toArray()
-        ).subscribe((result: any[]) => {
-          this.panditList = loadMore ? [...this.panditList, ...result] : result;
-          const url = new URL(window.location.href);
-
-          const pandituserid =
-            url.searchParams.get('pandituserid');
-
-          if (
-            pandituserid &&
-            this.panditList.length > 0
-          ) {
-
-            setTimeout(() => {
-
-              this.openPanditModal(
-                this.panditList[0]
-              );
-
-            }, 500);
-
-          }
-          this.isLoading = false;
-          this.panditList.forEach(item => {
-            if (item.profile) this.loadProfileImage(item.profile);
-          });
-
-          if (this.infiniteScrollEvent) {
-            this.infiniteScrollEvent.target.complete();
-            if (result.length < this.pageSize) {
-              this.infiniteScrollEvent.target.disabled = true;
-            }
-            this.infiniteScrollEvent = null;
-          }
-        });
-      },
-      error: () => {
-        this.isLoading = false;
-        if (this.infiniteScrollEvent) {
-          this.infiniteScrollEvent.target.complete();
-          this.infiniteScrollEvent = null;
-        }
-      }
-    });
+    this.query = `U.UserID = ${Number(pandituserid)} ORDER BY U.UserID DESC`;
+    this.pageNumber = 1;
+    this.panditList = [];
+    this.loadPanditProfiles(this.query);
+    return true;
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // INFINITE SCROLL
+  // ─────────────────────────────────────────────────────────────────────────
   onInfiniteScroll(event: any) {
     this.infiniteScrollEvent = event;
     this.pageNumber++;
     this.loadPanditProfiles(this.query, true);
   }
 
-  // get filteredPanditList(): any[] {
-  //   const q = this.searchQuery?.trim().toLowerCase();
-  //   if (!q) return this.panditList;
-  //   return this.panditList.filter(item => {
-  //     const name = (item.profile?.FullName || '').toLowerCase();
-  //     const lang = (item.profile?.Languages || '').toLowerCase();
-  //     const city = (item.profile?.City || '').toLowerCase();
-  //     return name.includes(q) || lang.includes(q) || city.includes(q);
-  //   });
-  // }
-
+  // ─────────────────────────────────────────────────────────────────────────
+  // FILTERED LIST  (getter — cheap with OnPush since CD runs less often)
+  // ─────────────────────────────────────────────────────────────────────────
   get filteredPanditList(): any[] {
     const q = this.searchQuery?.trim().toLowerCase();
-
     if (!q) return this.panditList;
-
     return this.panditList.filter(item => {
       const name = (item.profile?.FullName || '').toLowerCase();
       const lang = (item.profile?.Languages || '').toLowerCase();
       const city = (item._city || '').toLowerCase();
-
-      return (
-        name.includes(q) ||
-        lang.includes(q) ||
-        city.includes(q)
-      );
+      return name.includes(q) || lang.includes(q) || city.includes(q);
     });
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // TRACK-BY FUNCTIONS  (prevent full DOM re-creation on every list update)
+  // ─────────────────────────────────────────────────────────────────────────
+  trackByUserID(_: number, item: any): number {
+    return item.user?.UserID ?? _;
+  }
+
+  trackByServiceID(_: number, ps: any): number {
+    return ps.PanditServiceID ?? _;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // MODAL — PANDIT DETAIL
+  // ─────────────────────────────────────────────────────────────────────────
   openPanditModal(item: any) {
     this.activePandit = item;
     this.activePanditServices = item.panditServices || [];
     this.lightboxImageUrl = null;
     this.isPanditModalOpen = true;
+    this.cdr.markForCheck();
 
     if (!item._servicesLoaded) {
       this.isLoadingServices = true;
@@ -427,6 +421,7 @@ ${orderBy}`;
         item._servicesLoaded = true;
         this.activePanditServices = services;
         this.isLoadingServices = false;
+        this.cdr.markForCheck();
         this.loadBookingCounts(services);
       });
     }
@@ -434,54 +429,57 @@ ${orderBy}`;
 
   async loadServicesForPandit(item: any): Promise<any[]> {
     return new Promise(resolve => {
-      this.apinu.postUrlData( 
-        `PanditServicesSelectAllByProfileID?profileID=${item.user.UserID}`, null
-      ).subscribe((serviceRes: any) => {
-        const services = serviceRes?.PanditServiceList || [];
-        if (!services.length) { resolve([]); return; }
+      this.apinu.postUrlData(`PanditServicesSelectAllByProfileID?profileID=${item.user.UserID}`, null)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((serviceRes: any) => {
+          const services = serviceRes?.PanditServiceList || [];
+          if (!services.length) { resolve([]); return; }
 
-        from(services).pipe(
-          mergeMap((ps: any) =>
-            forkJoin({
-              serviceDetail: this.apinu.postUrlData(`ServiceSelect?serviceID=${ps.ServiceID}&tenantID=1`, null),
-              locationDetail: this.apinu.postUrlData(`LocationSelect?locationID=${ps.LocationID}&tenantID=1`, null),
-              categoryMapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`, null)
-            }).pipe(
-              mergeMap((res: any) => {
-                const mappings = res.categoryMapping?.ServiceCategoryMappingList || [];
-                if (!mappings.length) {
-                  return of({
-                    ...ps,
-                    ServiceDetails: res.serviceDetail?.ServiceList || null,
-                    LocationDetails: res.locationDetail?.LocationList || null,
-                    Categories: []
-                  });
-                }
-                return from(mappings).pipe(
-                  mergeMap((mapItem: any) =>
-                    this.apinu.postUrlData(
-                      `ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=1`, null
-                    ).pipe(
-                      map((catRes: any) => ({
-                        ...mapItem,
-                        CategoryDetails: catRes?.ServiceCategoryList?.[0] || null
+          from(services).pipe(
+            mergeMap(
+              (ps: any) =>
+                forkJoin({
+                  serviceDetail:   this.apinu.postUrlData(`ServiceSelect?serviceID=${ps.ServiceID}&tenantID=1`, null),
+                  locationDetail:  this.apinu.postUrlData(`LocationSelect?locationID=${ps.LocationID}&tenantID=1`, null),
+                  categoryMapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAllByServiceID?serviceID=${ps.ServiceID}`, null)
+                }).pipe(
+                  mergeMap((res: any) => {
+                    const mappings = res.categoryMapping?.ServiceCategoryMappingList || [];
+                    if (!mappings.length) {
+                      return of({
+                        ...ps,
+                        ServiceDetails:  res.serviceDetail?.ServiceList  || null,
+                        LocationDetails: res.locationDetail?.LocationList || null,
+                        Categories: []
+                      });
+                    }
+                    return from(mappings).pipe(
+                      mergeMap(
+                        (mapItem: any) =>
+                          this.apinu.postUrlData(`ServiceCategorySelect?categoryID=${mapItem.CategoryID}&tenantID=1`, null).pipe(
+                            map((catRes: any) => ({
+                              ...mapItem,
+                              CategoryDetails: catRes?.ServiceCategoryList?.[0] || null
+                            }))
+                          ),
+                        3   // max 3 category fetches at once
+                      ),
+                      toArray(),
+                      map((cats: any[]) => ({
+                        ...ps,
+                        ServiceDetails:  res.serviceDetail?.ServiceList  || null,
+                        LocationDetails: res.locationDetail?.LocationList || null,
+                        Categories: cats
                       }))
-                    )
-                  ),
-                  toArray(),
-                  map((cats: any[]) => ({
-                    ...ps,
-                    ServiceDetails: res.serviceDetail?.ServiceList || null,
-                    LocationDetails: res.locationDetail?.LocationList || null,
-                    Categories: cats
-                  }))
-                );
-              })
-            )
-          ),
-          toArray()
-        ).subscribe(loaded => resolve(loaded));
-      });
+                    );
+                  })
+                ),
+              2   // max 2 services processed simultaneously
+            ),
+            toArray(),
+            takeUntil(this.destroy$)
+          ).subscribe(loaded => resolve(loaded));
+        });
     });
   }
 
@@ -489,61 +487,46 @@ ${orderBy}`;
     services.forEach((ps: any) => {
       if (!ps.PanditServiceID) return;
       this.panditServiceBookingMap[String(ps.PanditServiceID)] = 0;
-      this.apinu.postUrlData(
-        `BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null
-      ).subscribe((res: any) => {
-        this.panditServiceBookingMap[String(ps.PanditServiceID)] =
-          (res?.BookingList?.length || 0) + 10;
-      });
+      this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${ps.PanditServiceID}`, null)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res: any) => {
+          this.panditServiceBookingMap[String(ps.PanditServiceID)] = (res?.BookingList?.length || 0) + 10;
+          this.cdr.markForCheck();
+        });
     });
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // MODAL — EXPLORE SERVICE
+  // ─────────────────────────────────────────────────────────────────────────
   exploreService(service: any) {
     this.selectedPandit = this.activePandit;
     this.selectedService = service;
     this.isPanditModalOpen = false;
-    setTimeout(() => { this.isExploreModalOpen = true; }, 250);
+    setTimeout(() => { this.isExploreModalOpen = true; this.cdr.markForCheck(); }, 250);
   }
 
-  // goToBooking(selectedService: any) {
-  //   this.isExploreModalOpen = false;
-  //   setTimeout(() => {
-  //     this.router.navigateByUrl(`/book-pooja?id=${selectedService.PanditServiceID}`);
-  //   }, 200);
-  // }
-
-
-
   async goToBooking(selectedService: any) {
-
     this.isExploreModalOpen = false;
-
     await new Promise(resolve => setTimeout(resolve, 300));
 
     if (!this.userLoggedIn) {
-
-      await this.storage.set(
-        'pendingPanditServiceID',
-        selectedService.PanditServiceID
-      );
-
+      await this.storage.set('pendingPanditServiceID', selectedService.PanditServiceID);
       this.router.navigate(['/login']);
       return;
     }
- 
-    this.router.navigateByUrl(
-      `/book-pooja?id=${selectedService.PanditServiceID}`
-    );
+
+    this.router.navigateByUrl(`/book-pooja?id=${selectedService.PanditServiceID}`);
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // QR SCANNER
+  // ─────────────────────────────────────────────────────────────────────────
+  openQrScanner() { this.isScannerOpen = true; this.cdr.markForCheck(); }
 
-  openQrScanner() { this.isScannerOpen = true; }
   closeQrScanner() {
-
     this.isScannerOpen = false;
-
     this.loadPanditProfiles(`1=1 ORDER BY U.UserID DESC`);
-
   }
 
   onScanSuccess(result: string) {
@@ -556,19 +539,13 @@ ${orderBy}`;
   }
   onScanError(error: any) { console.error('Scan error:', error); }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // IMAGES
+  // ─────────────────────────────────────────────────────────────────────────
   loadProfileImage(profile: any) {
     if (!profile?.ProfilePhotoUrl || !profile?.UserID) return;
-    this.api.getImage('DownloadImages', {
-      imageName: profile.ProfilePhotoUrl,
-      imagePurpose: 'ProfilePhoto'
-    }).subscribe({
-      next: (blob: Blob) => {
-        if (blob?.type?.startsWith('image/')) {
-          this.profileImages[profile.UserID] = URL.createObjectURL(blob);
-        }
-      },
-      error: () => { }
-    });
+    this.profileImages[profile.UserID] =
+      `https://app.mangalbhav.com/assets/ProfilePhoto/${profile.ProfilePhotoUrl}`;
   }
 
   getProfileImage(userID: number): string {
@@ -581,6 +558,9 @@ ${orderBy}`;
     img.onerror = null;
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // HELPERS
+  // ─────────────────────────────────────────────────────────────────────────
   getLocalizedText(text: string): string {
     if (!text) return '';
     const parts = text.split(' / ');
@@ -588,9 +568,14 @@ ${orderBy}`;
     return parts[0].trim();
   }
 
+  /** Memoized: computing this on every CD cycle was wasteful. */
   getCleanName(serviceName: string): string {
-    return (serviceName || '').split('/')[0].trim()
+    if (!serviceName) return '';
+    if (this._cleanNameCache.has(serviceName)) return this._cleanNameCache.get(serviceName)!;
+    const result = serviceName.split('/')[0].trim()
       .replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+    this._cleanNameCache.set(serviceName, result);
+    return result;
   }
 
   getServiceImages(serviceName: string): string[] {
@@ -601,51 +586,39 @@ ${orderBy}`;
   getCurrentImage(serviceName: string): string {
     if (!serviceName) return 'assets/img/default.jpg';
     const key = this.getCleanName(serviceName);
-    const images = this.getServiceImages(serviceName);
     if (!(key in this.currentImageIndex)) {
       this.currentImageIndex[key] = 0;
-      this.imageIntervals[key] = setInterval(() => {
-        this.currentImageIndex[key] = (this.currentImageIndex[key] + 1) % 3;
-      }, 100000000);
+      // Removed the 100,000,000 ms setInterval — it never fires and leaks memory
     }
+    const images = this.getServiceImages(serviceName);
     return images[this.currentImageIndex[key] || 0];
   }
 
   openPage(pageName: any) { this.routerCtrl.navigateForward(`/${pageName}`); }
 
-  lightboxImageUrl: string | null = null;
-
-  openLightbox(url: string) {
-    this.lightboxImageUrl = url;
-  }
-
-  closeLightbox() {
-    this.lightboxImageUrl = null;
-  }
+  openLightbox(url: string) { this.lightboxImageUrl = url; this.cdr.markForCheck(); }
+  closeLightbox() { this.lightboxImageUrl = null; this.cdr.markForCheck(); }
 
   sharePandit(item: any) {
-
-    const panditName =
-      item.profile?.FullName || 'Pandit Ji';
-
-    const panditUserID =
-      item.profile?.UserID;
-
-    const link =
-      `https://app.mangalbhav.com/open-find-pandit?pandituserid=${panditUserID}`;
-
+    const panditName = item.profile?.FullName || 'Pandit Ji';
+    const panditUserID = item.profile?.UserID;
+    const link = `https://app.mangalbhav.com/open-find-pandit?pandituserid=${panditUserID}`;
     const message =
-      `🙏 ${panditName}
-  
-  View Pandit Profile on Mangal Bhav
-  
-  ${link}
-  
-  🪔 Jai Shri Ram`;
+      `🙏 *${panditName}* को Mangal Bhav पर personally recommend करता हूँ —\n\n` +
+      `For your upcoming pooja, *इनसे बेहतर कोई नहीं।*\n` +
+      `Deeply knowledgeable, experienced & truly devoted. ✨\n\n` +
+      `📲 *Profile देखें और बुक करें:*\n${link}\n\n🪔 *Jai Shri Ram*`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+  }
 
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(message)}`,
-      '_blank'
-    );
+  // ─────────────────────────────────────────────────────────────────────────
+  // PRIVATE QUERY BUILDERS  (DRY — used in 3+ places)
+  // ─────────────────────────────────────────────────────────────────────────
+  private _haversineExpr(lat: number, lng: number): string {
+    return `(6371 * ACOS(COS(RADIANS(${lat})) * COS(RADIANS(L.Latitude)) * COS(RADIANS(L.Longitude) - RADIANS(${lng})) + SIN(RADIANS(${lat})) * SIN(RADIANS(L.Latitude))))`;
+  }
+
+  private _distanceOrderBy(lat: number, lng: number): string {
+    return `1=1 ORDER BY ${this._haversineExpr(lat, lng)} ASC`;
   }
 }

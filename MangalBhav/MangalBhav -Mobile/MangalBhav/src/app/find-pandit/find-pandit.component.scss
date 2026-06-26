@@ -3630,3 +3630,72 @@ select {
 .pandit-share-btn:active {
   transform: scale(0.92);
 }
+
+.card-chip.joined {
+  background: rgba(139, 90, 43, 0.1);
+  color: #7a3e00;
+  border: 1px solid rgba(139, 90, 43, 0.2);
+
+  ion-icon {
+    color: #c17f24;
+  }
+}
+
+// ── BIGGER MODAL PHOTO ──────────────────────────────────
+.pandit-modal-photo-wrap {
+  width: 140px;       // was likely 80–90px → increase to 120
+  height: 140px;
+  margin: 0 auto 12px;
+  position: relative;
+
+  .pandit-modal-photo,
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e8c97a;
+    box-shadow: 0 4px 16px rgba(193, 127, 36, 0.3);
+  }
+
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff3d6, #fde8a0);
+    font-size: 42px;           // bigger initial letter
+    font-weight: 700;
+    color: #c17f24;
+  }
+
+  .photo-expand-hint {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    font-size: 16px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+// ── MEMBER SINCE BADGE (below name in hero) ─────────────
+.modal-member-since {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #a07030;
+  margin: -4px 0 8px;
+
+  ion-icon {
+    font-size: 13px;
+    color: #c17f24;
+  }
+}

@@ -42,10 +42,9 @@
         </div>
       </div>
       <p class="avatar-hint">{{ t.changePhoto }}</p>
-      <!-- <button class="update-photo-btn" (click)="uploadProfilePhoto()">Update Photo</button> -->
     </div>
 
-    <!-- FORM SECTION -->
+    <!-- PERSONAL DETAILS SECTION -->
     <div class="section-label">{{ t.personalDetails }}</div>
 
     <div class="form-container">
@@ -90,7 +89,6 @@
           <ion-icon name="transgender-outline"></ion-icon>
           {{ t.gender }}
         </div>
-        <!-- GENDER (fixed) -->
         <div class="field-input-wrap">
           <ion-select [placeholder]="t.selectGender" [(ngModel)]="profile.Gender">
             <ion-select-option value="Male">{{ t.male }}</ion-select-option>
@@ -136,7 +134,6 @@
         </div>
       </div>
 
-      <!-- BIO -->
       <!-- BIO / ADDRESS -->
       <div class="form-field">
         <div class="field-label">
@@ -213,27 +210,80 @@
         </div>
       </div>
 
-
-      <!-- <div *ngIf="userDetails?.Role === 'PANDIT' && userDetails?.UserID"
-        style="display:flex;align-items: center;justify-content: center;">
-
-        <qrcode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="200" errorCorrectionLevel="M">
-        </qrcode>
-
-      </div> -->
     </div>
 
+    <!-- ADDRESS DETAILS SECTION -->
+    <div class="section-label">
+      <ion-icon name="home-outline"></ion-icon>
+      {{ t.addressDetails }}
+    </div>
+
+    <div class="form-container">
+
+      <!-- ADDRESS LINE 1 -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ t.addressLine1 }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-input [(ngModel)]="profile.AddressLine1" [placeholder]="t.enterAddressLine1"></ion-input>
+        </div>
+      </div>
+
+      <!-- ADDRESS LINE 2 -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ t.addressLine2 }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-input [(ngModel)]="profile.AddressLine2" [placeholder]="t.enterAddressLine2"></ion-input>
+        </div>
+      </div>
+
+      <!-- CITY -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="business-outline"></ion-icon>
+          {{ t.city }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-input [(ngModel)]="profile.City" [placeholder]="t.enterCity"></ion-input>
+        </div>
+      </div>
+
+      <!-- STATE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="map-outline"></ion-icon>
+          {{ t.state }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-input [(ngModel)]="profile.State" [placeholder]="t.enterState"></ion-input>
+        </div>
+      </div>
+
+      <!-- PIN CODE -->
+      <div class="form-field">
+        <div class="field-label">
+          <ion-icon name="keypad-outline"></ion-icon>
+          {{ t.pinCode }}
+        </div>
+        <div class="field-input-wrap">
+          <ion-input type="number" [(ngModel)]="profile.PinCode" [placeholder]="t.enterPinCode"></ion-input>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SOCIAL MEDIA SECTION -->
     <div class="section-label">
       <ion-icon name="share-social-outline"></ion-icon>
       Social Media Profiles
     </div>
 
     <div class="form-container">
-
-      <!-- <ion-icon name="logo-instagram"></ion-icon>
-<ion-icon name="logo-facebook"></ion-icon>
-<ion-icon name="logo-youtube"></ion-icon>
-<ion-icon name="logo-whatsapp"></ion-icon> -->
 
       <div class="social-card" *ngFor="let item of socialMediaList">
 
@@ -259,16 +309,11 @@
       </div>
 
       <button class="submit-btn" (click)="openAddSocialMedia()">
-
         <ion-icon name="add-circle-outline"></ion-icon>
-
         Add Social Media
-
       </button>
 
     </div>
-
-
 
     <!-- SAVE BUTTON -->
     <div class="submit-wrap">
@@ -292,24 +337,6 @@
 
   </div>
 </ion-content>
-
-
-
-
-<!-- Floating scanner — outside tab bar -->
-<!-- <div class="mb-scanner-float" (click)="openPage('open-community-page')" *ngIf="userDetails?.Role == 'BHAKT'">
-  <div class="mb-scanner-inner">
-    <img src="assets/swastik.png" class="mb-scanner-logo-img" />
-  </div>
-</div> -->
-
-
-
-
-<!-- 
-<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'">
-</app-common-bottom-tabs> -->
 
 
 <div class="ni-backdrop" *ngIf="showNotInterestedModal" (click)="showNotInterestedModal = false"></div>
@@ -344,83 +371,40 @@
 </div>
 
 
-
-<div class="ni-backdrop" *ngIf="showSocialModal" (click)="showSocialModal = false">
-</div>
+<div class="ni-backdrop" *ngIf="showSocialModal" (click)="showSocialModal = false"></div>
 
 <div class="ni-modal" [class.active]="showSocialModal">
 
   <h3>
-
-    {{isEditSocialMedia
-    ? 'Edit Social Media'
-    : 'Add Social Media'}}
-
+    {{ isEditSocialMedia ? 'Edit Social Media' : 'Add Social Media' }}
   </h3>
 
   <ion-item>
-
     <ion-select placeholder="Select Platform" [(ngModel)]="socialMedia.Platform">
-
-      <ion-select-option value="Instagram">
-        Instagram
-      </ion-select-option>
-
-      <ion-select-option value="Facebook">
-        Facebook
-      </ion-select-option>
-
-      <ion-select-option value="YouTube">
-        YouTube
-      </ion-select-option>
-
-      <ion-select-option value="WhatsApp">
-        WhatsApp
-      </ion-select-option>
-
-      <ion-select-option value="LinkedIn">
-        LinkedIn
-      </ion-select-option>
-
-      <ion-select-option value="Twitter">
-        X (Twitter)
-      </ion-select-option>
-
-      <ion-select-option value="Website">
-        Website
-      </ion-select-option>
-
+      <ion-select-option value="Instagram">Instagram</ion-select-option>
+      <ion-select-option value="Facebook">Facebook</ion-select-option>
+      <ion-select-option value="YouTube">YouTube</ion-select-option>
+      <ion-select-option value="WhatsApp">WhatsApp</ion-select-option>
+      <ion-select-option value="LinkedIn">LinkedIn</ion-select-option>
+      <ion-select-option value="Twitter">X (Twitter)</ion-select-option>
+      <ion-select-option value="Website">Website</ion-select-option>
     </ion-select>
-
   </ion-item>
 
   <ion-item>
-
-    <ion-input placeholder="Username" [(ngModel)]="socialMedia.Username">
-    </ion-input>
-
+    <ion-input placeholder="Username" [(ngModel)]="socialMedia.Username"></ion-input>
   </ion-item>
 
   <ion-item>
-
-    <ion-input placeholder="Display Name" [(ngModel)]="socialMedia.DisplayName">
-    </ion-input>
-
+    <ion-input placeholder="Display Name" [(ngModel)]="socialMedia.DisplayName"></ion-input>
   </ion-item>
 
   <ion-item>
-
-    <ion-input placeholder="Profile URL" [(ngModel)]="socialMedia.Link">
-    </ion-input>
-
+    <ion-input placeholder="Profile URL" [(ngModel)]="socialMedia.Link"></ion-input>
   </ion-item>
 
   <button class="submit-btn" (click)="saveSocialMedia()">
-
-    {{isEditSocialMedia
-    ? 'Update'
-    : 'Save'}}
-
+    {{ isEditSocialMedia ? 'Update' : 'Save' }}
   </button>
 
 </div>

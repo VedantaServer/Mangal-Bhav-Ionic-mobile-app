@@ -1,4 +1,3 @@
-
 <app-tabscommonheader></app-tabscommonheader>
 
 
@@ -12,7 +11,7 @@
       <div class="greeting-text">
         <p class="greeting-sub">{{ t.greetingSubtitle }}</p>
         <h2 class="greeting-title">{{ t.greetingTitle }}{{FullName}} <br> <span (click)="showIdCard = true"
-            style="font-size: x-small;"><ion-icon name="qr-code-outline"></ion-icon> Show my QR</span>
+            style="font-size: small;"><ion-icon name="qr-code-outline"></ion-icon> Show my QR</span>
         </h2>
       </div>
       <div class="greeting-om">ॐ</div>
@@ -93,6 +92,8 @@
         </div>
       </div>
     </div>
+
+
     <!-- ===== SECTION LABEL ===== -->
     <div class="section-label">{{ t.mySeva }}</div>
 
@@ -129,6 +130,24 @@
 
     </div>
 
+    <div class="referral-strip" *ngIf="referralCode" >
+      <div class="referral-strip-left">
+        <span class="referral-strip-icon">🎟️</span>
+        <div class="referral-strip-text">
+          <span class="referral-strip-title">Your Referral Code</span>
+          <span class="referral-strip-code">{{ referralCode }}</span>
+        </div>
+      </div>
+      <div class="referral-strip-actions">
+        <button class="referral-copy-btn" (click)="copyReferralCode($event)">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
+        <button class="referral-wa-btn" (click)="shareReferralOnWhatsApp($event)">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+        </button>
+      </div>
+    </div>
+
     <!-- ===== STATUS CARD ===== -->
     <!-- <div class="section-label">Status</div> -->
 
@@ -152,22 +171,22 @@
     <div class="social-share-section">
       <p class="social-share-label">{{ t.followUs }}</p>
       <div class="social-share-row">
-    
+
         <button class="social-btn facebook" (click)="followOn('facebook')">
           <img src="assets/facebook.webp" class="social-icon" />
           <span>Facebook</span>
         </button>
-    
+
         <button class="social-btn instagram" (click)="followOn('instagram')">
           <img src="assets/instagram.webp" class="social-icon" />
           <span>Instagram</span>
         </button>
-    
+
         <button class="social-btn linkedin" (click)="followOn('linkedin')">
           <img src="assets/linkdin.webp" class="social-icon" />
           <span>LinkedIn</span>
         </button>
-    
+
       </div>
     </div>
 

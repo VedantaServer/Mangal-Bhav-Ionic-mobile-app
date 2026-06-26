@@ -181,3 +181,60 @@ ion-content {
     letter-spacing: 1px;
   }
 }
+
+.search-wrap {
+  padding: 0 12px 4px;
+
+  .pandit-search {
+    --background: rgba(255, 248, 235, 0.9);
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(184, 110, 0, 0.15);
+    --color: #4a2c00;
+    --placeholder-color: #a0763a;
+    --icon-color: #c17f24;
+    --clear-button-color: #c17f24;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #a0763a;
+  font-size: 14px;
+
+  strong { color: #c17f24; }
+}
+
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+
+  .search-input {
+    flex: 1;
+    --background: rgba(255, 248, 235, 0.9);
+    --border-radius: 10px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --color: #4a2c00;
+    --placeholder-color: #a0763a;
+    border: 1px solid #e0c080;
+    border-radius: 10px;
+  }
+
+  .search-btn {
+    --background: #c17f24;
+    --border-radius: 10px;
+    --color: white;
+    height: 44px;
+    width: 44px;
+  }
+
+  .clear-btn {
+    --color: #a0763a;
+    height: 44px;
+    width: 36px;
+  }
+}

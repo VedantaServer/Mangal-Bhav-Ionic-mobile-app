@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Api, ApiNU } from '../providers';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { App } from '@capacitor/app';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { filter } from 'rxjs';
 
+declare let gtag: Function;
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -32,6 +34,16 @@ export class AppComponent {
     public routerCtrl: NavController
   ) {
 
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+
+        gtag('event', 'page_view', {
+          page_path: event.urlAfterRedirects,
+          send_to: ['G-TPZZLB33ZY', 'G-WMGSH5QEPF']
+        });
+
+      });
     this.initializeApp();
 
     this.setupDeepLinks();
@@ -76,7 +88,7 @@ export class AppComponent {
     await FirebaseAnalytics.logEvent({
       name: 'app_started'
     });
-    
+
   }
 
 

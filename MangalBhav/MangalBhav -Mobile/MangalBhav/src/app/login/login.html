@@ -914,6 +914,113 @@
           </ion-select>
         </div>
 
+        <!-- ===== REFERRAL CODE (Optional) ===== -->
+        <div class="auth-field" style="margin-bottom: 16px;">
+          <div class="field-icon">🎁</div>
+          <div class="field-inner">
+            <label class="field-label">Referral Code <span style="font-size:10px; color:#aaa;">(Optional)</span></label>
+            <div class="field-otp-row">
+              <ion-input placeholder="e.g. MANGAL1234" type="text" [(ngModel)]="referralCode" class="field-input"
+                [style.text-transform]="'uppercase'" [disabled]="referralCodeValid === true">
+              </ion-input>
+              <button class="get-otp-btn" (click)="validateReferralCode()" *ngIf="referralCodeValid !== true"
+                [disabled]="!referralCode?.trim()">
+                Apply
+              </button>
+              <button class="get-otp-btn" style="background: #16a34a;" *ngIf="referralCodeValid === true" disabled>
+                ✓ Applied
+              </button>
+            </div>
+            <p *ngIf="referralCodeValid === false" style="color:#dc2626; font-size:11px; margin-top:4px;">
+              ❌ Invalid code. Please check and try again.
+            </p>
+            <p *ngIf="referralCodeValid === true" style="color:#16a34a; font-size:11px; margin-top:4px;">
+              🎉 Applied!
+            </p>
+          </div>
+        </div>
+
+
+        <!-- ===== TERMS & CONDITIONS ===== -->
+        <div style="margin-bottom: 20px;">
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"
+            (click)="showTerms = !showTerms">
+            <p style="font-size:10px; font-weight:700; color:#FF9500;
+              letter-spacing:1px; text-transform:uppercase; margin:0;">
+              {{ UserLanguage === 'Hindi' ? '📜 नियम व शर्तें' : '📜 Terms & Conditions' }}
+            </p>
+            <ion-icon [name]="showTerms ? 'chevron-up-outline' : 'chevron-down-outline'"
+              style="color:#FF9500; font-size:16px;"></ion-icon>
+          </div>
+
+          <!-- Scrollable T&C box -->
+          <div *ngIf="showTerms" style="max-height:200px; overflow-y:auto; background:#FFFBF0;
+           border:1.5px solid rgba(255,184,0,0.3); border-radius:12px;
+           padding:14px; margin-bottom:12px; font-size:12px;
+           color:#3B1F00; line-height:1.7;">
+
+            <!-- HINDI -->
+            <div *ngIf="UserLanguage === 'Hindi'">
+              <strong>🕉️ मंगल भव — आचार संहिता एवं सेवा नियमावली</strong><br><br>
+              1. विद्वान सनातन धर्म, वेद एवं शास्त्रों के प्रति पूर्ण श्रद्धा रखेगा।<br>
+              2. आचरण विनम्र, संयमित एवं मर्यादित होना चाहिए।<br>
+              3. धूम्रपान, तंबाकू, शराब या नशे का सेवन पूर्णतः प्रतिबंधित है।<br>
+              4. सेवा के समय भारतीय पारंपरिक वेशभूषा अनिवार्य है।<br>
+              5. निर्धारित समय पर सेवा स्थल पर पहुँचना अनिवार्य होगा।<br>
+              6. यजमान एवं परिवार के प्रति सम्मानजनक व्यवहार रखा जाएगा।<br>
+              7. महिलाओं एवं बच्चों के प्रति पूर्ण सम्मान एवं सुरक्षा सुनिश्चित की जाएगी।<br>
+              8. यजमान को मंच से बाहर व्यक्तिगत सेवा हेतु प्रेरित करना प्रतिबंधित है।<br>
+              9. निर्धारित शुल्क के अतिरिक्त कोई अतिरिक्त मांग नहीं की जाएगी।<br>
+              10. यजमान की व्यक्तिगत जानकारी पूर्णतः गोपनीय रखी जाएगी।<br>
+              11. किसी भी प्रकार की भ्रामक या झूठी जानकारी देना प्रतिबंधित है।<br>
+              12. भय, भ्रम या अंधविश्वास से किसी प्रकार का लाभ लेना वर्जित है।<br>
+              13. मंगल भव के सभी दिशा-निर्देशों का पालन अनिवार्य होगा।<br>
+              14. नियम उल्लंघन पर चेतावनी, निलंबन या निष्कासन हो सकता है।<br><br>
+              <em>🕉️ धर्मो रक्षति रक्षितः 🕉️</em>
+            </div>
+
+            <!-- ENGLISH -->
+            <div *ngIf="UserLanguage !== 'Hindi'">
+              <strong>🕉️ Mangal Bhav — Code of Conduct &amp; Terms of Service</strong><br><br>
+              1. All scholars/users must respect Sanatan Dharma, Vedic traditions and scriptures.<br>
+              2. Conduct must be humble, disciplined, and respectful at all times.<br>
+              3. Consumption of tobacco, alcohol, or any intoxicants is strictly prohibited.<br>
+              4. Traditional Indian attire is mandatory during all religious services.<br>
+              5. Punctuality at the service venue is obligatory.<br>
+              6. Respectful and courteous behaviour towards the Yajman and family is required.<br>
+              7. Complete respect and safety must be ensured towards women and children.<br>
+              8. Soliciting Yajmans for services outside the platform is prohibited.<br>
+              9. No additional charges beyond the agreed fee may be demanded.<br>
+              10. All personal information of the Yajman must be kept strictly confidential.<br>
+              11. Providing false or misleading information is a disciplinary offence.<br>
+              12. Exploiting superstition or fear for personal gain is strictly forbidden.<br>
+              13. All Mangal Bhav platform guidelines must be adhered to at all times.<br>
+              14. Violations may result in warnings, suspension, or permanent removal.<br><br>
+              <em>🕉️ Dharmo Rakshati Rakshitah 🕉️</em>
+            </div>
+          </div>
+
+          <!-- Checkbox -->
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:12px;
+              background:#fff; border-radius:12px;
+              border:1.5px solid rgba(255,184,0,0.3);">
+            <input type="checkbox" [(ngModel)]="termsAccepted" style="width:18px; height:18px; accent-color:#FF9500;
+             margin-top:2px; flex-shrink:0;" />
+            <p style="font-size:12px; color:#3B1F00; margin:0; line-height:1.5;">
+              <span *ngIf="UserLanguage === 'Hindi'">
+                मैं मंगल भव की <strong>आचार संहिता एवं सेवा नियमावली</strong> को पढ़कर
+                सहमत हूँ और इनका पालन करने का संकल्प लेता/लेती हूँ।
+              </span>
+              <span *ngIf="UserLanguage !== 'Hindi'">
+                I have read and agree to Mangal Bhav's
+                <strong>Terms &amp; Conditions</strong> and Code of Conduct.
+              </span>
+            </p>
+          </div>
+
+        </div>
+
         <div class="role-cards">
 
           <div class="role-card pandit" *ngIf="!(pendingPanditCategoryID && pendingPanditUserID)"

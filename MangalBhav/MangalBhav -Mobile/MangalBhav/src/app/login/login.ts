@@ -99,7 +99,11 @@ export class LoginPage {
   referCopied = false;
   userReferCode: string = '';
   Language: any = 'English';
-
+  referralCode: string = '';
+  referrerUserID: number = 0;
+  referralCodeValid: boolean | null = null;  // null=unchecked, true=valid, false=invalid
+  termsAccepted: boolean = false;
+  showTerms: boolean = true;
 
   categoryList: any[] = [];
   serviceList: any[] = [];
@@ -120,8 +124,8 @@ export class LoginPage {
     private fcm: FcmService,
     private plt: Platform,
     private http: HttpClient,
-    private toastCtrl: ToastController,private router: Router,
-    private alertCtrl: AlertController,private route: ActivatedRoute
+    private toastCtrl: ToastController, private router: Router,
+    private alertCtrl: AlertController, private route: ActivatedRoute
   ) {
     // this.lblSchoolName = this.api.SchoolName;
     // this.forgetPassword = this.api.getForgetPasswordLink();
@@ -173,7 +177,7 @@ export class LoginPage {
 
 
   async ionViewWillEnter() {
-   
+
 
     const openLogin = await this.storage.get('openLoginSection');
     if (openLogin === 'true') {
@@ -187,7 +191,7 @@ export class LoginPage {
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
     this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
-  
+
     if (
       Number(this.pendingPanditServiceID) > 0 ||
       (this.pendingPanditCategoryID && this.pendingPanditUserID)
@@ -218,7 +222,7 @@ export class LoginPage {
     // this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
     // this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
 
-  //  alert('ss')
+    //  alert('ss')
 
 
 
@@ -446,7 +450,7 @@ export class LoginPage {
 
 
   async action5() {
-   // await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
+    // await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
 
     this.routerCtrl.navigateForward(`/open-find-pandit`);
   }
@@ -498,7 +502,7 @@ export class LoginPage {
               this.loginOtpSent = true;
             },
             error: (smsErr: any) => {
-               this.isOtpRequesting = false;
+              this.isOtpRequesting = false;
               console.error('SMS OTP failed:', smsErr);
             }
           });
@@ -555,7 +559,7 @@ export class LoginPage {
       .subscribe(async (res: any) => {
         console.log(res)
         if (res) {
-         // this.fcm.initPush(res.UserID);
+          // this.fcm.initPush(res.UserID);
           if (res.Role == 'PANDIT') {
             await this.storage.set("account", res);
             await this.storage.set("IsUserLoggedIn", "true");
@@ -781,51 +785,11 @@ export class LoginPage {
 
 
   async selectRole(role: string) {
-
+    if (!this.termsAccepted) {
+      this.showToastMessage('कृपया नियम व शर्तें स्वीकार करें / Please accept Terms & Conditions to continue.', 'danger');
+      return;
+    }
     this.showConfirmAlert(role);
-
-    // 👉 If role is pandit → ask for UPI
-    // if (role === 'PANDIT') {
-
-    //   const upiAlert = await this.alertCtrl.create({
-    //     header: 'Give UPI for dakshina',
-    //     inputs: [
-    //       {
-    //         name: 'upi',
-    //         type: 'text',
-    //         placeholder: 'Give UPI for dakshina (e.g. name@upi)'
-    //       }
-    //     ],
-    //     buttons: [
-    //       {
-    //         text: 'Cancel',
-    //         role: 'cancel'
-    //       },
-    //       {
-    //         text: 'Continue',
-    //         handler: (data) => {
-    //           if (!data.upi) {
-    //             this.showToastMessage('UPI ID is required', 'danger');
-    //             return false;
-    //           }
-
-
-    //           this.upiId = data.upi;
-
-
-    //           this.showConfirmAlert(role);
-    //           return true;
-    //         }
-    //       }
-    //     ]
-    //   });
-
-    //   await upiAlert.present();
-
-    // } else {
-
-    //   this.showConfirmAlert(role);
-    // }
   }
 
   async showToastMessage(message: string, color: string = 'primary') {
@@ -889,6 +853,21 @@ export class LoginPage {
         // console.log(res);
 
 
+        // Referral history insert (fire-and-forget)
+        if (this.referralCodeValid && this.referrerUserID > 0 && res.UserID) {
+          const referralBody = {
+            ReferrerUserID: this.referrerUserID,
+            ReferredUserID: Number(res.UserID),
+            ReferralCode: `${this.referralCode.trim().toUpperCase()}`,
+            ReferralDate: new Date()
+          };
+          this.apinu.postUrlData('UserReferralHistoryInsert', referralBody).subscribe({
+            next: (r: any) => console.log('Referral recorded', r),
+            error: (e: any) => console.error('Referral insert failed', e)
+          });
+        }
+
+
         const bankbody = {
           TenantId: Number(1),
           UserID: Number(res.UserID),
@@ -930,6 +909,13 @@ export class LoginPage {
           basePrice: 0,
           profilePhotoUrl: '',
           verificationStatus: 'APPROVED',
+          AddressLine1: "",
+          AddressLine2: "",
+          City: "",
+          State: "",
+          PinCode: "",
+          Lat: "",
+          Longitude: "",
           isActive: Boolean(1),
           dateAdded: new Date().toISOString(),
           dateModified: new Date().toISOString(),
@@ -994,25 +980,25 @@ export class LoginPage {
   openLoginSection() {
 
     //console.log('Before', this.showLoginSection);
-  
+
     this.showMainSection = false;
     this.showAuthLanding = false;
     this.showRegisterSection = false;
     this.showLoginSection = true;
 
     this.cdr.detectChanges();
-  
-   // console.log('After', this.showLoginSection);
+
+    // console.log('After', this.showLoginSection);
   }
   // openLoginSection() {
 
   //   console.log('OPEN LOGIN');
-  
+
   //   this.showMainSection = false;
   //   this.showAuthLanding = false;
   //   this.showLoginSection = true;
   //   this.showRegisterSection = false;
-  
+
   //   console.log({
   //     main: this.showMainSection,
   //     auth: this.showAuthLanding,
@@ -1121,6 +1107,26 @@ export class LoginPage {
   getSlogan() {
     const randomIndex = Math.floor(Math.random() * 40);
     this.sloganName = this.api.getChalisaLine(randomIndex);
+  }
+
+
+  validateReferralCode() {
+    const code = this.referralCode?.trim().toUpperCase();
+    if (!code) return;
+
+    // The stored code in DB matches full "MANGALxxx" format
+    this.apinu.postUrlData(`UserReferralCodeSelectByQuery?Query=ReferralCode='${code}'`, null)
+      .subscribe((res: any) => {
+        if (res.UserReferralCodeList?.length > 0) {
+          this.referrerUserID = res.UserReferralCodeList[0].UserID;
+          this.referralCodeValid = true;
+          this.showToastMessage('✅ Referral code applied! ₹50 off on your first booking.', 'success');
+        } else {
+          this.referrerUserID = 0;
+          this.referralCodeValid = false;
+          this.showToastMessage('Invalid referral code. Please check and retry.', 'danger');
+        }
+      });
   }
 
 }

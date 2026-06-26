@@ -42,7 +42,7 @@ export class JajmanDashboardComponent implements OnInit {
       logoTitle: 'Mangal.Bhav',
       myBookings: 'My Bookings',
       profile: 'Profile',
-      festivals: 'Hindu Calender',
+      festivals: 'Dainik Panchang',
       logoSub: '✦ Peace · Prosperity · Protection ✦',
       explore: 'Explore Life',
       me: 'Me',
@@ -62,7 +62,7 @@ export class JajmanDashboardComponent implements OnInit {
       myBookings: 'मेरी बुकिंग्स',
       profile: 'प्रोफ़ाइल',
       logoTitle: 'मंगल.भाव:',
-      festivals: 'हिंदू पंचांग',
+      festivals: 'दैनिक पंचांग',
       followUs: 'सोशल मीडिया पर फॉलो करें',
       explore: 'जीवन देखें',
       me: 'मैं'

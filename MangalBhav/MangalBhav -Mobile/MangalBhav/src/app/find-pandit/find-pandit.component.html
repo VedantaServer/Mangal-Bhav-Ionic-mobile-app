@@ -185,6 +185,11 @@
                 <ion-icon name="location-outline"></ion-icon>
                 {{ item._city || 'India' }}
               </span>
+
+              <span class="card-chip joined" *ngIf="item.user?.DateAdded">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ item.user.DateAdded | date:'MMM yyyy' }}
+              </span>
             </div>
             <!-- Divider -->
             <div class="card-divider"></div>
@@ -272,6 +277,13 @@
 
           </div>
           <h2 class="pandit-modal-name">{{ activePandit.profile?.FullName }}</h2>
+
+          <div class="modal-member-since" *ngIf="activePandit.user?.DateAdded">
+            <ion-icon name="calendar-outline"></ion-icon>
+            Member since {{ activePandit.user.DateAdded | date:'MMMM yyyy' }}
+          </div>
+
+          
           <div class="pandit-share-btn" (click)="sharePandit(activePandit)">
             <ion-icon name="share-social-outline"></ion-icon>
           </div>
@@ -339,6 +351,18 @@
               </p>
             </div>
           </div>
+
+          <!-- ↓ ADD THIS tile -->
+          <div class="detail-info-item" *ngIf="activePandit.user?.DateAdded">
+            <ion-icon name="person-add-outline"></ion-icon>
+            <div>
+              <p class="detail-info-label">Member Since</p>
+              <p class="detail-info-value">
+                {{ activePandit.user.DateAdded | date:'dd MMM yyyy' }}
+              </p>
+            </div>
+          </div>
+          <!-- ↑ END ADD -->
 
           <div class="detail-info-item">
             <ion-icon name="location-outline"></ion-icon>

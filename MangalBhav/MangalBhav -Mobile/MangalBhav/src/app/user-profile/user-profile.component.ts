@@ -71,6 +71,13 @@ export class UserProfileComponent implements OnInit {
     Languages: '',
     BasePrice: null,
     ProfilePhotoUrl: '',
+    AddressLine1: '',
+    AddressLine2: '',
+    City: '',
+    State: '',
+    PinCode: '',
+    Lat: '',
+    Longitude: '',
     VerificationStatus: '',
     IsActive: true,
     DateAdded: new Date().toISOString(),
@@ -85,6 +92,7 @@ export class UserProfileComponent implements OnInit {
   bankDetails: any = null;
   upiId: string = '';
   showBankForm: boolean = false;
+  referralCode: string = '';
 
   labels = {
     en: {
@@ -100,6 +108,19 @@ export class UserProfileComponent implements OnInit {
       changePhoto: 'Tap to change photo',
 
       personalDetails: 'Personal Details',
+
+      // ── Address section ──
+      addressDetails: 'Address Details',
+      addressLine1: 'Address Line 1',
+      enterAddressLine1: 'House / Flat / Building no.',
+      addressLine2: 'Address Line 2',
+      enterAddressLine2: 'Street / Locality / Area',
+      city: 'City',
+      enterCity: 'Enter your city',
+      state: 'State',
+      enterState: 'Enter your state',
+      pinCode: 'PIN Code',
+      enterPinCode: 'Enter 6-digit PIN code',
 
       notInterested: 'Not interested in using app',
       sorryTitle: "We're sorry to see you go",
@@ -128,7 +149,6 @@ export class UserProfileComponent implements OnInit {
 
       experience: 'Experience (Years)',
       enterExperience: 'e.g. 10',
-
 
       dob: 'Date of Birth',
 
@@ -169,6 +189,19 @@ export class UserProfileComponent implements OnInit {
       changePhoto: 'फोटो बदलने के लिए टैप करें',
 
       personalDetails: 'व्यक्तिगत जानकारी',
+
+      // ── Address section ──
+      addressDetails: 'पता विवरण',
+      addressLine1: 'पता पंक्ति 1',
+      enterAddressLine1: 'मकान / फ्लैट / बिल्डिंग नंबर',
+      addressLine2: 'पता पंक्ति 2',
+      enterAddressLine2: 'गली / मोहल्ला / क्षेत्र',
+      city: 'शहर',
+      enterCity: 'अपना शहर दर्ज करें',
+      state: 'राज्य',
+      enterState: 'अपना राज्य दर्ज करें',
+      pinCode: 'पिन कोड',
+      enterPinCode: '6 अंकों का पिन कोड दर्ज करें',
 
       fullName: 'पूरा नाम',
       enterFullName: 'अपना पूरा नाम दर्ज करें',
@@ -217,7 +250,9 @@ export class UserProfileComponent implements OnInit {
       me: 'मैं'
     }
   };
+
   selectedRole: any = '';
+
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
@@ -233,20 +268,14 @@ export class UserProfileComponent implements OnInit {
       logoWhatsapp,
       logoLinkedin
     });
-
   }
 
 
   loadSocialMedia() {
-
     this.apinu.postUrlData(
       `EntitySocialMediaSelectByQuery?Query=EntityType='USER' and EntityID = ${this.userDetails.UserID}`,
       null
     ).subscribe((res: any) => {
-
-      // this.socialMediaList =
-      //   res.EntitySocialMediaList || [];
-
       this.socialMediaList = (res.EntitySocialMediaList || []).map((item: any) => ({
         ...item,
         IconName:
@@ -257,21 +286,16 @@ export class UserProfileComponent implements OnInit {
           item.Platform === 'LinkedIn' ? 'logo-linkedin' :
           'share-social-outline'
       }));
-
     });
-
   }
 
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
     this.language = this.userDetails.Languages;
-    //  alert(this.language);
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
-
-    // console.log(this.userDetails.Role === 'PANDIT')
 
     this.loadSocialMedia();
 
@@ -284,9 +308,9 @@ export class UserProfileComponent implements OnInit {
       this.userDetails = res.UserList[0];
       this.selectedRole = this.userDetails.Role;
 
+      this.loadReferralCode();
       this.loadBankDetails();
-    })
-
+    });
 
     this.apinu.postUrlData(
       `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
@@ -295,8 +319,6 @@ export class UserProfileComponent implements OnInit {
       if (res.ProfileList && res.ProfileList.length > 0) {
         const data = res.ProfileList[0];
         this.profileObject = res.ProfileList[0];
-        //  console.log(this.profileObject);
-        //  console.log(data);
         this.isEditMode = true;
         this.profile = { ...data };
 
@@ -305,8 +327,7 @@ export class UserProfileComponent implements OnInit {
         }
 
         this.profilePreview = data.ProfilePhotoUrl;
-        console.log(this.profilePreview)
-        this.loadProfileImage()
+        this.loadProfileImage();
       }
     });
   }
@@ -318,13 +339,12 @@ export class UserProfileComponent implements OnInit {
   }
 
 
-
   loadProfileImage() {
     if (!this.profilePreview) return;
 
     this.api.getImage('DownloadImages', {
       imageName: this.profilePreview,
-      imagePurpose: 'ProfilePhoto'    // adjust if different
+      imagePurpose: 'ProfilePhoto'
     }).subscribe({
       next: (blob: any) => {
         if (blob?.type?.startsWith('image/')) {
@@ -336,13 +356,13 @@ export class UserProfileComponent implements OnInit {
   }
 
   selectedProfileFile: any = null;
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
 
     this.selectedProfileFile = file;
 
-    // Show instant local preview
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.profilePreview = e.target.result;
@@ -368,9 +388,8 @@ export class UserProfileComponent implements OnInit {
       if (res.Status === 'Success') {
         this.selectedProfileFile = null;
 
-        // ✅ Sync new filename to BOTH objects
         this.profileObject.ProfilePhotoUrl = res.FileName;
-        this.profile.ProfilePhotoUrl = res.FileName;  // ← THIS LINE WAS MISSING
+        this.profile.ProfilePhotoUrl = res.FileName;
 
         this.apinu.postUrlData('ProfilesUpdate', this.profileObject).subscribe(async (res: any) => {
           if (res.ProfileID > 0) {
@@ -385,7 +404,6 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
-
 
 
   async showToast(message: string, color = 'primary') {
@@ -420,6 +438,16 @@ export class UserProfileComponent implements OnInit {
         ? Number(this.profile.BasePrice)
         : 0,
       profilePhotoUrl: this.profile.ProfilePhotoUrl || '',
+
+      // ── Address fields ──
+      addressLine1: this.profile.AddressLine1 || '',
+      addressLine2: this.profile.AddressLine2 || '',
+      city: this.profile.City || '',
+      state: this.profile.State || '',
+      pinCode: this.profile.PinCode ? String(this.profile.PinCode) : '',
+      lat: '',   // intentionally empty — not collected from user
+      Longitude: '',  // intentionally empty — not collected from user
+
       verificationStatus: 'PENDING',
       isActive: Boolean(this.profile.IsActive),
       dateAdded: this.profile.DateAdded
@@ -458,7 +486,7 @@ export class UserProfileComponent implements OnInit {
         this.showBankForm = false;
       } else {
         this.bankDetails = null;
-        this.showBankForm = true;  // no record found, show add form
+        this.showBankForm = true;
       }
     });
   }
@@ -498,36 +526,27 @@ export class UserProfileComponent implements OnInit {
   }
 
   async logout() {
-
     await this.storage.clear();
     this.routerCtrl.navigateForward('/login');
 
     const deviceId = await this.fcm.getDeviceID();
 
-
     this.apinu.postUrlData(`UserDeviceSelectByQuery?Query=DeviceID=${deviceId}`, null)
       .subscribe(async (res: any) => {
         console.log(res.UserDeviceList[0]);
-
 
         const body = {
           ...res.UserDeviceList[0],
           IsActive: Boolean(0),
           DateModified: new Date()
-        }
+        };
 
         this.apinu.postUrlData(`UserDeviceUpdate`, body)
           .subscribe(async (res: any) => {
-
-
             await this.storage.clear();
             this.routerCtrl.navigateForward('/login');
-
-          })
-
-      })
-
-
+          });
+      });
   }
 
   openPage(pageName: any) {
@@ -539,10 +558,7 @@ export class UserProfileComponent implements OnInit {
     const payload = this.prepareProfileForSubmit();
     const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
     const previousRole = this.userDetails.Role;
-    const previousLanguage = this.profileObject.Languages;
-
-    //  alert(previousRole + " " + previousLanguage);
-    // alert(this.selectedRole + " " + payload.languages);
+    const previousLanguage = this.profileObject?.Languages;
 
     this.apinu.postUrlData(DBAction, payload).subscribe(async (res: any) => {
       if (res.ProfileID > 0) {
@@ -565,7 +581,6 @@ export class UserProfileComponent implements OnInit {
 
             this.showToast('Profile saved successfully ✅', 'success');
 
-            // ✅ Reload if role OR language changed
             if (previousRole !== this.selectedRole || previousLanguage !== payload.languages) {
               window.location.reload();
             }
@@ -597,7 +612,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   openAddSocialMedia() {
-
     this.isEditSocialMedia = false;
 
     this.socialMedia = {
@@ -621,43 +635,26 @@ export class UserProfileComponent implements OnInit {
   }
 
   editSocialMedia(item: any) {
-
     this.isEditSocialMedia = true;
-
-    this.socialMedia = {
-      ...item
-    };
-
+    this.socialMedia = { ...item };
     this.showSocialModal = true;
   }
 
   saveSocialMedia() {
-
-    const action =
-      this.isEditSocialMedia
-        ? 'EntitySocialMediaUpdate'
-        : 'EntitySocialMediaInsert';
+    const action = this.isEditSocialMedia
+      ? 'EntitySocialMediaUpdate'
+      : 'EntitySocialMediaInsert';
 
     this.socialMedia.DateModified = new Date();
 
-    this.apinu.postUrlData(
-      action,
-      this.socialMedia
-    ).subscribe((res: any) => {
-
+    this.apinu.postUrlData(action, this.socialMedia).subscribe((res: any) => {
       this.showToast(
-        this.isEditSocialMedia
-          ? 'Social media updated'
-          : 'Social media added',
+        this.isEditSocialMedia ? 'Social media updated' : 'Social media added',
         'success'
       );
-
       this.showSocialModal = false;
-
       this.loadSocialMedia();
-
     });
-
   }
 
   getPlatformClass(platform: string) {
@@ -672,47 +669,65 @@ export class UserProfileComponent implements OnInit {
       default: return 'platform-default';
     }
   }
-  deleteSocialMedia(item: any) {
 
+  deleteSocialMedia(item: any) {
     this.apinu.postUrlData(
       `EntitySocialMediaDelete?entitySocialMediaID=${item.EntitySocialMediaID}`,
       null
     ).subscribe(() => {
-
-      this.showToast(
-        'Deleted successfully',
-        'success'
-      );
-
+      this.showToast('Deleted successfully', 'success');
       this.loadSocialMedia();
-
     });
-
   }
-  getPlatformIcon(platform: string) {
 
-    console.log(platform)
+  getPlatformIcon(platform: string) {
+    console.log(platform);
     platform = (platform || '').trim();
 
     switch (platform) {
-      case 'Instagram':
-        return 'logo-instagram';
-
-      case 'Facebook':
-        return 'logo-facebook';
-
-      case 'YouTube':
-        return 'logo-youtube';
-
-      case 'LinkedIn':
-        return 'logo-linkedin';
-
-      case 'WhatsApp':
-        return 'logo-whatsapp';
-
+      case 'Instagram': return 'logo-instagram';
+      case 'Facebook': return 'logo-facebook';
+      case 'YouTube': return 'logo-youtube';
+      case 'LinkedIn': return 'logo-linkedin';
+      case 'WhatsApp': return 'logo-whatsapp';
       default:
         console.log('Unknown platform:', JSON.stringify(platform));
         return 'share-social-outline';
+    }
+  }
+
+  loadReferralCode() {
+    this.apinu.postUrlData(
+      `UserReferralCodeSelectByQuery?Query=UserID=${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.UserReferralCodeList?.length > 0) {
+        this.referralCode = res.UserReferralCodeList[0].ReferralCode;
+      }
+    });
+  }
+
+  async shareReferralOnWhatsApp() {
+    const name = this.profile.FullName || 'A friend';
+    const message =
+      `🙏 *Jai Shri Ram* 🙏\n\n` +
+      `${name} ne aapko *Mangal Bhav* app par aane ka nimantran diya hai!\n\n` +
+      `📿 Pandits aur Bhakton ko jodne wala pehla dharmic platform.\n\n` +
+      `Sign up karte waqt neeche diya referral code zaroor use karein:\n` +
+      `🎟️ *${this.referralCode}*\n\n` +
+      `✨ Hare Krishna, Hare Ram ✨`;
+
+    await Browser.open({
+      url: 'https://wa.me/?text=' + encodeURIComponent(message)
+    });
+  }
+
+  async copyReferralCode() {
+    try {
+      await navigator.clipboard.writeText(this.referralCode);
+      this.showToast('Referral code copied! 📋', 'success');
+    } catch {
+      this.showToast('Could not copy, please copy manually', 'warning');
     }
   }
 }

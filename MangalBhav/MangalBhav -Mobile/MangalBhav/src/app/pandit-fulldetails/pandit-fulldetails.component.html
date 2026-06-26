@@ -17,8 +17,22 @@
     <p class="shloka">॥ सेवा परमो धर्मः ॥</p>
   </div>
 
+  <div class="search-wrap">
+    <ion-input
+      [(ngModel)]="searchQuery"
+      placeholder="Search by name or number..."
+      class="search-input"
+      (keyup.enter)="searchPandits()">   <!-- also works on keyboard Enter -->
+    </ion-input>
+    <ion-button class="search-btn" (click)="searchPandits()">
+      <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+    </ion-button>
+    <ion-button class="clear-btn" fill="clear" *ngIf="searchQuery" (click)="clearSearch()">
+      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
   <div class="card-list">
-    <ion-card class="pandit-card" *ngFor="let pandit of panditList; let i = index">
+    <ion-card class="pandit-card" *ngFor="let pandit of displayList; let i = index">
       <div class="card-inner">
 
         <div class="avatar-wrap">
@@ -59,6 +73,10 @@
         </ion-button>
       </div>
     </ion-card>
+    <div class="no-results" *ngIf="filteredPanditList.length === 0 && searchQuery.trim()">
+      <p>🔍 No pandit found for "<strong>{{ searchQuery }}</strong>"</p>
+    </div>
+
   </div>
 
   <div class="bottom-note">

@@ -93,6 +93,7 @@ export class Tab1Page {
   currentMobileAppVersion: string = '';
   mobileAppVersion: any;
   unreadCount: any;
+  referralCode: string = '';
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
     public platform: Platform, private common: CommonProvider,
@@ -181,9 +182,9 @@ export class Tab1Page {
 
     this.language = this.userDetails.Languages;
     this.FullName = this.userDetails.FullName;
-   // console.log('ACCOUNT OBJECT:', this.userDetails);
+    // console.log('ACCOUNT OBJECT:', this.userDetails);
     this.loadProfilePhoto();
-
+    this.loadReferralCode();
     if (
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'PANDIT'
@@ -427,27 +428,27 @@ export class Tab1Page {
 
 
   // ✅ Share QR as image on WhatsApp
-  
+
 
 
   async shareQROnWhatsApp() {
     try {
-  
+
       const canvas = this.qrCodeRef.nativeElement.querySelector('canvas');
       if (!canvas) return;
-  
+
       const base64Data = canvas
         .toDataURL('image/png')
         .replace('data:image/png;base64,', '');
-  
+
       const fileName = `qr_${Date.now()}.png`;
-  
+
       const savedFile = await Filesystem.writeFile({
         path: fileName,
         data: base64Data,
         directory: Directory.Cache
       });
-  
+
       await Share.share({
         title: `Book ${this.FullName} on Mangal Bhav`,
         text:
@@ -455,7 +456,7 @@ export class Tab1Page {
           `${this.APP_DOWNLOAD_LINK}`,
         url: savedFile.uri
       });
-  
+
     } catch (err) {
       console.error(err);
     }
@@ -559,10 +560,48 @@ export class Tab1Page {
 
 
   fetchUnreadCount() {
-    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' +Number(this.userDetails.UserID), null)
+    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' + Number(this.userDetails.UserID), null)
       .subscribe((res: any) => {
         this.unreadCount = res[0]?.UnreadCount ?? 0;
       });
   }
+
+  loadReferralCode() {
+    this.apinu.postUrlData(
+      `UserReferralCodeSelectByQuery?Query=UserID=${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.UserReferralCodeList?.length > 0) {
+        this.referralCode = res.UserReferralCodeList[0].ReferralCode;
+      }
+    });
+  }
   
+  async copyReferralCode(event: Event) {
+    event.stopPropagation();   // prevent navigating to profile
+    try {
+      await navigator.clipboard.writeText(this.referralCode);
+      // reuse your existing alertCtrl for a quick toast
+      const alert = await this.alertCtrl.create({
+        message: '✅ Referral code copied!',
+        duration: 1500,
+      } as any);
+      alert.present();
+    } catch { }
+  }
+  
+  async shareReferralOnWhatsApp(event: Event) {
+    event.stopPropagation();   // prevent navigating to profile
+    const name = this.FullName || 'A friend';
+    const message =
+      `🙏 *Jai Shri Ram* 🙏\n\n` +
+      `${name} ne aapko *Mangal Bhav* par aane ka nimantran diya hai!\n\n` +
+      `Sign up karte waqt yeh referral code use karein:\n` +
+      `🎟️ *${this.referralCode}*\n\n` +
+      `📱 Download: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n\n` +
+      `✦ ॐ Mangal Bhav ✦`;
+  
+    window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');
+  }
+
 }

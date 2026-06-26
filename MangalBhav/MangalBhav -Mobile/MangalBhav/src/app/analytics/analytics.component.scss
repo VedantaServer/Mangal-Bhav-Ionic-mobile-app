@@ -1,0 +1,396 @@
+// ─────────────────────────────────────────────
+//  Mangal Bhav – Analytics Dashboard
+//  Palette: saffron / maroon / teal / gold / amber
+// ─────────────────────────────────────────────
+
+// ── Toolbar ──────────────────────────────────
+.mb-toolbar {
+    --background: linear-gradient(135deg, #9B2800 0%, #C84000 55%, #FF6B00 100%);
+    --color: #fff;
+  }
+  
+  .mb-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    padding: 6px 0;
+  
+    .title-main {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2px;
+    }
+  
+    .title-sub {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.78);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+  }
+  
+  // ── Page background ───────────────────────────
+  .mb-content {
+    --background: #FFF5E6;
+  }
+  
+  // ── Skeleton ──────────────────────────────────
+  .skeleton-banner {
+    display: flex;
+    gap: 10px;
+    padding: 20px 14px 16px;
+    background: linear-gradient(135deg, #9B2800 0%, #FF6B00 100%);
+  }
+  
+  .skel-banner-item {
+    flex: 1;
+    height: 48px;
+    border-radius: 8px;
+    --background: rgba(255, 255, 255, 0.18);
+    --background-rgb: 255, 255, 255;
+  }
+  
+  .skeleton-body {
+    padding: 16px 12px;
+  }
+  
+  .skel-group-header {
+    height: 48px;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 2px;
+    --background: #e8c8a0;
+  }
+  
+  .skel-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 18px;
+  }
+  
+  .skel-card {
+    height: 96px;
+    border-radius: 0;
+    --background: #ffe8cc;
+  
+    &:last-child {
+      border-radius: 0 0 8px 8px;
+    }
+  }
+  
+  // ── Error state ───────────────────────────────
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 32px;
+    text-align: center;
+  
+    .error-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #FFE8CC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+  
+      ion-icon {
+        font-size: 40px;
+        color: #FF6B00;
+      }
+    }
+  
+    .error-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #3D1C00;
+      margin: 0 0 6px;
+    }
+  
+    .error-sub {
+      font-size: 13px;
+      color: #a07050;
+      margin: 0 0 24px;
+    }
+  
+    .retry-btn {
+      --background: #FF6B00;
+      --border-radius: 10px;
+      font-weight: 600;
+      width: 200px;
+    }
+  }
+  
+  // ── Summary Banner ────────────────────────────
+  .summary-banner {
+    background: linear-gradient(135deg, #6B1200 0%, #A83000 40%, #FF6B00 100%);
+    padding: 20px 16px 22px;
+    position: relative;
+    overflow: hidden;
+  
+    .banner-om {
+      position: absolute;
+      right: 10px;
+      top: -14px;
+      font-size: 88px;
+      color: rgba(255, 255, 255, 0.07);
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+    }
+  
+    .banner-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      position: relative;
+      z-index: 1;
+    }
+  
+    .banner-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+  
+    .banner-val {
+      font-size: 21px;
+      font-weight: 700;
+      color: #FFD700;
+      line-height: 1;
+      letter-spacing: -0.3px;
+    }
+  
+    .banner-lbl {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 500;
+    }
+  
+    .banner-sep {
+      width: 1px;
+      height: 34px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+  
+  // ── Groups ────────────────────────────────────
+  .groups-wrap {
+    padding: 16px 12px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .stat-group {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  // ── Group Header ──────────────────────────────
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+  
+    .group-emoji {
+      font-size: 20px;
+      line-height: 1;
+    }
+  
+    .group-label-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+  
+    .group-en {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.1px;
+    }
+  
+    .group-hi {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.78);
+      font-weight: 400;
+    }
+  
+    .group-count {
+      --background: rgba(255, 255, 255, 0.22);
+      --color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 2px 8px;
+    }
+  
+    &.group-saffron { background: linear-gradient(135deg, #C84000, #FF6B00); }
+    &.group-maroon  { background: linear-gradient(135deg, #4A0808, #8B1A1A); }
+    &.group-teal    { background: linear-gradient(135deg, #003D3D, #005F5F); }
+    &.group-gold    { background: linear-gradient(135deg, #705000, #A87800); }
+    &.group-amber   { background: linear-gradient(135deg, #8B4000, #C86000); }
+  }
+  
+  // ── Cards Grid ────────────────────────────────
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: #e8c4a0;
+  
+    &.single-card {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  // ── Stat Card ─────────────────────────────────
+  .stat-card {
+    background: #fff;
+    padding: 14px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: background 0.15s;
+  
+    &:active {
+      background: #fdf0e0;
+    }
+  
+    .card-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 9px;
+  
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  
+    .card-value {
+      font-size: 23px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 5px;
+      letter-spacing: -0.4px;
+    }
+  
+    .card-prefix {
+      font-size: 14px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+  
+    .card-label {
+      font-size: 11px;
+      color: #7a5040;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.2;
+    }
+  
+    .card-label-hi {
+      font-size: 10px;
+      color: #bba090;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+  
+    // ── Per-group color tokens ──
+    &.group-saffron-card {
+      .card-icon-wrap {
+        background: #FFF0E6;
+        ion-icon { color: #FF6B00; }
+      }
+      .card-value { color: #C84000; }
+    }
+  
+    &.group-maroon-card {
+      .card-icon-wrap {
+        background: #FFF0EE;
+        ion-icon { color: #8B1A1A; }
+      }
+      .card-value { color: #5C0808; }
+    }
+  
+    &.group-teal-card {
+      .card-icon-wrap {
+        background: #E6F4F4;
+        ion-icon { color: #005F5F; }
+      }
+      .card-value { color: #003D3D; }
+    }
+  
+    &.group-gold-card {
+      .card-icon-wrap {
+        background: #FFF8E6;
+        ion-icon { color: #A87800; }
+      }
+      .card-value { color: #705000; }
+    }
+  
+    &.group-amber-card {
+      .card-icon-wrap {
+        background: #FFF4E6;
+        ion-icon { color: #C86000; }
+      }
+      .card-value { color: #8B4000; }
+    }
+  
+    // Full-width card (Mangal Mudra)
+    &.full-card {
+      flex-direction: row;
+      justify-content: center;
+      gap: 14px;
+      padding: 18px 20px;
+  
+      .card-icon-wrap {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 0;
+  
+        ion-icon { font-size: 24px; }
+      }
+  
+      .card-value {
+        font-size: 32px;
+        margin-bottom: 3px;
+      }
+  
+      .card-label    { font-size: 12px; }
+      .card-label-hi { font-size: 11px; }
+    }
+  }
+  
+  // ── Footer ────────────────────────────────────
+  .page-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 12px 0 28px;
+    color: #c0a080;
+    font-size: 11px;
+  
+    ion-icon {
+      font-size: 13px;
+    }
+  }

@@ -16,6 +16,8 @@ import { Capacitor } from '@capacitor/core';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 import { ActionSheetController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
+declare let gtag: Function;
 @Component({
   selector: 'app-openfindmandir',
   templateUrl: './openfindmandir.component.html',
@@ -111,6 +113,12 @@ export class OpenfindmandirComponent implements OnInit {
     public toastController: ToastController, private actionSheetCtrl: ActionSheetController
   ) { }
 
+
+  ionViewDidEnter() {
+    gtag('event', 'open_find_mandir', {
+      page_name: 'Open Find Mandir'
+    });
+  }
 
   async ngOnInit() {
     if (this.router.url === '/tabs/openfindmandir') {
@@ -337,30 +345,41 @@ export class OpenfindmandirComponent implements OnInit {
 
 
   loadMandirImage(mandir: any) {
-    if (!mandir.FrontImage) return;
-
-    this.api.getImage('DownloadImages', {
-      imageName: mandir.InsideImage,
-      imagePurpose: 'ProfilePhoto'
-    }).subscribe({
-      next: (blob: any) => {
-        if (blob?.type?.startsWith('image/')) {
-          mandir.InsideImageUrl = URL.createObjectURL(blob);
-          this.filteredMandirs = [...this.filteredMandirs];
-        }
-      },
-      error: (err) => console.error('Error loading image:', err)
-    });
+    if (!mandir.InsideImage) return;
+  
+    mandir.InsideImageUrl =
+      `https://app.mangalbhav.com/assets/ProfilePhoto/${mandir.InsideImage}`;
+  
+    this.filteredMandirs = [...this.filteredMandirs];
   }
+
+  // loadMandirImage(mandir: any) {
+  //   if (!mandir.FrontImage) return;
+
+  //   this.api.getImage('DownloadImages', {
+  //     imageName: mandir.InsideImage,
+  //     imagePurpose: 'ProfilePhoto'
+  //   }).subscribe({
+  //     next: (blob: any) => {
+  //       if (blob?.type?.startsWith('image/')) {
+  //         mandir.InsideImageUrl = URL.createObjectURL(blob);
+  //         this.filteredMandirs = [...this.filteredMandirs];
+  //       }
+  //     },
+  //     error: (err) => console.error('Error loading image:', err)
+  //   });
+  // }
 
 
   openAddMandir() {
     this.resetMandirForm();
+   
     this.showAddMandirForm = true;
   }
 
   closeAddMandir() {
     this.showAddMandirForm = false;
+   
   }
 
   resetMandirForm() {

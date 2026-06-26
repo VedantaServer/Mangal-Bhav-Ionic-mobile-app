@@ -98,7 +98,7 @@ export class MandirInsertUpdateComponent implements OnInit {
 
  // pageNumber = 1;
 //pageSize = 10;
-query: string = 'tenantID=1 ORDER BY DateAdded DESC';
+query: string = 'tenantID=1 ORDER BY DateAdded ASC';
 searchTimeout: any;
 
 

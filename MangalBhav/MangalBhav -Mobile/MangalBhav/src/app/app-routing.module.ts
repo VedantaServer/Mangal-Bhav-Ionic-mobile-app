@@ -50,6 +50,7 @@ import { FamilyMandirPendingApprovalComponent } from './family-mandir-pending-ap
 import { MyMandirComponent } from './my-mandir/my-mandir.component';
 import { AdminEventVerificationComponent } from './admin-event-verification/admin-event-verification.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { AnalyticsComponent } from './analytics/analytics.component';
 
 const routes: Routes = [
 
@@ -136,10 +137,11 @@ const routes: Routes = [
   {
     path: 'open-community-page',
     component: OpenCommunityPageComponent  // directly use the standalone component
+  },
+  {
+    path: 'analytics',
+    component: AnalyticsComponent  // directly use the standalone component
   }
-
-
-
   ,
   {
     path: 'pandit-list',
@@ -221,7 +223,7 @@ const routes: Routes = [
   {
     path: 'completed-booking',
     component: JajmanCompletedPoojaComponent  // directly use the standalone component
-  } ,
+  },
   {
     path: 'my-mandirs',
     component: MyMandirComponent  // directly use the standalone component

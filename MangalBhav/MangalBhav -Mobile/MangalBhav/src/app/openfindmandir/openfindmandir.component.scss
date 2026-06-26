@@ -2339,3 +2339,45 @@ select {
     filter: drop-shadow(0 0 4px rgba(255, 149, 0, 0.5));
   }
 }
+
+
+.hide-tabs app-common-bottom-tabs,
+.hide-tabs app-panditjibottomtabs {
+  display: none !important;
+}
+
+
+
+.mandir-modal {
+  position: fixed;
+  top: 0;                          // ← anchor to top
+  bottom: unset;                   // ← clear any bottom value
+  left: 0;
+  right: 0;
+  max-height: 90vh;
+  background: #FFFBF0;
+  border-top: none;                // ← no top border (flush with screen)
+  border-bottom: 2px solid rgba(255, 149, 0, 0.35);
+  border-radius: 0 0 24px 24px;   // ← round BOTTOM corners now
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(-100%);    // ← hides ABOVE the screen
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 8px 32px rgba(224, 123, 0, 0.15); // ← shadow goes DOWN
+
+  &.active { transform: translateY(0); }
+
+  @media (min-width: 768px) {
+    max-width: 640px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    &.active { transform: translateX(-50%) translateY(0); }
+  }
+}
+
+// Header no longer needs top border-radius (it's flush with screen top)
+.mandir-modal-header {
+  border-radius: 0;
+}
+
