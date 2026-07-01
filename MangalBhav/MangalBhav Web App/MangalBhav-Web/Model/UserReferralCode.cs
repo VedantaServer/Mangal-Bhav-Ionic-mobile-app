@@ -5,11 +5,13 @@ namespace FaceUPAI.Models
 	{
 		#region Fields
 
-		private int tenantID;
 		private int userReferralCodeID;
+		private int tenantID;
 		private int userID;
 		private string referralCode;
-		private DateTime dateAdded;
+		private bool isActive;
+		private DateTime createdDate;
+		private DateTime modifiedDate;
 
 		#endregion
 
@@ -25,38 +27,33 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the UserReferralCode class.
 		/// </summary>
-		public UserReferralCode(int tenantID, int userID, string referralCode, DateTime dateAdded)
+		public UserReferralCode(int tenantID, int userID, string referralCode, bool isActive, DateTime createdDate, DateTime modifiedDate)
 		{
 			this.tenantID = tenantID;
 			this.userID = userID;
 			this.referralCode = referralCode;
-			this.dateAdded = dateAdded;
+			this.isActive = isActive;
+			this.createdDate = createdDate;
+			this.modifiedDate = modifiedDate;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the UserReferralCode class.
 		/// </summary>
-		public UserReferralCode(int tenantID, int userReferralCodeID, int userID, string referralCode, DateTime dateAdded)
+		public UserReferralCode(int userReferralCodeID, int tenantID, int userID, string referralCode, bool isActive, DateTime createdDate, DateTime modifiedDate)
 		{
-			this.tenantID = tenantID;
 			this.userReferralCodeID = userReferralCodeID;
+			this.tenantID = tenantID;
 			this.userID = userID;
 			this.referralCode = referralCode;
-			this.dateAdded = dateAdded;
+			this.isActive = isActive;
+			this.createdDate = createdDate;
+			this.modifiedDate = modifiedDate;
 		}
 
 		#endregion
 
 		#region Properties
-		/// <summary>
-		/// Gets or sets the TenantID value.
-		/// </summary>
-		public  int TenantID
-		{
-			get { return tenantID; }
-			set { tenantID = value; }
-		}
-
 		/// <summary>
 		/// Gets or sets the UserReferralCodeID value.
 		/// </summary>
@@ -64,6 +61,15 @@ namespace FaceUPAI.Models
 		{
 			get { return userReferralCodeID; }
 			set { userReferralCodeID = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the TenantID value.
+		/// </summary>
+		public  int TenantID
+		{
+			get { return tenantID; }
+			set { tenantID = value; }
 		}
 
 		/// <summary>
@@ -85,12 +91,30 @@ namespace FaceUPAI.Models
 		}
 
 		/// <summary>
-		/// Gets or sets the DateAdded value.
+		/// Gets or sets the IsActive value.
 		/// </summary>
-		public  DateTime DateAdded
+		public  bool IsActive
 		{
-			get { return dateAdded; }
-			set { dateAdded = value; }
+			get { return isActive; }
+			set { isActive = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the CreatedDate value.
+		/// </summary>
+		public  DateTime CreatedDate
+		{
+			get { return createdDate; }
+			set { createdDate = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the ModifiedDate value.
+		/// </summary>
+		public  DateTime ModifiedDate
+		{
+			get { return modifiedDate; }
+			set { modifiedDate = value; }
 		}
 
 		#endregion

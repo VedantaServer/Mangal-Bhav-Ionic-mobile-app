@@ -19,8 +19,29 @@
   </ion-toolbar>
 </ion-header>
 
+<div class="skeleton-wrap" *ngIf="isLoading">
+  <div class="skeleton-banner"></div>
+  <div class="skeleton-avatar"></div>
+
+  <div class="skeleton-section-label"></div>
+  <div class="skeleton-card">
+    <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton-label"></div>
+      <div class="skeleton-input"></div>
+    </div>
+  </div>
+
+  <div class="skeleton-section-label" style="margin-top:24px"></div>
+  <div class="skeleton-card">
+    <div class="skeleton-row" *ngFor="let i of [1,2,3]">
+      <div class="skeleton-label"></div>
+      <div class="skeleton-input"></div>
+    </div>
+  </div>
+</div>
+
 <ion-content>
-  <div class="page-wrapper">
+  <div class="page-wrapper" *ngIf="!isLoading">
 
     <!-- TOP BANNER -->
     <div class="page-banner">
@@ -408,3 +429,207 @@
   </button>
 
 </div>
+
+
+
+
+
+<!-- ========================================================= -->
+<!-- ADD THIS KYC SECTION TO YOUR user-profile.component.html -->
+<!-- ========================================================= -->
+
+<!-- ── KYC STATUS CARD — compact ── -->
+<ion-card class="kyc-card" (click)="openKYCDetails()">
+  <ion-card-content>
+    <div class="kyc-header">
+
+      <div class="kyc-icon" [class.verified]="isKYCVerified">
+        <ion-icon
+          [name]="isKYCVerified ? 'shield-checkmark' : 'shield-outline'"
+          [color]="isKYCVerified ? 'success' : 'medium'">
+        </ion-icon>
+      </div>
+
+      <div class="kyc-info">
+        <h3>{{ kycT.kycTitle }}</h3>
+        <p *ngIf="isKYCVerified" class="verified-text">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          {{ kycT.kycVerified }}
+        </p>
+        <p *ngIf="!isKYCVerified" class="pending-text">
+          {{ kycT.kycPending }}
+        </p>
+      </div>
+
+      <!-- Not verified: show Start button -->
+      <ion-button *ngIf="!isKYCVerified" fill="clear" size="small" color="primary">
+        {{ kycT.startKYC }}
+      </ion-button>
+
+      <!-- Verified: just show chevron -->
+      <ion-icon *ngIf="isKYCVerified" name="chevron-forward" color="medium"></ion-icon>
+
+    </div>
+  </ion-card-content>
+</ion-card>
+
+
+<!-- ── KYC DETAILS BOTTOM SHEET — shown on tap when verified ── -->
+<div class="ni-backdrop" *ngIf="showKYCDetails" (click)="showKYCDetails = false"></div>
+<div class="ni-modal" [class.active]="showKYCDetails">
+
+  <div style="text-align:center; margin-bottom: 16px;">
+    <ion-icon name="shield-checkmark" color="success" style="font-size: 48px;"></ion-icon>
+    <h3 style="margin: 8px 0 4px; color: #2d2d2d;">{{ kycT.kycVerified }}</h3>
+    <p style="color: #888; font-size: 13px; margin: 0;">Aadhaar Identity Verified</p>
+  </div>
+
+  <div class="verified-summary" *ngIf="kycStatus">
+
+    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+      <small style="color:#888;">{{ kycT.verifiedName }}</small>
+      <span style="font-weight:600; color:#2d2d2d;">{{ kycStatus.verifiedName }}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+      <small style="color:#888;">{{ kycT.verifiedDOB }}</small>
+      <span style="font-weight:600; color:#2d2d2d;">{{ kycStatus.verifiedDOB }}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+      <small style="color:#888;">{{ kycT.verifiedGender }}</small>
+      <span style="font-weight:600; color:#2d2d2d;">
+        {{ kycStatus.verifiedGender === 'M' ? 'Male' : kycStatus.verifiedGender === 'F' ? 'Female' : kycStatus.verifiedGender }}
+      </span>
+    </div>
+
+    <div style="padding: 10px 0;">
+      <small style="color:#888; display:block; margin-bottom:4px;">{{ kycT.verifiedAddress }}</small>
+      <span style="font-size:13px; color:#444; line-height:1.5;">{{ kycStatus.verifiedAddress }}</span>
+    </div>
+
+  </div>
+
+  <button class="ni-cancel-btn" (click)="showKYCDetails = false">
+    Close
+  </button>
+
+</div>
+
+
+<!-- ── KYC FLOW MODAL — only shown during verification process ── -->
+<ion-modal [isOpen]="showKYCModal" (didDismiss)="closeKYCModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>{{ kycT.kycTitle }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeKYCModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+
+      <!-- Loading -->
+      <div *ngIf="isKYCLoading" class="loading-center">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>{{ kycT.verifying }}</p>
+      </div>
+
+      <!-- Step 1 -->
+      <div *ngIf="kycStep === 1 && !isKYCLoading" class="kyc-step">
+        <div class="kyc-illustration">
+          <ion-icon name="finger-print-outline" color="primary"></ion-icon>
+        </div>
+        <h2>{{ kycT.kycTitle }}</h2>
+        <p class="subtitle">{{ kycT.kycSubtitle }}</p>
+        <p class="info-text">{{ kycT.kycInfo }}</p>
+        <p class="benefits">{{ kycT.kycBenefits }}</p>
+        <ion-button expand="block" color="primary" (click)="startKYC()">
+          <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+          {{ kycT.startKYC }}
+        </ion-button>
+        <ion-button expand="block" fill="clear" color="medium" (click)="closeKYCModal()">
+          {{ kycT.notNow }}
+        </ion-button>
+      </div>
+
+      <!-- Step 2 -->
+      <div *ngIf="kycStep === 2 && !isKYCLoading" class="kyc-step">
+        <div class="kyc-illustration">
+          <ion-icon name="lock-closed-outline" color="warning"></ion-icon>
+        </div>
+        <h2>{{ kycT.step2Title }}</h2>
+        <p class="subtitle">{{ kycT.closeBrowserMsg }}</p>
+        <p class="info-text">DigiLocker has been opened. Please complete the consent process there.</p>
+        <ion-button expand="block" color="success" (click)="checkConsentStatus()">
+          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          {{ kycT.consentCheck }}
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="primary" (click)="openDigiLockerInApp('')">
+          <ion-icon name="open-outline" slot="start"></ion-icon>
+          {{ kycT.openDigiLocker }}
+        </ion-button>
+      </div>
+
+      <!-- Step 3 -->
+      <div *ngIf="kycStep === 3 && !isKYCLoading" class="kyc-step">
+        <div class="kyc-illustration">
+          <ion-icon name="refresh-circle-outline" color="tertiary"></ion-icon>
+        </div>
+        <h2>{{ kycT.checkingStatus }}</h2>
+        <p class="subtitle">Please wait while we verify your consent...</p>
+        <ion-button expand="block" color="primary" (click)="checkConsentStatus()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          {{ kycT.checkingStatus }}
+        </ion-button>
+      </div>
+
+      <!-- Step 4 -->
+      <div *ngIf="kycStep === 4 && !isKYCLoading" class="kyc-step">
+        <div class="kyc-illustration">
+          <ion-icon name="document-text-outline" color="tertiary"></ion-icon>
+        </div>
+        <h2>{{ kycT.step3Title }}</h2>
+        <p class="subtitle">Consent received! Fetching your Aadhaar details...</p>
+        <ion-button expand="block" color="success" (click)="fetchDocumentData()">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          {{ kycT.fetchDocument }}
+        </ion-button>
+      </div>
+
+      <!-- Step 5: Success -->
+      <div *ngIf="kycStep === 5 && !isKYCLoading" class="kyc-step">
+        <div class="kyc-illustration success">
+          <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+        </div>
+        <h2>{{ kycT.kycSuccess }}</h2>
+        <p class="subtitle">Your identity has been verified successfully.</p>
+
+        <div class="verified-summary" *ngIf="kycStatus">
+          <ion-item lines="none">
+            <ion-label>{{ kycT.verifiedName }}</ion-label>
+            <ion-note slot="end">{{ kycStatus.verifiedName }}</ion-note>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>{{ kycT.verifiedDOB }}</ion-label>
+            <ion-note slot="end">{{ kycStatus.verifiedDOB }}</ion-note>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>{{ kycT.verifiedGender }}</ion-label>
+            <ion-note slot="end">{{ kycStatus.verifiedGender }}</ion-note>
+          </ion-item>
+        </div>
+
+        <ion-button expand="block" color="primary" (click)="applyKYCToProfile()">
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          {{ t.updateProfile }}
+        </ion-button>
+      </div>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>

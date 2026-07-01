@@ -63,7 +63,7 @@
           <ion-icon slot="start" name="call-outline"></ion-icon>
           Call
         </ion-button>
-        <ion-button fill="clear" size="small" class="contact-btn">
+        <ion-button fill="clear" size="small" class="contact-btn" (click)="openPayPopup(pandit)">
           <ion-icon slot="start" name="cash-outline"></ion-icon>
           Pay
         </ion-button>
@@ -73,7 +73,7 @@
         </ion-button>
       </div>
     </ion-card>
-    <div class="no-results" *ngIf="filteredPanditList.length === 0 && searchQuery.trim()">
+    <div class="no-results" *ngIf="filteredPanditList?.length === 0 && searchQuery.trim()">
       <p>🔍 No pandit found for "<strong>{{ searchQuery }}</strong>"</p>
     </div>
 
@@ -84,3 +84,84 @@
   </div>
 
 </ion-content>
+
+
+<!-- ── Dakshina Pay Popup ─────────────────────────── -->
+<div class="pay-backdrop" *ngIf="payPopupOpen" (click)="closePayPopup()"></div>
+
+<div class="pay-popup" *ngIf="payPopupOpen">
+
+  <!-- header -->
+  <div class="popup-header">
+    <div>
+      <p class="popup-sub">Dakshina Payment</p>
+      <h3 class="popup-title">{{ selectedPandit?.FullName }}</h3>
+      <p class="popup-phone">📞 {{ selectedPandit?.LoginID }}</p>
+    </div>
+    <ion-button fill="clear" class="close-btn" (click)="closePayPopup()">
+      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- form -->
+  <div class="popup-form">
+
+    <div class="field-wrap">
+      <label>Amount (₹) <span class="req">*</span></label>
+      <ion-input [(ngModel)]="payAmount" type="number"
+                 placeholder="Enter amount" class="field-input"></ion-input>
+    </div>
+
+    <div class="field-wrap">
+      <label>Mode</label>
+      <ion-input [(ngModel)]="PaymentMode" type="tel"
+                 placeholder="Payment Mode" class="field-input"></ion-input>
+    </div>
+
+    <div class="field-wrap">
+      <label>Reference No. <span class="req">*</span></label>
+      <ion-input [(ngModel)]="payRefNo"
+                 placeholder="UPI / bank ref no." class="field-input"></ion-input>
+    </div>
+
+    <div class="field-wrap">
+      <label>Donor Name</label>
+      <ion-input [(ngModel)]="payDonorName"
+                 placeholder="Payer name (optional)" class="field-input"></ion-input>
+    </div>
+
+    <div class="field-wrap">
+      <label>Donor Phone</label>
+      <ion-input [(ngModel)]="payPhone" type="tel"
+                 placeholder="Payer phone (optional)" class="field-input"></ion-input>
+    </div>
+
+    <ion-button expand="block" class="submit-btn"
+                [disabled]="isSubmitting" (click)="submitPayment()">
+      <ion-spinner *ngIf="isSubmitting" name="crescent" slot="start"></ion-spinner>
+      {{ isSubmitting ? 'Saving…' : '🙏 Record Dakshina' }}
+    </ion-button>
+  </div>
+
+  <!-- transaction history -->
+  <div class="tx-section">
+    <h4 class="tx-heading">Past Dakshina</h4>
+
+    <div *ngIf="isLoadingTx" class="tx-loading">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
+
+    <div *ngIf="!isLoadingTx && panditTxList.length === 0" class="tx-empty">
+      No records yet.
+    </div>
+
+    <div *ngFor="let tx of panditTxList" class="tx-row">
+      <div class="tx-left">
+        <p class="tx-ref">{{ tx.UniqueReferenceNo }}</p>
+        <p class="tx-date">{{ tx.DateAdded | date:'dd MMM yyyy, hh:mm a' }}</p>
+      </div>
+      <span class="tx-amount">₹{{ tx.Amount }}</span>
+    </div>
+  </div>
+
+</div>

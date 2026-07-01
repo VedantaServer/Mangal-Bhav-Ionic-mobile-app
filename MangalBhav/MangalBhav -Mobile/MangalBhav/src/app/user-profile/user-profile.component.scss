@@ -1292,3 +1292,300 @@ ion-icon[name="logo-whatsapp"] {
     }
   }
 }
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+ 
+%shimmer-base {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+ 
+.skeleton-wrap {
+  padding: 0 16px 40px;
+}
+ 
+.skeleton-banner {
+  @extend %shimmer-base;
+  height: 110px;
+  border-radius: 16px;
+  margin: 16px 0;
+}
+ 
+.skeleton-avatar {
+  @extend %shimmer-base;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+}
+ 
+.skeleton-section-label {
+  @extend %shimmer-base;
+  height: 18px;
+  width: 140px;
+  margin-bottom: 12px;
+}
+ 
+.skeleton-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+ 
+.skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+ 
+.skeleton-label {
+  @extend %shimmer-base;
+  height: 13px;
+  width: 30%;
+}
+ 
+.skeleton-input {
+  @extend %shimmer-base;
+  height: 44px;
+  width: 100%;
+}
+
+
+
+// =========================================================
+// ADD THESE STYLES TO YOUR user-profile.component.scss
+// =========================================================
+
+.kyc-card {
+  margin: 12px 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.kyc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .kyc-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  .kyc-info {
+    flex: 1;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .verified-text {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+
+    .pending-text {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #f59e0b;
+    }
+  }
+}
+
+.kyc-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  ion-row {
+    margin-bottom: 8px;
+  }
+
+  ion-col {
+    small {
+      display: block;
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1f2937;
+    }
+
+    .address-text {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #4b5563;
+    }
+  }
+}
+
+// KYC Modal Styles
+.kyc-step {
+  text-align: center;
+  padding: 24px 16px;
+
+  .kyc-illustration {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+
+    &.success {
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    ion-icon {
+      font-size: 40px;
+    }
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .subtitle {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  .info-text {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .benefits {
+    margin: 0 0 24px;
+    font-size: 12px;
+    color: #10b981;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.08);
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  ion-button {
+    margin-top: 8px;
+  }
+}
+
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+  }
+}
+
+.verified-summary {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 8px 0;
+  margin: 16px 0;
+  text-align: left;
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 16px;
+    --padding-end: 16px;
+
+    ion-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    ion-note {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1f2937;
+    }
+  }
+}
+
+// Verified Badge on Profile
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-top: 4px;
+
+  ion-icon {
+    font-size: 12px;
+  }
+}

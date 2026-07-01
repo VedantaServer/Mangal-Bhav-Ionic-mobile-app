@@ -1,30 +1,4 @@
-<!-- <ion-header [translucent]="true">
-  <ion-toolbar>
-    <div class="inner-header">
 
-      <div class="nav-logo" (click)="goToLoggedInHomePage()">
-        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
-        <div class="logo-text-block">
-          <div class="nav-logo-text">{{t.logoTitle}}</div>
-          <div class="nav-logo-sub">{{t.logoSub}}</div>
-        </div>
-      </div>
-
-      <div style="display: flex;gap: 4px;">
-        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
-            name="logo-whatsapp" style="color: white;"></ion-icon></button>
-
-        <button class="header-logout-btn" (click)="openPage('find-pandit')">
-          <ion-icon name="qr-code-outline"></ion-icon>
-        </button>
-      </div>
-
-
-
-
-    </div>
-  </ion-toolbar>
-</ion-header> -->
 
 <app-tabscommonheader></app-tabscommonheader>
 
@@ -81,7 +55,7 @@
         <div class="dash-icon">🛕</div>
         <span>{{ t.myMandirs }}</span>
       </div>
-      
+
 
     </div>
 
@@ -92,6 +66,25 @@
 
     </div>
 
+
+
+    <div class="referral-strip" *ngIf="referralCode">
+      <div class="referral-strip-left">
+        <span class="referral-strip-icon">🎟️</span>
+        <div class="referral-strip-text">
+          <span class="referral-strip-title">Your Referral Code</span>
+          <span class="referral-strip-code">{{ referralCode }}</span>
+        </div>
+      </div>
+      <div class="referral-strip-actions">
+        <button class="referral-copy-btn" (click)="copyReferralCode($event)">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
+        <button class="referral-wa-btn" (click)="shareReferralOnWhatsApp($event)">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+        </button>
+      </div>
+    </div>
 
 
     <!-- ===== DIVIDER ===== -->
@@ -106,22 +99,22 @@
     <div class="social-share-section">
       <!-- <p class="social-share-label">{{ t.followUs }}</p> -->
       <div class="social-share-row">
-    
+
         <button class="social-btn facebook" (click)="followOn('facebook')">
           <img src="assets/facebook.webp" class="social-icon" />
           <span>Facebook</span>
         </button>
-    
+
         <button class="social-btn instagram" (click)="followOn('instagram')">
           <img src="assets/instagram.webp" class="social-icon" />
           <span>Instagram</span>
         </button>
-    
+
         <button class="social-btn linkedin" (click)="followOn('linkedin')">
           <img src="assets/youtube.jpg" class="social-icon" />
           <span>Youtube</span>
         </button>
-    
+
       </div>
     </div>
 
@@ -131,6 +124,5 @@
 
 
 
-<app-common-bottom-tabs
-  *ngIf="userDetails?.Role != 'PANDIT'">
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'">
 </app-common-bottom-tabs>

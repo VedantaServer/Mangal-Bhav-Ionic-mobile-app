@@ -207,6 +207,41 @@ namespace FaceUPAI.Controllers
 
 
 
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("GetPanditListing")]
+        public IActionResult GetPanditListing(
+    int PageNumber = 1,
+    int PageSize = 10,
+    string Search = "",
+    double? Latitude = null,
+    double? Longitude = null
+)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@PageNumber", PageNumber),
+        new SqlParameter("@PageSize", PageSize),
+        new SqlParameter("@Search", string.IsNullOrEmpty(Search) ? (object)DBNull.Value : Search),
+        new SqlParameter("@Latitude", Latitude.HasValue ? (object)Latitude.Value : DBNull.Value),
+        new SqlParameter("@Longitude", Longitude.HasValue ? (object)Longitude.Value : DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader =
+                DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure,
+                    "GetPanditListing",
+                    parameters))
+            {
+                DataTable dt = new DataTable();
+                dt.Load(dataReader);
+
+                return Ok(JsonConvert.SerializeObject(dt));
+            }
+        }
+
+
+
 
 
 
@@ -288,6 +323,128 @@ namespace FaceUPAI.Controllers
             }
         }
 
+
+
+        [HttpPost]
+        [Route("GetDashboardStatistics")]
+        [EnableCors("AllowAll")]
+        public IActionResult GetDashboardStatistics()
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+               
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "GetDashboardStatistics", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+
+
+
+
+        [HttpPost]
+        [Route("UserReferralSummaryReport")]
+        [EnableCors("AllowAll")]
+        public IActionResult UserReferralSummaryReport()
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserReferralSummaryReport", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+
+        [HttpPost]
+        [Route("BookingReport")]
+        [EnableCors("AllowAll")]
+        public IActionResult BookingReport()
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "BookingReport", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+
+        [HttpPost]
+        [Route("UserReferralHistoryReport")]
+        [EnableCors("AllowAll")]
+        public IActionResult UserReferralHistoryReport()
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserReferralHistoryReport", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Converting DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // Return the data as JSON
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
 
 
 
@@ -853,12 +1010,21 @@ namespace FaceUPAI.Controllers
                         }
                         catch (Exception ex)
                         {
+                            System.IO.File.AppendAllText(
+                                "firebase-error.txt",
+                                DateTime.Now + System.Environment.NewLine +
+                                ex.ToString() + System.Environment.NewLine +
+                                "--------------------------------" + System.Environment.NewLine
+                            );
+
                             DataAccess.ExecuteNonQuery(
                                 CommandType.Text,
                                 $@"UPDATE NotificationQueue
-                           SET ErrorMessage = '{ex.Message.Replace("'", "''")}'
-                           WHERE ID = {notificationID}",
+           SET ErrorMessage = '{ex.Message.Replace("'", "''")}'
+           WHERE ID = {notificationID}",
                                 new SqlParameter[] { });
+
+                            continue; // move to next token
                         }
                     }
                 }
@@ -1719,6 +1885,54 @@ namespace FaceUPAI.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+
+
+
+
+
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("ProfileEngagementCount_Select")]
+        public IActionResult ProfileEngagementCount_Select(int PanditUserID)
+        {
+            try
+            {
+                // Define parameters for the stored procedure
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@PanditUserID", PanditUserID),
+
+                };
+
+                // Execute the stored procedure and load results into a DataTable
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure,
+                    "ProfileEngagementCount_Select",
+                    parameters))
+                {
+                    var dataTable = new DataTable();
+                    dataTable.Load(dataReader);
+
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        // Convert DataTable to JSON string
+                        var jsonResult = JsonConvert.SerializeObject(dataTable);
+                        return Ok(jsonResult);
+                    }
+                    else
+                    {
+                        return NotFound("No data found.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return 500 status code in case of errors
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
 
 
 

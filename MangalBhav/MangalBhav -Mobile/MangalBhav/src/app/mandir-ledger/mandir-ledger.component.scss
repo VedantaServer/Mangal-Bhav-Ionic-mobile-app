@@ -247,3 +247,32 @@ ion-toolbar { --background: transparent; --border-width: 0; --padding-start:0; -
   &:active { transform:scale(0.97); }
   &:disabled { opacity:0.5; cursor:not-allowed; }
 }
+
+
+/* ── Bank Details Card ───────────────────────── */
+.ml-bank-card {
+  margin: 12px 16px 0;
+  background: #f0f9f0;
+  border: 1px solid #b7dfb7;
+  border-radius: 14px;
+  padding: 14px;
+}
+.ml-bank-loading {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #666;
+}
+.ml-bank-header {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700;
+  color: #2d7a2d; text-transform: uppercase;
+  letter-spacing: .5px; margin-bottom: 10px;
+}
+.ml-bank-icon { font-size: 15px; }
+.ml-bank-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; border-bottom: 1px solid #d4edcf;
+  &:last-child { border-bottom: none; }
+}
+.ml-bank-label { font-size: 12px; color: #666; }
+.ml-bank-val   { font-size: 13px; color: #1a1a1a; }
+.upi-val       { color: #6a1b9a; }

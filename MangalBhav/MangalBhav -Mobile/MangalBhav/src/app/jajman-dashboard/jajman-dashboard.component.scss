@@ -1281,3 +1281,69 @@ ion-fab-button.fab-item {
   justify-content: center;
   border: 1.5px solid #fff;
 }
+
+
+.referral-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #fff8ec, #fff0cc);
+  border: 1.5px solid #e8c97a;
+  border-radius: 14px;
+  padding: 20px 10px;
+  margin: 0 16px 16px;
+  cursor: pointer;
+
+  .referral-strip-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .referral-strip-icon {
+      font-size: 22px;
+    }
+
+    .referral-strip-title {
+      font-size: 11px;
+      color: #a07030;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: block;
+    }
+
+    .referral-strip-code {
+      font-size: 17px;
+      font-weight: 800;
+      color: #c17f24;
+      letter-spacing: 2px;
+    }
+  }
+
+  .referral-strip-actions {
+    display: flex;
+    gap: 8px;
+
+    .referral-copy-btn,
+    .referral-wa-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .referral-copy-btn {
+      background: #fff3d6;
+      color: #c17f24;
+    }
+
+    .referral-wa-btn {
+      background: #25D366;
+      color: white;
+    }
+  }
+}

@@ -1,14 +1,14 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Data.SqlTypes;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
-using FaceUPAI.Models;
-using FaceUPAI.DataAccessService;
 using FaceUPAI.Controllers.Common;
+using FaceUPAI.DataAccessService;
+using FaceUPAI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlTypes;
 
 namespace FaceUPAI.API
 {
@@ -23,12 +23,12 @@ namespace FaceUPAI.API
 	throw new NotImplementedException();
 	}
 		/// <summary>
-		/// Saves a record to the UserReferralCodes table.
+		/// Saves a record to the UserReferralCode table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("UserReferralCodesInsert")]
-		public  IActionResult UserReferralCodesInsert([FromBody] UserReferralCode userReferralCode)
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeInsert")]
+		public  IActionResult UserReferralCodeInsert([FromBody] UserReferralCode userReferralCode)
 		{
 			return ApiHandler.Handle(() =>
 	{
@@ -38,57 +38,81 @@ namespace FaceUPAI.API
 				new SqlParameter("@TenantID", userReferralCode.TenantID == 0 ? SqlInt32.Null : userReferralCode.TenantID ),
 				new SqlParameter("@UserID", userReferralCode.UserID == 0 ? SqlInt32.Null : userReferralCode.UserID ),
 				new SqlParameter("@ReferralCode", userReferralCode.ReferralCode),
-				new SqlParameter("@DateAdded", userReferralCode.DateAdded == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.DateAdded )
+				new SqlParameter("@IsActive", userReferralCode.IsActive),
+				new SqlParameter("@CreatedDate", userReferralCode.CreatedDate == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.CreatedDate ),
+				new SqlParameter("@ModifiedDate", userReferralCode.ModifiedDate == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.ModifiedDate )
 			};
 
-			userReferralCode.UserReferralCodeID = Convert.ToInt32(DataAccess.ExecuteScalar(CommandType.StoredProcedure, "UserReferralCodesInsert", parameters));
+			userReferralCode.UserReferralCodeID = Convert.ToInt32(DataAccess.ExecuteScalar(CommandType.StoredProcedure, "UserReferralCodeInsert", parameters));
 			return Ok(new {UserReferralCodeID=userReferralCode.UserReferralCodeID});
 			}, this);
 		}
 
 		/// <summary>
-		/// Updates a record in the UserReferralCodes table.
+		/// Updates a record in the UserReferralCode table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("UserReferralCodesUpdate")]
-		public  IActionResult UserReferralCodesUpdate([FromBody] UserReferralCode userReferralCode)
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeUpdate")]
+		public  IActionResult UserReferralCodeUpdate([FromBody] UserReferralCode userReferralCode)
 		{
 			return ApiHandler.Handle(() =>
 	{
 
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter("@TenantID", userReferralCode.TenantID == 0 ? SqlInt32.Null : userReferralCode.TenantID ),
 				new SqlParameter("@UserReferralCodeID", userReferralCode.UserReferralCodeID == 0 ? SqlInt32.Null : userReferralCode.UserReferralCodeID ),
+				new SqlParameter("@TenantID", userReferralCode.TenantID == 0 ? SqlInt32.Null : userReferralCode.TenantID ),
 				new SqlParameter("@UserID", userReferralCode.UserID == 0 ? SqlInt32.Null : userReferralCode.UserID ),
 				new SqlParameter("@ReferralCode", userReferralCode.ReferralCode),
-				new SqlParameter("@DateAdded", userReferralCode.DateAdded == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.DateAdded )
+				new SqlParameter("@IsActive", userReferralCode.IsActive),
+				new SqlParameter("@CreatedDate", userReferralCode.CreatedDate == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.CreatedDate ),
+				new SqlParameter("@ModifiedDate", userReferralCode.ModifiedDate == DateTime.MinValue ? SqlDateTime.Null : userReferralCode.ModifiedDate )
 			};
 
-			 var UserReferralCodeID = Convert.ToInt32(DataAccess.ExecuteNonQuery(CommandType.StoredProcedure, "UserReferralCodesUpdate", parameters));
+			 var UserReferralCodeID = Convert.ToInt32(DataAccess.ExecuteNonQuery(CommandType.StoredProcedure, "UserReferralCodeUpdate", parameters));
 			return Ok(new {UserReferralCodeID =UserReferralCodeID});
 			}, this);
 		}
 
-	
 		/// <summary>
-		/// Selects a single record from the UserReferralCodes table.
+		/// Deletes a record from the UserReferralCode table by its primary key.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("UserReferralCodeSelect")]
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeDelete")]
+		public  IActionResult UserReferralCodeDelete(int userReferralCodeID, int tenantID)
+		{
+			return ApiHandler.Handle(() =>
+	{
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter("@UserReferralCodeID", userReferralCodeID)
+
+				,new SqlParameter("@TenantID", tenantID)			};
+
+			 var userReferralCodeDeletedID = Convert.ToInt32(DataAccess.ExecuteScalar(CommandType.StoredProcedure, "UserReferralCodeDelete", parameters));
+			return Ok(new {UserReferralCodeID =userReferralCodeDeletedID});
+			}, this);
+		}
+
+		/// <summary>
+		/// Selects a single record from the UserReferralCode table.
+		/// </summary>
+	[HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeSelect")]
 		public IActionResult UserReferralCodeSelect(int userReferralCodeID,int tenantID)
 		{
 			return ApiHandler.Handle(() =>
 	{
 			SqlParameter[] parameters = new SqlParameter[]
 			{
-				new SqlParameter("@TenantID", tenantID)
+				new SqlParameter("@UserReferralCodeID", userReferralCodeID)
 ,				new SqlParameter("@TenantID", tenantID)
 			};
 
-			using (SqlDataReader dataReader = DataAccess.ExecuteReader(CommandType.StoredProcedure, "UserReferralCodesSelect", parameters))
+			using (SqlDataReader dataReader = DataAccess.ExecuteReader(CommandType.StoredProcedure, "UserReferralCodeSelect", parameters))
 			{
 				List<UserReferralCode> UserReferralCodeList = new List<UserReferralCode>();
 				while (dataReader.Read())
@@ -103,11 +127,11 @@ namespace FaceUPAI.API
 		}
 
 		/// <summary>
-		/// Selects a single record from the UserReferralCodes table.
+		/// Selects a single record from the UserReferralCode table.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("UserReferralCodeSelectAll")]
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeSelectAll")]
 		public IActionResult UserReferralCodeSelectAll(int tenantID){
 			return ApiHandler.Handle(() =>
 	{
@@ -115,7 +139,7 @@ namespace FaceUPAI.API
 			{
 				new SqlParameter("@TenantID", tenantID)
 			};
-			using (SqlDataReader dataReader = DataAccess.ExecuteReader(CommandType.StoredProcedure, "UserReferralCodesSelectAll", parameters))
+			using (SqlDataReader dataReader = DataAccess.ExecuteReader(CommandType.StoredProcedure, "UserReferralCodeSelectAll", parameters))
 			{
 				List<UserReferralCode> UserReferralCodeList = new List<UserReferralCode>();
 				while (dataReader.Read())
@@ -130,12 +154,12 @@ namespace FaceUPAI.API
 		}
 
 		/// <summary>
-		/// Selects all query records from the UserReferralCodes table by a ak=ll query.
+		/// Selects all query records from the UserReferralCode table by a ak=ll query.
 		/// </summary>
 	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("UserReferralCodesSelectByQuery")]
-		public  IActionResult UserReferralCodesSelectByQuery(int tenantID,int schoolID,string Query)
+        [EnableCors("AllowAll")]
+        [Route("UserReferralCodeSelectByQuery")]
+		public  IActionResult UserReferralCodeSelectByQuery(int tenantID,int schoolID,string Query)
 		{
 			return ApiHandler.Handle(() =>
 	{
@@ -145,7 +169,7 @@ namespace FaceUPAI.API
 
 			};
 
-			using (SqlDataReader dataReader = DataAccess.ExecuteReader( System.Data.CommandType.StoredProcedure, "UserReferralCodesSelectByQuery", parameters))
+			using (SqlDataReader dataReader = DataAccess.ExecuteReader( System.Data.CommandType.StoredProcedure, "UserReferralCodeSelectByQuery", parameters))
 			{
 				List<UserReferralCode> UserReferralCodeList = new List<UserReferralCode>();
 				while (dataReader.Read())
@@ -160,16 +184,18 @@ namespace FaceUPAI.API
 		}
 
 		/// <summary>
-		/// Creates a new instance of the UserReferralCodes class and populates it with data from the specified SqlDataReader.
+		/// Creates a new instance of the UserReferralCode class and populates it with data from the specified SqlDataReader.
 		/// </summary>
 		public  UserReferralCode MakeUserReferralCode(SqlDataReader dataReader)
 		{
 			UserReferralCode userReferralCode = new UserReferralCode();
-			userReferralCode.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
 			userReferralCode.UserReferralCodeID = DataAccess.GetInt32(dataReader, "UserReferralCodeID", 0);
+			userReferralCode.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
 			userReferralCode.UserID = DataAccess.GetInt32(dataReader, "UserID", 0);
 			userReferralCode.ReferralCode = DataAccess.GetString(dataReader, "ReferralCode", String.Empty);
-			userReferralCode.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
+			userReferralCode.IsActive = DataAccess.GetBoolean(dataReader, "IsActive", false);
+			userReferralCode.CreatedDate = DataAccess.GetDateTime(dataReader, "CreatedDate", DateTime.MinValue);
+			userReferralCode.ModifiedDate = DataAccess.GetDateTime(dataReader, "ModifiedDate", DateTime.MinValue);
 
 			return userReferralCode;
 		}

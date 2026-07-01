@@ -1,0 +1,204 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Daily Panchang</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Search -->
+
+  <ion-card>
+
+    <ion-card-header>
+      <ion-card-title>Search Panchang</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">Panchang Date</ion-label>
+
+        <ion-datetime presentation="date" [(ngModel)]="searchDate">
+        </ion-datetime>
+
+      </ion-item>
+
+      <ion-button expand="block" color="primary" (click)="loadDailyPanchang()">
+
+        Search
+
+      </ion-button>
+
+    </ion-card-content>
+
+  </ion-card>
+
+
+
+  <!-- List -->
+
+  <ion-card>
+
+    <ion-card-header>
+
+      <ion-card-title>
+
+        Records
+
+      </ion-card-title>
+
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-button color="success" expand="block" (click)="addNew()">
+
+        Add New
+
+      </ion-button>
+
+      <ion-list>
+
+        <ion-item button *ngFor="let item of DailyPanchangList" (click)="editDailyPanchang(item)">
+
+          <ion-label>
+
+            <h2>{{item.SectionHeading}}</h2>
+
+            <p>{{item.Key1}}</p>
+
+            <p>{{item.Value1}}</p>
+
+            <p>{{item.Language}}</p>
+
+          </ion-label>
+
+          <ion-icon slot="end" name="create-outline">
+          </ion-icon>
+
+        </ion-item>
+
+      </ion-list>
+
+    </ion-card-content>
+
+  </ion-card>
+
+
+
+  <!-- Form -->
+
+  <ion-card>
+
+    <ion-card-header>
+
+      <ion-card-title>
+
+        {{isEditMode ? 'Update Panchang' : 'Add Panchang'}}
+
+      </ion-card-title>
+
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">
+          Section Heading
+        </ion-label>
+
+        <ion-select interface="popover" [(ngModel)]="dailyPanchang.SectionHeading" placeholder="Select Section">
+
+          <ion-select-option *ngFor="let item of sectionHeadingList" [value]="item">
+
+            {{item}}
+
+          </ion-select-option>
+
+        </ion-select>
+
+      </ion-item>
+
+
+      <ion-item>
+
+        <ion-label position="stacked">
+
+          Key
+
+        </ion-label>
+
+        <ion-input [(ngModel)]="dailyPanchang.Key1">
+        </ion-input>
+
+      </ion-item>
+
+
+      <ion-item>
+
+        <ion-label position="stacked">
+
+          Value
+
+        </ion-label>
+
+        <ion-textarea autoGrow="true" rows="3" [(ngModel)]="dailyPanchang.Value1">
+        </ion-textarea>
+
+      </ion-item>
+
+
+      <ion-item>
+
+        <ion-label position="stacked">
+
+          Panchang Date
+
+        </ion-label>
+
+        <ion-datetime presentation="date" [(ngModel)]="dailyPanchang.PanchangDate">
+        </ion-datetime>
+
+      </ion-item>
+
+
+      <ion-item>
+
+        <ion-label position="stacked">
+
+          Language
+
+        </ion-label>
+
+        <ion-input [(ngModel)]="dailyPanchang.Language">
+        </ion-input>
+
+      </ion-item>
+
+
+      <ion-item>
+
+        <ion-label position="stacked">
+
+          Location
+
+        </ion-label>
+
+        <ion-input [(ngModel)]="dailyPanchang.Location">
+        </ion-input>
+
+      </ion-item>
+
+
+      <ion-button expand="block" color="primary" (click)="saveDailyPanchang()">
+
+        {{isEditMode ? 'Update' : 'Save'}}
+
+      </ion-button>
+
+    </ion-card-content>
+
+  </ion-card>
+
+</ion-content>

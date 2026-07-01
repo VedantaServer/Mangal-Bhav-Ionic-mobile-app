@@ -72,6 +72,8 @@ export class JajmanDashboardComponent implements OnInit {
   currentMobileAppVersion: string = '';
   mobileAppVersion: any;
   unreadCount: any;
+  FullName: any;
+  referralCode: string = '';
 
   constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
     public api: Api, private router: Router,
@@ -151,10 +153,12 @@ export class JajmanDashboardComponent implements OnInit {
 
     this.userDetails = await this.storage.get("account");
 
-  
+    this.FullName = this.userDetails.FullName;
+
     this.fetchUnreadCount();
     this.language = this.userDetails.Languages;
     this.checkMobileAppVersion();
+    this.loadReferralCode();
     // console.log(this.userDetails);
     console.log('IsUserLoggedIn:', await this.storage.get("IsUserLoggedIn"));
     console.log('Role:', this.userDetails?.Role);
@@ -276,11 +280,27 @@ export class JajmanDashboardComponent implements OnInit {
 
 
   fetchUnreadCount() {
-    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' +Number(this.userDetails.UserID), null)
+    this.apinu.postUrlData('GetUnreadNotificationCount?userID=' + Number(this.userDetails.UserID), null)
       .subscribe((res: any) => {
         this.unreadCount = res[0]?.UnreadCount ?? 0;
       });
   }
+
+
+  async shareReferralOnWhatsApp(event: Event) {
+    event.stopPropagation();   // prevent navigating to profile
+    const name = this.FullName || 'A friend';
+    const message =
+      `🙏 *Jai Shri Ram* 🙏\n\n` +
+      `${name} ne aapko *Mangal Bhav* par aane ka nimantran diya hai!\n\n` +
+      `Sign up karte waqt yeh referral code use karein:\n` +
+      `🎟️ *${this.referralCode}*\n\n` +
+      `📱 Download: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n\n` +
+      `✦ ॐ Mangal Bhav ✦`;
+
+    window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');
+  }
+
 
   checkMobileAppVersion() {
     this.currentMobileAppVersion = this.api.appVersion;
@@ -345,6 +365,31 @@ export class JajmanDashboardComponent implements OnInit {
     return 0; // equal
   }
 
+
+  loadReferralCode() {
+    this.apinu.postUrlData(
+      `UserReferralCodeSelectByQuery?Query=UserID=${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.UserReferralCodeList?.length > 0) {
+        this.referralCode = res.UserReferralCodeList[0].ReferralCode;
+      }
+    });
+  }
+  
+  async copyReferralCode(event: Event) {
+    event.stopPropagation();   // prevent navigating to profile
+    try {
+      await navigator.clipboard.writeText(this.referralCode);
+      // reuse your existing alertCtrl for a quick toast
+      const alert = await this.alertCtrl.create({
+        message: '✅ Referral code copied!',
+        duration: 1500,
+      } as any);
+      alert.present();
+    } catch { }
+  }
+  
 
 
 }

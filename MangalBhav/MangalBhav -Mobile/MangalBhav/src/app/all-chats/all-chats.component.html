@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="header-inner">
-      <div class="nav-logo"     routerLink="/open-community-page"    >
+      <div class="nav-logo" routerLink="/open-community-page">
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">
           <div class="nav-logo-text">Mangal Bhav</div>
@@ -16,7 +16,8 @@
 <ion-content [fullscreen]="true">
   <div class="page-wrapper">
 
-    <div class="section-label">💬 My Chats (<span *ngIf="isSupportPerson">🛡️ Support Admin</span> <span  *ngIf="isAskPandit">🕉️ Ask Pandit Admin</span>)</div> 
+    <div class="section-label">💬 My Chats (<span *ngIf="isSupportPerson">🛡️ Support Admin</span> <span
+        *ngIf="isAskPandit">🕉️ Ask Pandit Admin</span>)</div>
 
     <!-- ══════════════════════════════════════
          SUPPORT PERSON — sees user inbox
@@ -35,8 +36,7 @@
       </div>
 
       <div class="chat-list" *ngIf="!inboxLoading && supportInbox.length > 0">
-        <div class="chat-card" *ngFor="let u of supportInbox"
-          (click)="openSupportChat(u.UserID)">
+        <div class="chat-card" *ngFor="let u of supportInbox" (click)="openSupportChat(u.UserID)">
           <div class="chat-avatar support">
             <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
           </div>
@@ -70,8 +70,7 @@
       </div>
 
       <div class="chat-list" *ngIf="!inboxLoading && askPanditInbox.length > 0">
-        <div class="chat-card" *ngFor="let u of askPanditInbox"
-          (click)="openAskPanditChat(u.UserID)">
+        <div class="chat-card" *ngFor="let u of askPanditInbox" (click)="openAskPanditChat(u.UserID)">
           <div class="chat-avatar pandit">
             <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
           </div>
@@ -154,6 +153,34 @@
       </div>
     </div>
 
+    <!-- ══ ONE TO ONE PANDIT CHATS ══ -->
+    <ng-container *ngIf="!isSupportPerson && !isAskPandit">
+      <div class="section-label" *ngIf="oneToOneChats.length > 0">🕉️ Pandit Conversations</div>
+
+      <div class="loading-row" *ngIf="oneToOneLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Loading conversations…</span>
+      </div>
+
+      <div class="chat-list" *ngIf="!oneToOneLoading && oneToOneChats.length > 0">
+        <div class="chat-card" *ngFor="let c of oneToOneChats" (click)="openOneToOneChat(c.UserID, c.DisplayName)">
+          <div class="chat-avatar pandit">
+            <span>{{ c.DisplayName?.charAt(0)?.toUpperCase() || '🙏' }}</span>
+          </div>
+          <div class="chat-info">
+            <div class="chat-top-row">
+              <span class="chat-name">{{ c.DisplayName }}</span>
+              <span class="chat-time">{{ c.LastMessageTime | date: 'hh:mm a' }}</span>
+            </div>
+            <div class="chat-bottom-row">
+              <span class="chat-preview">{{ c.LastMessage || 'Tap to continue' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+
     <div class="page-divider">✦ ॐ ✦ ॐ ✦</div>
   </div>
 </ion-content>
@@ -167,4 +194,3 @@
 <app-common-bottom-tabs
   *ngIf="userDetails?.Role != 'PANDIT'">
 </app-common-bottom-tabs> -->
-

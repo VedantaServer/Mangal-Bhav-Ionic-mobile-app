@@ -374,3 +374,217 @@ ion-content {
         cursor: not-allowed;
     }
 }
+
+
+/* ══ CHAT TERMS OVERLAY ══ */
+.chat-terms-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .chat-terms-card {
+    width: 100%;
+    max-height: 92vh;
+    background: #fffbf4;
+    border-radius: 24px 24px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 -8px 32px rgba(184, 92, 0, 0.18);
+  }
+  
+  /* Header */
+  .chat-terms-header {
+    padding: 20px 20px 14px;
+    background: linear-gradient(135deg, #b85c00 0%, #e07b00 100%);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  
+  .chat-terms-om {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+  
+  .chat-terms-title {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  
+  .chat-terms-sub {
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 12.5px;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  .chat-terms-sub strong {
+    color: #fff;
+  }
+  
+  /* Scrollable body */
+  .chat-terms-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .chat-terms-section {
+    background: #fff;
+    border: 1px solid #f0e0c8;
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  
+  .chat-terms-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #7a3e00;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .chat-terms-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #e07b00;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  
+  .chat-terms-list {
+    margin: 0;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  
+    li {
+      font-size: 12.5px;
+      color: #4a3000;
+      line-height: 1.5;
+    }
+  }
+  
+  .chat-terms-acknowledgement {
+    background: #fff8ee;
+    border: 1.5px solid #e07b00;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .chat-terms-ack-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .chat-terms-acknowledgement p {
+    font-size: 12px;
+    color: #5c3200;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  .chat-terms-acknowledgement strong {
+    color: #b85c00;
+  }
+  
+  /* Footer */
+  .chat-terms-footer {
+    flex-shrink: 0;
+    padding: 14px 18px 28px;
+    background: #fff;
+    border-top: 1px solid #f0e0c8;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .chat-terms-check-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a2800;
+  }
+  
+  .chat-terms-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #b85c00;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #fff;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #fff;
+  
+    &.checked {
+      background: #b85c00;
+      border-color: #b85c00;
+    }
+  }
+  
+  .chat-terms-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-terms-decline-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1.5px solid #ccc;
+    background: #fff;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .chat-terms-accept-btn {
+    flex: 2;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #ccc;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: not-allowed;
+    transition: all 0.25s ease;
+  
+    &.enabled {
+      background: linear-gradient(135deg, #b85c00, #e07b00);
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(184, 92, 0, 0.35);
+    }
+  }

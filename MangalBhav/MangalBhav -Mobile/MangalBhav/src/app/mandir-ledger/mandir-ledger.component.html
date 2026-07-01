@@ -1,22 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <div class="inner-header">
-      <button class="inner-back-btn"
-        (click)="currentSection === 'ledger'   ? backToPending()
+      <button class="inner-back-btn" (click)="currentSection === 'ledger'   ? backToPending()
                : currentSection === 'payEntry'  ? cancelPayEntry()
                : routerCtrl.back()">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
       <div class="inner-title-block">
         <div class="inner-title">
-          {{ currentSection === 'ledger'   ? (selectedMandir?.MandirName || 'Ledger')
-           : currentSection === 'payEntry' ? 'Pay to Mandir'
-           :                                 'Pending Dues' }}
+          {{ currentSection === 'ledger' ? (selectedMandir?.MandirName || 'Ledger')
+          : currentSection === 'payEntry' ? 'Pay to Mandir'
+          : 'Pending Dues' }}
         </div>
         <div class="inner-title-sub">
-          {{ currentSection === 'ledger'   ? '✦ Unpaid Entries ✦'
-           : currentSection === 'payEntry' ? '✦ Record Payment ✦'
-           :                                 '✦ Mandirs with Due Amounts ✦' }}
+          {{ currentSection === 'ledger' ? '✦ Unpaid Entries ✦'
+          : currentSection === 'payEntry' ? '✦ Record Payment ✦'
+          : '✦ Mandirs with Due Amounts ✦' }}
         </div>
       </div>
       <div class="inner-logo">
@@ -53,7 +52,8 @@
       </div>
 
       <div class="ml-results-meta" *ngIf="pendingMandirList.length > 0">
-        <span class="ml-results-count">{{ pendingMandirList.length }} mandir{{ pendingMandirList.length > 1 ? 's' : '' }}</span>
+        <span class="ml-results-count">{{ pendingMandirList.length }} mandir{{ pendingMandirList.length > 1 ? 's' : ''
+          }}</span>
         <span class="ml-results-query">with pending dues</span>
       </div>
       <div class="ml-section-label" *ngIf="pendingMandirList.length > 0">Mandirs</div>
@@ -188,7 +188,8 @@
       </div>
       <div class="ml-pay-hint" *ngIf="payForm.Amount && payForm.Amount != totalDue">
         Current due: ₹{{ totalDue | number:'1.0-0' }}
-        <span *ngIf="payForm.Amount < totalDue"> · ₹{{ (totalDue - payForm.Amount) | number:'1.0-0' }} will remain</span>
+        <span *ngIf="payForm.Amount < totalDue"> · ₹{{ (totalDue - payForm.Amount) | number:'1.0-0' }} will
+          remain</span>
         <span *ngIf="payForm.Amount > totalDue"> · ₹{{ (payForm.Amount - totalDue) | number:'1.0-0' }} excess</span>
       </div>
 
@@ -197,14 +198,16 @@
       <input class="mfd-text-input" type="text" [(ngModel)]="payForm.UpdatedByUser" placeholder="Who is making this payment?" /> -->
 
       <!-- Payment Reference -->
-      <div class="ml-section-label" style="padding-top:14px">Payment Reference <span class="opt-label">(Optional)</span></div>
-      <input class="mfd-text-input" type="text" [(ngModel)]="payForm.PaymentReferenceNo" placeholder="UPI ref, cheque no., etc." />
+      <div class="ml-section-label" style="padding-top:14px">Payment Reference <span class="opt-label">(Optional)</span>
+      </div>
+      <input class="mfd-text-input" type="text" [(ngModel)]="payForm.PaymentReferenceNo"
+        placeholder="UPI ref, cheque no., etc." />
 
       <!-- Remarks -->
       <div class="ml-section-label" style="padding-top:14px">Remarks <span class="opt-label">(Optional)</span></div>
       <div class="mfd-wish-wrap">
-        <textarea class="mfd-wish-input" [(ngModel)]="payForm.Remarks"
-          placeholder="Any notes about this payment…" rows="2" maxlength="300"></textarea>
+        <textarea class="mfd-wish-input" [(ngModel)]="payForm.Remarks" placeholder="Any notes about this payment…"
+          rows="2" maxlength="300"></textarea>
         <div class="mfd-wish-count">{{ payForm.Remarks.length || 0 }}/300</div>
       </div>
 
@@ -227,6 +230,47 @@
           <span>By</span>
           <strong>{{ payForm.UpdatedByUser || '—' }}</strong>
         </div>
+      </div>
+
+      <!-- Bank Details -->
+      <div class="ml-bank-card" *ngIf="isLoadingBank || bankDetails">
+
+        <div class="ml-bank-loading" *ngIf="isLoadingBank">
+          <ion-spinner name="dots" color="warning"></ion-spinner>
+          <span>Fetching bank details…</span>
+        </div>
+
+        <ng-container *ngIf="!isLoadingBank && bankDetails">
+          <div class="ml-bank-header">
+            <ion-icon name="business-outline" class="ml-bank-icon"></ion-icon>
+            <span>Bank Details</span>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.BankName">
+            <span class="ml-bank-label">Bank</span>
+            <strong class="ml-bank-val">{{ bankDetails.BankName }}</strong>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.AccountHolderName">
+            <span class="ml-bank-label">Account Name</span>
+            <strong class="ml-bank-val">{{ bankDetails.AccountHolderName }}</strong>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.AccountNumber">
+            <span class="ml-bank-label">Account No.</span>
+            <strong class="ml-bank-val">{{ bankDetails.AccountNumber }}</strong>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.IFSCCode">
+            <span class="ml-bank-label">IFSC</span>
+            <strong class="ml-bank-val">{{ bankDetails.IFSCCode }}</strong>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.UPIId">
+            <span class="ml-bank-label">UPI</span>
+            <strong class="ml-bank-val upi-val">{{ bankDetails.UPIId }}</strong>
+          </div>
+          <div class="ml-bank-row" *ngIf="bankDetails.BranchName">
+            <span class="ml-bank-label">Branch</span>
+            <strong class="ml-bank-val">{{ bankDetails.BranchName }}</strong>
+          </div>
+        </ng-container>
+
       </div>
 
     </div>

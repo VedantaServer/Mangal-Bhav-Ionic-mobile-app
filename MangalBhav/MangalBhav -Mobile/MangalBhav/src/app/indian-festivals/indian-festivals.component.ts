@@ -95,7 +95,7 @@ export class IndianFestivalsComponent implements OnInit {
     const account = await this.storage.get('account');
     this.language = account?.Languages || 'English';
 
-    this.apinu.postUrlData(`FestivalSelectAll?tenantID=1`, null)
+    this.apinu.postUrlData(`FestivalsSelectByQuery?Query=CanonicalURL = 'Festival'`, null)
       .subscribe((res: any) => {
         this.festivalList = res.FestivalList
           .sort((a: any, b: any) =>

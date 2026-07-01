@@ -466,6 +466,7 @@ export class LoginPage {
     if (this.loginUsername.toString() == "8796917944") {
       await this.storage.set('adminloggedin', 'true');
       this.routerCtrl.navigateForward('/admindashboard');
+      return;
     }
 
     this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)

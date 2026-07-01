@@ -238,3 +238,72 @@ ion-content {
     width: 36px;
   }
 }
+
+
+/* ── Pay Popup ───────────────────────────────────────── */
+.pay-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 100;
+}
+
+.pay-popup {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 101;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 0 0 env(safe-area-inset-bottom);
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 -4px 24px rgba(0,0,0,.18);
+}
+
+.popup-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid #f0e6d3;
+  background: #fff8f0;
+  border-radius: 20px 20px 0 0;
+}
+.popup-sub   { font-size: 11px; color: #b5631a; margin: 0; font-weight: 600; }
+.popup-title { font-size: 17px; font-weight: 700; color: #2d1a00; margin: 2px 0; }
+.popup-phone { font-size: 13px; color: #666; margin: 0; }
+.close-btn   { --color: #555; margin: -4px -8px 0 0; }
+
+.popup-form {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.field-wrap label {
+  font-size: 12px; font-weight: 600; color: #8b5e2e;
+  display: block; margin-bottom: 4px;
+}
+.req { color: #e53e3e; }
+.field-input {
+  --background: #f9f4ee;
+  --border-radius: 10px;
+  --padding-start: 12px;
+  border: 1px solid #e8d5bb;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.submit-btn {
+  --background: #c97d2e;
+  --background-activated: #a8621e;
+  --border-radius: 12px;
+  font-weight: 700; margin-top: 4px;
+}
+
+/* transaction history */
+.tx-section  { padding: 0 16px 24px; }
+.tx-heading  { font-size: 13px; font-weight: 700; color: #8b5e2e; margin-bottom: 10px; }
+.tx-loading  { text-align: center; padding: 16px; }
+.tx-empty    { font-size: 13px; color: #aaa; text-align: center; padding: 12px 0; }
+.tx-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid #f5ece0;
+}
+.tx-ref    { font-size: 13px; font-weight: 600; color: #333; margin: 0; }
+.tx-date   { font-size: 11px; color: #999; margin: 2px 0 0; }
+.tx-amount { font-size: 15px; font-weight: 700; color: #c97d2e; }

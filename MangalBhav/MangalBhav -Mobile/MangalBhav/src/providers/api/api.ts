@@ -275,7 +275,7 @@ export class Api {
   public tenantID = '18';
   //public resourcePath =this.root +'/Resources/SchoolImages';
   public SchoolName = 'The Building and Other Construction Workers Welfare Board ';
-  public appVersion = '1.0.0'
+  public appVersion = '2.0.1'
   // packagename : 
 
 

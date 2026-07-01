@@ -60,10 +60,10 @@ export class CommonBottomTabsComponent implements OnInit {
       this.fromPath = this.currentPath;   // ← both set to current
       this.animateBump(idx);              // ← force animate on load
 
-      console.log('navWidth', this.navWidth);
-      console.log('currentUrl', this.currentUrl);
-      console.log('activeIndex', this.getActiveIndex());
-      console.log('path', this.currentPath);
+     // console.log('navWidth', this.navWidth);
+     // console.log('currentUrl', this.currentUrl);
+     // console.log('activeIndex', this.getActiveIndex());
+     // console.log('path', this.currentPath);
     }, 100);                              // ← slight delay ensures navWidth is real
 
     this.router.events.pipe(
@@ -176,7 +176,7 @@ export class CommonBottomTabsComponent implements OnInit {
   }
 
   private getActiveIndex(): number {
-    console.log('currentUrl:', this.currentUrl); // ← add this temporarily
+   // console.log('currentUrl:', this.currentUrl); // ← add this temporarily
     if (this.currentUrl.includes('loggedin-home')) return 0;
     if (this.currentUrl.includes('login') && this.currentUrl.includes('from=pooja')) return 0;
     if (this.currentUrl.includes('openfindmandir')) return 1;

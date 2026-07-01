@@ -11,8 +11,17 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 import { IonContent } from '@ionic/angular';
-import { ViewChild } from '@angular/core';
-
+import { ViewChild, ElementRef } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { FileOpener } from '@capacitor-community/file-opener';
 interface SevaItem { icon: string; name: string; sound: string; count: number; toast: string; }
 interface PanchangData { label: string; value: string; sub: string; auspicious?: boolean; avoid?: boolean; }
 interface UpcomingEvent { day: string; month: string; title: string; time: string; location: string; free: boolean; }
@@ -26,16 +35,16 @@ interface AartiStep { icon: string; label: string; sub: string; sub2?: string; }
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonicModule,
-     TabscommonheaderComponent,
-     PanditjibottomtabsComponent, CommonBottomTabsComponent
+    TabscommonheaderComponent,
+    PanditjibottomtabsComponent, CommonBottomTabsComponent
   ]
 })
 export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-
+  @ViewChild('panchangCapture', { static: true }) panchangCapture!: ElementRef<HTMLElement>;
   @ViewChild('pageContent', { static: false })
   pageContent!: IonContent;
-
+  panchangHtml!: SafeHtml;
   userDetails: any;
   todayFestivalsLabel = '🪔 आज के त्यौहार';
   userLoggedIn = false;
@@ -189,12 +198,13 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
   familyAartiCurrentAudio: HTMLAudioElement | null = null;
   familyAartiPlayingSlot: string | null = null;
   familyAartiLoadingSlot: string | null = null;
+  panchangList: any;
   constructor(
     public api: Api,
-    public routerCtrl: NavController,
+    public routerCtrl: NavController, private cdr: ChangeDetectorRef,
     public apinu: ApiNU,
     private storage: Storage,
-    public toastController: ToastController
+    public toastController: ToastController, private sanitizer: DomSanitizer, public http: HttpClient,
   ) { }
 
   async ngOnInit() {
@@ -206,19 +216,25 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.buildPanchang();
     this.loadMangalMudraPoints();
     this.loadFamilyActiveMandir();
+    this.loadDailyDynamicPanchang()
   }
 
 
+
   loadMangalMudraPoints() {
-    this.apinu.postUrlData(`FamilyMangalMudraPointsSelectByQuery?Query=UserID=${this.userDetails?.UserID}`, null)
-      .subscribe((res: any) => {
-        const result = res.FamilyMangalMudraPointList || [];
-        this.MangalMudraPoints = 0;
-        result.forEach((item: any) => {
-          this.MangalMudraPoints += Number(item.PointsCount || 0);
+
+    if (this.userDetails?.UserID) {
+      this.apinu.postUrlData(`FamilyMangalMudraPointsSelectByQuery?Query=UserID=${this.userDetails?.UserID}`, null)
+        .subscribe((res: any) => {
+          const result = res.FamilyMangalMudraPointList || [];
+          this.MangalMudraPoints = 0;
+          result.forEach((item: any) => {
+            this.MangalMudraPoints += Number(item.PointsCount || 0);
+          });
+          console.log(this.MangalMudraPoints);
         });
-        console.log(this.MangalMudraPoints);
-      });
+    }
+
   }
 
 
@@ -936,7 +952,7 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
         this.familyAartiPlayingSlot = slot;
         this.scrollToMandirHero();
         this.familyAartiCurrentAudio.play().catch(() => {
-          
+
           this.showToast('❌', 'ऑडियो चला नहीं');
           this.familyAartiPlayingSlot = null;
         });
@@ -961,14 +977,14 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.familyAartiPlayingSlot = null;
     this.familyAartiLoadingSlot = null;
   }
- 
+
   async scrollToMandirHero() {
     const el = document.getElementById('mandirHero');
     if (!el) return;
-  
+
     const scrollEl = await this.pageContent.getScrollElement();
     const yOffset = el.offsetTop - 20;
-  
+
     this.pageContent.scrollToPoint(0, yOffset, 600);
   }
 
@@ -978,12 +994,644 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
       fab.style.display = 'none';
     }
   }
-  
+
   ionViewWillLeave() {
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
     if (fab) {
       fab.style.display = 'flex';
     }
   }
+
+
+
+  // loadDailyDynamicPanchang() {
+  //   const today = new Date();
+  //   const formattedDate =
+  //     `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')} 00:00:00.000`;
+
+  //   this.apinu.postUrlData(
+  //     `DailyPanchangSelectByQuery?Query=PanchangDate='${formattedDate}'`,
+  //     null
+  //   ).subscribe((res: any) => {
+  //     this.buildPanchangView(res.DailyPanchangList || []);
+  //   });
+  // }
+
+  // private async buildPanchangView(list: any[]) {
+  //   try {
+  //     const templateHtml = await this.http
+  //       .get('assets/panchang/index.html', { responseType: 'text' })
+  //       .toPromise();
+
+  //     if (!templateHtml) return;
+
+  //     const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
+
+  //     // "SectionHeading|Key1" -> [values]  (array, in case a key repeats e.g. multiple festivals)
+  //     const valueMap = new Map<string, string[]>();
+  //     list.forEach((item: any) => {
+  //       const k = `${(item.SectionHeading || '').trim()}|${(item.Key1 || '').trim()}`;
+  //       const v = item.Value != null ? String(item.Value).trim() : '';
+  //       if (!valueMap.has(k)) valueMap.set(k, []);
+  //       if (v) valueMap.get(k)!.push(v);
+  //     });
+
+  //     // date / location from the first row
+  //     const first = list[0];
+  //     if (first) {
+  //       const dateEl = doc.getElementById('panchang-date');
+  //       const locEl = doc.getElementById('panchang-location');
+  //       if (dateEl && first.PanchangDate) {
+  //         dateEl.textContent = new Date(first.PanchangDate).toLocaleDateString('hi-IN', {
+  //           day: '2-digit', month: 'long', year: 'numeric'
+  //         });
+  //       }
+  //       if (locEl) locEl.textContent = first.Location || '';
+  //     }
+
+  //     // fill every bound field
+  //     doc.querySelectorAll<HTMLElement>('[data-key]').forEach(el => {
+  //       const section = el.getAttribute('data-section') || '';
+  //       const key = el.getAttribute('data-key') || '';
+  //       const values = valueMap.get(`${section}|${key}`);
+  //       el.textContent = values && values.length ? values.join(', ') : '—';
+  //     });
+
+  //     // images in the template are relative to assets/panchang/ — fix so they
+  //     // resolve correctly once this markup is injected into the current page
+  //     doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+  //       const src = img.getAttribute('src') || '';
+  //       if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+  //         img.setAttribute('src', `assets/panchang/${src}`);
+  //       }
+  //     });
+
+  //     // documentElement (not body) so the <style> block in <head> comes along too
+  //     const finalHtml = doc.documentElement.innerHTML;
+  //     this.panchangHtml = this.sanitizer.bypassSecurityTrustHtml(finalHtml);
+
+  //   } catch (err) {
+  //     console.error('Error building panchang view:', err);
+  //   }
+  // }
+
+
+  // private async buildPanchangView(list: any[]) {
+  //   try {
+  //     const templateHtml = await firstValueFrom(
+  //       this.http.get('assets/panchang/index.html', { responseType: 'text' })
+  //     );
+  //     if (!templateHtml) return;
+
+  //     const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
+
+  //     const valueMap = new Map<string, string[]>();
+  //     list.forEach((item: any) => {
+  //       const k = `${(item.SectionHeading || '').trim()}|${(item.Key1 || '').trim()}`;
+  //       const v = item.Value != null ? String(item.Value).trim() : '';
+  //       if (!valueMap.has(k)) valueMap.set(k, []);
+  //       if (v) valueMap.get(k)!.push(v);
+  //     });
+
+  //     const first = list[0];
+  //     if (first) {
+  //       const dateEl = doc.getElementById('panchang-date');
+  //       const locEl = doc.getElementById('panchang-location');
+  //       if (dateEl && first.PanchangDate) {
+  //         dateEl.textContent = new Date(first.PanchangDate).toLocaleDateString('hi-IN', {
+  //           day: '2-digit', month: 'long', year: 'numeric'
+  //         });
+  //       }
+  //       if (locEl) locEl.textContent = first.Location || '';
+  //     }
+
+  //     doc.querySelectorAll<HTMLElement>('[data-key]').forEach(el => {
+  //       const section = el.getAttribute('data-section') || '';
+  //       const key = el.getAttribute('data-key') || '';
+  //       const values = valueMap.get(`${section}|${key}`);
+  //       el.textContent = values && values.length ? values.join(', ') : '—';
+  //     });
+
+  //     doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+  //       const src = img.getAttribute('src') || '';
+  //       if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+  //         img.setAttribute('src', `assets/panchang/${src}`);
+  //       }
+  //     });
+
+  //     const finalHtml = doc.documentElement.innerHTML;
+  //     this.panchangHtml = this.sanitizer.bypassSecurityTrustHtml(finalHtml);
+
+  //     // force the DOM to actually paint the new innerHTML before we move on
+  //     this.cdr.detectChanges();
+
+  //   } catch (err) {
+  //     console.error('Error building panchang view:', err);
+  //   }
+  // }
+
+
+  private async buildPanchangView(list: any[]) {
+    try {
+      const templateHtml = await firstValueFrom(
+        this.http.get('assets/panchang/index.html', { responseType: 'text' })
+      );
+      if (!templateHtml) return;
+
+      const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
+
+      // ── GROUP DATA BY SECTION ──
+      // Map: sectionName -> Array of {key, value} objects
+      const sectionMap = new Map<string, Array<{ key: string, value1: string }>>();
+
+      list.forEach((item: any) => {
+        const section = (item.SectionHeading || '').trim();
+        const key = (item.Key1 || '').trim();
+        const value = item.Value1 != null ? String(item.Value1).trim() : '';
+
+        if (!section) return;
+
+        if (!sectionMap.has(section)) {
+          sectionMap.set(section, []);
+        }
+        if (key || value) { // Include even if key is empty (value-only entries)
+          sectionMap.get(section)!.push({ key, value1: value });
+        }
+      });
+
+      // ── FILL DATE & LOCATION ──
+      const first = list[0];
+      if (first) {
+        const dateEl = doc.getElementById('panchang-date');
+        const locEl = doc.getElementById('panchang-location');
+        if (dateEl && first.PanchangDate) {
+          dateEl.textContent = new Date(first.PanchangDate).toLocaleDateString('hi-IN', {
+            day: '2-digit', month: 'long', year: 'numeric'
+          });
+        }
+        if (locEl) locEl.textContent = first.Location || '';
+      }
+
+      // ── DYNAMICALLY BUILD SECTIONS ──
+      // Find all section containers in the template that have data-section
+      const sectionContainers = doc.querySelectorAll<HTMLElement>('[data-section]');
+
+      sectionContainers.forEach(container => {
+        const sectionName = container.getAttribute('data-section')?.trim();
+        if (!sectionName || !sectionMap.has(sectionName)) return;
+
+        const items = sectionMap.get(sectionName)!;
+
+        // Check if container expects a specific structure
+        // If it has data-key, it's a single field - fill it
+        if (container.hasAttribute('data-key')) {
+          const key = container.getAttribute('data-key')?.trim();
+          const match = items.find(i => i.key === key);
+          container.textContent = match?.value1 || '—';
+          return;
+        }
+
+        // Otherwise, this is a parent container - build rows dynamically
+        // Clear existing content first (remove placeholder rows)
+        const existingRows = container.querySelectorAll('.kv-row, .graha-row, .mini-card');
+        existingRows.forEach(row => row.remove());
+
+        // Build new rows from API data
+        items.forEach(item => {
+          const row = doc.createElement('div');
+          row.className = 'kv-row';
+
+          // Key label
+          const labelDiv = doc.createElement('div');
+          labelDiv.className = 'label';
+          if (item.key) {
+            labelDiv.innerHTML = `<span class="ico">◆</span>${item.key}:`;
+          }
+
+          // Value
+          const valDiv = doc.createElement('div');
+          valDiv.className = 'val';
+          valDiv.textContent = item.value1 || '—';
+
+          row.appendChild(labelDiv);
+          row.appendChild(valDiv);
+          container.appendChild(row);
+        });
+      });
+
+      // ── FIX IMAGE PATHS ──
+      doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+        const src = img.getAttribute('src') || '';
+        if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+          img.setAttribute('src', `assets/panchang/${src}`);
+        }
+      });
+
+      const finalHtml = doc.documentElement.innerHTML;
+      this.panchangHtml = this.sanitizer.bypassSecurityTrustHtml(finalHtml);
+      this.cdr.detectChanges();
+
+    } catch (err) {
+      console.error('Error building panchang view:', err);
+    }
+  }
+
+
+  panchangReady = false;
+  isDownloadingPanchang = false;
+
+  async loadDailyDynamicPanchang() {
+
+    const today = new Date();
+
+    const formatDateOnly = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    const startDate = formatDateOnly(today);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const endDate = formatDateOnly(tomorrow);
+
+    const query =
+      `PanchangDate >= '${startDate} 00:00:00.000' AND PanchangDate < '${endDate} 00:00:00.000'`;
+
+    this.apinu.postUrlData(
+      `DailyPanchangSelectByQuery?Query=${encodeURIComponent(query)}`,
+      null
+    ).subscribe({
+      next: async (res: any) => {
+
+        console.log('[panchang] api response', res);
+
+        const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+        this.panchangList = parsed?.DailyPanchangList || parsed || [];
+
+        console.log('[panchang] stored', this.panchangList.length, 'items');
+
+        try {
+          await this.buildPanchangView(this.panchangList);
+          console.log('[panchang] template built');
+
+          // ✅ just mark ready — no auto-download
+          this.panchangReady = this.panchangList.length > 0;
+
+        } catch (err) {
+          console.error('[panchang] build failed:', err);
+          this.panchangReady = false;
+        }
+      },
+      error: (err: any) => {
+        console.error('[panchang] api fetch failed:', err);
+        this.panchangReady = false;
+      }
+    });
+
+  }
+
+  // ✅ NEW — called from the button
+  downloadTodayPanchang() {
+    if (!this.panchangReady || this.isDownloadingPanchang) return;
+
+    this.isDownloadingPanchang = true;
+
+    setTimeout(async () => {
+      try {
+        await this.downloadPanchangAsImage();
+      } finally {
+        this.isDownloadingPanchang = false;
+      }
+    }, 500);
+  }
+
+
+
+  // ✅ ADD THIS METHOD
+  private waitForDomRender(): Promise<void> {
+    return new Promise(resolve => {
+      // Give Angular time to render the innerHTML binding
+      setTimeout(() => resolve(), 100);
+    });
+  }
+
+
+
+
+  private waitForImagesToLoad(): Promise<void> {
+    const el = this.panchangCapture?.nativeElement;
+    if (!el) return Promise.resolve();
+    const imgs = Array.from(el.querySelectorAll('img'));
+    if (!imgs.length) return Promise.resolve();
+
+    return Promise.all(
+      imgs.map((img: any) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise<void>(resolve => {
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // don't block on a broken image
+          })
+      )
+    ).then(() => undefined);
+  }
+
+  // private async captureCanvas(): Promise<HTMLCanvasElement> {
+  //   // Use document query instead of ViewChild — more reliable for html2canvas
+  //   const el = document.getElementById('panchangCapture') as HTMLElement;
+
+  //   if (!el) {
+  //     throw new Error('Panchang element not found in DOM');
+  //   }
+
+  //   return html2canvas(el, {
+  //     scale: 2,
+  //     useCORS: true,
+  //     allowTaint: false,
+  //     backgroundColor: '#ffffff',
+  //     logging: true,
+  //     // Fix for Ionic scroll containers
+  //     x: el.offsetLeft,
+  //     y: el.offsetTop,
+  //     width: el.offsetWidth,
+  //     height: el.offsetHeight,
+  //   });
+  // }
+  // ── REPLACE your entire capture/download methods with this ──
+
+
+
+  async downloadPanchangAsImage() {
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '0';
+      iframe.style.width = '1200px';
+      iframe.style.height = '1600px'; // temporary — just needs to be tall enough to render
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentDocument || iframe.contentWindow!.document;
+      doc.open();
+      doc.write(this.panchangHtml as string);
+      doc.close();
+
+      // Wait for images
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // ✅ Measure actual rendered content height
+      const sheetEl = doc.querySelector('.sheet') as HTMLElement;
+      const actualHeight = sheetEl
+        ? sheetEl.getBoundingClientRect().height + 48 // + body padding (24px top+bottom from body{padding:24px})
+        : doc.body.scrollHeight;
+
+      // Resize iframe to match actual content before capture
+      iframe.style.height = `${actualHeight}px`;
+
+      const canvas = await html2canvas(doc.body, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: true,
+        width: 1200,
+        height: actualHeight,
+        windowWidth: 1200,
+        windowHeight: actualHeight,
+      });
+
+      document.body.removeChild(iframe);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      await this.saveFile(dataUrl, 'panchang.png', 'image/png');
+
+    } catch (err) {
+      console.error('downloadPanchangAsImage failed:', err);
+      this.showToast('❌', 'इमेज बनाने में त्रुटि');
+    }
+  }
+
+
+  // Converts an asset path into a base64 data URI
+  private async toDataUrl(assetPath: string): Promise<string> {
+    const blob = await this.http.get(assetPath, { responseType: 'blob' }).toPromise();
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob as Blob);
+    });
+  }
+
+  async downloadPanchangAsPdf() {
+    try {
+      const canvas = await this.captureCanvas();
+      const imgData = canvas.toDataURL('image/png');
+
+      // ✅ LANDSCAPE: swap width/height for landscape orientation
+      const isLandscape = true; // or: canvas.width > canvas.height;
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',  // ← CHANGED from 'portrait'
+        unit: 'px',
+        format: isLandscape ? [canvas.height, canvas.width] : [canvas.width, canvas.height]
+        // For landscape: height becomes width, width becomes height
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+
+      const pdfDataUrl = pdf.output('datauristring');
+      await this.saveFile(pdfDataUrl, 'panchang.pdf', 'application/pdf');
+    } catch (err) {
+      console.error('downloadPanchangAsPdf failed:', err);
+      this.showToast('❌', 'PDF बनाने में त्रुटि');
+    }
+  }
+
+  // ✅ KEY FIX: Render panchangHtml in an off-screen iframe, then capture
+
+
+  private async captureCanvas(): Promise<HTMLCanvasElement> {
+    // Find the element that actually contains the rendered panchang HTML
+    // Add id="panchangContent" to your [innerHTML] div in the template
+    const el = document.getElementById('panchangContent') as HTMLElement;
+
+    if (!el) {
+      throw new Error('Panchang content element not found. Ensure #panchangContent exists on [innerHTML] container.');
+    }
+
+    // Ensure element has dimensions
+    if (el.offsetWidth === 0 || el.offsetHeight === 0) {
+      throw new Error('Panchang element has zero dimensions');
+    }
+
+    return html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,  // Allow tainted canvas for local images
+      backgroundColor: '#ffffff',
+      logging: true,
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0,
+    });
+  }
+
+  // Build the same HTML string that you inject via innerHTML
+
+  private async buildPanchangHtmlString(): Promise<string> {
+    const templateHtml = await firstValueFrom(
+      this.http.get('assets/panchang/index.html', { responseType: 'text' })
+    );
+    if (!templateHtml) return '';
+
+
+
+
+
+    // ✅ FIX: Use stored data instead of re-fetching API
+    const list = this.panchangList;
+
+    if (!list || list.length === 0) {
+      console.error('[panchang] No panchang data available. Call loadDailyDynamicPanchang first.');
+      return '';
+    }
+
+    console.log('[panchang] buildPanchangHtmlString using', list.length, 'items');
+
+    // Convert images to base64
+    const [logoBase64, hanumanBase64] = await Promise.all([
+      this.toDataUrl('assets/panchang/images/logo.jpeg').catch(() => ''),
+      this.toDataUrl('assets/panchang/images/hanuman.png').catch(() => '')
+    ]);
+
+    const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
+
+    // Build value map
+    const valueMap = new Map<string, string[]>();
+    list.forEach((item: any) => {
+      const section = (item.SectionHeading || '').trim();
+      const key = (item.Key1 || '').trim();
+      const k = `${section}|${key}`;
+      const v = item.Value1 != null ? String(item.Value1).trim() : '';
+
+      console.log('[panchang] Mapping:', k, '=>', v || '(empty)');
+
+      if (!valueMap.has(k)) valueMap.set(k, []);
+      if (v) valueMap.get(k)!.push(v);
+    });
+
+    const first = list[0];
+    if (first) {
+      const dateEl = doc.getElementById('panchang-date');
+      const locEl = doc.getElementById('panchang-location');
+      if (dateEl && first.PanchangDate) {
+        dateEl.textContent = new Date(first.PanchangDate).toLocaleDateString('hi-IN', {
+          day: '2-digit', month: 'long', year: 'numeric'
+        });
+      }
+      if (locEl) locEl.textContent = first.Location || '';
+    }
+
+    // Fill data-key elements
+    doc.querySelectorAll<HTMLElement>('[data-key]').forEach(el => {
+      const section = (el.getAttribute('data-section') || '').trim();
+      const key = (el.getAttribute('data-key') || '').trim();
+      const lookupKey = `${section}|${key}`;
+      const values = valueMap.get(lookupKey);
+
+      console.log('[panchang] Looking up:', lookupKey, '=> found:', values);
+
+      el.textContent = values && values.length ? values.join(', ') : '—';
+    });
+
+    // Replace image src with base64
+    doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+      const src = img.getAttribute('src') || '';
+      if (src.includes('logo.jpeg')) {
+        img.setAttribute('src', logoBase64 || 'assets/panchang/images/logo.jpeg');
+      } else if (src.includes('hanuman.png')) {
+        img.setAttribute('src', hanumanBase64 || 'assets/panchang/images/hanuman.png');
+      }
+    });
+
+    return `<!DOCTYPE html><html>${doc.documentElement.innerHTML}</html>`;
+  }
+
+  // Same as working certificate code
+  private waitForIframeImages(iframe: HTMLIFrameElement): Promise<void> {
+    return new Promise((resolve) => {
+      const doc = iframe.contentDocument;
+      if (!doc) { resolve(); return; }
+
+      const images = Array.from(doc.images);
+      if (images.length === 0) {
+        setTimeout(resolve, 50);
+        return;
+      }
+
+      let loaded = 0;
+      const done = () => {
+        loaded++;
+        if (loaded === images.length) resolve();
+      };
+
+      images.forEach(img => {
+        if (img.complete) {
+          done();
+        } else {
+          img.addEventListener('load', done);
+          img.addEventListener('error', done);
+        }
+      });
+
+      setTimeout(resolve, 3000); // safety net
+    });
+  }
+
+
+
+
+  private async saveFile(dataUrl: string, fileName: string, mimeType: string) {
+    try {
+      if (Capacitor.isNativePlatform()) {
+
+        const base64Data = dataUrl.split(',')[1];
+
+        const writeResult = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache
+        });
+
+        try {
+          // ✅ Open directly in the device's default image/PDF viewer
+          await FileOpener.open({
+            filePath: writeResult.uri,
+            contentType: mimeType
+          });
+        } catch (openErr) {
+          console.warn('FileOpener failed, falling back to Share:', openErr);
+          // Fallback — some devices/OEMs have no default handler registered
+          await Share.share({
+            title: 'Panchang',
+            url: writeResult.uri,
+            dialogTitle: 'Save or share Panchang'
+          });
+        }
+
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = fileName;
+        a.click();
+      }
+    } catch (err) {
+      console.error('saveFile failed:', err);
+      this.showToast('❌', 'फ़ाइल सेव नहीं हुई');
+    }
+  }
+
 
 }

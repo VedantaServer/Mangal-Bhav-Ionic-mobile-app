@@ -47,7 +47,14 @@ namespace FaceUPAI.API
 				new SqlParameter("@BasePrice", profile.BasePrice),
 				new SqlParameter("@ProfilePhotoUrl", profile.ProfilePhotoUrl),
 				new SqlParameter("@VerificationStatus", profile.VerificationStatus),
-				new SqlParameter("@IsActive", profile.IsActive),
+                new SqlParameter("@AddressLine1", profile.AddressLine1),
+                new SqlParameter("@AddressLine2", profile.AddressLine2),
+                new SqlParameter("@City", profile.City),
+                new SqlParameter("@State", profile.State),
+                new SqlParameter("@PinCode", profile.PinCode),
+                new SqlParameter("@Lat", profile.Lat),
+               new SqlParameter("@Longitude", profile.Longitude),
+                new SqlParameter("@IsActive", profile.IsActive),
 				new SqlParameter("@DateAdded", profile.DateAdded == DateTime.MinValue ? SqlDateTime.Null : profile.DateAdded ),
 				new SqlParameter("@DateModified", profile.DateModified == DateTime.MinValue ? SqlDateTime.Null : profile.DateModified ),
 				new SqlParameter("@UpdatedByUser", profile.UpdatedByUser)
@@ -85,7 +92,14 @@ namespace FaceUPAI.API
 				new SqlParameter("@BasePrice", profile.BasePrice),
 				new SqlParameter("@ProfilePhotoUrl", profile.ProfilePhotoUrl),
 				new SqlParameter("@VerificationStatus", profile.VerificationStatus),
-				new SqlParameter("@IsActive", profile.IsActive),
+                new SqlParameter("@AddressLine1", profile.AddressLine1),
+                new SqlParameter("@AddressLine2", profile.AddressLine2),
+                new SqlParameter("@City", profile.City),
+                new SqlParameter("@State", profile.State),
+                new SqlParameter("@PinCode", profile.PinCode),
+                new SqlParameter("@Lat", profile.Lat),
+              new SqlParameter("@Longitude", profile.Longitude),
+                new SqlParameter("@IsActive", profile.IsActive),
 				new SqlParameter("@DateAdded", profile.DateAdded == DateTime.MinValue ? SqlDateTime.Null : profile.DateAdded ),
 				new SqlParameter("@DateModified", profile.DateModified == DateTime.MinValue ? SqlDateTime.Null : profile.DateModified ),
 				new SqlParameter("@UpdatedByUser", profile.UpdatedByUser)
@@ -284,7 +298,14 @@ namespace FaceUPAI.API
 			profile.BasePrice = DataAccess.GetDecimal(dataReader, "BasePrice", Decimal.Zero);
 			profile.ProfilePhotoUrl = DataAccess.GetString(dataReader, "ProfilePhotoUrl", String.Empty);
 			profile.VerificationStatus = DataAccess.GetString(dataReader, "VerificationStatus", String.Empty);
-			profile.IsActive = DataAccess.GetBoolean(dataReader, "IsActive", false);
+            profile.AddressLine1 = DataAccess.GetString(dataReader, "AddressLine1", String.Empty);
+            profile.AddressLine2 = DataAccess.GetString(dataReader, "AddressLine2", String.Empty);
+            profile.City = DataAccess.GetString(dataReader, "City", String.Empty);
+            profile.State = DataAccess.GetString(dataReader, "State", String.Empty);
+            profile.PinCode = DataAccess.GetString(dataReader, "PinCode", String.Empty);
+            profile.Lat = DataAccess.GetString(dataReader, "Lat", String.Empty);
+            profile.Longitude = DataAccess.GetString(dataReader, "Longitude", String.Empty);
+            profile.IsActive = DataAccess.GetBoolean(dataReader, "IsActive", false);
 			profile.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
 			profile.DateModified = DataAccess.GetDateTime(dataReader, "DateModified", DateTime.MinValue);
 			profile.UpdatedByUser = DataAccess.GetString(dataReader, "UpdatedByUser", String.Empty);

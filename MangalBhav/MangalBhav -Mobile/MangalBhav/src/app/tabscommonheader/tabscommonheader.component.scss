@@ -456,12 +456,12 @@ ion-toolbar {
 
 .share-modal {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 16vh; left: 0; right: 0;
   background: #FFFBF0;
-  border-radius: 28px 28px 0 0;
+  border-radius: 28px ;
   z-index: 100000;         // ✅ above backdrop
   padding: 28px 24px 36px;
-  transform: translateY(100%);
+  transform: translateY(130%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   box-shadow: 0 -8px 40px rgba(224, 123, 0, 0.2);
   pointer-events: all;     // ✅ modal itself is clickable

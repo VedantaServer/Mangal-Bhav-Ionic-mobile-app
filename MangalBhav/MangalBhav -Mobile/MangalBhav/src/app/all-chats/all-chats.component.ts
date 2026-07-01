@@ -16,7 +16,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './all-chats.component.html',
   styleUrls: ['./all-chats.component.scss'],
   standalone: true,
-  imports: [CommonModule,RouterModule, FormsModule, IonicModule]
+  imports: [CommonModule, RouterModule, FormsModule, IonicModule]
 })
 export class AllChatsComponent implements OnInit {
 
@@ -32,7 +32,8 @@ export class AllChatsComponent implements OnInit {
   askPanditInbox: any[] = [];    // unique users who texted AskPandit
   inboxLoading = false;
   showpanditbottomtab: boolean = false;
-
+  oneToOneChats: any[] = [];
+  oneToOneLoading = false;
   constructor(
     private routerCtrl: NavController,
     private apinu: ApiNU,
@@ -71,8 +72,86 @@ export class AllChatsComponent implements OnInit {
     });
 
     this.loadGroups();
+    this.loadOneToOneChats();
   }
 
+
+
+
+  loadOneToOneChats() {
+    this.oneToOneLoading = true;
+    const myID = this.userDetails.UserID;
+
+    this.apinu.postUrlData(
+      `MessagesSelectByQuery?Query= ChatType = 'OneToOne' and (SenderID = ${myID} or ReceiverID = ${myID})`, null
+    ).subscribe((res: any) => {
+      const messages: any[] = res?.MessageList ?? [];
+      const rawList = this.deduplicateOneToOne(messages, myID);
+
+      if (rawList.length === 0) {
+        this.oneToOneChats = [];
+        this.oneToOneLoading = false;
+        return;
+      }
+
+      
+      const profileRequests = rawList.map((c: any) =>
+        this.apinu.postUrlData(`ProfilesSelectAllByUserID?userId=${c.UserID}`, null)
+      );
+
+      forkJoin(profileRequests).subscribe({
+        next: (profiles: any[]) => {
+          this.oneToOneChats = rawList.map((c: any, i: number) => {
+            const profile = profiles[i]?.ProfileList?.[0] || profiles[i]?.Profile || null;
+            return {
+              ...c,
+              DisplayName: profile?.FullName || c.DisplayName
+            };
+          });
+          this.oneToOneLoading = false;
+        },
+        error: () => {
+          // fallback — show as-is if profile fetch fails
+          this.oneToOneChats = rawList;
+          this.oneToOneLoading = false;
+        }
+      });
+    });
+  }
+
+
+  deduplicateOneToOne(messages: any[], myID: number): any[] {
+    const map = new Map<number, any>();
+    const sorted = [...messages].sort(
+      (a, b) => new Date(a.SentAt).getTime() - new Date(b.SentAt).getTime()
+    );
+    for (const msg of sorted) {
+      const otherID = Number(msg.SenderID) === myID
+        ? Number(msg.ReceiverID)
+        : Number(msg.SenderID);
+      if (!otherID || otherID === myID) continue;
+      map.set(otherID, {
+        UserID: otherID,
+        DisplayName: Number(msg.SenderID) === myID
+          ? (msg.ReceiverName || `User ${otherID}`)
+          : (msg.SenderName || `User ${otherID}`),
+        LastMessage: msg.MessageText,
+        LastMessageTime: msg.SentAt
+      });
+    }
+    return Array.from(map.values()).reverse();
+  }
+
+  openOneToOneChat(userID: number, displayName: string) {
+    this.router.navigate(['/chatbox'], {
+      queryParams: {
+        groupId: 0,
+        chatType: 'OneToOne',
+        withUserID: userID,
+        withUserName: displayName
+      }
+    });
+  }
   // ── Fetch all Support messages → deduplicate by SenderID ──
   loadSupportInbox() {
     this.inboxLoading = true;

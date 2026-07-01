@@ -51,6 +51,8 @@ import { MyMandirComponent } from './my-mandir/my-mandir.component';
 import { AdminEventVerificationComponent } from './admin-event-verification/admin-event-verification.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { AdminPanchangInsertComponent } from './admin-panchang-insert/admin-panchang-insert.component';
+import { AdminReposrtsComponent } from './admin-reposrts/admin-reposrts.component';
 
 const routes: Routes = [
 
@@ -138,9 +140,19 @@ const routes: Routes = [
     path: 'open-community-page',
     component: OpenCommunityPageComponent  // directly use the standalone component
   },
+
+  
+  {
+    path: 'adminreports',
+    component: AdminReposrtsComponent  // directly use the standalone component
+  },
   {
     path: 'analytics',
     component: AnalyticsComponent  // directly use the standalone component
+  },
+  {
+    path: 'adminpanchanginsert',
+    component: AdminPanchangInsertComponent  // directly use the standalone component
   }
   ,
   {

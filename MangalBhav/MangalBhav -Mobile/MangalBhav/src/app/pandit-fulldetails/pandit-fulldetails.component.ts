@@ -22,9 +22,10 @@ import { FcmService } from 'src/providers/fcm/fcm';
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class PanditFulldetailsComponent implements OnInit {
-  panditList: any;
-  displayList: any[] = []; 
+  panditList: any[] = [];
+  displayList: any[] = [];
   searchQuery: string = '';
+  PaymentMode: any = '';
 
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
@@ -39,7 +40,7 @@ export class PanditFulldetailsComponent implements OnInit {
   get filteredPanditList(): any[] {
     if (!this.searchQuery?.trim()) return this.panditList;
     const q = this.searchQuery.toLowerCase().trim();
-    return this.panditList.filter((p:any) =>
+    return this.panditList.filter((p: any) =>
       p.FullName?.toLowerCase().includes(q) ||
       p.LoginID?.toLowerCase().includes(q)
     );
@@ -52,7 +53,7 @@ export class PanditFulldetailsComponent implements OnInit {
       return;
     }
     const q = this.searchQuery.toLowerCase().trim();
-    this.displayList = this.panditList.filter((p:any) =>
+    this.displayList = this.panditList.filter((p: any) =>
       p.FullName?.toLowerCase().includes(q) ||
       p.LoginID?.toLowerCase().includes(q)
     );
@@ -64,13 +65,106 @@ export class PanditFulldetailsComponent implements OnInit {
     this.displayList = this.panditList;
   }
 
+  // ── Pay Popup ──────────────────────────────────────────────
+  selectedPandit: any = null;
+  payPopupOpen = false;
+  payAmount = '';
+  payRefNo = '';
+  payDonorName = '';
+  payPhone = '';
+  panditTxList: any[] = [];
+  isSubmitting = false;
+  isLoadingTx = false;
+  MandirTransaction: any = {};
+
+  openPayPopup(pandit: any) {
+    this.selectedPandit = pandit;
+    this.payAmount = '';
+    this.payRefNo = '';
+    this.payDonorName = '';
+    this.payPhone = '';
+    this.panditTxList = [];
+    this.payPopupOpen = true;
+    this.loadPanditTransactions(pandit.UserID);
+  }
+
+  closePayPopup() {
+    this.payPopupOpen = false;
+    this.selectedPandit = null;
+  }
+
+  loadPanditTransactions(userId: any) {
+    this.isLoadingTx = true;
+    this.apinu.postUrlData(
+      `MandirTransactionsSelectByQuery?Query= UserID = '${userId}' and transactiontype = 'MangalBhavDakshina'  order by dateAdded desc`,
+      null
+    ).subscribe((res: any) => {
+      this.panditTxList = res?.MandirTransactionList || [];
+      this.isLoadingTx = false;
+    });
+  }
+
+  async submitPayment() {
+    if (!this.payAmount || !String(this.payRefNo ?? '').trim()) {
+      const a = await this.alertCtrl.create({
+        header: 'Required',
+        message: 'Amount and Reference No. are mandatory.',
+        buttons: ['OK']
+      });
+      return a.present();
+    }
+
+    this.isSubmitting = true;
+    this.MandirTransaction = {
+      TenantID : 1,
+      MandirID: 0,
+      UserID: this.selectedPandit.UserID,
+      DonorName: this.payDonorName,
+      PaymentMode: this.PaymentMode,
+      UpdatedByUser: this.payDonorName,
+      Phone: this.payPhone,
+      UniqueReferenceNo: this.payRefNo,
+      OrderID: this.payRefNo,
+      PaymentStatus: 'Success',
+      TransactionType: 'MangalBhavDakshina',
+      ServiceName: 'MangalBhavDakshina',
+      Amount: String(this.payAmount),
+      Remarks: `Dakshina for Pandit: ${this.selectedPandit.FullName}`,
+      DateAdded: new Date(),
+      DateModified: new Date()
+    };
+
+    this.apinu.postUrlData('MandirTransactionsInsert', this.MandirTransaction)
+      .subscribe({
+        next: async () => {
+          this.isSubmitting = false;
+          this.payAmount = ''; this.payRefNo = '';
+          this.payDonorName = ''; this.payPhone = '';
+          this.loadPanditTransactions(this.selectedPandit.UserID);
+          const a = await this.alertCtrl.create({
+            header: '✅ Dakshina Recorded',
+            message: `₹${this.MandirTransaction.Amount} recorded for ${this.selectedPandit.FullName}.`,
+            buttons: ['OK']
+          });
+          a.present();
+        },
+        error: async () => {
+          this.isSubmitting = false;
+          const a = await this.alertCtrl.create({
+            header: 'Error', message: 'Failed to record. Try again.', buttons: ['OK']
+          });
+          a.present();
+        }
+      });
+  }
+
   ngOnInit() {
 
     this.apinu.postUrlData('GetPanditDetails', null)
       .subscribe((res: any) => {
         console.log(res)
         this.panditList = res;
-        this.displayList = res; 
+        this.displayList = res;
       })
   }
 

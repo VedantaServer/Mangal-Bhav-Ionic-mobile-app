@@ -18,7 +18,9 @@ export class MandirLedgerComponent implements OnInit, OnDestroy {
   // ── Pending Mandirs state ─────────────────────────────────
   pendingMandirList: any[] = [];
   isLoadingPending = false;
-
+  // ── add property near other state vars ──
+  bankDetails: any = null;
+  isLoadingBank = false;
   // ── Ledger state ──────────────────────────────────────────
   currentSection: 'pending' | 'ledger' | 'payEntry' = 'pending';
   selectedMandir: any = null;
@@ -176,15 +178,15 @@ export class MandirLedgerComponent implements OnInit, OnDestroy {
   }
 
   // ── Pay Entry ─────────────────────────────────────────────
-  openPayEntry() {
-    this.payForm = {
-      Amount: this.totalDue,   // pre-fill with current due
-      PaymentReferenceNo: '',
-      Remarks: '',
-      UpdatedByUser: '8796917944',
-    };
-    this.currentSection = 'payEntry';
-  }
+  // openPayEntry() {
+  //   this.payForm = {
+  //     Amount: this.totalDue,   // pre-fill with current due
+  //     PaymentReferenceNo: '',
+  //     Remarks: '',
+  //     UpdatedByUser: '8796917944',
+  //   };
+  //   this.currentSection = 'payEntry';
+  // }
 
   async savePayEntry() {
     if (!this.payForm.Amount || this.payForm.Amount <= 0) {
@@ -241,4 +243,30 @@ export class MandirLedgerComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  openPayEntry() {
+  this.payForm = {
+    Amount: this.totalDue,
+    PaymentReferenceNo: '',
+    Remarks: '',
+    UpdatedByUser: '8796917944',
+  };
+  this.bankDetails = null;          // ← reset
+  this.currentSection = 'payEntry';
+  this.fetchBankDetails(this.selectedMandir.MandirID);   // ← fetch
+}
+
+private fetchBankDetails(mandirId: number) {
+  this.isLoadingBank = true;
+  this.apinu.postUrlData(
+    `BankDetailsSelectByQuery?Query= MandirID = ${mandirId}`, null
+  ).subscribe({
+    next: (res: any) => {
+      const list = res?.BankDetailList ?? res ?? [];
+      this.bankDetails = Array.isArray(list) ? list[0] : list;  // take first record
+      this.isLoadingBank = false;
+    },
+    error: () => { this.isLoadingBank = false; }
+  });
+}
 }

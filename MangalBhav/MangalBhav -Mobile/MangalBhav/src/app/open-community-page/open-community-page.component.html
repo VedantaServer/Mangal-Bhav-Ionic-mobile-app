@@ -1,7 +1,7 @@
 <!-- WAS: <app-tabscommonheader></app-tabscommonheader> -->
 <app-tabscommonheader [style.display]="chromeHidden ? 'none' : ''"></app-tabscommonheader>
 
-<ion-content  #pageContent [scrollEvents]="true">
+<ion-content #pageContent [scrollEvents]="true">
 
   <!-- ═══ DIVINE HERO SECTION ═══ -->
   <div class="hero-wrapper" id="mandirHero">
@@ -162,9 +162,9 @@
         </span>
       </button>
     </div>
-   <br><br>
+    <br><br>
   </div>
-  
+
   <!-- ═══ AAJ KA PANCHANG ═══ -->
   <div class="section">
     <div class="section-header">
@@ -210,7 +210,19 @@
     </div>
   </div>
 
-    <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
+  <!-- ═══ DOWNLOAD TODAY'S PANCHANG ═══ -->
+  <div class="section" *ngIf="panchangReady">
+    <button class="mangal-aarti-btn" [disabled]="isDownloadingPanchang" (click)="downloadTodayPanchang()">
+      <span class="mab-diya">📥</span>
+      <div class="mab-center">
+        <span class="mab-title">{{ isDownloadingPanchang ? 'डाउनलोड हो रहा है...' : 'आज का पंचांग डाउनलोड करें'
+          }}</span>
+        <span class="mab-sub">Download Today's Panchang</span>
+      </div>
+      <span class="mab-right">🪔</span>
+    </button>
+  </div>
+  <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
   <div class="section">
     <!-- If active mandir exists → show "my mandir" card -->
     <div class="family-mandir-cta active-mandir" *ngIf="familyActiveMandir">
@@ -288,7 +300,10 @@
       </div>
     </div>
   </section>
-
+  <!-- The element that contains the panchangHtml -->
+  <!-- <div #panchangCapture style="position: relative;">
+    <div [innerHTML]="panchangHtml"></div>
+  </div> -->
   <div style="height: 80px;"></div>
 
 </ion-content>

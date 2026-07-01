@@ -1,0 +1,92 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="warning">
+    <ion-title>Admin Reports</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="refreshReport($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Report Selector Card -->
+  <ion-card class="selector-card">
+    <ion-card-content>
+
+      <ion-item lines="none" class="report-select-item">
+        <ion-label position="stacked">Select Report</ion-label>
+        <ion-select
+          [(ngModel)]="selectedReport"
+          (ionChange)="onReportChange()"
+          interface="alert"
+          placeholder="Choose a report">
+          <ion-select-option *ngFor="let opt of reportOptions" [value]="opt.value">
+            {{ opt.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-button
+        expand="block"
+        color="warning"
+        class="go-btn"
+        [disabled]="!selectedReport || isLoading"
+        (click)="onGoClick()">
+        <ion-icon name="play" slot="start"></ion-icon>
+        Go
+      </ion-button>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="state-container">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <p>Loading report...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && loadError" class="state-container error">
+    <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+    <p>Failed to load report. Please try again.</p>
+    <ion-button size="small" fill="outline" color="warning" (click)="loadReport()">
+      Retry
+    </ion-button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !loadError && hasSearched && reportData.length === 0" class="state-container">
+    <ion-icon name="document-text-outline" size="large" color="medium"></ion-icon>
+    <p>No records found for this report.</p>
+  </div>
+
+  <!-- Results Table -->
+  <ion-card *ngIf="!isLoading && !loadError && reportData.length > 0" class="results-card">
+    <ion-card-header>
+      <div class="results-header">
+        <ion-card-title>Results ({{ reportData.length }})</ion-card-title>
+        <ion-button size="small" fill="clear" color="warning" (click)="exportToExcel()">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          Export CSV
+        </ion-button>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content class="table-wrapper">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th *ngFor="let col of reportColumns">{{ col }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of reportData">
+            <td *ngFor="let col of reportColumns">{{ row[col] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

@@ -7,7 +7,10 @@
           [ngClass]="GroupName === 'Support' ? 'support' : GroupName === 'AskPandit' ? 'pandit' : 'group'">
           <span *ngIf="GroupName === 'Support'">🛡️</span>
           <span *ngIf="GroupName === 'AskPandit'">🕉️</span>
-          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">{{ GroupName.charAt(0) || '🙏' }}</span>
+          <!-- OneToOne or group: show first letter -->
+          <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">
+            {{ GroupName.charAt(0) || '🙏' }}
+          </span>
         </div>
         <div class="logo-text-block">
           <div class="nav-logo-text">{{ GroupName || '…' }}</div>
@@ -119,3 +122,116 @@
   </ion-tab-button>
 
 </ion-tab-bar> -->
+
+
+
+<!-- ══ CHAT TERMS OVERLAY ══ -->
+<div class="chat-terms-overlay" *ngIf="showTermsModal">
+  <div class="chat-terms-card">
+
+    <!-- Header -->
+    <div class="chat-terms-header">
+      <div class="chat-terms-om">🕉️</div>
+      <h2 class="chat-terms-title">Read & Accept Before Starting Chat</h2>
+      <p class="chat-terms-sub">
+        To ensure a safe, secure, and respectful experience for both the
+        <strong>Pandit Ji</strong> and the <strong>Yajman</strong>, all
+        conversations must comply with the following policy.
+      </p>
+    </div>
+
+    <!-- Scrollable Body -->
+    <div class="chat-terms-body">
+
+      <div class="chat-terms-section">
+        <div class="chat-terms-section-title">
+          <span class="chat-terms-num">1</span>
+          🔒 Privacy Protection
+        </div>
+        <ul class="chat-terms-list">
+          <li>Do not share or request personal contact information, including phone numbers, WhatsApp numbers, email addresses, home addresses, or social media handles.</li>
+          <li>Keep all communication within the platform to protect the privacy of both parties.</li>
+        </ul>
+      </div>
+
+      <div class="chat-terms-section">
+        <div class="chat-terms-section-title">
+          <span class="chat-terms-num">2</span>
+          🛡️ Digital Security
+        </div>
+        <ul class="chat-terms-list">
+          <li>Do not share passwords, OTPs, banking information, government IDs, or any confidential information.</li>
+          <li>Do not send malicious links, files, or suspicious content.</li>
+        </ul>
+      </div>
+
+      <div class="chat-terms-section">
+        <div class="chat-terms-section-title">
+          <span class="chat-terms-num">3</span>
+          🙏 Respectful Communication
+        </div>
+        <ul class="chat-terms-list">
+          <li>Maintain respectful and courteous communication at all times.</li>
+          <li>Abusive, offensive, threatening, discriminatory, or vulgar language is strictly prohibited.</li>
+        </ul>
+      </div>
+
+      <div class="chat-terms-section">
+        <div class="chat-terms-section-title">
+          <span class="chat-terms-num">4</span>
+          ⚖️ Platform Integrity
+        </div>
+        <ul class="chat-terms-list">
+          <li>Do not solicit payments outside the platform or attempt to move conversations to external apps.</li>
+          <li>Do not spam, advertise, or misuse the chat feature.</li>
+        </ul>
+      </div>
+
+      <div class="chat-terms-section">
+        <div class="chat-terms-section-title">
+          <span class="chat-terms-num">5</span>
+          👁️ Monitoring & Enforcement
+        </div>
+        <ul class="chat-terms-list">
+          <li>Chats may be monitored for safety, quality, and policy compliance.</li>
+          <li>Violations may result in warnings, suspension, or permanent blacklisting from the platform.</li>
+        </ul>
+      </div>
+
+      <div class="chat-terms-acknowledgement">
+        <div class="chat-terms-ack-icon">📜</div>
+        <p>
+          By selecting <strong>'Read & Accept'</strong>, both the Pandit Ji and
+          the Yajman acknowledge that they have read, understood, and agree to
+          comply with this Digital Security & Privacy Policy. Failure to comply
+          may result in restrictions or permanent removal from the platform.
+        </p>
+      </div>
+
+    </div>
+    <!-- /chat-terms-body -->
+
+    <!-- Checkbox + Actions -->
+    <div class="chat-terms-footer">
+      <label class="chat-terms-check-label" (click)="termsChecked = !termsChecked">
+        <div class="chat-terms-checkbox" [class.checked]="termsChecked">
+          <span *ngIf="termsChecked">✓</span>
+        </div>
+        <span>I have read and agree to the above policy</span>
+      </label>
+
+      <div class="chat-terms-actions">
+        <button class="chat-terms-decline-btn" (click)="declineTerms()">
+          Go Back
+        </button>
+        <button class="chat-terms-accept-btn"
+          [class.enabled]="termsChecked"
+          [disabled]="!termsChecked"
+          (click)="acceptTerms()">
+          🙏 Read & Accept
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -19,6 +19,13 @@ namespace FaceUPAI.Models
 		private decimal basePrice;
 		private string profilePhotoUrl;
 		private string verificationStatus;
+		private string addressLine1;
+		private string addressLine2;
+		private string city;
+		private string state;
+		private string pinCode;
+		private string lat;
+		private string longitude;
 		private bool isActive;
 		private DateTime dateAdded;
 		private DateTime dateModified;
@@ -38,7 +45,7 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the Profile class.
 		/// </summary>
-		public Profile(int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
+		public Profile(int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
 		{
 			this.tenantID = tenantID;
 			this.userID = userID;
@@ -53,6 +60,13 @@ namespace FaceUPAI.Models
 			this.basePrice = basePrice;
 			this.profilePhotoUrl = profilePhotoUrl;
 			this.verificationStatus = verificationStatus;
+			this.addressLine1 = addressLine1;
+			this.addressLine2 = addressLine2;
+			this.city = city;
+			this.state = state;
+			this.pinCode = pinCode;
+			this.lat = lat;
+			this.longitude = longitude;
 			this.isActive = isActive;
 			this.dateAdded = dateAdded;
 			this.dateModified = dateModified;
@@ -62,7 +76,7 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the Profile class.
 		/// </summary>
-		public Profile(int profileID, int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
+		public Profile(int profileID, int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
 		{
 			this.profileID = profileID;
 			this.tenantID = tenantID;
@@ -78,6 +92,13 @@ namespace FaceUPAI.Models
 			this.basePrice = basePrice;
 			this.profilePhotoUrl = profilePhotoUrl;
 			this.verificationStatus = verificationStatus;
+			this.addressLine1 = addressLine1;
+			this.addressLine2 = addressLine2;
+			this.city = city;
+			this.state = state;
+			this.pinCode = pinCode;
+			this.lat = lat;
+			this.longitude = longitude;
 			this.isActive = isActive;
 			this.dateAdded = dateAdded;
 			this.dateModified = dateModified;
@@ -211,6 +232,69 @@ namespace FaceUPAI.Models
 		{
 			get { return verificationStatus; }
 			set { verificationStatus = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the AddressLine1 value.
+		/// </summary>
+		public  string AddressLine1
+		{
+			get { return addressLine1; }
+			set { addressLine1 = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the AddressLine2 value.
+		/// </summary>
+		public  string AddressLine2
+		{
+			get { return addressLine2; }
+			set { addressLine2 = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the City value.
+		/// </summary>
+		public  string City
+		{
+			get { return city; }
+			set { city = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the State value.
+		/// </summary>
+		public  string State
+		{
+			get { return state; }
+			set { state = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the PinCode value.
+		/// </summary>
+		public  string PinCode
+		{
+			get { return pinCode; }
+			set { pinCode = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the Lat value.
+		/// </summary>
+		public  string Lat
+		{
+			get { return lat; }
+			set { lat = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the Longitude value.
+		/// </summary>
+		public  string Longitude
+		{
+			get { return longitude; }
+			set { longitude = value; }
 		}
 
 		/// <summary>

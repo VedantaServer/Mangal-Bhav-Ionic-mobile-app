@@ -3,7 +3,6 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
-import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
 import { Storage } from '@ionic/storage-angular';
 import { firstValueFrom } from 'rxjs';
@@ -17,6 +16,8 @@ import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.
 import { FcmService } from 'src/providers/fcm/fcm';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 import { addIcons } from 'ionicons';
+import { KYCService } from 'src/providers/kyc/kyc.service';
+import { Browser } from '@capacitor/browser';
 import {
   logoInstagram,
   logoFacebook,
@@ -87,6 +88,7 @@ export class UserProfileComponent implements OnInit {
 
   showNotInterestedModal = false;
   isEditMode = false;
+  isLoading = true;
   profileObject: any;
   language: any;
   bankDetails: any = null;
@@ -252,8 +254,77 @@ export class UserProfileComponent implements OnInit {
   };
 
   selectedRole: any = '';
+  kycStatus: any = null;
+  isKYCVerified = false;
+  isKYCLoading = false;
+  showKYCModal = false;
+  kycStep = 1;
 
-  constructor(public routerCtrl: NavController,
+  kycData = {
+    verificationId: '',
+    referenceId: '',
+    aadhaarNumber: '',
+    mobileNumber: ''
+  };
+
+  kycLabels = {
+    en: {
+      kycTitle: 'KYC Verification',
+      kycSubtitle: 'Verify your identity with Aadhaar',
+      kycVerified: '✓ Verified',
+      kycPending: '⚠ Pending',
+      startKYC: 'Start KYC Verification',
+      verifying: 'Verifying...',
+      openDigiLocker: 'Open DigiLocker',
+      checkingStatus: 'Checking status...',
+      fetchDocument: 'Fetch Aadhaar Data',
+      kycSuccess: 'KYC Verified Successfully!',
+      kycFailed: 'KYC Verification Failed',
+      tryAgain: 'Try Again',
+      verifiedName: 'Verified Name',
+      verifiedAddress: 'Verified Address',
+      verifiedDOB: 'Date of Birth',
+      verifiedGender: 'Gender',
+      kycInfo: 'Your Aadhaar will be verified through DigiLocker. This is 100% secure and RBI compliant.',
+      kycBenefits: 'Benefits: Verified badge, faster bookings, trust & credibility',
+      closeBrowserMsg: 'Please complete DigiLocker steps, then close the browser to continue.',
+      consentCheck: 'I have completed DigiLocker consent',
+      step1Title: 'Step 1: Open DigiLocker',
+      step2Title: 'Step 2: Complete Consent',
+      step3Title: 'Step 3: Verify Data',
+      notNow: 'Not Now'
+    },
+    hi: {
+      kycTitle: 'KYC सत्यापन',
+      kycSubtitle: 'आधार के साथ अपनी पहचान सत्यापित करें',
+      kycVerified: '✓ सत्यापित',
+      kycPending: '⚠ लंबित',
+      startKYC: 'KYC सत्यापन शुरू करें',
+      verifying: 'सत्यापित हो रहा है...',
+      openDigiLocker: 'DigiLocker खोलें',
+      checkingStatus: 'स्थिति जांच रहा है...',
+      fetchDocument: 'आधार डेटा प्राप्त करें',
+      kycSuccess: 'KYC सफलतापूर्वक सत्यापित!',
+      kycFailed: 'KYC सत्यापन विफल',
+      tryAgain: 'पुनः प्रयास करें',
+      verifiedName: 'सत्यापित नाम',
+      verifiedAddress: 'सत्यापित पता',
+      verifiedDOB: 'जन्म तिथि',
+      verifiedGender: 'लिंग',
+      kycInfo: 'आपका आधार DigiLocker के माध्यम से सत्यापित किया जाएगा। यह 100% सुरक्षित और RBI अनुपालित है।',
+      kycBenefits: 'लाभ: सत्यापित बैज, तेज बुकिंग, विश्वास और विश्वसनीयता',
+      closeBrowserMsg: 'कृपया DigiLocker चरण पूरा करें, फिर ब्राउज़र बंद करें।',
+      consentCheck: 'मैंने DigiLocker सहमति पूरी कर ली है',
+      step1Title: 'चरण 1: DigiLocker खोलें',
+      step2Title: 'चरण 2: सहमति पूर्ण करें',
+      step3Title: 'चरण 3: डेटा सत्यापित करें',
+      notNow: 'अभी नहीं'
+    }
+  };
+
+
+
+  constructor(public routerCtrl: NavController, private kycService: KYCService,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
@@ -280,14 +351,57 @@ export class UserProfileComponent implements OnInit {
         ...item,
         IconName:
           item.Platform === 'Instagram' ? 'logo-instagram' :
-          item.Platform === 'Facebook' ? 'logo-facebook' :
-          item.Platform === 'YouTube' ? 'logo-youtube' :
-          item.Platform === 'WhatsApp' ? 'logo-whatsapp' :
-          item.Platform === 'LinkedIn' ? 'logo-linkedin' :
-          'share-social-outline'
+            item.Platform === 'Facebook' ? 'logo-facebook' :
+              item.Platform === 'YouTube' ? 'logo-youtube' :
+                item.Platform === 'WhatsApp' ? 'logo-whatsapp' :
+                  item.Platform === 'LinkedIn' ? 'logo-linkedin' :
+                    'share-social-outline'
       }));
     });
   }
+
+
+  // async ngOnInit() {
+  //   this.userDetails = await this.storage.get("account");
+  //   this.language = this.userDetails.Languages;
+  //   this.profile.UserID = this.userDetails.UserID;
+  //   this.profile.TenantID = this.userDetails.TenantID;
+  //   this.profile.PhoneNumber = this.userDetails.LoginID;
+
+  //   this.loadSocialMedia();
+
+  //   this.apinu.postUrlData(
+  //     `UsersNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+  //     null
+  //   ).subscribe((res: any) => {
+  //     console.log(res.UserList[0]);
+
+  //     this.userDetails = res.UserList[0];
+  //     this.selectedRole = this.userDetails.Role;
+
+  //     this.loadReferralCode();
+  //     this.loadBankDetails();
+  //   });
+
+  //   this.apinu.postUrlData(
+  //     `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+  //     null
+  //   ).subscribe((res: any) => {
+  //     if (res.ProfileList && res.ProfileList.length > 0) {
+  //       const data = res.ProfileList[0];
+  //       this.profileObject = res.ProfileList[0];
+  //       this.isEditMode = true;
+  //       this.profile = { ...data };
+
+  //       if (this.profile.DOB) {
+  //         this.profile.DOB = this.profile.DOB.toString().split('T')[0];
+  //       }
+
+  //       this.profilePreview = data.ProfilePhotoUrl;
+  //       this.loadProfileImage();
+  //     }
+  //   });
+  // }
 
 
   async ngOnInit() {
@@ -296,39 +410,38 @@ export class UserProfileComponent implements OnInit {
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
+    this.loadKYCStatus();
 
     this.loadSocialMedia();
 
+    let pendingCalls = 2;
+    const done = () => { if (--pendingCalls === 0) this.isLoading = false; };
+
     this.apinu.postUrlData(
-      `UsersNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
-      null
+      `UsersNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`, null
     ).subscribe((res: any) => {
-      console.log(res.UserList[0]);
-
       this.userDetails = res.UserList[0];
-      this.selectedRole = this.userDetails.Role;
-
-      this.loadReferralCode();
+      this.selectedRole = this.userDetails?.Role;
+     // this.loadReferralCode();
       this.loadBankDetails();
+      done();
     });
 
     this.apinu.postUrlData(
-      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
-      null
+      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`, null
     ).subscribe((res: any) => {
       if (res.ProfileList && res.ProfileList.length > 0) {
         const data = res.ProfileList[0];
         this.profileObject = res.ProfileList[0];
         this.isEditMode = true;
         this.profile = { ...data };
-
         if (this.profile.DOB) {
           this.profile.DOB = this.profile.DOB.toString().split('T')[0];
         }
-
         this.profilePreview = data.ProfilePhotoUrl;
         this.loadProfileImage();
       }
+      done();
     });
   }
 
@@ -698,7 +811,7 @@ export class UserProfileComponent implements OnInit {
 
   loadReferralCode() {
     this.apinu.postUrlData(
-      `UserReferralCodeSelectByQuery?Query=UserID=${this.userDetails.UserID}`,
+      `UserReferralCodeSelectByQuery?Query=UserID=${this.userDetails?.UserID}`,
       null
     ).subscribe((res: any) => {
       if (res.UserReferralCodeList?.length > 0) {
@@ -730,4 +843,302 @@ export class UserProfileComponent implements OnInit {
       this.showToast('Could not copy, please copy manually', 'warning');
     }
   }
+
+
+  loadKYCStatus() {
+    if (!this.userDetails?.UserID) return;
+
+    this.kycService.getKYCStatus(this.userDetails.UserID).subscribe({
+      next: (res: any) => {
+        // Normalize PascalCase → camelCase once here
+        this.kycStatus = {
+          isVerified: res.IsVerified || res.isVerified || false,
+          isEKYC: res.IsEKYC || res.isEKYC || false,
+          isMBVerified: res.IsMBVerified || res.isMBVerified || false,
+          verifiedName: res.VerifiedName || res.verifiedName || '',
+          verifiedAddress: res.VerifiedAddress || res.verifiedAddress || '',
+          verifiedDOB: res.VerifiedDOB || res.verifiedDOB || '',
+          verifiedGender: res.VerifiedGender || res.verifiedGender || '',
+          remarks: res.Remarks || res.remarks || ''
+        };
+        this.isKYCVerified = this.kycStatus.isVerified; // ← now reads normalized value
+      },
+      error: (err) => {
+        console.log('KYC status not found (normal for new users)', err);
+        this.kycStatus = null;
+        this.isKYCVerified = false;
+      }
+    });
+  }
+
+  /** Open KYC modal */
+  openKYCModal() {
+    this.showKYCModal = true;
+    this.kycStep = 1;
+    this.kycData = { verificationId: '', referenceId: '', aadhaarNumber: '', mobileNumber: '' };
+  }
+
+  /** Step 1: Generate Auth URL and Open DigiLocker */
+
+
+
+  applyKYCToProfile() {
+    if (!this.kycStatus) {
+      this.closeKYCModal();
+      return;
+    }
+
+    // Map verified name
+    if (this.kycStatus.verifiedName) {
+      this.profile.FullName = this.kycStatus.verifiedName;
+    }
+
+    // Map gender — Cashfree returns "M"/"F", profile stores "Male"/"Female"
+    if (this.kycStatus.verifiedGender) {
+      const g = this.kycStatus.verifiedGender.toUpperCase();
+      this.profile.Gender = g === 'M' ? 'Male' : g === 'F' ? 'Female' : 'Other';
+    }
+
+    // Map DOB — Cashfree returns "04-02-2004" (dd-MM-yyyy), input needs "2004-02-04" (yyyy-MM-dd)
+    if (this.kycStatus.verifiedDOB) {
+      const parts = this.kycStatus.verifiedDOB.split('-');
+      if (parts.length === 3) {
+        // If already dd-MM-yyyy format
+        this.profile.DOB = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+    }
+
+    // Close modal first, then save
+    this.showKYCModal = false;
+    this.kycStep = 1;
+    this.kycService.clearKYCSession();
+
+    // Save profile with KYC data filled in
+    this.saveProfile();
+    this.showToast('Profile updated with verified KYC data ✅', 'success');
+  }
+
+
+  startKYC() {
+    this.isKYCLoading = true;
+
+    this.kycService.generateAuthUrl(
+      this.userDetails.UserID,
+      this.userDetails.TenantID || 1,
+      this.userDetails.FullName || 'User'
+    ).subscribe({
+      next: (res: any) => {
+        this.isKYCLoading = false;
+        console.log('GenerateAuthUrl response:', res);
+
+        const authUrl = res?.AuthUrl;           // ← PascalCase matches controller
+        const verId = res?.VerificationID;
+        const refId = res?.ReferenceID;
+
+        if (authUrl) {
+          this.kycData.verificationId = verId || '';
+          this.kycData.referenceId = refId || '';
+
+          console.log('verificationId stored:', this.kycData.verificationId);
+          console.log('referenceId stored:', this.kycData.referenceId);
+
+          this.kycStep = 2;
+          this.openDigiLockerInApp(authUrl);
+        } else {
+          this.showToast('Failed to get KYC link.', 'danger');
+        }
+      },
+      error: (err) => {
+        this.isKYCLoading = false;
+        console.error('KYC Error:', err);
+        this.showToast('KYC error. Please try again.', 'danger');
+      }
+    });
+  }
+
+
+
+  /**
+   * Open DigiLocker in Capacitor In-App Browser
+   * This is the MOBILE way - keeps user in app experience
+   */
+  // In openDigiLockerInApp() — remove old listeners FIRST
+  async openDigiLockerInApp(url: string) {
+    await Browser.removeAllListeners(); // ← ADD THIS before adding new listener
+    await Browser.open({ url: url });
+
+    Browser.addListener('browserFinished', async () => {
+      await Browser.removeAllListeners(); // cleanup after use
+      this.kycStep = 3;
+      this.showToast('Checking consent status...', 'primary');
+      this.checkConsentStatus(); // ← also auto-trigger it here
+    });
+  }
+  /** Step 2: Check Consent Status after user returns from DigiLocker */
+
+
+
+
+  checkConsentStatus() {
+    if (!this.kycData.verificationId) {
+      this.showToast('Session expired. Please start KYC again.', 'warning');
+      return;
+    }
+
+    this.isKYCLoading = true;
+
+    // Both IDs already captured from step 1 — use them directly
+    console.log('Checking consent with:');
+    console.log('  referenceId:', this.kycData.referenceId);
+    console.log('  verificationId:', this.kycData.verificationId);
+
+    this.kycService.checkConsentStatus(
+      this.kycData.referenceId,    // CF_XXXX — from GenerateAuthUrl response
+      this.kycData.verificationId, // MB_2137_XXX — our ID
+      this.userDetails.UserID,
+      this.userDetails.TenantID || 1
+    ).subscribe({
+      next: (res: any) => {
+        this.isKYCLoading = false;
+        console.log('Consent response:', JSON.stringify(res));
+
+        const consentStatus = (
+          res?.ConsentStatus ||                        // ← controller's mapped field
+          res?.consentStatus ||
+          res?.cashfreeResponse?.status ||             // ← Cashfree's actual field name
+          res?.cashfreeResponse?.consent_status ||
+          ''
+        ).toUpperCase();
+
+        console.log('Consent status:', consentStatus);
+
+
+        const accepted = [
+          'ACCEPTED',
+          'COMPLETED',
+          'CONSENT_GIVEN',
+          'SUCCESS',
+          'VERIFIED',
+          'LINKED',
+          'AUTHENTICATED'   // ← ADD THIS — Cashfree's actual status for consent given
+        ];
+
+
+        if (accepted.includes(consentStatus)) {
+          this.kycStep = 4;
+          this.showToast('Consent accepted! Fetching Aadhaar...', 'success');
+          this.fetchDocumentData();
+        } else {
+          this.showToast(`Status: "${consentStatus}" — please complete DigiLocker.`, 'warning');
+        }
+      },
+      error: (err) => {
+        this.isKYCLoading = false;
+        console.error('Consent error:', err);
+        this.showToast('Error checking consent. Try again.', 'danger');
+      }
+    });
+  }
+
+
+
+  /** Step 3: Fetch Document Data (Aadhaar) */
+  fetchDocumentData() {
+    this.isKYCLoading = true;
+
+    this.kycService.getDocumentData(
+      this.kycData.referenceId || this.kycData.verificationId,
+      this.kycData.verificationId,
+      'AADHAAR',
+      this.userDetails.UserID,
+      this.userDetails.TenantID || 1
+    ).subscribe({
+      next: (res: any) => {
+        this.isKYCLoading = false;
+
+        if (res.Status === 'Success') {
+          this.kycStep = 5; // Success
+          this.isKYCVerified = true;
+          this.loadKYCStatus(); // Refresh status
+          this.showToast('KYC verification completed!', 'success');
+        } else {
+          this.showToast('Failed to fetch document data.', 'danger');
+        }
+      },
+      error: (err) => {
+        this.isKYCLoading = false;
+        this.showToast('Error fetching document. Please try again.', 'danger');
+        console.error('Document fetch error:', err);
+      }
+    });
+  }
+
+  /** Complete full KYC flow in one go (alternative method) */
+  completeKYC() {
+    if (!this.kycData.aadhaarNumber || this.kycData.aadhaarNumber.length !== 12) {
+      this.showToast('Please enter valid 12-digit Aadhaar number', 'warning');
+      return;
+    }
+
+    if (!this.kycData.mobileNumber || this.kycData.mobileNumber.length !== 10) {
+      this.showToast('Please enter valid 10-digit mobile number', 'warning');
+      return;
+    }
+
+    this.isKYCLoading = true;
+
+    const request = {
+      userID: this.userDetails.UserID,
+      tenantID: this.userDetails.TenantID || 1,
+      verificationID: this.kycData.verificationId,
+      mobileNumber: this.kycData.mobileNumber,
+      aadhaarNumber: this.kycData.aadhaarNumber,
+      updatedByUser: this.userDetails.FullName || 'User'
+    };
+
+    this.kycService.completeKYC(request).subscribe({
+      next: (res: any) => {
+        this.isKYCLoading = false;
+
+        if (res.isVerified) {
+          this.isKYCVerified = true;
+          this.showKYCModal = false;
+          this.loadKYCStatus();
+          this.showToast('KYC verified successfully!', 'success');
+        } else {
+          this.showToast('KYC verification failed. ' + res.message, 'danger');
+        }
+      },
+      error: (err) => {
+        this.isKYCLoading = false;
+        this.showToast('KYC completion error. Please try again.', 'danger');
+        console.error('Complete KYC error:', err);
+      }
+    });
+  }
+
+  /** Close KYC modal */
+  closeKYCModal() {
+    this.showKYCModal = false;
+    this.kycStep = 1;
+    this.kycService.clearKYCSession();
+  }
+
+  /** Get KYC label */
+  get kycT() {
+    return this.language === 'Hindi' ? this.kycLabels.hi : this.kycLabels.en;
+  }
+
+
+  // Add this property alongside other KYC properties
+showKYCDetails = false;
+
+// Add this method
+openKYCDetails() {
+  if (this.isKYCVerified) {
+    this.showKYCDetails = true;
+  } else {
+    this.openKYCModal();
+  }
+}
 }

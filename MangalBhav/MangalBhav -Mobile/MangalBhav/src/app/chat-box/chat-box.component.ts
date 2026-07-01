@@ -25,6 +25,9 @@ export class ChatBoxComponent implements OnInit {
   userDetails: any;
   allMessagesOfCurrentChatBox: any;
   withUserID: number = 0;
+  chatType: string = '';
+  withUserName: string = 'Pandit Ji';
+
 
   constructor(private route: ActivatedRoute,
     private routerCtrl: NavController,
@@ -35,58 +38,139 @@ export class ChatBoxComponent implements OnInit {
     private router: Router
   ) { }
 
-  async ngOnInit() {
 
+
+
+  async ngOnInit() {
     this.userDetails = await this.storage.get('account');
+
+    this.checkTermsAcceptance();
     const groupId = this.route.snapshot.queryParamMap.get('groupId');
     const withUserID = this.route.snapshot.queryParamMap.get('withUserID');
-    this.withUserID = withUserID ? Number(withUserID) : 0;
-    console.log('Received groupId:', groupId);
-    console.log('Received userID:', withUserID);
+    const chatType = this.route.snapshot.queryParamMap.get('chatType');
+    const withUserName = this.route.snapshot.queryParamMap.get('withUserName');
 
+    this.withUserID = withUserID ? Number(withUserID) : 0;
+    this.chatType = chatType || '';
+    this.withUserName = withUserName || 'Pandit Ji';
+
+    // ── OneToOne (Pandit direct chat) ──
+    if (this.chatType === 'OneToOne') {
+      this.GroupName = this.withUserName;
+      this.loadOneToOneMessages();
+      return;
+    }
+
+    // ── Support ──
     if (Number(groupId) === -1) {
       this.GroupName = 'Support';
-      this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='Support' and identifier='Support'`}`, null)
-        .subscribe((res: any) => {
-          this.supportUserID = Number(res.MasterDataList[0].Description);
-
-          // ── Staff viewing a user's chat vs user viewing own chat ──
-          const filterID = this.withUserID || this.userDetails.UserID;
-
-          this.apinu.postUrlData(
-            `MessagesSelectByQuery?Query= ChatType = 'Support' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
-          ).subscribe((res: any) => {
-            this.allMessagesOfCurrentChatBox = res.MessageList;
-          });
+      this.apinu.postUrlData(
+        `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='Support' and identifier='Support'`}`, null
+      ).subscribe((res: any) => {
+        this.supportUserID = Number(res.MasterDataList[0].Description);
+        const filterID = this.withUserID || this.userDetails.UserID;
+        this.apinu.postUrlData(
+          `MessagesSelectByQuery?Query= ChatType = 'Support' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
+        ).subscribe((res: any) => {
+          this.allMessagesOfCurrentChatBox = res.MessageList;
         });
-
-    } else if (Number(groupId) === -2) {
-      this.GroupName = 'AskPandit';
-      this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='AskPandit' and identifier='AskPandit'`}`, null)
-        .subscribe((res: any) => {
-          this.AskPanditUserID = Number(res.MasterDataList[0].Description);
-
-          // ── Staff viewing a user's chat vs user viewing own chat ──
-          const filterID = this.withUserID || this.userDetails.UserID;
-
-          this.apinu.postUrlData(
-            `MessagesSelectByQuery?Query= ChatType = 'AskPandit' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
-          ).subscribe((res: any) => {
-            this.allMessagesOfCurrentChatBox = res.MessageList;
-          });
-        });
-    } else {
-      this.customGroupID = Number(groupId);
-      this.apinu.postUrlData(`ChatGroupSelect?chatGroupID=${this.customGroupID}`, null).subscribe((res: any) => {
-        this.GroupName = res.ChatGroupList[0]?.GroupName;
-        this.apinu.postUrlData(`MessagesSelectByQuery?Query= ChatType = '${this.GroupName}' and chatGroupID=${this.customGroupID}`, null)
-          .subscribe((res: any) => {
-            this.allMessagesOfCurrentChatBox = res.MessageList;
-            console.log(res)
-          })
-      })
+      });
+      return;
     }
+
+    // ── AskPandit ──
+    if (Number(groupId) === -2) {
+      this.GroupName = 'AskPandit';
+      this.apinu.postUrlData(
+        `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='AskPandit' and identifier='AskPandit'`}`, null
+      ).subscribe((res: any) => {
+        this.AskPanditUserID = Number(res.MasterDataList[0].Description);
+        const filterID = this.withUserID || this.userDetails.UserID;
+        this.apinu.postUrlData(
+          `MessagesSelectByQuery?Query= ChatType = 'AskPandit' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
+        ).subscribe((res: any) => {
+          this.allMessagesOfCurrentChatBox = res.MessageList;
+        });
+      });
+      return;
+    }
+
+    // ── Custom Group ──
+    this.customGroupID = Number(groupId);
+    this.apinu.postUrlData(`ChatGroupSelect?chatGroupID=${this.customGroupID}`, null)
+      .subscribe((res: any) => {
+        this.GroupName = res.ChatGroupList[0]?.GroupName;
+        this.apinu.postUrlData(
+          `MessagesSelectByQuery?Query= ChatType = '${this.GroupName}' and chatGroupID=${this.customGroupID}`, null
+        ).subscribe((res: any) => {
+          this.allMessagesOfCurrentChatBox = res.MessageList;
+        });
+      });
+
+
   }
+
+  loadOneToOneMessages() {
+    const myID = this.userDetails.UserID;
+    const otherID = this.withUserID;
+    this.apinu.postUrlData(
+      `MessagesSelectByQuery?Query= ChatType = 'OneToOne' and ((SenderID = ${myID} and ReceiverID = ${otherID}) or (SenderID = ${otherID} and ReceiverID = ${myID}))`, null
+    ).subscribe((res: any) => {
+      this.allMessagesOfCurrentChatBox = res.MessageList;
+    });
+  }
+  // async ngOnInit() {
+
+  //   this.userDetails = await this.storage.get('account');
+  //   const groupId = this.route.snapshot.queryParamMap.get('groupId');
+  //   const withUserID = this.route.snapshot.queryParamMap.get('withUserID');
+  //   this.withUserID = withUserID ? Number(withUserID) : 0;
+  //   console.log('Received groupId:', groupId);
+  //   console.log('Received userID:', withUserID);
+
+  //   if (Number(groupId) === -1) {
+  //     this.GroupName = 'Support';
+  //     this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='Support' and identifier='Support'`}`, null)
+  //       .subscribe((res: any) => {
+  //         this.supportUserID = Number(res.MasterDataList[0].Description);
+
+  //         // ── Staff viewing a user's chat vs user viewing own chat ──
+  //         const filterID = this.withUserID || this.userDetails.UserID;
+
+  //         this.apinu.postUrlData(
+  //           `MessagesSelectByQuery?Query= ChatType = 'Support' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
+  //         ).subscribe((res: any) => {
+  //           this.allMessagesOfCurrentChatBox = res.MessageList;
+  //         });
+  //       });
+
+  //   } else if (Number(groupId) === -2) {
+  //     this.GroupName = 'AskPandit';
+  //     this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='AskPandit' and identifier='AskPandit'`}`, null)
+  //       .subscribe((res: any) => {
+  //         this.AskPanditUserID = Number(res.MasterDataList[0].Description);
+
+  //         // ── Staff viewing a user's chat vs user viewing own chat ──
+  //         const filterID = this.withUserID || this.userDetails.UserID;
+
+  //         this.apinu.postUrlData(
+  //           `MessagesSelectByQuery?Query= ChatType = 'AskPandit' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
+  //         ).subscribe((res: any) => {
+  //           this.allMessagesOfCurrentChatBox = res.MessageList;
+  //         });
+  //       });
+  //   } else {
+  //     this.customGroupID = Number(groupId);
+  //     this.apinu.postUrlData(`ChatGroupSelect?chatGroupID=${this.customGroupID}`, null).subscribe((res: any) => {
+  //       this.GroupName = res.ChatGroupList[0]?.GroupName;
+  //       this.apinu.postUrlData(`MessagesSelectByQuery?Query= ChatType = '${this.GroupName}' and chatGroupID=${this.customGroupID}`, null)
+  //         .subscribe((res: any) => {
+  //           this.allMessagesOfCurrentChatBox = res.MessageList;
+  //           console.log(res)
+  //         })
+  //     })
+  //   }
+  // }
 
   newMessage: string = '';
 
@@ -98,21 +182,23 @@ export class ChatBoxComponent implements OnInit {
   sendMessage() {
     if (!this.newMessage?.trim()) return;
 
-    var recID = 0;
-    if (this.GroupName === 'Support') {
-      // Staff replying → receiver is the user; User sending → receiver is support staff
+    let recID = 0;
+    let chatTypeToSend = this.GroupName;
+
+    if (this.chatType === 'OneToOne') {
+      recID = this.withUserID;
+      chatTypeToSend = 'OneToOne';
+    } else if (this.GroupName === 'Support') {
       recID = this.withUserID ? this.withUserID : this.supportUserID;
     } else if (this.GroupName === 'AskPandit') {
       recID = this.withUserID ? this.withUserID : this.AskPanditUserID;
-    } else {
-      recID = 0;
     }
 
     const body = {
-      chatGroupID: Number(this.customGroupID),
-      chatType: this.GroupName,
+      chatGroupID: this.chatType === 'OneToOne' ? Number(0) : Number(this.customGroupID),
+      chatType: chatTypeToSend,
       senderID: this.userDetails.UserID,
-      receiverID: recID,          // ← now correctly targets the right person
+      receiverID: recID,
       messageText: this.newMessage,
       messageType: 'Text',
       mediaURL: '',
@@ -120,15 +206,17 @@ export class ChatBoxComponent implements OnInit {
       isDeleted: false
     };
 
-    this.apinu.postUrlData(`MessagesInsert`, body).subscribe((res: any) => {
-      console.log(res);
-      // Refresh messages after sending
-      const filterID = this.withUserID || this.userDetails.UserID;
-      this.apinu.postUrlData(
-        `MessagesSelectByQuery?Query= ChatType = '${this.GroupName}' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
-      ).subscribe((r: any) => {
-        this.allMessagesOfCurrentChatBox = r.MessageList;
-      });
+    this.apinu.postUrlData(`MessagesInsert`, body).subscribe(() => {
+      if (this.chatType === 'OneToOne') {
+        this.loadOneToOneMessages();
+      } else {
+        const filterID = this.withUserID || this.userDetails.UserID;
+        this.apinu.postUrlData(
+          `MessagesSelectByQuery?Query= ChatType = '${chatTypeToSend}' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
+        ).subscribe((r: any) => {
+          this.allMessagesOfCurrentChatBox = r.MessageList;
+        });
+      }
     });
 
     this.newMessage = '';
@@ -144,5 +232,26 @@ export class ChatBoxComponent implements OnInit {
   }
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
+  }
+
+
+  showTermsModal = false;
+  termsChecked = false;
+
+
+  private checkTermsAcceptance() {
+    const accepted = localStorage.getItem('chatTermsAccepted');
+    if (!accepted) {
+      this.showTermsModal = true;
+    }
+  }
+
+  acceptTerms() {
+    localStorage.setItem('chatTermsAccepted', 'true');
+    this.showTermsModal = false;
+  }
+
+  declineTerms() {
+    this.goBack();
   }
 }

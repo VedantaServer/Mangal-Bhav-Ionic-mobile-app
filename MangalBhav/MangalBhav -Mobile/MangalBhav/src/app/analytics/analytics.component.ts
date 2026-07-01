@@ -69,12 +69,12 @@ export class AnalyticsComponent implements OnInit {
       emoji: '🙏',
       colorClass: 'group-saffron',
       cards: [
-        { label: 'Total Users',      labelHi: 'कुल उपयोगकर्ता',   key: 'TotalUsers',         icon: 'people'        },
-        { label: 'Yajmans',          labelHi: 'यजमान',             key: 'TotalYajmans',       icon: 'person-add'    },
-        { label: 'Families',         labelHi: 'परिवार',             key: 'TotalFamily',        icon: 'home'          },
-        { label: 'Family Members',   labelHi: 'परिवार के सदस्य',   key: 'TotalFamilyMembers', icon: 'people-circle' },
-        { label: 'Mandir Members',   labelHi: 'मंदिर सदस्य',       key: 'TotalMandirMember',  icon: 'ribbon'        },
-        { label: 'Social Shares',    labelHi: 'सोशल शेयर',         key: 'TotalSocialMedia',   icon: 'share-social'  },
+        { label: 'Total Users', labelHi: 'कुल उपयोगकर्ता', key: 'TotalUsers', icon: 'people' },
+        { label: 'Yajmans', labelHi: 'यजमान', key: 'TotalYajmans', icon: 'person-add' },
+        { label: 'Families', labelHi: 'परिवार', key: 'TotalFamily', icon: 'home' },
+        { label: 'Family Members', labelHi: 'परिवार के सदस्य', key: 'TotalFamilyMembers', icon: 'people-circle' },
+        { label: 'Mandir Members', labelHi: 'मंदिर सदस्य', key: 'TotalMandirMember', icon: 'ribbon' },
+        { label: 'Social Shares', labelHi: 'सोशल शेयर', key: 'TotalSocialMedia', icon: 'share-social' },
       ]
     },
     {
@@ -83,10 +83,10 @@ export class AnalyticsComponent implements OnInit {
       emoji: '🛕',
       colorClass: 'group-maroon',
       cards: [
-        { label: 'Total Mandirs',    labelHi: 'कुल मंदिर',     key: 'TotalMandirs',      icon: 'business'  },
-        { label: 'Mandir Events',    labelHi: 'मंदिर आयोजन',   key: 'TotalMandirEvents', icon: 'calendar'  },
-        { label: 'Panchang Entries', labelHi: 'पंचांग',         key: 'TotalPanchang',     icon: 'book'      },
-        { label: 'Locations',        labelHi: 'स्थान',           key: 'TotalLocations',    icon: 'location'  },
+        { label: 'Total Mandirs', labelHi: 'कुल मंदिर', key: 'TotalMandirs', icon: 'business' },
+        { label: 'Mandir Events', labelHi: 'मंदिर आयोजन', key: 'TotalMandirEvents', icon: 'calendar' },
+        { label: 'Panchang Entries', labelHi: 'पंचांग', key: 'TotalPanchang', icon: 'book' },
+        { label: 'Locations', labelHi: 'स्थान', key: 'TotalLocations', icon: 'location' },
       ]
     },
     {
@@ -95,10 +95,10 @@ export class AnalyticsComponent implements OnInit {
       emoji: '🕉️',
       colorClass: 'group-teal',
       cards: [
-        { label: 'Total Pandits',    labelHi: 'कुल पंडित',        key: 'TotalPandits',       icon: 'person'    },
-        { label: 'Pandit Services',  labelHi: 'पंडित सेवाएं',      key: 'TotalPanditService', icon: 'sparkles'  },
-        { label: 'Services',         labelHi: 'सेवाएं',             key: 'TotalService',       icon: 'construct' },
-        { label: 'Categories',       labelHi: 'श्रेणियां',          key: 'TotalCategory',      icon: 'layers'    },
+        { label: 'Total Pandits', labelHi: 'कुल पंडित', key: 'TotalPandits', icon: 'person' },
+        { label: 'Pandit Services', labelHi: 'पंडित सेवाएं', key: 'TotalPanditService', icon: 'sparkles' },
+        { label: 'Services', labelHi: 'सेवाएं', key: 'TotalService', icon: 'construct' },
+        { label: 'Categories', labelHi: 'श्रेणियां', key: 'TotalCategory', icon: 'layers' },
       ]
     },
     {
@@ -107,10 +107,10 @@ export class AnalyticsComponent implements OnInit {
       emoji: '💰',
       colorClass: 'group-gold',
       cards: [
-        { label: 'Total Bookings',     labelHi: 'कुल बुकिंग',  key: 'TotalBookings',          icon: 'bookmarks'                   },
-        { label: 'Transactions',       labelHi: 'लेनदेन',       key: 'TotalTransaction',       icon: 'card'                        },
-        { label: 'Pooja Amount',       labelHi: 'पूजा राशि',    key: 'TotalPoojaBookingAmount', icon: 'cash',   prefix: '₹'        },
-        { label: 'Mandir Donations',   labelHi: 'मंदिर दान',    key: 'TotalMandirDonation',    icon: 'wallet', prefix: '₹'        },
+        { label: 'Total Bookings', labelHi: 'कुल बुकिंग', key: 'TotalBookings', icon: 'bookmarks' },
+        { label: 'Transactions', labelHi: 'लेनदेन', key: 'TotalTransaction', icon: 'card' },
+        { label: 'Pooja Amount', labelHi: 'पूजा राशि', key: 'TotalPoojaBookingAmount', icon: 'cash', prefix: '₹' },
+        { label: 'Mandir Donations', labelHi: 'मंदिर दान', key: 'TotalMandirDonation', icon: 'wallet', prefix: '₹' },
       ]
     },
     {
@@ -140,17 +140,38 @@ export class AnalyticsComponent implements OnInit {
     this.loadStats();
   }
 
+
   loadStats(event?: any) {
     if (!event) this.isLoading = true;
     this.loadError = false;
 
     this.apinu.postUrlData('GetDashboardStatistics', null).subscribe({
       next: (res: any) => {
-        this.stats = res[0] as DashboardStats;
+        let data: any = res;
+
+        // Unwrap if the response came back as a raw JSON string
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+          } catch {
+            data = null;
+          }
+        }
+
+        // Handle accidental double-array wrapping
+        if (Array.isArray(data) && Array.isArray(data[0])) {
+          data = data[0];
+        }
+
+        this.stats = (data?.[0] ?? null) as DashboardStats;
+
+        console.log('Dashboard Stats:', JSON.stringify(this.stats));
+
         this.isLoading = false;
         if (event) event.target.complete();
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('Dashboard stats error:', err);
         this.isLoading = false;
         this.loadError = true;
         if (event) event.target.complete();

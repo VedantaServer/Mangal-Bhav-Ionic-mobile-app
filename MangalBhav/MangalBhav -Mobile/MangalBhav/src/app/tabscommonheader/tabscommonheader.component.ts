@@ -115,7 +115,7 @@ export class TabscommonheaderComponent implements OnInit {
 
   // ✅ Replace these with your real store links
   androidLink = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
-  iosLink = 'https://apps.apple.com/app/mangalbhav/id000000000';
+  iosLink = 'https://apps.apple.com/us/app/mangal-bhav/id6764030842';
 
   openShare() {
     this.selectedPlatform = null;
