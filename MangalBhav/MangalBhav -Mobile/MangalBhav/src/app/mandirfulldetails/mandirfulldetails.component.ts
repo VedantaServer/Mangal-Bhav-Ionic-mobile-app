@@ -100,6 +100,7 @@ export class MandirfulldetailsComponent implements OnInit {
     'Other',
   ];
   events: any = [];
+  bankDetails: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -127,8 +128,8 @@ export class MandirfulldetailsComponent implements OnInit {
       || this.route.snapshot.params['id'];
 
     if (this.mandirID) {
-      
-      this.loadMandir(); 
+
+      this.loadMandir();
       this.loadUpcomingEvents();
     }
     // this.loadTransaction();
@@ -181,7 +182,7 @@ export class MandirfulldetailsComponent implements OnInit {
       this.loadMemberCount(); // still show member count to guests
       return;
     }
-  
+
     const query = `MandirID = ${this.mandirID} AND UserID = ${this.userDetails.UserID} AND IsActive = 1`;
     this.apinu
       .postUrlData(`MandirMemberSelectByQuery?tenantID=1&schoolID=0&Query=${encodeURIComponent(query)}`, null)
@@ -199,7 +200,7 @@ export class MandirfulldetailsComponent implements OnInit {
         }
       });
   }
-  
+
   loadMemberCount() {
     const query = `MandirID = ${this.mandirID} AND IsActive = 1`;
     this.apinu
@@ -210,15 +211,15 @@ export class MandirfulldetailsComponent implements OnInit {
         }
       });
   }
-  
+
   joinMandir() {
     if (!this.userDetails?.UserID) {
       this.showToast('Please login to join this mandir community 🙏', 'warning');
       return;
     }
-  
+
     this.isJoining = true;
-  
+
     const member = {
       MandirMemberID: 0,
       TenantID: 1,
@@ -230,7 +231,7 @@ export class MandirfulldetailsComponent implements OnInit {
       DateModified: new Date(),
       UpdatedByUser: this.userDetails.FullName || ''
     };
-  
+
     this.apinu.postUrlData('MandirMemberInsert', member).subscribe({
       next: () => {
         this.isMember = true;
@@ -283,12 +284,12 @@ export class MandirfulldetailsComponent implements OnInit {
   loadUpcomingEvents() {
 
     const today = new Date().toISOString().split('T')[0];
-  
+
     const query =
       `MandirID=${this.mandirID} AND IsVerified = 1
        AND CONVERT(date, EventDate, 23) >= CONVERT(date, GETDATE())
        ORDER BY CONVERT(date, EventDate, 23) ASC`;
-  
+
     this.apinu
       .postUrlData(
         `MandirEventSelectByQuery?Query=${encodeURIComponent(query)}`,
@@ -391,12 +392,81 @@ export class MandirfulldetailsComponent implements OnInit {
     this.activeSlide = (this.activeSlide + 1) % this.slideImages.length;
   }
 
-  // ── Sheet controls ────────────────────────────────────────────
+
   openDonate() {
-    this.currentSection = 'donate';
-    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
-    if (fab) fab.style.display = 'none';
+
+    this.apinu.postUrlData(
+      `BankDetailsSelectByQuery?Query=MandirID=${this.mandirID}`,
+      null
+    ).subscribe((res: any) => {
+
+      if (res.BankDetailList && res.BankDetailList.length > 0) {
+
+        this.bankDetails = res.BankDetailList[0];
+
+        // Continue only if bank details exist
+        this.currentSection = 'donate';
+
+        const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+        if (fab) {
+          fab.style.display = 'none';
+        }
+
+      } else {
+
+        this.showToastMessage(
+          '🚧 Online donation is coming soon for this temple.',
+          'warning'
+        );
+
+      }
+
+    }, () => {
+
+      this.showToastMessage(
+        'Unable to load bank details. Please try again later.',
+        'danger'
+      );
+
+    });
+
   }
+
+  async showToastMessage(
+    message: string,
+    color: 'success' | 'danger' | 'warning' | 'primary' | 'secondary' | 'light' | 'dark' = 'primary'
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color,
+      icon:
+        color === 'success'
+          ? 'checkmark-circle'
+          : color === 'danger'
+          ? 'close-circle'
+          : color === 'warning'
+          ? 'warning'
+          : 'information-circle',
+      buttons: [
+        {
+          text: '✕',
+          role: 'cancel'
+        }
+      ]
+    });
+  
+    await toast.present();
+  }
+  // ── Sheet controls ────────────────────────────────────────────
+  // openDonate() {
+
+
+  //   this.currentSection = 'donate';
+  //   const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+  //   if (fab) fab.style.display = 'none';
+  // }
   closeDonate() {
     this.currentSection = 'main';
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
@@ -632,7 +702,7 @@ export class MandirfulldetailsComponent implements OnInit {
 
   formatEventDate(dateStr: string) {
     const d = new Date(dateStr);
-  
+
     return {
       dd: d.toLocaleDateString('en-IN', { day: '2-digit' }),
       mon: d.toLocaleDateString('en-IN', { month: 'short' }).toUpperCase()
@@ -709,21 +779,21 @@ ${shareUrl}
       .subscribe({
         next: (res: any) => {
           let data: any = res;
-  
+
           // Unwrap if the response came back as a raw JSON string
           if (typeof data === 'string') {
             try { data = JSON.parse(data); } catch { data = null; }
           }
-  
+
           // Defensive: handle accidental double-array wrapping too
           if (Array.isArray(data) && Array.isArray(data[0])) {
             data = data[0];
           }
-  
+
           this.donationSummary = data?.[0] ?? null;
           console.log('donationSummary:', JSON.stringify(this.donationSummary));
         },
-        error: (err:any) => console.error('donation summary error', err)
+        error: (err: any) => console.error('donation summary error', err)
       });
   }
   showDonors() {

@@ -289,9 +289,9 @@ export class Tab1Page {
 
   followOn(platform: 'facebook' | 'instagram' | 'linkedin') {
     const urls: any = {
-      facebook: 'https://www.facebook.com/mangalbhav',   // 🔁 your page URL
-      instagram: 'https://www.instagram.com/mangalbhav',  // 🔁 your handle
-      linkedin: 'https://www.linkedin.com/company/mangalbhav' // 🔁 your company page
+      facebook: 'https://www.facebook.com/profile.php?id=61575446319952',   // 🔁 your page URL
+      instagram: 'https://www.instagram.com/mangal_bhav_official/',  // 🔁 your handle
+      linkedin: 'https://www.youtube.com/@mangal_bhav_official' // 🔁 your company page
     };
     Browser.open({ url: urls[platform] });
   }

@@ -762,6 +762,31 @@ export class FindPanditComponent implements OnInit, OnDestroy {
    * Records a ProfileView event. Fire-and-forget — errors are swallowed
    * so a tracking failure can never break the modal open flow.
    */
+  // private trackProfileView(item: any): void {
+  //   const panditUserID = item.profile?.UserID || item.user?.UserID;
+  //   if (!panditUserID) return;
+
+  //   const payload = {
+  //     TenantID: 1,
+  //     PanditUserID: panditUserID,
+  //     ViewedByUserID: this.userDetails?.UserID || 0,   // 0 = anonymous / guest
+  //     IPAddress: '',
+  //     Device: Capacitor.getPlatform() || 'web',
+  //     Source: 'FindPandit',
+  //     DateAdded: new Date().toISOString()
+  //   };
+
+  //   this.apinu.postUrlData('ProfileViewsInsert', payload)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({ error: () => { /* tracking failure must not crash the page */ } });
+  // }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // PROFILE LIKE TRACKING
+  // ─────────────────────────────────────────────────────────────────────────
+
+
+
   private trackProfileView(item: any): void {
     const panditUserID = item.profile?.UserID || item.user?.UserID;
     if (!panditUserID) return;
@@ -769,7 +794,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     const payload = {
       TenantID: 1,
       PanditUserID: panditUserID,
-      ViewedByUserID: this.userDetails?.UserID || 0,   // 0 = anonymous / guest
+      ViewedByUserID: this.userDetails?.UserID || 0,
       IPAddress: '',
       Device: Capacitor.getPlatform() || 'web',
       Source: 'FindPandit',
@@ -778,13 +803,14 @@ export class FindPanditComponent implements OnInit, OnDestroy {
 
     this.apinu.postUrlData('ProfileViewsInsert', payload)
       .pipe(takeUntil(this.destroy$))
-      .subscribe({ error: () => { /* tracking failure must not crash the page */ } });
+      .subscribe({
+        next: () => {
+          this.viewsCount = (this.viewsCount || 0) + 1;   // 👈 NEW
+          this.cdr.markForCheck();
+        },
+        error: () => { /* tracking failure must not crash the page */ }
+      });
   }
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // PROFILE LIKE TRACKING
-  // ─────────────────────────────────────────────────────────────────────────
-
   /** Returns true if the current user has already liked this pandit. */
   isPanditLiked(item: any): boolean {
     const panditUserID = item?.profile?.UserID || item?.user?.UserID;
@@ -849,6 +875,90 @@ export class FindPanditComponent implements OnInit, OnDestroy {
    *
    * A debounce guard (isTogglingLike) prevents duplicate in-flight requests.
    */
+  // toggleLike(item: any): void {
+  //   if (this.isTogglingLike) return;
+
+  //   const panditUserID = item?.profile?.UserID || item?.user?.UserID;
+  //   if (!panditUserID) return;
+
+  //   const alreadyLiked = this.likedPanditMap.has(panditUserID);
+
+  //   if (alreadyLiked) {
+  //     // ── UNLIKE ──────────────────────────────────────────────────────────
+  //     const profileLikeID = this.likedPanditMap.get(panditUserID)!;
+
+  //     // Optimistic UI update first so the button feels instant
+  //     this.likedPanditMap.delete(panditUserID);
+  //     this.isTogglingLike = true;
+  //     this.cdr.markForCheck();
+
+  //     this.apinu.postUrlData(`ProfileLikeDelete?profileLikeID=${profileLikeID}&tenantID=1`, null)
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe({
+  //         next: () => {
+  //           // Already removed optimistically — just release the guard
+  //           this.isTogglingLike = false;
+  //           this.cdr.markForCheck();
+  //         },
+  //         error: () => {
+  //           // Rollback: put the like back if the delete failed
+  //           this.likedPanditMap.set(panditUserID, profileLikeID);
+  //           this.isTogglingLike = false;
+  //           this.cdr.markForCheck();
+  //         }
+  //       });
+
+  //   } else {
+  //     // ── LIKE ────────────────────────────────────────────────────────────
+  //     this.isTogglingLike = true;
+  //     this.cdr.markForCheck();
+
+  //     const payload = {
+  //       TenantID: 1,
+  //       PanditUserID: panditUserID,
+  //       LikedByUserID: this.userDetails?.UserID || 0,
+  //       IPAddress: '',
+  //       Device: Capacitor.getPlatform() || 'web',
+  //       Source: 'FindPandit',
+  //       DateAdded: new Date().toISOString()
+  //     };
+
+  //     this.apinu.postUrlData('ProfileLikeInsert', payload)
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           // Store the ProfileLikeID returned by the API — needed for future delete
+  //           const newLikeID = res?.ProfileLikeID;
+  //           if (newLikeID) {
+  //             this.likedPanditMap.set(panditUserID, newLikeID);
+  //           } else {
+  //             // API succeeded but didn't return an ID (edge case).
+  //             // Store a sentinel (-1) so isPanditLiked stays true.
+  //             this.likedPanditMap.set(panditUserID, -1);
+  //           }
+  //           this.isTogglingLike = false;
+  //           this.cdr.markForCheck();
+  //         },
+  //         error: () => {
+  //           // Don't mark as liked if the API call actually failed
+  //           this.isTogglingLike = false;
+  //           this.cdr.markForCheck();
+  //         }
+  //       });
+  //   }
+  // }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // MODAL — EXPLORE SERVICE
+  // ─────────────────────────────────────────────────────────────────────────
+  exploreService(service: any) {
+    this.selectedPandit = this.activePandit;
+    this.selectedService = service;
+    this.isPanditModalOpen = false;
+    setTimeout(() => { this.isExploreModalOpen = true; this.cdr.markForCheck(); }, 250);
+  }
+
+
   toggleLike(item: any): void {
     if (this.isTogglingLike) return;
 
@@ -863,6 +973,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
 
       // Optimistic UI update first so the button feels instant
       this.likedPanditMap.delete(panditUserID);
+      this.likeCount = Math.max(0, (this.likeCount || 0) - 1);   // 👈 NEW
       this.isTogglingLike = true;
       this.cdr.markForCheck();
 
@@ -870,13 +981,13 @@ export class FindPanditComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Already removed optimistically — just release the guard
             this.isTogglingLike = false;
             this.cdr.markForCheck();
           },
           error: () => {
             // Rollback: put the like back if the delete failed
             this.likedPanditMap.set(panditUserID, profileLikeID);
+            this.likeCount = (this.likeCount || 0) + 1;          // 👈 NEW rollback
             this.isTogglingLike = false;
             this.cdr.markForCheck();
           }
@@ -884,6 +995,8 @@ export class FindPanditComponent implements OnInit, OnDestroy {
 
     } else {
       // ── LIKE ────────────────────────────────────────────────────────────
+      // Make this optimistic too, same as unlike, so the number moves instantly
+      this.likeCount = (this.likeCount || 0) + 1;                // 👈 NEW
       this.isTogglingLike = true;
       this.cdr.markForCheck();
 
@@ -901,35 +1014,19 @@ export class FindPanditComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (res: any) => {
-            // Store the ProfileLikeID returned by the API — needed for future delete
             const newLikeID = res?.ProfileLikeID;
-            if (newLikeID) {
-              this.likedPanditMap.set(panditUserID, newLikeID);
-            } else {
-              // API succeeded but didn't return an ID (edge case).
-              // Store a sentinel (-1) so isPanditLiked stays true.
-              this.likedPanditMap.set(panditUserID, -1);
-            }
+            this.likedPanditMap.set(panditUserID, newLikeID || -1);
             this.isTogglingLike = false;
             this.cdr.markForCheck();
           },
           error: () => {
-            // Don't mark as liked if the API call actually failed
+            // Rollback the optimistic increment
+            this.likeCount = Math.max(0, (this.likeCount || 0) - 1);  // 👈 NEW rollback
             this.isTogglingLike = false;
             this.cdr.markForCheck();
           }
         });
     }
-  }
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // MODAL — EXPLORE SERVICE
-  // ─────────────────────────────────────────────────────────────────────────
-  exploreService(service: any) {
-    this.selectedPandit = this.activePandit;
-    this.selectedService = service;
-    this.isPanditModalOpen = false;
-    setTimeout(() => { this.isExploreModalOpen = true; this.cdr.markForCheck(); }, 250);
   }
 
   async goToBooking(selectedService: any) {
@@ -1047,18 +1144,16 @@ export class FindPanditComponent implements OnInit, OnDestroy {
 
     // Record the share event (fire-and-forget)
     if (panditUserID) {
-      const payload = {
-        TenantID: 1,
-        PanditUserID: panditUserID,
-        SharedByUserID: this.userDetails?.UserID || 0,
-        IPAddress: '',
-        Device: Capacitor.getPlatform() || 'web',
-        Source: 'FindPandit',
-        DateAdded: new Date().toISOString()
-      };
+      const payload = { /* ...same as before... */ };
       this.apinu.postUrlData('ProfileShareInsert', payload)
         .pipe(takeUntil(this.destroy$))
-        .subscribe({ error: () => { /* tracking failure must not block share */ } });
+        .subscribe({
+          next: () => {
+            this.shareCount = (this.shareCount || 0) + 1;   // 👈 NEW
+            this.cdr.markForCheck();
+          },
+          error: () => { /* tracking failure must not block share */ }
+        });
     }
 
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');

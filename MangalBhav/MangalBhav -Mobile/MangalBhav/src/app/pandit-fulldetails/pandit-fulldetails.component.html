@@ -18,11 +18,8 @@
   </div>
 
   <div class="search-wrap">
-    <ion-input
-      [(ngModel)]="searchQuery"
-      placeholder="Search by name or number..."
-      class="search-input"
-      (keyup.enter)="searchPandits()">   <!-- also works on keyboard Enter -->
+    <ion-input [(ngModel)]="searchQuery" placeholder="Search by name or number..." class="search-input"
+      (keyup.enter)="searchPandits()"> <!-- also works on keyboard Enter -->
     </ion-input>
     <ion-button class="search-btn" (click)="searchPandits()">
       <ion-icon slot="icon-only" name="search-outline"></ion-icon>
@@ -63,9 +60,18 @@
           <ion-icon slot="start" name="call-outline"></ion-icon>
           Call
         </ion-button>
+        <ion-button fill="clear" size="small" color="success" class="contact-btn"
+          (click)="openVerificationPopup(pandit)">
+          <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+          Verify
+        </ion-button>
         <ion-button fill="clear" size="small" class="contact-btn" (click)="openPayPopup(pandit)">
           <ion-icon slot="start" name="cash-outline"></ion-icon>
           Pay
+        </ion-button>
+        <ion-button fill="clear" size="small" class="contact-btn" (click)="openReferralPopup(pandit)">
+          <ion-icon slot="start" name="git-network-outline"></ion-icon>
+          Referral
         </ion-button>
         <ion-button fill="clear" size="small" class="contact-btn" (click)="login(pandit.LoginID)">
           <ion-icon slot="start" name="log-in-outline"></ion-icon>
@@ -108,36 +114,30 @@
 
     <div class="field-wrap">
       <label>Amount (₹) <span class="req">*</span></label>
-      <ion-input [(ngModel)]="payAmount" type="number"
-                 placeholder="Enter amount" class="field-input"></ion-input>
+      <ion-input [(ngModel)]="payAmount" type="number" placeholder="Enter amount" class="field-input"></ion-input>
     </div>
 
     <div class="field-wrap">
       <label>Mode</label>
-      <ion-input [(ngModel)]="PaymentMode" type="tel"
-                 placeholder="Payment Mode" class="field-input"></ion-input>
+      <ion-input [(ngModel)]="PaymentMode" type="tel" placeholder="Payment Mode" class="field-input"></ion-input>
     </div>
 
     <div class="field-wrap">
       <label>Reference No. <span class="req">*</span></label>
-      <ion-input [(ngModel)]="payRefNo"
-                 placeholder="UPI / bank ref no." class="field-input"></ion-input>
+      <ion-input [(ngModel)]="payRefNo" placeholder="UPI / bank ref no." class="field-input"></ion-input>
     </div>
 
     <div class="field-wrap">
       <label>Donor Name</label>
-      <ion-input [(ngModel)]="payDonorName"
-                 placeholder="Payer name (optional)" class="field-input"></ion-input>
+      <ion-input [(ngModel)]="payDonorName" placeholder="Payer name (optional)" class="field-input"></ion-input>
     </div>
 
     <div class="field-wrap">
       <label>Donor Phone</label>
-      <ion-input [(ngModel)]="payPhone" type="tel"
-                 placeholder="Payer phone (optional)" class="field-input"></ion-input>
+      <ion-input [(ngModel)]="payPhone" type="tel" placeholder="Payer phone (optional)" class="field-input"></ion-input>
     </div>
 
-    <ion-button expand="block" class="submit-btn"
-                [disabled]="isSubmitting" (click)="submitPayment()">
+    <ion-button expand="block" class="submit-btn" [disabled]="isSubmitting" (click)="submitPayment()">
       <ion-spinner *ngIf="isSubmitting" name="crescent" slot="start"></ion-spinner>
       {{ isSubmitting ? 'Saving…' : '🙏 Record Dakshina' }}
     </ion-button>
@@ -162,6 +162,115 @@
       </div>
       <span class="tx-amount">₹{{ tx.Amount }}</span>
     </div>
+  </div>
+
+</div>
+
+<div class="pay-backdrop" *ngIf="referralPopupOpen" (click)="closeReferralPopup()">
+</div>
+
+<div class="pay-popup" *ngIf="referralPopupOpen">
+
+  <div class="popup-header">
+
+    <div>
+      <p class="popup-sub">Referral</p>
+      <h3 class="popup-title">
+        {{selectedReferralPandit?.FullName}}
+      </h3>
+    </div>
+
+    <ion-button fill="clear" (click)="closeReferralPopup()">
+      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+    </ion-button>
+
+  </div>
+
+  <div class="popup-form">
+
+    <div class="field-wrap">
+
+      <label>Referral Code</label>
+
+      <ion-input [(ngModel)]="referralCode" placeholder="Enter referral code">
+      </ion-input>
+
+    </div>
+
+    <ion-button expand="block" class="submit-btn" (click)="submitReferral()">
+
+      Save Referral
+
+    </ion-button>
+
+  </div>
+
+</div>
+
+
+<div class="pay-backdrop"
+     *ngIf="verificationPopupOpen"
+     (click)="closeVerificationPopup()">
+</div>
+
+<div class="pay-popup" *ngIf="verificationPopupOpen">
+
+  <div class="popup-header">
+    <div>
+      <p class="popup-sub">Verification</p>
+      <h3 class="popup-title">
+        {{selectedVerificationPandit?.FullName}}
+      </h3>
+    </div>
+
+    <ion-button fill="clear" (click)="closeVerificationPopup()">
+      <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="popup-form">
+
+    <div class="field-wrap">
+      <label>Status</label>
+
+      <ion-select
+        [(ngModel)]="verificationStatus"
+        interface="popover">
+
+        <ion-select-option value="PENDING">
+          Pending
+        </ion-select-option>
+
+        <ion-select-option value="APPROVED">
+          Approved
+        </ion-select-option>
+
+        <ion-select-option value="REJECTED">
+          Rejected
+        </ion-select-option>
+
+      </ion-select>
+    </div>
+
+    <div class="field-wrap">
+      <label>Remarks</label>
+
+      <ion-textarea
+        rows="3"
+        [(ngModel)]="verificationRemarks"
+        placeholder="Optional remarks">
+      </ion-textarea>
+    </div>
+
+    <ion-button
+      expand="block"
+      color="success"
+      (click)="saveVerification()">
+
+      Save Verification
+
+    </ion-button>
+
   </div>
 
 </div>

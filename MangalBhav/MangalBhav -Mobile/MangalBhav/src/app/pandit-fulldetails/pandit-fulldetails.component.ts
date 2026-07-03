@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -26,11 +26,20 @@ export class PanditFulldetailsComponent implements OnInit {
   displayList: any[] = [];
   searchQuery: string = '';
   PaymentMode: any = '';
+  verificationPopupOpen = false;
+  selectedVerificationPandit: any = null;
+  verificationStatus = '';
+  verificationRemarks = '';
+  referralPopupOpen = false;
+  selectedReferralPandit: any = null;
+
+  referralCode = '';
+  referrerUserID = 0;
 
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api, private fcm: FcmService,
-    private storage: Storage, private router: Router,
+    private storage: Storage, private router: Router, public toastController: ToastController,
     private plt: Platform,
     private http: HttpClient,
     private alertCtrl: AlertController) { }
@@ -116,7 +125,7 @@ export class PanditFulldetailsComponent implements OnInit {
 
     this.isSubmitting = true;
     this.MandirTransaction = {
-      TenantID : 1,
+      TenantID: 1,
       MandirID: 0,
       UserID: this.selectedPandit.UserID,
       DonorName: this.payDonorName,
@@ -190,4 +199,234 @@ export class PanditFulldetailsComponent implements OnInit {
         }
       })
   }
+
+  openReferralPopup(pandit: any) {
+    this.selectedReferralPandit = pandit;
+    this.referralCode = '';
+    this.referrerUserID = 0;
+    this.referralPopupOpen = true;
+  }
+
+  closeReferralPopup() {
+    this.referralPopupOpen = false;
+  }
+
+  async submitReferral() {
+
+    if (!this.referralCode.trim()) {
+
+      const alert = await this.alertCtrl.create({
+        header: 'Referral Code',
+        message: 'Please enter referral code.',
+        buttons: ['OK']
+      });
+
+      return alert.present();
+    }
+
+    // validate referral code
+    this.apinu.postUrlData(
+      `UserReferralCodeSelectByQuery?Query=ReferralCode='${this.referralCode.trim().toUpperCase()}'`,
+      null
+    ).subscribe(async (res: any) => {
+
+      if (!res.UserReferralCodeList || res.UserReferralCodeList.length == 0) {
+
+        const a = await this.alertCtrl.create({
+          header: 'Invalid',
+          message: 'Referral code not found.',
+          buttons: ['OK']
+        });
+
+        return a.present();
+      }
+
+      this.referrerUserID = res.UserReferralCodeList[0].UserID;
+
+      // don't allow self referral
+      if (this.referrerUserID == this.selectedReferralPandit.UserID) {
+
+        const a = await this.alertCtrl.create({
+          header: 'Invalid',
+          message: 'A user cannot refer themselves.',
+          buttons: ['OK']
+        });
+
+        return a.present();
+      }
+
+      // confirmation
+      const confirm = await this.alertCtrl.create({
+        header: 'Confirm Referral',
+        message:
+          `Are you sure you want to link referral code <b>${this.referralCode.toUpperCase()}</b> with <b>${this.selectedReferralPandit.FullName}</b>?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Yes',
+            handler: () => {
+
+              const body = {
+                ReferrerUserID: this.referrerUserID,
+                ReferredUserID: this.selectedReferralPandit.UserID,
+                ReferralCode: this.referralCode.trim().toUpperCase(),
+                ReferralDate: new Date()
+              };
+
+              this.apinu.postUrlData(
+                `UserReferralHistorySelectByQuery?Query=ReferredUserID='${this.selectedReferralPandit.UserID}'`,
+                null
+              )
+                .subscribe(async (history: any) => {
+
+                  if (history.UserReferralHistoryList?.length) {
+
+                    const a = await this.alertCtrl.create({
+                      header: 'Already Referred',
+                      message: 'This pandit already has a referral linked.',
+                      buttons: ['OK']
+                    });
+
+                    return a.present();
+                  }
+
+                  // continue with confirmation & insert
+
+                });
+
+              this.apinu.postUrlData(
+                'UserReferralHistoryInsert',
+                body
+              ).subscribe(async () => {
+
+                this.closeReferralPopup();
+
+                const success = await this.alertCtrl.create({
+                  header: 'Success',
+                  message: 'Referral added successfully.',
+                  buttons: ['OK']
+                });
+
+                success.present();
+
+              });
+
+            }
+          }
+        ]
+      });
+
+      confirm.present();
+
+    });
+
+  }
+
+  async showToastMessage(
+    message: string,
+    color: 'success' | 'danger' | 'warning' | 'primary' | 'secondary' | 'light' | 'dark' = 'primary'
+  ) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2500,
+      position: 'top',
+      color,
+      icon:
+        color === 'success'
+          ? 'checkmark-circle'
+          : color === 'danger'
+          ? 'close-circle'
+          : color === 'warning'
+          ? 'warning'
+          : 'information-circle',
+      buttons: [
+        {
+          text: '✕',
+          role: 'cancel'
+        }
+      ]
+    });
+  
+    await toast.present();
+  }
+
+  async saveVerification() {
+
+    if (!this.verificationStatus) {
+      return this.showToastMessage(
+        'Please select verification status.',
+        'warning'
+      );
+    }
+  
+    const confirm = await this.alertCtrl.create({
+      header: 'Confirm Verification',
+      message: `Are you sure you want to mark <b>${this.selectedVerificationPandit.FullName}</b> as <b>${this.verificationStatus}</b>?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+  
+            // Load profile first
+            this.apinu.postUrlData(
+              `ProfilesNUSelectByQuery?Query=UserID=${this.selectedVerificationPandit.UserID}`,
+              null
+            ).subscribe((res: any) => {
+  
+              if (!res.ProfileList || res.ProfileList.length === 0) {
+                this.showToastMessage('Profile not found.', 'danger');
+                return;
+              }
+  
+              const profile = {
+                ...res.ProfileList[0],
+                VerificationStatus: this.verificationStatus,
+                DateModified: new Date(),
+                UpdatedByUser: 'ADMIN' // or logged in UserID
+              };
+  
+              this.apinu.postUrlData(
+                'ProfilesUpdate',
+                profile
+              ).subscribe(() => {
+  
+                // Update UI immediately
+                this.selectedVerificationPandit.VerificationStatus = this.verificationStatus;
+  
+                this.closeVerificationPopup();
+  
+                this.showToastMessage(
+                  `Verification status updated to ${this.verificationStatus}.`,
+                  'success'
+                );
+  
+              });
+  
+            });
+  
+          }
+        }
+      ]
+    });
+  
+    confirm.present();
+  }
+  openVerificationPopup(pandit: any) {
+    this.selectedVerificationPandit = pandit;
+    this.verificationStatus = pandit.VerificationStatus || '';
+    this.verificationRemarks = '';
+    this.verificationPopupOpen = true;
+  }
+
+  closeVerificationPopup() {
+    this.verificationPopupOpen = false;
+  }
+
 }
