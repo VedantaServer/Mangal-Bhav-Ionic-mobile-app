@@ -1359,15 +1359,16 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
   // ── REPLACE your entire capture/download methods with this ──
 
 
-
   async downloadPanchangAsImage() {
     try {
+      const CAPTURE_WIDTH = 1600; // pick your target width and use it EVERYWHERE
+
       const iframe = document.createElement('iframe');
       iframe.style.position = 'fixed';
       iframe.style.left = '-9999px';
       iframe.style.top = '0';
-      iframe.style.width = '1200px';
-      iframe.style.height = '1600px'; // temporary — just needs to be tall enough to render
+      iframe.style.width = `${CAPTURE_WIDTH}px`;
+      iframe.style.height = '1600px'; // temporary, just tall enough to render
       document.body.appendChild(iframe);
 
       const doc = iframe.contentDocument || iframe.contentWindow!.document;
@@ -1378,10 +1379,10 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
       // Wait for images
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // ✅ Measure actual rendered content height
+      // Measure actual rendered content height AT THE SAME WIDTH
       const sheetEl = doc.querySelector('.sheet') as HTMLElement;
       const actualHeight = sheetEl
-        ? sheetEl.getBoundingClientRect().height + 48 // + body padding (24px top+bottom from body{padding:24px})
+        ? sheetEl.getBoundingClientRect().height + 48
         : doc.body.scrollHeight;
 
       // Resize iframe to match actual content before capture
@@ -1392,9 +1393,9 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: true,
-        width: 1200,
+        width: CAPTURE_WIDTH,       
         height: actualHeight,
-        windowWidth: 1200,
+        windowWidth: CAPTURE_WIDTH,  
         windowHeight: actualHeight,
       });
 

@@ -279,7 +279,7 @@ namespace FaceUPAI.API
                 kycRecord.UserID = userId;
                 kycRecord.TenantID = tenantId;
                 kycRecord.IsEKYC = true;
-                kycRecord.IsMBVerified = true;
+                kycRecord.IsMBVerified = false;
                 kycRecord.VerifiedName = verifiedName;
                 kycRecord.VerifiedAddress = verifiedAddress;
                 kycRecord.VerifiedDOB = verifiedDOB;

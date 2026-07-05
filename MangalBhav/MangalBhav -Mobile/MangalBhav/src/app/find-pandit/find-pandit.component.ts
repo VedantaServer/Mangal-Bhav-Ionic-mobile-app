@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { Subject, forkJoin, from, map, mergeMap, of, toArray, takeUntil } from 'rxjs';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BarcodeFormat } from '@zxing/library';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
@@ -257,7 +257,8 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     private plt: Platform,
     private http: HttpClient,
     private alertCtrl: AlertController,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) { }
 
   ionViewDidEnter() {
@@ -349,7 +350,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
               });
 
               if (!loadMore) {
-                const pandituserid = new URL(window.location.href).searchParams.get('pandituserid');
+                const pandituserid = this.route.snapshot.queryParamMap.get('pandituserid');
                 if (pandituserid && this.panditList.length > 0) {
                   setTimeout(() => this.openPanditModal(this.panditList[0]), 500);
                 }
@@ -537,20 +538,34 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────
   // DEEP LINK
   // ─────────────────────────────────────────────────────────────────────────
-  checkPanditDeepLink(): boolean {
-    const raw = new URL(window.location.href).searchParams.get('pandituserid');
-    if (!raw) return false;
+  // checkPanditDeepLink(): boolean {
+  //   const raw = this.route.snapshot.queryParamMap.get('pandituserid');
+  //   if (!raw) return false;
 
+  //   const uid = Number(raw);
+  //   if (!uid || isNaN(uid) || uid <= 0 || !Number.isInteger(uid)) return false;
+
+  //   this.serverSideSearchActive = true;
+  //   this.query = `U.UserID = ${uid} ORDER BY U.UserID DESC`;
+  //   this.pageNumber = 1;
+  //   this.panditList = [];
+  //   this.loadPanditProfiles(this.query);
+  //   return true;
+  // }
+
+
+
+  checkPanditDeepLink(): boolean {
+    const raw = this.route.snapshot.queryParamMap.get('pandituserid');
+    if (!raw) return false;
+  
     const uid = Number(raw);
     if (!uid || isNaN(uid) || uid <= 0 || !Number.isInteger(uid)) return false;
-
-    this.serverSideSearchActive = true;
-    this.query = `U.UserID = ${uid} ORDER BY U.UserID DESC`;
-    this.pageNumber = 1;
-    this.panditList = [];
-    this.loadPanditProfiles(this.query);
+  
+    this.router.navigate(['/open-find-pandit', uid], { replaceUrl: true });
     return true;
   }
+
 
   // ─────────────────────────────────────────────────────────────────────────
   // INFINITE SCROLL
@@ -603,42 +618,42 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────
   // MODAL — PANDIT DETAIL
   // ─────────────────────────────────────────────────────────────────────────
-  openPanditModal(item: any) {
-    this.activePandit = item;
-    this.activePanditServices = item.panditServices || [];
-    this.lightboxImageUrl = null;
-    this.isPanditModalOpen = true;
-    this.cdr.markForCheck();
+  // openPanditModal(item: any) {
+  //   this.activePandit = item;
+  //   this.activePanditServices = item.panditServices || [];
+  //   this.lightboxImageUrl = null;
+  //   this.isPanditModalOpen = true;
+  //   this.cdr.markForCheck();
 
-    // Track profile view (fire-and-forget, must not block UI)
-    this.trackProfileView(item);
+  //   // Track profile view (fire-and-forget, must not block UI)
+  //   this.trackProfileView(item);
 
 
-    //console.log(item.user.UserID)
+  //   //console.log(item.user.UserID)
 
-    this.checkEngagements(item);
-    // Check if the logged-in user has already liked this pandit (hydrates likedPanditMap)
-    this.checkExistingLike(item);
+  //   this.checkEngagements(item);
+  //   // Check if the logged-in user has already liked this pandit (hydrates likedPanditMap)
+  //   this.checkExistingLike(item);
 
-    if (!item._servicesLoaded) {
-      this.isLoadingServices = true;
-      this.loadServicesForPandit(item)
-        .then(services => {
-          item.panditServices = services;
-          item._servicesLoaded = true;
-          this.activePanditServices = services;
-          this.isLoadingServices = false;
-          this.cdr.markForCheck();
-          this.loadBookingCounts(services);
-        })
-        .catch(() => {
-          item._servicesLoaded = true;
-          this.activePanditServices = [];
-          this.isLoadingServices = false;
-          this.cdr.markForCheck();
-        });
-    }
-  }
+  //   if (!item._servicesLoaded) {
+  //     this.isLoadingServices = true;
+  //     this.loadServicesForPandit(item)
+  //       .then(services => {
+  //         item.panditServices = services;
+  //         item._servicesLoaded = true;
+  //         this.activePanditServices = services;
+  //         this.isLoadingServices = false;
+  //         this.cdr.markForCheck();
+  //         this.loadBookingCounts(services);
+  //       })
+  //       .catch(() => {
+  //         item._servicesLoaded = true;
+  //         this.activePanditServices = [];
+  //         this.isLoadingServices = false;
+  //         this.cdr.markForCheck();
+  //       });
+  //   }
+  // }
 
 
   checkEngagements(item: any) {
@@ -821,6 +836,12 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   isPanditLikeChecking(item: any): boolean {
     const panditUserID = item?.profile?.UserID || item?.user?.UserID;
     return !!panditUserID && this.likeCheckingIDs.has(panditUserID);
+  }
+
+  openPanditModal(item: any) {
+    const panditUserID = item.profile?.UserID || item.user?.UserID;
+    if (!panditUserID) return;
+    this.router.navigate(['/open-find-pandit', panditUserID]);
   }
 
   /**
@@ -1056,6 +1077,22 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     this.loadPanditProfiles(this.query);
   }
 
+  // onScanSuccess(result: string) {
+  //   this.scannedQrData = result;
+  //   this.isScannerOpen = false;
+  //   const match = result.toLowerCase().match(/pandituserid=(\d+)/);
+  //   if (match) {
+  //     const uid = Number(match[1]);
+  //     if (uid && !isNaN(uid) && uid > 0) {
+  //       this.serverSideSearchActive = true;
+  //       this.query = `U.UserID = ${uid} ORDER BY U.UserID DESC`;
+  //       this.pageNumber = 1;
+  //       this.panditList = [];
+  //       this.loadPanditProfiles(this.query);
+  //     }
+  //   }
+  // }
+
   onScanSuccess(result: string) {
     this.scannedQrData = result;
     this.isScannerOpen = false;
@@ -1063,11 +1100,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     if (match) {
       const uid = Number(match[1]);
       if (uid && !isNaN(uid) && uid > 0) {
-        this.serverSideSearchActive = true;
-        this.query = `U.UserID = ${uid} ORDER BY U.UserID DESC`;
-        this.pageNumber = 1;
-        this.panditList = [];
-        this.loadPanditProfiles(this.query);
+        this.router.navigate(['/open-find-pandit', uid]);
       }
     }
   }

@@ -38,7 +38,7 @@
       <span class="mb-tab-label">Pandit ji</span>
     </div>
 
-    <div class="mb-tab-btn" [class.tab-active]="isProfileActive()" (click)="openProfile()">
+    <div class="mb-tab-btn" [class.tab-active]="isProfileActive()" (click)="openProfile()" *ngIf="!adminloggedin">
       <div class="mb-active-fab">
         <img src="/assets/user.png" class="mb-fab-img"/>
       </div>
@@ -48,5 +48,13 @@
       </span>
     </div>
 
+
+    <div class="mb-tab-btn" [class.tab-active]="isAdminDashboardActive()" (click)="openAdminDashboard()" *ngIf="adminloggedin">
+      <div class="mb-active-fab">
+        <img src="/assets/user.png" class="mb-fab-img"/>
+      </div>
+      <img src="/assets/user.png" class="mb-tab-img"/>
+      <span class="mb-tab-label">Admin</span>
+    </div>
   </div>
 </div>

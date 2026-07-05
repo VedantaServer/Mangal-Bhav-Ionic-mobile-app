@@ -83,7 +83,9 @@ export class Tab1Page {
       changeLang: 'भाषा बदलें'
     }
   };
-
+  showBroadcastModal = false;
+  broadcastMessage = '';
+  private broadcastDateStr = '';
   language: any;
   FullName: any;
   sloganName: any;
@@ -173,27 +175,23 @@ export class Tab1Page {
   async ngOnInit() {
     this.getSlogan();
 
-
     this.userDetails = await this.storage.get("account");
-
 
     this.fetchUnreadCount();
     this.checkMobileAppVersion();
 
     this.language = this.userDetails.Languages;
     this.FullName = this.userDetails.FullName;
-    // console.log('ACCOUNT OBJECT:', this.userDetails);
     this.loadProfilePhoto();
     this.loadReferralCode();
+    this.checkAndShowBroadcast();   // ← add this
+
     if (
       await this.storage.get("IsUserLoggedIn") &&
       this.userDetails?.Role !== 'PANDIT'
     ) {
       this.routerCtrl.navigateForward('/login');
     }
-
-
-
 
     if (this.FullName == null) {
       const alert = await this.alertCtrl.create({
@@ -217,8 +215,6 @@ export class Tab1Page {
     }
     console.log(this.userDetails);
 
-
-
     if (
       await this.storage.get("languageChange")
     ) {
@@ -226,17 +222,9 @@ export class Tab1Page {
       this.routerCtrl.navigateForward('/languagechange');
     }
 
-
-
-
-
-
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
-
-
     this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
-
 
     if (Number(this.pendingPanditServiceID) > 0) {
       this.router.navigate(['/book-pooja'], {
@@ -244,20 +232,140 @@ export class Tab1Page {
       });
     }
 
-
-
     if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
-      // await this.storage.remove('pendingPanditUserID');
-      // await this.storage.remove('pendingPanditCategoryID');
       this.router.navigate(['/book-pooja'], {
         queryParams: { id: -1 }
       });
     }
 
     await this.initializePushNotifications();
-
-
   }
+
+  // ── Broadcast message: check storage first, only hit API if not yet seen today ──
+  private async checkAndShowBroadcast() {
+    const today = new Date();
+    this.broadcastDateStr =
+      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    const seenKey = `broadcast_seen_${this.broadcastDateStr}`;
+    const alreadySeen = await this.storage.get(seenKey);
+    if (alreadySeen) return; // already dismissed today's broadcast — skip API entirely
+
+    this.apinu.postUrlData(
+      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='BroadcastMessage' AND Identifier='${this.broadcastDateStr}'`)}`,
+      null
+    ).subscribe({
+      next: (res: any) => {
+        const list = typeof res.MasterDataList === 'string'
+          ? JSON.parse(res.MasterDataList)
+          : (res.MasterDataList || []);
+
+        if (!list.length) return; // no broadcast configured for today
+
+        this.broadcastMessage = list[0].Description || '';
+        if (this.broadcastMessage.trim()) {
+          this.showBroadcastModal = true;
+        }
+      },
+      error: (err:any) => console.error('Broadcast fetch failed:', err)
+    });
+  }
+
+  async dismissBroadcast() {
+    this.showBroadcastModal = false;
+    await this.storage.set(`broadcast_seen_${this.broadcastDateStr}`, true);
+  }
+
+
+
+  // async ngOnInit() {
+  //   this.getSlogan();
+
+
+  //   this.userDetails = await this.storage.get("account");
+
+
+  //   this.fetchUnreadCount();
+  //   this.checkMobileAppVersion();
+
+  //   this.language = this.userDetails.Languages;
+  //   this.FullName = this.userDetails.FullName;
+  //   // console.log('ACCOUNT OBJECT:', this.userDetails);
+  //   this.loadProfilePhoto();
+  //   this.loadReferralCode();
+  //   if (
+  //     await this.storage.get("IsUserLoggedIn") &&
+  //     this.userDetails?.Role !== 'PANDIT'
+  //   ) {
+  //     this.routerCtrl.navigateForward('/login');
+  //   }
+
+
+
+
+  //   if (this.FullName == null) {
+  //     const alert = await this.alertCtrl.create({
+  //       header: '🙏 Profile Incomplete',
+  //       subHeader: 'Your sacred profile awaits',
+  //       message: 'Please complete your profile before proceeding. You will not be able to create service and get bookings.',
+  //       cssClass: 'sacred-alert',
+  //       buttons: [
+  //         {
+  //           text: 'Complete Profile →',
+  //           cssClass: 'alert-btn-confirm',
+  //           handler: () => {
+  //             this.routerCtrl.navigateForward('/user-profile');
+  //           }
+  //         }
+  //       ]
+  //     });
+
+  //     await alert.present();
+  //     return;
+  //   }
+  //   console.log(this.userDetails);
+
+
+
+  //   if (
+  //     await this.storage.get("languageChange")
+  //   ) {
+  //     await this.storage.remove('languageChange');
+  //     this.routerCtrl.navigateForward('/languagechange');
+  //   }
+
+
+
+
+
+
+  //   this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+  //   this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+
+
+  //   this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+
+  //   if (Number(this.pendingPanditServiceID) > 0) {
+  //     this.router.navigate(['/book-pooja'], {
+  //       queryParams: { id: this.pendingPanditServiceID }
+  //     });
+  //   }
+
+
+
+  //   if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+  //     // await this.storage.remove('pendingPanditUserID');
+  //     // await this.storage.remove('pendingPanditCategoryID');
+  //     this.router.navigate(['/book-pooja'], {
+  //       queryParams: { id: -1 }
+  //     });
+  //   }
+
+  //   await this.initializePushNotifications();
+
+
+  // }
 
 
   // ── Share modal ───────────────────────────────────────────────

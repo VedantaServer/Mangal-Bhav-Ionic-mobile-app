@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Api, ApiNU } from '../providers';
@@ -31,7 +31,7 @@ export class AppComponent {
     private router: Router,
     private platform: Platform,
     private storage: Storage,
-    public routerCtrl: NavController
+    public routerCtrl: NavController,  private ngZone: NgZone
   ) {
 
     this.router.events
@@ -51,33 +51,31 @@ export class AppComponent {
     this.initAnalytics();
   }
 
+
+
   async setupDeepLinks() {
 
     // App already running
     App.addListener('appUrlOpen', (event) => {
-
       console.log('Deep Link:', event.url);
-
-      const url = new URL(event.url);
-
-      this.router.navigateByUrl(url.pathname);
-
+      this.ngZone.run(() => this.handleIncomingUrl(event.url));
     });
 
     // App opened from closed state
     const launchUrl = await App.getLaunchUrl();
-
     if (launchUrl?.url) {
-
       console.log('Launch URL:', launchUrl.url);
-
-      const url = new URL(launchUrl.url);
-
-      this.router.navigateByUrl(url.pathname);
-
+      this.ngZone.run(() => this.handleIncomingUrl(launchUrl.url));
     }
-
   }
+
+  private handleIncomingUrl(rawUrl: string) {
+    const url = new URL(rawUrl);
+    // Keep BOTH path and query string, not just pathname
+    const target = url.pathname + url.search;
+    this.router.navigateByUrl(target);
+  }
+
 
 
   async initAnalytics() {

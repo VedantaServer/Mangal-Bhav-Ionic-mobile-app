@@ -81,6 +81,16 @@
         <span>Reports</span>
       </div>
 
+      <div class="dash-card" (click)="openPage('adminbroadcastinsert')">
+        <div class="dash-icon">📢</div>
+        <span>Broadcast</span>
+      </div>
+
+      <div class="dash-card" (click)="openPage('panditchatreport')">
+        <div class="dash-icon">💬</div>
+        <span>Chat Report</span>
+      </div>
+
     </div>
 
     <!-- ===== DIVIDER ===== -->
@@ -92,3 +102,7 @@
 
   </div>
 </ion-content>
+
+
+<app-common-bottom-tabs >
+</app-common-bottom-tabs>

@@ -32,6 +32,7 @@ export class CommonBottomTabsComponent implements OnInit {
   private readonly H = 70;
   private readonly DIP_H = 81;
   private loginTriggeredBy: 'pooja' | 'profile' = 'profile';
+  adminloggedin: boolean=false;
 
   constructor(
     private alertCtrl: AlertController,
@@ -47,6 +48,8 @@ export class CommonBottomTabsComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get('account');
+
+    this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
     this.isLoggedIn = !!this.userDetails?.UserID;
     this.currentUrl = this.router.url;
 
@@ -184,6 +187,14 @@ export class CommonBottomTabsComponent implements OnInit {
     // if (this.currentUrl.includes('/')) return 2;
     if (this.currentUrl.includes('open-find-pandit')) return 3;
     return 4;
+  }
+
+  openAdminDashboard() {
+    this.router.navigateByUrl('/admindashboard');
+  }
+  
+  isAdminDashboardActive(): boolean {
+    return this.router.url.startsWith('/admindashboard');
   }
 
 }

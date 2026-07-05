@@ -1,0 +1,42 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="warning">
+    <ion-title>📢 Broadcast Message</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="broadcast-form-wrapper">
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Send Today's Broadcast</ion-card-title>
+        <ion-card-subtitle>Will be shown once to every user on {{ todayDisplay }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">Message</ion-label>
+          <ion-textarea
+            [(ngModel)]="broadcastMessage"
+            autoGrow="true"
+            rows="4"
+            placeholder="Enter the message to broadcast to all users...">
+          </ion-textarea>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          color="warning"
+          class="broadcast-btn"
+          [disabled]="isSubmitting"
+          (click)="onBroadcastClick()">
+          <ion-icon name="megaphone-outline" slot="start"></ion-icon>
+          {{ isSubmitting ? 'Sending...' : 'Broadcast' }}
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+</ion-content>

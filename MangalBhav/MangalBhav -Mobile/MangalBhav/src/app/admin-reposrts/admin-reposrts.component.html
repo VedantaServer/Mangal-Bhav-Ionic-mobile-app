@@ -27,6 +27,51 @@
         </ion-select>
       </ion-item>
 
+      <!-- ═══ FILTER SECTION — only shows once a report is selected ═══ -->
+      <div class="filter-section" *ngIf="selectedReport">
+
+        <div class="filter-row" *ngIf="showFilter('dateRange')">
+          <ion-item lines="none" class="filter-item">
+            <ion-label position="stacked">Date From</ion-label>
+            <input type="date" [(ngModel)]="filters.dateFrom"
+              style="width:100%; border:none; outline:none; background:transparent;">
+          </ion-item>
+          <ion-item lines="none" class="filter-item">
+            <ion-label position="stacked">Date To</ion-label>
+            <input type="date" [(ngModel)]="filters.dateTo"
+              style="width:100%; border:none; outline:none; background:transparent;">
+          </ion-item>
+        </div>
+
+        <ion-item lines="none" class="filter-item" *ngIf="showFilter('name')">
+          <ion-label position="stacked">Name</ion-label>
+          <ion-input [(ngModel)]="filters.name" placeholder="Search by name"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="filter-item" *ngIf="showFilter('phone')">
+          <ion-label position="stacked">Phone</ion-label>
+          <ion-input [(ngModel)]="filters.phone" placeholder="Search by phone"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="filter-item" *ngIf="showFilter('state')">
+          <ion-label position="stacked">State</ion-label>
+          <ion-input [(ngModel)]="filters.state" placeholder="Search by state"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="filter-item" *ngIf="showFilter('status')">
+          <ion-label position="stacked">Booking Status</ion-label>
+          <ion-select [(ngModel)]="filters.status" interface="popover" placeholder="Any status">
+            <ion-select-option value="">Any</ion-select-option>
+            <ion-select-option *ngFor="let s of bookingStatusOptions" [value]="s">{{ s }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button size="small" fill="clear" color="medium" (click)="clearFilters()">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Clear Filters
+        </ion-button>
+      </div>
+
       <ion-button
         expand="block"
         color="warning"

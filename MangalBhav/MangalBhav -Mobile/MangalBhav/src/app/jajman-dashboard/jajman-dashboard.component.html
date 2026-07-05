@@ -1,3 +1,13 @@
+<div class="broadcast-overlay" *ngIf="showBroadcastModal">
+  <div class="broadcast-card">
+    <div class="broadcast-icon">📢</div>
+    <div class="broadcast-title">महत्वपूर्ण सूचना</div>
+    <div class="broadcast-message">{{ broadcastMessage }}</div>
+    <button class="broadcast-close-btn" (click)="dismissBroadcast()">
+      ठीक है 🙏
+    </button>
+  </div>
+</div>
 
 
 <app-tabscommonheader></app-tabscommonheader>

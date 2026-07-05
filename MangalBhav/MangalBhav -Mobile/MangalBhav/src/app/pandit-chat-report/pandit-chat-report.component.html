@@ -1,0 +1,181 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="header-inner">
+      <div class="nav-title-block">
+        <div class="nav-title">Pandit Chat Report</div>
+        <div class="nav-sub">Conversation Monitoring</div>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="report-wrapper">
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn" [class.active]="activeTab === 'daily'" (click)="switchTab('daily')">
+        Daily Conversations
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'unanswered'" (click)="switchTab('unanswered')">
+        Unanswered Messages
+      </button>
+    </div>
+
+    <!-- ══════════ DAILY CONVERSATIONS TAB ══════════ -->
+    <ng-container *ngIf="activeTab === 'daily'">
+
+      <!-- Step 1: Pandit search / selection -->
+      <div class="section-card" *ngIf="!selectedPandit">
+        <div class="section-title">Select a Pandit Ji</div>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search Pandit by name…"
+          [(ngModel)]="panditSearchText"
+          (input)="searchPandits()"
+        />
+
+        <div class="loading-row" *ngIf="loadingPandits">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <span>Searching…</span>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingPandits && panditList.length === 0">
+          <p>No Pandits found for this search.</p>
+        </div>
+
+        <div class="pandit-list" *ngIf="!loadingPandits && panditList.length > 0">
+          <div class="pandit-card" *ngFor="let p of panditList" (click)="selectPandit(p)">
+            <div class="pandit-avatar">{{ p.FullName?.charAt(0) || 'P' }}</div>
+            <div class="pandit-info">
+              <div class="pandit-name">{{ p.FullName }}</div>
+              <div class="pandit-phone">{{ p.PhoneNumber }}</div>
+            </div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Conversations for selected Pandit + date -->
+      <div class="section-card" *ngIf="selectedPandit">
+        <div class="selected-pandit-bar">
+          <button class="back-link" (click)="backToPanditList()">‹ Change Pandit</button>
+          <div class="selected-pandit-name">{{ selectedPandit.FullName }}</div>
+        </div>
+
+        <div class="date-filter-row">
+          <input type="date" [(ngModel)]="chatDate" (change)="loadConversations()" />
+        </div>
+
+        <div class="loading-row" *ngIf="loadingConversations">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <span>Loading conversations…</span>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingConversations && conversations.length === 0">
+          <div class="empty-icon">🙏</div>
+          <p>No conversations on this day.</p>
+        </div>
+
+        <div class="convo-list" *ngIf="!loadingConversations && conversations.length > 0">
+          <div class="convo-card" *ngFor="let c of conversations" (click)="openTranscript(c)">
+            <div class="convo-avatar">{{ c.BhaktName?.charAt(0) || 'B' }}</div>
+            <div class="convo-body">
+              <div class="convo-top-row">
+                <span class="convo-name">{{ c.BhaktName }}</span>
+                <span class="badge unanswered" *ngIf="c.IsUnanswered">No reply</span>
+              </div>
+              <p class="convo-last-msg">{{ c.LastMessageText }}</p>
+              <div class="convo-meta">
+                <span>{{ c.BhaktMessageCount }} from Bhakt</span>
+                <span>·</span>
+                <span>{{ c.PanditMessageCount }} from Pandit</span>
+                <span>·</span>
+                <span>{{ c.LastMessageAt | date:'hh:mm a' }}</span>
+              </div>
+            </div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- ══════════ UNANSWERED REPORT TAB ══════════ -->
+    <ng-container *ngIf="activeTab === 'unanswered'">
+      <div class="section-card">
+        <div class="section-title">
+          Unanswered Bhakt Messages
+          <span class="scope-note" *ngIf="selectedPandit">— {{ selectedPandit.FullName }}</span>
+        </div>
+
+        <div class="date-filter-row range">
+          <input type="date" [(ngModel)]="unansweredFromDate" (change)="loadUnansweredReport()" />
+          <span class="range-sep">to</span>
+          <input type="date" [(ngModel)]="unansweredToDate" (change)="loadUnansweredReport()" />
+        </div>
+
+        <div class="loading-row" *ngIf="loadingUnanswered">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <span>Loading report…</span>
+        </div>
+
+        <div class="empty-state" *ngIf="!loadingUnanswered && unansweredList.length === 0">
+          <div class="empty-icon">✅</div>
+          <p>No unanswered messages in this range.</p>
+        </div>
+
+        <div class="unanswered-list" *ngIf="!loadingUnanswered && unansweredList.length > 0">
+          <div class="unanswered-card" *ngFor="let u of unansweredList">
+            <div class="unanswered-top-row">
+              <span class="unanswered-date">{{ u.MessageDate | date:'dd MMM yyyy' }}</span>
+              <span class="badge unanswered">{{ u.BhaktMessageCount }} msg(s), no reply</span>
+            </div>
+            <div class="unanswered-names">
+              <strong>{{ u.BhaktName }}</strong> → <strong>{{ u.PanditName }}</strong>
+            </div>
+            <div class="unanswered-meta">
+              <span>{{ u.BhaktMobile }}</span>
+              <span>·</span>
+              <span>First: {{ u.FirstMessageAt | date:'hh:mm a' }}</span>
+              <span>·</span>
+              <span>Last: {{ u.LastMessageAt | date:'hh:mm a' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</ion-content>
+
+<!-- ══════════ TRANSCRIPT DRAWER ══════════ -->
+<div class="transcript-overlay" *ngIf="selectedBhakt" (click)="closeTranscript()">
+  <div class="transcript-card" (click)="$event.stopPropagation()">
+    <div class="transcript-header">
+      <div class="transcript-title">
+        {{ selectedPandit?.FullName }} ↔ {{ selectedBhakt?.BhaktName }}
+      </div>
+      <div class="transcript-date">{{ chatDate | date:'dd MMM yyyy' }}</div>
+      <button class="close-btn" (click)="closeTranscript()">✕</button>
+    </div>
+
+    <div class="transcript-body">
+      <div class="loading-row" *ngIf="loadingTranscript">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Loading transcript…</span>
+      </div>
+
+      <ng-container *ngIf="!loadingTranscript">
+        <div class="transcript-msg" *ngFor="let m of transcript" [ngClass]="isMine(m.SenderRole) ? 'from-pandit' : 'from-bhakt'">
+          <div class="transcript-sender">{{ isMine(m.SenderRole) ? selectedPandit?.FullName : selectedBhakt?.BhaktName }}</div>
+          <div class="transcript-bubble">
+            <p>{{ m.MessageText }}</p>
+            <span class="transcript-time">{{ m.SentAt | date:'hh:mm a' }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

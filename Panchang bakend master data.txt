@@ -1,0 +1,50 @@
+DECLARE @TenantID INT = 1; -- adjust
+DECLARE @SectionIDs TABLE (Identifier NVARCHAR(200), MasterDataID INT);
+
+-- Sections
+INSERT INTO MasterData (TenantID, ParentItemID, Description, Domain, Identifier, Date)
+OUTPUT inserted.Identifier, inserted.MasterDataID INTO @SectionIDs
+VALUES
+(@TenantID, NULL, N'सूर्य संबंधी जानकारी', 'Panchang', N'सूर्य संबंधी जानकारी', GETDATE()),
+(@TenantID, NULL, N'संवत्सर एवं काल',     'Panchang', N'संवत्सर एवं काल',     GETDATE()),
+(@TenantID, NULL, N'पंचांग विवरण',        'Panchang', N'पंचांग विवरण',        GETDATE()),
+(@TenantID, NULL, N'शुभ-अशुभ समय',        'Panchang', N'शुभ-अशुभ समय',        GETDATE()),
+(@TenantID, NULL, N'ग्रह स्थिति',          'Panchang', N'ग्रह स्थिति',          GETDATE()),
+(@TenantID, NULL, N'आज के पर्व एवं विशेष दिवस', 'Panchang', N'आज के पर्व एवं विशेष दिवस', GETDATE()),
+(@TenantID, NULL, N'आज का धार्मिक महत्व',  'Panchang', N'आज का धार्मिक महत्व',  GETDATE()),
+(@TenantID, NULL, N'आज का शुभ उपाय',       'Panchang', N'आज का शुभ उपाय',       GETDATE()),
+(@TenantID, NULL, N'सुविचार',              'Panchang', N'सुविचार',              GETDATE());
+
+-- Keys (mapped to their parent section by Identifier)
+INSERT INTO MasterData (TenantID, ParentItemID, Description, Domain, Identifier, Date)
+SELECT @TenantID, s.MasterDataID, k.KeyLabel, 'Panchang', k.KeyLabel, GETDATE()
+FROM @SectionIDs s
+CROSS APPLY (VALUES
+    (N'सूर्य संबंधी जानकारी', N'सूर्योदय'),
+    (N'सूर्य संबंधी जानकारी', N'सूर्यास्त'),
+    (N'संवत्सर एवं काल', N'श्री संवत्'),
+    (N'संवत्सर एवं काल', N'अयन'),
+    (N'संवत्सर एवं काल', N'ऋतु'),
+    (N'संवत्सर एवं काल', N'मास'),
+    (N'संवत्सर एवं काल', N'पक्ष'),
+    (N'पंचांग विवरण', N'तिथि'),
+    (N'पंचांग विवरण', N'नक्षत्र'),
+    (N'पंचांग विवरण', N'योग'),
+    (N'पंचांग विवरण', N'करण'),
+    (N'शुभ-अशुभ समय', N'अभिजीत मुहूर्त'),
+    (N'शुभ-अशुभ समय', N'राहुकाल'),
+    (N'ग्रह स्थिति', N'सूर्य'),
+    (N'ग्रह स्थिति', N'चंद्र'),
+    (N'ग्रह स्थिति', N'मंगल'),
+    (N'ग्रह स्थिति', N'बुध'),
+    (N'ग्रह स्थिति', N'गुरु'),
+    (N'ग्रह स्थिति', N'शुक्र'),
+    (N'ग्रह स्थिति', N'शनि'),
+    (N'ग्रह स्थिति', N'राहु'),
+    (N'ग्रह स्थिति', N'केतु'),
+    (N'आज के पर्व एवं विशेष दिवस', N'विवरण'),
+    (N'आज का धार्मिक महत्व', N'विवरण'),
+    (N'आज का शुभ उपाय', N'विवरण'),
+    (N'सुविचार', N'विवरण')
+) AS k(SectionLabel, KeyLabel)
+WHERE k.SectionLabel = s.Identifier;

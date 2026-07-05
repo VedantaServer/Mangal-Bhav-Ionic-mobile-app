@@ -14,13 +14,14 @@ import { ValueLookUpComponent } from 'src/components/value-look-up/value-look-up
 import { IndiaDateComponent } from 'src/components/india-date/india-date';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule]
+  imports: [CommonModule, IonicModule, FormsModule,CommonBottomTabsComponent]
 })
 export class AdminDashboardComponent implements OnInit {
   isloggedin: boolean = false;

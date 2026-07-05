@@ -356,76 +356,20 @@ namespace FaceUPAI.Controllers
 
 
 
-
-
-        [HttpPost]
-        [Route("UserReferralSummaryReport")]
-        [EnableCors("AllowAll")]
-        public IActionResult UserReferralSummaryReport()
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-
-            };
-
-            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserReferralSummaryReport", parameters))
-            {
-                var dataTable = new DataTable();
-                dataTable.Load(dataReader);
-
-                if (dataTable.Rows.Count > 0)
-                {
-                    // Converting DataTable to JSON
-                    var jsonResult = JsonConvert.SerializeObject(dataTable);
-                    return Ok(jsonResult); // Return the data as JSON
-                }
-                else
-                {
-                    return NotFound("No data found.");
-                }
-            }
-        }
-
-
-
-        [HttpPost]
-        [Route("BookingReport")]
-        [EnableCors("AllowAll")]
-        public IActionResult BookingReport()
-        {
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-
-            };
-
-            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "BookingReport", parameters))
-            {
-                var dataTable = new DataTable();
-                dataTable.Load(dataReader);
-
-                if (dataTable.Rows.Count > 0)
-                {
-                    // Converting DataTable to JSON
-                    var jsonResult = JsonConvert.SerializeObject(dataTable);
-                    return Ok(jsonResult); // Return the data as JSON
-                }
-                else
-                {
-                    return NotFound("No data found.");
-                }
-            }
-        }
-
-
-
         [HttpPost]
         [Route("UserReferralHistoryReport")]
         [EnableCors("AllowAll")]
-        public IActionResult UserReferralHistoryReport()
+        public IActionResult UserReferralHistoryReport(
+    [FromQuery] DateTime? DateFrom, [FromQuery] DateTime? DateTo,
+    [FromQuery] string Name, [FromQuery] string Phone, [FromQuery] string State)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
-
+        new SqlParameter("@DateFrom", (object)DateFrom ?? DBNull.Value),
+        new SqlParameter("@DateTo", (object)DateTo ?? DBNull.Value),
+        new SqlParameter("@Name", (object)Name ?? DBNull.Value),
+        new SqlParameter("@Phone", (object)Phone ?? DBNull.Value),
+        new SqlParameter("@State", (object)State ?? DBNull.Value)
             };
 
             using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserReferralHistoryReport", parameters))
@@ -435,9 +379,41 @@ namespace FaceUPAI.Controllers
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    // Converting DataTable to JSON
                     var jsonResult = JsonConvert.SerializeObject(dataTable);
-                    return Ok(jsonResult); // Return the data as JSON
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("UserReferralSummaryReport")]
+        [EnableCors("AllowAll")]
+        public IActionResult UserReferralSummaryReport(
+            [FromQuery] DateTime? DateFrom, [FromQuery] DateTime? DateTo,
+            [FromQuery] string Name, [FromQuery] string Phone, [FromQuery] string State)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@DateFrom", (object)DateFrom ?? DBNull.Value),
+        new SqlParameter("@DateTo", (object)DateTo ?? DBNull.Value),
+        new SqlParameter("@Name", (object)Name ?? DBNull.Value),
+        new SqlParameter("@Phone", (object)Phone ?? DBNull.Value),
+        new SqlParameter("@State", (object)State ?? DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserReferralSummaryReport", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
                 }
                 else
                 {
@@ -447,6 +423,202 @@ namespace FaceUPAI.Controllers
         }
 
 
+
+        [HttpPost]
+        [Route("BroadcastInsert")]
+        [EnableCors("AllowAll")]
+        public IActionResult BroadcastInsert([FromBody] BroadcastInsertModel model)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@TenantID", model.TenantID),
+        new SqlParameter("@Domain", model.Domain),
+        new SqlParameter("@Identifier", model.Identifier),
+        new SqlParameter("@Description", model.Description),
+        new SqlParameter("@DateAdded", model.DateAdded)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "BroadcastInsert", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable.Rows[0]);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("Insert failed.");
+                }
+            }
+        }
+
+
+
+        public class BroadcastInsertModel
+        {
+            public int TenantID { get; set; }
+            public string Domain { get; set; }
+            public string Identifier { get; set; }
+            public string Description { get; set; }
+            public DateTime DateAdded { get; set; }
+        }
+
+
+
+        [HttpPost]
+        [Route("BookingReport")]
+        [EnableCors("AllowAll")]
+        public IActionResult BookingReport(
+            [FromQuery] DateTime? DateFrom, [FromQuery] DateTime? DateTo,
+            [FromQuery] string Name, [FromQuery] string Phone, [FromQuery] string State,
+            [FromQuery] string Status)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@DateFrom", (object)DateFrom ?? DBNull.Value),
+        new SqlParameter("@DateTo", (object)DateTo ?? DBNull.Value),
+        new SqlParameter("@Name", (object)Name ?? DBNull.Value),
+        new SqlParameter("@Phone", (object)Phone ?? DBNull.Value),
+        new SqlParameter("@State", (object)State ?? DBNull.Value),
+        new SqlParameter("@Status", (object)Status ?? DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "BookingReport", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+
+        [HttpPost]
+        [Route("ChatPanditListSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult ChatPanditListSelect([FromQuery] string SearchText)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@SearchText", (object)SearchText ?? DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "ChatPanditListSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("PanditDailyConversationsSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult PanditDailyConversationsSelect(
+            [FromQuery] int PanditUserID, [FromQuery] DateTime ChatDate)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@PanditUserID", PanditUserID),
+        new SqlParameter("@ChatDate", ChatDate)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "PanditDailyConversationsSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("PanditBhaktDayTranscriptSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult PanditBhaktDayTranscriptSelect(
+            [FromQuery] int PanditUserID, [FromQuery] int BhaktUserID, [FromQuery] DateTime ChatDate)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@PanditUserID", PanditUserID),
+        new SqlParameter("@BhaktUserID", BhaktUserID),
+        new SqlParameter("@ChatDate", ChatDate)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "PanditBhaktDayTranscriptSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
+
+        [HttpPost]
+        [Route("UnansweredBhaktMessagesReportSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult UnansweredBhaktMessagesReportSelect(
+            [FromQuery] DateTime DateFrom, [FromQuery] DateTime DateTo, [FromQuery] int? PanditUserID)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@FromDate", DateFrom),
+        new SqlParameter("@ToDate", DateTo),
+        new SqlParameter("@PanditUserID", (object)PanditUserID ?? DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UnansweredBhaktMessagesReportSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
 
 
 
@@ -910,14 +1082,18 @@ namespace FaceUPAI.Controllers
                 SqlParameter[] notificationParams = new SqlParameter[] { };
 
                 DataTable notificationTable =
-                    DataAccess.ExecuteDataSet(
-                        "",
-                        CommandType.Text,
-                        @"SELECT *
-          FROM NotificationQueue
-          WHERE IsSent = 0",
-                        notificationParams
-                    ).Tables[0];
+    DataAccess.ExecuteDataSet(
+        "",
+        CommandType.Text,
+         @"
+SELECT *
+FROM NotificationQueue
+WHERE IsSent = 0 AND UserID IS NOT NULL
+  AND CreatedDate >= CAST(GETDATE() AS DATE)
+  AND CreatedDate < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));
+",
+        notificationParams
+    ).Tables[0];
 
                 foreach (DataRow notificationRow in notificationTable.Rows)
                 {

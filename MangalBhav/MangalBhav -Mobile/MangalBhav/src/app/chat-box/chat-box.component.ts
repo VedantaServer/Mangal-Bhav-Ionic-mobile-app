@@ -27,7 +27,7 @@ export class ChatBoxComponent implements OnInit {
   withUserID: number = 0;
   chatType: string = '';
   withUserName: string = 'Pandit Ji';
-
+  isLoggedIn: boolean = false;   // ← add this
 
   constructor(private route: ActivatedRoute,
     private routerCtrl: NavController,
@@ -42,9 +42,10 @@ export class ChatBoxComponent implements OnInit {
 
 
   async ngOnInit() {
-    this.userDetails = await this.storage.get('account');
 
-    this.checkTermsAcceptance();
+    this.userDetails = await this.storage.get('account');
+    this.isLoggedIn = !!this.userDetails?.UserID;
+
     const groupId = this.route.snapshot.queryParamMap.get('groupId');
     const withUserID = this.route.snapshot.queryParamMap.get('withUserID');
     const chatType = this.route.snapshot.queryParamMap.get('chatType');
@@ -54,12 +55,21 @@ export class ChatBoxComponent implements OnInit {
     this.chatType = chatType || '';
     this.withUserName = withUserName || 'Pandit Ji';
 
+    if (!this.isLoggedIn) {
+      // Just set a header label, skip terms + all data fetching
+      this.GroupName = this.chatType === 'OneToOne' ? this.withUserName : 'Chat';
+      return;
+    }
+
+    this.checkTermsAcceptance();
+
     // ── OneToOne (Pandit direct chat) ──
     if (this.chatType === 'OneToOne') {
       this.GroupName = this.withUserName;
       this.loadOneToOneMessages();
       return;
     }
+
 
     // ── Support ──
     if (Number(groupId) === -1) {
@@ -171,6 +181,12 @@ export class ChatBoxComponent implements OnInit {
   //     })
   //   }
   // }
+
+
+  openLogin() {
+    this.storage.set('openLoginSection', 'true');
+    this.routerCtrl.navigateForward('/login?from=chat');
+  }
 
   newMessage: string = '';
 

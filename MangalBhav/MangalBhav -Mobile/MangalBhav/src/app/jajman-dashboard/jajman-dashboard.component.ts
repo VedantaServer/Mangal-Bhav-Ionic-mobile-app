@@ -74,10 +74,10 @@ export class JajmanDashboardComponent implements OnInit {
   unreadCount: any;
   FullName: any;
   referralCode: string = '';
+  showBroadcastModal = false;
+  broadcastMessage = '';
+  private broadcastDateStr = '';
 
-  constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
-    public api: Api, private router: Router,
-    public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) { }
 
 
   async openWhatsApp() {
@@ -149,6 +149,12 @@ export class JajmanDashboardComponent implements OnInit {
       }
     );
   }
+
+
+  constructor(private alertCtrl: AlertController, private storage: Storage, public apinu: ApiNU,
+    public api: Api, private router: Router,
+    public platform: Platform, private common: CommonProvider, public routerCtrl: NavController, private http: HttpClient) { }
+
   async ngOnInit() {
 
     this.userDetails = await this.storage.get("account");
@@ -159,7 +165,8 @@ export class JajmanDashboardComponent implements OnInit {
     this.language = this.userDetails.Languages;
     this.checkMobileAppVersion();
     this.loadReferralCode();
-    // console.log(this.userDetails);
+    this.checkAndShowBroadcast();   // ← add this
+
     console.log('IsUserLoggedIn:', await this.storage.get("IsUserLoggedIn"));
     console.log('Role:', this.userDetails?.Role);
 
@@ -178,13 +185,9 @@ export class JajmanDashboardComponent implements OnInit {
       this.routerCtrl.navigateForward('/languagechange');
     }
 
-
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
-
-
     this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
-
 
     if (Number(this.pendingPanditServiceID) > 0) {
       this.router.navigate(['/book-pooja'], {
@@ -192,11 +195,7 @@ export class JajmanDashboardComponent implements OnInit {
       });
     }
 
-
-
     if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
-      // await this.storage.remove('pendingPanditUserID');
-      // await this.storage.remove('pendingPanditCategoryID');
       this.router.navigate(['/book-pooja'], {
         queryParams: { id: -1 }
       });
@@ -207,6 +206,42 @@ export class JajmanDashboardComponent implements OnInit {
     this.getSlogan();
 
   }
+
+  // ── Broadcast message: check storage first, only hit API if not yet seen today ──
+  private async checkAndShowBroadcast() {
+    const today = new Date();
+    this.broadcastDateStr =
+      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    const seenKey = `broadcast_seen_${this.broadcastDateStr}`;
+    const alreadySeen = await this.storage.get(seenKey);
+    if (alreadySeen) return; // already dismissed today's broadcast — skip API entirely
+
+    this.apinu.postUrlData(
+      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='BroadcastMessage' AND Identifier='${this.broadcastDateStr}'`)}`,
+      null
+    ).subscribe({
+      next: (res: any) => {
+        const list = typeof res.MasterDataList === 'string'
+          ? JSON.parse(res.MasterDataList)
+          : (res.MasterDataList || []);
+
+        if (!list.length) return; // no broadcast configured for today
+
+        this.broadcastMessage = list[0].Description || '';
+        if (this.broadcastMessage.trim()) {
+          this.showBroadcastModal = true;
+        }
+      },
+      error: (err: any) => console.error('Broadcast fetch failed:', err)
+    });
+  }
+
+  async dismissBroadcast() {
+    this.showBroadcastModal = false;
+    await this.storage.set(`broadcast_seen_${this.broadcastDateStr}`, true);
+  }
+
 
   get t() {
     return this.language === 'Hindi'
@@ -376,7 +411,7 @@ export class JajmanDashboardComponent implements OnInit {
       }
     });
   }
-  
+
   async copyReferralCode(event: Event) {
     event.stopPropagation();   // prevent navigating to profile
     try {
@@ -389,7 +424,7 @@ export class JajmanDashboardComponent implements OnInit {
       alert.present();
     } catch { }
   }
-  
+
 
 
 }

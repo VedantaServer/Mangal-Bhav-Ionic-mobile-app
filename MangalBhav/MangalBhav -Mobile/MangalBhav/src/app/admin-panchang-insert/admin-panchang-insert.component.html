@@ -19,8 +19,8 @@
       <ion-item>
         <ion-label position="stacked">Panchang Date</ion-label>
 
-        <ion-datetime presentation="date" [(ngModel)]="searchDate">
-        </ion-datetime>
+        <input type="date" [(ngModel)]="searchDate"
+          style="width:100%; border:none; outline:none; background:transparent;">
 
       </ion-item>
 
@@ -89,7 +89,7 @@
 
   <!-- Form -->
 
-  <ion-card>
+  <!-- <ion-card>
 
     <ion-card-header>
 
@@ -199,6 +199,80 @@
 
     </ion-card-content>
 
+  </ion-card> -->
+
+
+
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Add Daily Panchang</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">Panchang Date</ion-label>
+        <input type="date" [(ngModel)]="panchangDate"
+          style="width:100%; border:none; outline:none; background:transparent;"
+          (change)="loadExistingValuesForDate()" />
+      </ion-item>
+
+      <!-- <ion-item>
+        <ion-label position="stacked">Panchang Date</ion-label>
+        <ion-datetime presentation="date" [(ngModel)]="panchangDate"></ion-datetime>
+      </ion-item> -->
+
+      <ion-item>
+        <ion-label position="stacked">Language</ion-label>
+        <ion-input [(ngModel)]="language"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Location</ion-label>
+        <ion-input [(ngModel)]="location"></ion-input>
+      </ion-item>
+
+
+      <div *ngFor="let section of panchangSections">
+        <h3>{{section.Identifier}}</h3>
+        <ion-item *ngFor="let key of section.keys">
+          <ion-label position="stacked">
+            {{key.Identifier}}
+            <ion-text color="medium" *ngIf="key.DailyPanchangID > 0"> (saved)</ion-text>
+          </ion-label>
+          <ion-textarea autoGrow="true" rows="2" [(ngModel)]="key.Value"></ion-textarea>
+        </ion-item>
+      </div>
+
+      <ion-button expand="block" color="primary" (click)="saveDailyPanchang()">
+        Save
+      </ion-button>
+
+      <ion-button expand="block" color="tertiary" [disabled]="isBuildingPreview" (click)="previewPanchang()">
+        {{ isBuildingPreview ? 'Building preview...' : '👁 Preview Panchang' }}
+      </ion-button>
+
+    </ion-card-content>
   </ion-card>
 
+
 </ion-content>
+
+
+<div class="preview-overlay" *ngIf="showPreviewModal"
+     style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; flex-direction:column;">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#222;">
+    <span style="color:#fff; font-weight:600;">Panchang Preview</span>
+    <div>
+      <ion-button size="small" color="success" [disabled]="isDownloadingPreview" (click)="downloadPanchangPreviewAsImage()">
+        {{ isDownloadingPreview ? 'Downloading...' : '⬇ Download' }}
+      </ion-button>
+      <ion-button size="small" color="danger" (click)="closePreview()">✕ Close</ion-button>
+    </div>
+  </div>
+
+  <!-- <iframe #previewFrame
+          style="flex:1; width:100%; border:none; background:#fff;">
+  </iframe> -->
+</div>

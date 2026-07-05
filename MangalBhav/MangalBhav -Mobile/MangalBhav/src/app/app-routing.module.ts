@@ -53,6 +53,9 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { AdminPanchangInsertComponent } from './admin-panchang-insert/admin-panchang-insert.component';
 import { AdminReposrtsComponent } from './admin-reposrts/admin-reposrts.component';
+import { AdminBroadcastInsertComponent } from './admin-broadcast-insert/admin-broadcast-insert.component';
+import { FindPanditDetailComponent } from './find-pandit-detail/find-pandit-detail.component';
+import { PanditChatReportComponent } from './pandit-chat-report/pandit-chat-report.component';
 
 const routes: Routes = [
 
@@ -134,7 +137,24 @@ const routes: Routes = [
     path: 'open-find-pandit',
     component: FindPanditComponent  // directly use the standalone component
   }
+  
+  ,
+  {
+    path: 'panditchatreport',
+    component: PanditChatReportComponent  // directly use the standalone component
+  }
+  ,
 
+  {
+    path: 'open-find-pandit/:id',
+    component: FindPanditDetailComponent  // directly use the standalone component
+  }
+
+  ,
+  {
+    path: 'adminbroadcastinsert',
+    component: AdminBroadcastInsertComponent  // directly use the standalone component
+  }
   ,
   {
     path: 'open-community-page',
