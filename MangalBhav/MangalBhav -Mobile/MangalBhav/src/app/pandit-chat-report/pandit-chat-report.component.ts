@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { ApiNU } from '../../providers';
 
 @Component({
@@ -37,7 +37,7 @@ export class PanditChatReportComponent implements OnInit {
   unansweredList: any[] = [];
   loadingUnanswered = false;
 
-  constructor(private apinu: ApiNU) { }
+  constructor(private apinu: ApiNU,public routerCtrl: NavController,) { }
 
   ngOnInit() {
     const today = new Date();

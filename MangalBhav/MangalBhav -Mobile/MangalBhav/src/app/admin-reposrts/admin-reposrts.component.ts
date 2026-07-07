@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, ApiNU } from '../../providers';
@@ -70,7 +70,7 @@ export class AdminReposrtsComponent implements OnInit {
   constructor(
     public apinu: ApiNU,
     public api: Api,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,public routerCtrl: NavController,
   ) { }
 
   ngOnInit() {

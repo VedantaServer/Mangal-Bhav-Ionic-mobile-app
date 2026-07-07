@@ -1,0 +1,177 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">User Sign-up Report</div>
+        <div class="inner-title-sub">Sacred Directory</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+
+  <ion-refresher slot="fixed" (ionRefresh)="refreshReport($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card>
+
+    <ion-card-content>
+
+      <ion-item>
+        <ion-label position="stacked">Signup Date</ion-label>
+        <input type="date" [(ngModel)]="filters.dateAdded"
+          style="width:100%;border:none;outline:none;background:transparent;">
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Role</ion-label>
+
+        <ion-select [(ngModel)]="filters.role" placeholder="All Roles">
+
+          <ion-select-option value="">All</ion-select-option>
+
+          <ion-select-option *ngFor="let role of roleOptions" [value]="role">
+
+            {{role}}
+
+          </ion-select-option>
+
+        </ion-select>
+
+      </ion-item>
+
+      <ion-button expand="block" color="warning" (click)="onGoClick()">
+
+        Go
+
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" color="medium" (click)="clearFilters()">
+
+        Clear Filters
+
+      </ion-button>
+
+    </ion-card-content>
+
+  </ion-card>
+
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner color="warning"></ion-spinner>
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="!isLoading && loadError" class="ion-text-center ion-padding">
+    <ion-icon name="alert-circle" color="danger" size="large">
+    </ion-icon>
+
+    <p>Unable to load report.</p>
+  </div>
+
+  <div *ngIf="!isLoading && hasSearched && reportData.length==0 && !loadError" class="ion-text-center ion-padding">
+
+    No records found.
+
+  </div>
+
+  <ion-card *ngIf="reportData.length>0">
+
+    <ion-card-header>
+
+      <div class="results-header">
+
+        <ion-card-title>
+          Results ({{reportData.length}})
+        </ion-card-title>
+
+        <ion-button class="export-btn" size="small" fill="outline" color="warning" (click)="exportToExcel()">
+
+          <ion-icon slot="start" name="download-outline"></ion-icon>
+          Export CSV
+
+        </ion-button>
+
+      </div>
+
+    </ion-card-header>
+
+
+    <ion-card-content style="overflow:auto;">
+
+      <table class="report-table">
+
+        <thead>
+
+          <tr>
+
+            <th *ngFor="let col of reportColumns">
+
+              {{col}}
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let row of reportData" (click)="onRowClick(row)" class="clickable-row">
+
+
+            <td *ngFor="let col of reportColumns">
+
+              <ng-container *ngIf="col === 'SignupDate'; else normal">
+                {{ row[col] | date:'dd-MM-yyyy' }}
+              </ng-container>
+
+              <ng-template #normal>
+                {{ row[col] }}
+              </ng-template>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </ion-card-content>
+
+  </ion-card>
+
+  <div *ngIf="isLoadingUsers" class="ion-text-center ion-padding">
+    <ion-spinner color="warning"></ion-spinner>
+    <p>Loading user details...</p>
+  </div>
+
+  <ion-card *ngIf="!isLoadingUsers && showUserDetails">
+    <ion-card-header>
+      <ion-card-title>
+        User Details — {{ selectedRole }} on {{ selectedDateDisplay }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="userDetailsList.length; else noUsers">
+        <ion-item *ngFor="let user of userDetailsList" lines="full">
+          <ion-label class="ion-text-wrap">
+            <h3 style="text-transform: capitalize;">{{ user.Name || user.FullName }}</h3>
+            <p>{{ user.PhoneNumber || user.Email }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <ng-template #noUsers>
+        <p class="ion-text-center" style="color: var(--ion-color-medium);">No users found.</p>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

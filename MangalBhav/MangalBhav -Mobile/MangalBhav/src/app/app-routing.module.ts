@@ -56,6 +56,7 @@ import { AdminReposrtsComponent } from './admin-reposrts/admin-reposrts.componen
 import { AdminBroadcastInsertComponent } from './admin-broadcast-insert/admin-broadcast-insert.component';
 import { FindPanditDetailComponent } from './find-pandit-detail/find-pandit-detail.component';
 import { PanditChatReportComponent } from './pandit-chat-report/pandit-chat-report.component';
+import { AdminUserSignupReportComponent } from './admin-user-signup-report/admin-user-signup-report.component';
 
 const routes: Routes = [
 
@@ -142,6 +143,12 @@ const routes: Routes = [
   {
     path: 'panditchatreport',
     component: PanditChatReportComponent  // directly use the standalone component
+  }
+
+  ,
+  {
+    path: 'adminusersignupreport',
+    component: AdminUserSignupReportComponent  // directly use the standalone component
   }
   ,
 

@@ -1,17 +1,17 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="mb-toolbar">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" text="" color="light"></ion-back-button>
-    </ion-buttons>
-    <ion-title class="mb-title">
-      <span class="title-main">Dashboard Analytics</span>
-      <span class="title-sub">मंगल भव · विश्लेषण</span>
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" color="light" (click)="loadStats()" [disabled]="isLoading">
-        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Analytics</div>
+        <div class="inner-title-sub"> Dashboard</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 

@@ -1,14 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <div class="header-inner">
-      <div class="nav-title-block">
-        <div class="nav-title">Pandit Chat Report</div>
-        <div class="nav-sub">Conversation Monitoring</div>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Chat Report</div>
+        <div class="inner-title-sub">Sacred Directory</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
     </div>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
   <div class="report-wrapper">
 

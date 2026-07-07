@@ -1,6 +1,17 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="warning">
-    <ion-title>Admin Reports</ion-title>
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Reports</div>
+        <div class="inner-title-sub">Sacred Directory</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 

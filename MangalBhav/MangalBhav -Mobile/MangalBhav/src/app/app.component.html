@@ -1,3 +1,17 @@
+<div class="app-store-banner" *ngIf="showAppBanner">
+  <div class="left">
+    <img src="assets/icon/icon.png" width="40" height="40" />
+    <div>
+      <div class="title">Mangal Bhav</div>
+      <div class="subtitle">Get the full app experience</div>
+    </div>
+  </div>
+  <div class="right">
+    <a [href]="storeUrl" class="download-btn">Download</a>
+    <button class="close" (click)="dismissAppBanner()">&times;</button>
+  </div>
+</div>
+
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
   <app-floating-menu></app-floating-menu>

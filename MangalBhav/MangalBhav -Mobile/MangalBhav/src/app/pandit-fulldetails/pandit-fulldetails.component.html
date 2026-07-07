@@ -1,21 +1,22 @@
-<ion-header class="ion-no-border">
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button default-href="/" color="light"></ion-back-button>
-    </ion-buttons>
-    <ion-title>
-      <div class="header-title">
-        <span class="om">ॐ</span> Pandit Directory
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Pandit</div>
+        <div class="inner-title-sub">Sacred Directory</div>
       </div>
-    </ion-title>
+      <div class="inner-logo" routerLink="/open-community-page">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
-  <div class="top-banner">
-    <p class="shloka">॥ सेवा परमो धर्मः ॥</p>
-  </div>
 
   <div class="search-wrap">
     <ion-input [(ngModel)]="searchQuery" placeholder="Search by name or number..." class="search-input"

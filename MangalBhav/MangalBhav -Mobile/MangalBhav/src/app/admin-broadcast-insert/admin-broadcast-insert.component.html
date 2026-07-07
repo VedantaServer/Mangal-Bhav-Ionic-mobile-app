@@ -1,6 +1,17 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="warning">
-    <ion-title>📢 Broadcast Message</ion-title>
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Broadcast</div>
+        <div class="inner-title-sub">Sacred Directory</div>
+      </div>
+      <div class="inner-logo">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -17,24 +28,43 @@
 
         <ion-item lines="none">
           <ion-label position="stacked">Message</ion-label>
-          <ion-textarea
-            [(ngModel)]="broadcastMessage"
-            autoGrow="true"
-            rows="4"
+          <ion-textarea [(ngModel)]="broadcastMessage" autoGrow="true" rows="4"
             placeholder="Enter the message to broadcast to all users...">
           </ion-textarea>
         </ion-item>
 
-        <ion-button
-          expand="block"
-          color="warning"
-          class="broadcast-btn"
-          [disabled]="isSubmitting"
+        <ion-button expand="block" color="warning" class="broadcast-btn" [disabled]="isSubmitting"
           (click)="onBroadcastClick()">
           <ion-icon name="megaphone-outline" slot="start"></ion-icon>
           {{ isSubmitting ? 'Sending...' : 'Broadcast' }}
         </ion-button>
 
+        <ion-button expand="block" fill="outline" color="medium" class="view-btn" [disabled]="isLoadingList"
+          (click)="onViewClick()">
+          <ion-icon name="eye-outline" slot="start"></ion-icon>
+          {{ isLoadingList ? 'Loading...' : (showList ? 'Hide Broadcasts' : 'View Broadcasts') }}
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="showList">
+      <ion-card-header>
+        <ion-card-title>Past Broadcasts</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngIf="broadcastList.length; else noBroadcasts">
+          <ion-item *ngFor="let item of broadcastList" lines="full">
+            <ion-label class="ion-text-wrap">
+              <h3>{{ item.Identifier }}</h3>
+              <p>{{ item.Description }}</p>
+              <p><small>{{ item.DateAdded | date:'medium' }}</small></p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <ng-template #noBroadcasts>
+          <p class="ion-text-center" style="color: var(--ion-color-medium);">No broadcasts found.</p>
+        </ng-template>
       </ion-card-content>
     </ion-card>
 

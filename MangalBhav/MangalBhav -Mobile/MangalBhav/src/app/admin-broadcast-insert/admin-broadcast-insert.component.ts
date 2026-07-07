@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, NavController } from '@ionic/angular';
 import { ApiNU } from '../../providers';
 
 @Component({
@@ -15,6 +15,9 @@ export class AdminBroadcastInsertComponent implements OnInit {
 
   broadcastMessage: string = '';
   isSubmitting = false;
+  broadcastList: any[] = [];
+  showList = false;
+  isLoadingList = false;
 
   // Today's date, shown to admin so they know which day this broadcast targets
   todayDisplay: string = '';
@@ -22,7 +25,7 @@ export class AdminBroadcastInsertComponent implements OnInit {
 
   constructor(
     public apinu: ApiNU,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController, public routerCtrl: NavController,
   ) { }
 
   ngOnInit() {
@@ -102,6 +105,37 @@ export class AdminBroadcastInsertComponent implements OnInit {
           buttons: ['OK']
         });
         await errorAlert.present();
+      }
+    });
+  }
+
+  onViewClick() {
+    if (this.showList) {
+      this.showList = false;
+      return;
+    }
+
+    this.isLoadingList = true;
+
+    this.apinu.postUrlData(
+      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='BroadcastMessage'`)}`,
+      null
+    ).subscribe({
+      next: (res: any) => {
+        this.isLoadingList = false;
+
+        const list = typeof res.MasterDataList === 'string'
+          ? JSON.parse(res.MasterDataList)
+          : res.MasterDataList;
+
+        this.broadcastList = (list || []).sort((a: any, b: any) =>
+          new Date(b.DateAdded).getTime() - new Date(a.DateAdded).getTime()
+        );
+        this.showList = true;
+      },
+      error: (err: any) => {
+        this.isLoadingList = false;
+        console.error('MasterDataSelectByQuery failed:', err);
       }
     });
   }

@@ -423,6 +423,38 @@ namespace FaceUPAI.Controllers
         }
 
 
+        [HttpPost]
+        [Route("UsersSignupCountByDateAndRole")]
+        [EnableCors("AllowAll")]
+        public IActionResult UsersSignupCountByDateAndRole(
+    [FromQuery] DateTime? DateAdded,
+    [FromQuery] string Role)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@DateAdded", (object)DateAdded ?? DBNull.Value),
+        new SqlParameter("@Role", (object)Role ?? DBNull.Value)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                System.Data.CommandType.StoredProcedure,
+                "UsersSignupCountByDateAndRole",
+                parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult);
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+        }
 
         [HttpPost]
         [Route("BroadcastInsert")]
