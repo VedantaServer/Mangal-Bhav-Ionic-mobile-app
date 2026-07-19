@@ -165,62 +165,33 @@
     <br><br>
   </div>
 
-  <!-- ═══ AAJ KA PANCHANG ═══ -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">📅 आज का पंचांग</span>
-      <span class="section-sub">{{ todayDate }}</span>
-    </div>
-
-    <div class="tf-loading" *ngIf="festivalLoading">
-      <ion-spinner name="crescent" color="warning"></ion-spinner>
-      <span>त्यौहार लोड हो रहे हैं...</span>
-    </div>
-
-    <div class="today-festivals-wrap" *ngIf="!festivalLoading && todayFestivals.length > 0">
-      <div class="today-festival-label">{{ todayFestivalsLabel }}</div>
-      <div class="today-festival-card" *ngFor="let f of todayFestivals">
-        <div class="tf-date-badge">
-          <div class="tf-date-dd">{{ f.FestivalDate | date:'dd' }}</div>
-          <div class="tf-date-mon">{{ f.FestivalDate | date:'MMM' }}</div>
-          <div class="tf-date-yr">{{ f.FestivalDate | date:'yyyy' }}</div>
-        </div>
-        <div class="tf-info">
-          <div class="tf-name-row">
-            <span class="tf-name">{{ getFestivalName(f) }}</span>
-            <span class="tf-emoji">{{ getFestivalEmoji(f.FestivalName) }}</span>
-          </div>
-          <div class="tf-name-hindi" *ngIf="language !== 'Hindi' && f.FestivalNameHindi?.trim()">
-            {{ f.FestivalNameHindi.trim() }}
-          </div>
-          <div class="tf-name-hindi" *ngIf="language === 'Hindi' && f.FestivalName?.trim()">
-            {{ f.FestivalName.trim() }}
-          </div>
-          <div class="tf-day-row" *ngIf="getFestivalDay(f)">
-            <ion-icon name="sunny-outline"></ion-icon>
-            {{ getFestivalDay(f) }}
-          </div>
-          <div class="tf-desc" *ngIf="getFestivalDesc(f)">{{ getFestivalDesc(f) }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="no-festival-today" *ngIf="!festivalLoading && todayFestivals.length === 0">
-      <span>📆 कोई त्यौहार नहीं मिला</span>
-    </div>
-  </div>
+ 
 
   <!-- ═══ DOWNLOAD TODAY'S PANCHANG ═══ -->
   <div class="section" *ngIf="panchangReady">
-    <button class="mangal-aarti-btn" [disabled]="isDownloadingPanchang" (click)="downloadTodayPanchang()">
-      <span class="mab-diya">📥</span>
-      <div class="mab-center">
-        <span class="mab-title">{{ isDownloadingPanchang ? 'डाउनलोड हो रहा है...' : 'आज का पंचांग डाउनलोड करें'
-          }}</span>
-        <span class="mab-sub">Download Today's Panchang</span>
+    <div class="panchang-action-card">
+      <div class="pac-header">
+        <span class="pac-icon">🪔</span>
+        <div class="pac-text">
+          <span class="pac-title">आज का पंचांग</span>
+          <span class="pac-sub">Today's Panchang</span>
+        </div>
       </div>
-      <span class="mab-right">🪔</span>
-    </button>
+      <div class="pac-actions">
+        <button class="pac-btn" [disabled]="!!panchangAction" (click)="viewTodayPanchang()">
+          <ion-icon [name]="panchangAction === 'view' ? 'hourglass-outline' : 'eye-outline'"></ion-icon>
+          <span>देखें</span>
+        </button>
+        <button class="pac-btn" [disabled]="!!panchangAction" (click)="shareTodayPanchang()">
+          <ion-icon [name]="panchangAction === 'share' ? 'hourglass-outline' : 'share-social-outline'"></ion-icon>
+          <span>शेयर</span>
+        </button>
+        <button class="pac-btn primary" [disabled]="!!panchangAction" (click)="downloadTodayPanchang()">
+          <ion-icon [name]="panchangAction === 'download' ? 'hourglass-outline' : 'download-outline'"></ion-icon>
+          <span>डाउनलोड</span>
+        </button>
+      </div>
+    </div>
   </div>
   <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
   <div class="section">
@@ -243,35 +214,23 @@
       </div>
       <div class="fmc-arrow">→</div>
     </div>
-  </div>
-  <!-- ═══ HANUMAN CHALISA PLAYER ═══ -->
-  <div class="section">
-    <div class="chalisa-player" [class.playing]="chalisaPlaying">
-      <div class="chalisa-cover">
-        <div class="chalisa-spinner" [class.spin]="chalisaPlaying">📿</div>
-      </div>
-      <div class="chalisa-info">
-        <div class="chalisa-title">हनुमान चालीसा</div>
-        <div class="chalisa-verse" *ngIf="!chalisaPlaying">40 Chaupais · 8:24 min</div>
-        <div class="chalisa-verse playing-text" *ngIf="chalisaPlaying">
-          {{ chalisaVerses[currentVerse] }}
+
+
+    <!-- ═══ ADD A COMMUNITY POST / FEED ═══ -->
+    <div class="section">
+      <div class="family-mandir-cta" (click)="openFeedForm()">
+        <div class="fmc-icon">🪔</div>
+        <div class="fmc-content">
+          <div class="fmc-title">पोस्ट जोड़ें</div>
+          <div class="fmc-sub">Share a photo or video with the community</div>
         </div>
-        <div class="chalisa-progress" *ngIf="chalisaPlaying">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="chalisaProgress"></div>
-          </div>
-          <div class="progress-time">{{ chalisaTimeDisplay }}</div>
-        </div>
-      </div>
-      <div class="chalisa-controls">
-        <button class="ctrl-btn" (click)="previousVerse()" *ngIf="chalisaPlaying">⏮</button>
-        <button class="play-btn" (click)="toggleChalisa()">
-          {{ chalisaPlaying ? '⏸' : '▶' }}
-        </button>
-        <button class="ctrl-btn" (click)="nextVerse()" *ngIf="chalisaPlaying">⏭</button>
+        <div class="fmc-arrow">→</div>
       </div>
     </div>
   </div>
+ 
+
+
 
 
 
@@ -468,6 +427,74 @@
       </button>
 
       <div class="fm-note">📋 Admin अनुमोदन के बाद आपका मंदिर दिखाई देगा।</div>
+      <div style="height: 48px;"></div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══ FEED / POST FORM ═══ -->
+<div class="fm-overlay" [class.visible]="showFeedForm">
+  <div class="fm-sheet">
+
+    <div class="fm-header">
+      <button class="fm-close" (click)="showFeedForm = false">✕</button>
+      <div class="fm-header-title">🪔 पोस्ट जोड़ें</div>
+      <div class="fm-header-sub">Admin approval के बाद दिखेगी</div>
+    </div>
+
+    <div class="fm-body">
+
+      <div class="fm-field">
+        <label class="fm-label">शीर्षक *</label>
+        <input class="fm-input" type="text" [(ngModel)]="Feed.Title" placeholder="जैसे: मंगल आरती का प्रसाद" />
+      </div>
+
+      <div class="fm-field">
+        <label class="fm-label">विवरण</label>
+        <textarea class="fm-input fm-textarea" [(ngModel)]="Feed.Description"
+          placeholder="अपने अनुभव या संदेश के बारे में लिखें..."></textarea>
+      </div>
+
+      <!-- <div class="fm-field">
+        <label class="fm-label">श्रेणी</label>
+        <input class="fm-input" type="text" [(ngModel)]="Feed.FeedCategory" placeholder="जैसे: सेवा, दर्शन, प्रसाद" />
+      </div> -->
+
+      <!-- Media (image OR video) -->
+      <div class="fm-field">
+        <label class="fm-label">फ़ोटो / वीडियो</label>
+
+        <div class="fm-photo-row">
+          <div class="fm-thumb">
+            <img *ngIf="feedMediaPreview && feedMediaKind === 'image'" [src]="feedMediaPreview" class="fm-thumb-img" />
+            <video *ngIf="feedMediaPreview && feedMediaKind === 'video'" [src]="feedMediaPreview" class="fm-thumb-img"
+              muted></video>
+            <span *ngIf="!feedMediaPreview">📷</span>
+            <span class="fm-tick" *ngIf="Feed.MediaURL">✅</span>
+          </div>
+          <div class="fm-photo-actions">
+            <label class="fm-pick-btn">
+              मीडिया चुनें
+              <input type="file" accept="image/*,video/*" style="display:none" (change)="onFeedMediaSelected($event)" />
+            </label>
+            <button class="fm-upload-btn" *ngIf="feedMediaFile && !Feed.MediaURL" [disabled]="isUploadingFeedMedia"
+              (click)="uploadFeedMedia()">
+              {{ isUploadingFeedMedia ? 'अपलोड...' : '⬆ Upload' }}
+            </button>
+            <button class="fm-upload-btn" *ngIf="Feed.MediaURL" (click)="removeFeedMedia()">
+              🗑 हटाएं
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button class="fm-submit-btn" [disabled]="isSubmittingFeed" (click)="submitFeed()">
+        {{ isSubmittingFeed ? 'जमा हो रहा है...' : '🪔 पोस्ट जमा करें' }}
+      </button>
+
+      <div class="fm-note">📋 Admin अनुमोदन के बाद आपकी पोस्ट फ़ीड में दिखाई देगी।</div>
       <div style="height: 48px;"></div>
     </div>
   </div>
