@@ -3,7 +3,7 @@
     <div class="header-inner">
 
       <!-- Logo — same as web nav -->
-      <div class="nav-logo">
+      <div class="nav-logo" (click)="scrollToTop()">
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">
           <div class="nav-logo-text">{{ t.logoTitle }}</div>
@@ -12,12 +12,20 @@
       </div>
 
 
-      <div style="display: flex;gap: 4px;">
-        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
-            name="logo-whatsapp" style="color: white;"></ion-icon></button>
+      <div style="display:flex; gap:4px;">
+
+
+
+        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()">
+          <ion-icon name="logo-whatsapp" style="color:white;"></ion-icon>
+        </button>
 
         <button class="header-logout-btn" (click)="openShare()">
           <ion-icon name="share-social-outline"></ion-icon>
+        </button>
+
+        <button *ngIf="showLogout" class="header-logout-btn" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
         </button>
       </div>
 
@@ -61,7 +69,7 @@
     <!-- ── NEW: Direct share buttons ── -->
     <div class="share-direct-row">
       <button class="share-direct-btn whatsapp" (click)="shareOnWhatsApp()">
-        <span class="share-direct-icon">  <ion-icon name="logo-whatsapp"></ion-icon></span>
+        <span class="share-direct-icon"> <ion-icon name="logo-whatsapp"></ion-icon></span>
         <span class="share-direct-label">WhatsApp</span>
       </button>
       <button class="share-direct-btn native" (click)="shareNative()">

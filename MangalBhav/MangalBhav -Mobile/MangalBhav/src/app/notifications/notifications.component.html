@@ -12,9 +12,12 @@
         <span class="notif-header-om">🔔</span>
         <div>
           <h1 class="notif-title">Notifications</h1>
-          <p class="notif-sub">{{ notifications.length }} messages</p>
+          <p class="notif-sub">{{ notifications.length }} unread</p>
         </div>
       </div>
+      <button class="clear-all-btn" *ngIf="!isLoading && notifications.length > 0" (click)="clearAll()">
+        Clear all
+      </button>
     </div>
 
     <!-- ── Loading Skeleton ── -->
@@ -39,13 +42,8 @@
     <!-- ── Notification List ── -->
     <div *ngIf="!isLoading && notifications.length > 0" class="notif-list">
 
-      <div
-        class="notif-card"
-        *ngFor="let n of notifications"
-        [class.unread]="!n.IsSeen"
-        [class.festival]="n.NotificationType === 'FESTIVAL'"
-        [class.booking]="n.NotificationType === 'BOOKING_STATUS'"
-      >
+      <div class="notif-card" (click)="openNotification(n)" *ngFor="let n of notifications" [class.unread]="!n.IsSeen"
+        [class.festival]="n.NotificationType === 'FESTIVAL'" [class.booking]="n.NotificationType === 'BOOKING_STATUS'">
         <!-- Unread dot -->
         <div class="unread-dot" *ngIf="!n.IsSeen"></div>
 

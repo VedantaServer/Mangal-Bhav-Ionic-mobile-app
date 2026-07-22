@@ -121,7 +121,7 @@ export class BookingsComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages;
+     this.language = this.userDetails?.Languages || 'English';
 
     this.apinu.postUrlData(
       `MarkNotificationsSeen?UserID=${this.userDetails.UserID}&flag=${Number(1)}`,

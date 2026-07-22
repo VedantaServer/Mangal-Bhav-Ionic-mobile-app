@@ -186,7 +186,7 @@ export class JajmanCompletedPoojaComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages;
+     this.language = this.userDetails?.Languages || 'English';
 
 
 

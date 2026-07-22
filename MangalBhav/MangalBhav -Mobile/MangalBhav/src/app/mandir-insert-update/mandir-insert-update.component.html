@@ -117,9 +117,22 @@
               [href]="'https://maps.google.com/?q=' + m.Latitude + ',' + m.Longitude" target="_blank">
               🗺️ View on Map
             </a>
-            <button class="mandir-edit-btn" (click)="openEditMandir(m, $event)">
+
+            <div class="mandir-card-actions">
+
+              <button class="mandir-edit-btn" (click)="openEditMandir(m, $event)">
+                ✏️ Edit
+              </button>
+
+              <button class="mandir-delete-btn" (click)="deleteMandir(m, $event)">
+                🗑 Delete
+              </button>
+
+            </div>
+
+            <!-- <button class="mandir-edit-btn" (click)="openEditMandir(m, $event)">
               ✏️ Edit
-            </button>
+            </button> -->
           </div>
 
           <div class="card-added-info" *ngIf="m.AddedByName">
@@ -395,7 +408,7 @@
               Edit
 
             </button>
-<!-- 
+            <!-- 
             <button class="social-delete-btn" (click)="deleteSocialMedia(item)">
 
               Delete

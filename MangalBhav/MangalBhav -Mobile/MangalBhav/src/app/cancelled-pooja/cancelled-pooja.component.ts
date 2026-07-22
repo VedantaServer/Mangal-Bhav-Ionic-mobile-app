@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './cancelled-pooja.component.html',
   styleUrls: ['./cancelled-pooja.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterModule, IonicModule]
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule]
 })
 export class CancelledPoojaComponent implements OnInit {
   userDetails: any;
@@ -22,45 +22,45 @@ export class CancelledPoojaComponent implements OnInit {
   PanditServicesList: any;
 
   labels = {
-  en: {
-    pageTitle: 'Bookings',
-    bannerSubCancelled: 'Cancelled',
-    bannerTitle: 'Seva Bookings',
-appTitle: '✦ Mangal.Bhav ✦',
-    requested: 'Requested',
-    accepted: 'Accepted',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
+    en: {
+      pageTitle: 'Bookings',
+      bannerSubCancelled: 'Cancelled',
+      bannerTitle: 'Seva Bookings',
+      appTitle: '✦ Mangal.Bhav ✦',
+      requested: 'Requested',
+      accepted: 'Accepted',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
 
-    yourServices: 'Your Services',
-    bookings: 'Bookings',
+      yourServices: 'Your Services',
+      bookings: 'Bookings',
 
-    noBookings: 'No bookings yet for this service',
+      noBookings: 'No bookings yet for this service',
 
-    noServices: 'No Services Found',
-    noServicesSub: 'Add services first to start receiving bookings'
-  },
+      noServices: 'No Services Found',
+      noServicesSub: 'Add services first to start receiving bookings'
+    },
 
-  hi: {
-    pageTitle: 'बुकिंग्स',
-    bannerSubCancelled: 'रद्द',
-    bannerTitle: 'सेवा बुकिंग्स',
+    hi: {
+      pageTitle: 'बुकिंग्स',
+      bannerSubCancelled: 'रद्द',
+      bannerTitle: 'सेवा बुकिंग्स',
 
-    requested: 'अनुरोधित',
-    accepted: 'स्वीकृत',
-    completed: 'पूर्ण',
-    cancelled: 'रद्द',
+      requested: 'अनुरोधित',
+      accepted: 'स्वीकृत',
+      completed: 'पूर्ण',
+      cancelled: 'रद्द',
       appTitle: '✦ मंगल भाव ✦',
 
-    yourServices: 'आपकी सेवाएँ',
-    bookings: 'बुकिंग्स',
+      yourServices: 'आपकी सेवाएँ',
+      bookings: 'बुकिंग्स',
 
-    noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
+      noBookings: 'इस सेवा के लिए अभी कोई बुकिंग नहीं है',
 
-    noServices: 'कोई सेवा नहीं मिली',
-    noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
-  }
-};
+      noServices: 'कोई सेवा नहीं मिली',
+      noServicesSub: 'बुकिंग प्राप्त करने के लिए पहले सेवा जोड़ें'
+    }
+  };
 
   constructor(
     public routerCtrl: NavController,
@@ -80,15 +80,15 @@ appTitle: '✦ Mangal.Bhav ✦',
     this.loadList();
   }
 
-   openPage(pageName: any) {
+  openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
-    get t() {
-  return this.language === 'Hindi'
-    ? this.labels.hi
-    : this.labels.en;
-}
+  get t() {
+    return this.language === 'Hindi'
+      ? this.labels.hi
+      : this.labels.en;
+  }
 
 
   loadList() {
@@ -194,17 +194,17 @@ appTitle: '✦ Mangal.Bhav ✦',
 
       next: (finalList: any) => {
         console.log('🔥 Final Fully Enriched List:', finalList);
-      
+
         // Only keep services that have at least one CANCELLED booking
         const filtered = finalList.filter((service: any) => service.Bookings?.length > 0);
-      
+
         // Sort services by their latest booking's DateAdded (newest first)
         filtered.sort((a: any, b: any) => {
           const latestA = Math.max(...a.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
           const latestB = Math.max(...b.Bookings.map((bk: any) => new Date(bk.DateAdded || 0).getTime()));
           return latestB - latestA;
         });
-      
+
         this.PanditServicesList = filtered;
       },
 
@@ -240,72 +240,101 @@ appTitle: '✦ Mangal.Bhav ✦',
     }
   }
 
-  
+
   currentImageIndex: { [key: string]: number } = {};
-imageIntervals: { [key: string]: any } = {};
+  imageIntervals: { [key: string]: any } = {};
 
-getCleanName(serviceName: string): string {
-  let cleanName = serviceName.split('/')[0].trim();
-  cleanName = cleanName.replace(/\s+/g, '');
-  cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, '');
-  return cleanName;
-}
-
-getServiceImages(serviceName: string): string[] {
-  const cleanName = this.getCleanName(serviceName);
-
-  return [
-    `assets/img/${cleanName}.png`,
-    `assets/img/${cleanName}2.jfif`,
-    `assets/img/${cleanName}3.jfif`
-  ];
-}
-
-startSlideshow(serviceName: string) {
-  const key = this.getCleanName(serviceName);
-
-  if (this.imageIntervals[key]) return; // avoid multiple intervals
-
-  this.currentImageIndex[key] = 0;
-
-  this.imageIntervals[key] = setInterval(() => {
-    this.currentImageIndex[key] =
-      (this.currentImageIndex[key] + 1) % 3;
-  }, 300000); // change every 3 seconds
-}
-
-getCurrentImage(serviceName: string): string {
-  const key = this.getCleanName(serviceName);
-  const images = this.getServiceImages(serviceName);
-
-  if (!(key in this.currentImageIndex)) {
-    this.startSlideshow(serviceName);
+  getCleanName(serviceName: string): string {
+     let cleanName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
+    return cleanName;
   }
 
-  return images[this.currentImageIndex[key] || 0];
-}
+
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+  // getServiceImages(serviceName: string): string[] {
+  //   const cleanName = this.getCleanName(serviceName);
+
+  //   return [
+  //     `assets/img/${cleanName}.png`,
+  //     `assets/img/${cleanName}2.jfif`,
+  //     `assets/img/${cleanName}3.jfif`
+  //   ];
+  // }
+
+  getServiceImages(serviceName: string): string[] {
+    const cleanName = this.getCleanName(serviceName);
+
+    return [
+      `${this.imgBaseUrl}/${cleanName}.png`,
+      `${this.imgBaseUrl}/${cleanName}2.jfif`,
+      `${this.imgBaseUrl}/${cleanName}3.jfif`
+    ];
+  }
+
+  startSlideshow(serviceName: string) {
+    const key = this.getCleanName(serviceName);
+
+    if (this.imageIntervals[key]) return; // avoid multiple intervals
+
+    this.currentImageIndex[key] = 0;
+
+    this.imageIntervals[key] = setInterval(() => {
+      this.currentImageIndex[key] =
+        (this.currentImageIndex[key] + 1) % 3;
+    }, 300000); // change every 3 seconds
+  }
+
+  getCurrentImage(serviceName: string): string {
+    const key = this.getCleanName(serviceName);
+    const images = this.getServiceImages(serviceName);
+
+    if (!(key in this.currentImageIndex)) {
+      this.startSlideshow(serviceName);
+    }
+
+    return images[this.currentImageIndex[key] || 0];
+  }
 
   getServiceImage(serviceName: string): string {
 
     if (!serviceName)
-      return 'assets/img/default.jfif';
+      return `${this.imgBaseUrl}/default.jfif`;
 
     let cleanName = serviceName.split('/')[0].trim();
 
     cleanName = cleanName.replace(/\s+/g, '');
-    cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, '');
+    cleanName = cleanName.replace(/[^a-zA-Z0-9&]/g, '');
 
-    //   console.log(cleanName);
-
-    return `assets/img/${cleanName}.jfif`;
+    return `${this.imgBaseUrl}/${cleanName}.jfif`;
   }
-  // Fallback if image fails to load
+
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '../../assets/img/default.jpg';
-    // If even default fails, use a CSS gradient placeholder
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
+
+  // getServiceImage(serviceName: string): string {
+
+  //   if (!serviceName)
+  //     return 'assets/img/default.jfif';
+
+  //   let cleanName = serviceName.split('/')[0].trim();
+
+  //   cleanName = cleanName.replace(/\s+/g, '');
+  //   cleanName = cleanName.replace(/[^a-zA-Z0-9&]/g, '');
+
+  //   //   console.log(cleanName);
+
+  //   return `assets/img/${cleanName}.jfif`;
+  // }
+  // Fallback if image fails to load
+  // onImgError(event: Event) {
+  //   const img = event.target as HTMLImageElement;
+  //   img.src = '../../assets/img/default.jpg';
+  //   // If even default fails, use a CSS gradient placeholder
+  //   img.onerror = null;
+  // }
 
   // Returns CSS class for booking status badge
   getStatusClass(status: string): string {

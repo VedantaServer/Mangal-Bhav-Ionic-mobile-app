@@ -1,4 +1,8 @@
 ﻿using FaceUPAI.DataAccessService;
+using FaceUPAI.Models;
+using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -6,29 +10,26 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Syntizen.Aadhaar.AuaKua;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using static FaceUPAI.CommonServices;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-using Syntizen.Aadhaar.AuaKua;
-using System.Net;
-using FaceUPAI.Models;
-using System.Security.Cryptography;
-using System.Data.SqlTypes;
-using FirebaseAdmin.Messaging;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 namespace FaceUPAI.Controllers
 {
     public class AuthenticationController : Controller
@@ -558,7 +559,7 @@ namespace FaceUPAI.Controllers
                 }
                 else
                 {
-                    return NotFound("No data found.");
+                    return Ok("No data found.");
                 }
             }
         }
@@ -587,7 +588,7 @@ namespace FaceUPAI.Controllers
                 }
                 else
                 {
-                    return NotFound("No data found.");
+                    return Ok("No data found.");
                 }
             }
         }
@@ -617,25 +618,26 @@ namespace FaceUPAI.Controllers
                 }
                 else
                 {
-                    return NotFound("No data found.");
+                    return Ok("No data found.");
                 }
             }
         }
 
+
+
+
         [HttpPost]
-        [Route("UnansweredBhaktMessagesReportSelect")]
+        [Route("UserNameRoleByUserID")]
         [EnableCors("AllowAll")]
-        public IActionResult UnansweredBhaktMessagesReportSelect(
-            [FromQuery] DateTime DateFrom, [FromQuery] DateTime DateTo, [FromQuery] int? PanditUserID)
+        public IActionResult UserNameRoleByUserID(
+            [FromQuery] int UserID)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
-        new SqlParameter("@FromDate", DateFrom),
-        new SqlParameter("@ToDate", DateTo),
-        new SqlParameter("@PanditUserID", (object)PanditUserID ?? DBNull.Value)
+        new SqlParameter("@UserID", UserID)
             };
 
-            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UnansweredBhaktMessagesReportSelect", parameters))
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UserNameRoleByUserID", parameters))
             {
                 var dataTable = new DataTable();
                 dataTable.Load(dataReader);
@@ -649,6 +651,114 @@ namespace FaceUPAI.Controllers
                 {
                     return NotFound("No data found.");
                 }
+            }
+
+
+
+        }
+
+
+
+        [HttpPost]
+        [Route("UnansweredBhaktMessagesReportSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult UnansweredBhaktMessagesReportSelect(
+    [FromQuery] DateTime? DateFrom,
+    [FromQuery] DateTime? DateTo,
+    [FromQuery] int? PanditUserID,
+    [FromQuery] int PageNumber = 1,
+    [FromQuery] int PageSize = 20)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@FromDate", (object)DateFrom ?? DBNull.Value),
+        new SqlParameter("@ToDate", (object)DateTo ?? DBNull.Value),
+        new SqlParameter("@PanditUserID", (object)PanditUserID ?? DBNull.Value),
+        new SqlParameter("@PageNumber", PageNumber),
+        new SqlParameter("@PageSize", PageSize)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "UnansweredBhaktMessagesReportSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                // Always Ok, even when empty — frontend relies on comparing
+                // returned row count to TotalUnansweredCount to know when to stop paging.
+                var jsonResult = JsonConvert.SerializeObject(dataTable);
+                return Ok(jsonResult);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("PanditYajmanListSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult PanditYajmanListSelect(
+    [FromQuery] int PanditUserID,
+    [FromQuery] int PageNumber = 1,
+    [FromQuery] int PageSize = 20)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@PanditUserID", PanditUserID),
+        new SqlParameter("@PageNumber", PageNumber),
+        new SqlParameter("@PageSize", PageSize)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "PanditYajmanListSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                var jsonResult = JsonConvert.SerializeObject(dataTable);
+                return Ok(jsonResult);
+            }
+        }
+
+
+
+        [HttpPost]
+        [Route("LocationDistinctCitiesSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult LocationDistinctCitiesSelect()
+        {
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                System.Data.CommandType.StoredProcedure, "LocationDistinctCitiesSelect", null))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+                var jsonResult = JsonConvert.SerializeObject(dataTable);
+                return Ok(jsonResult);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Route("PanditBhaktFullTranscriptSelect")]
+        [EnableCors("AllowAll")]
+        public IActionResult PanditBhaktFullTranscriptSelect(
+    [FromQuery] int PanditUserID,
+    [FromQuery] int BhaktUserID,
+    [FromQuery] int PageNumber = 1,
+    [FromQuery] int PageSize = 50)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@PanditUserID", PanditUserID),
+        new SqlParameter("@BhaktUserID", BhaktUserID),
+        new SqlParameter("@PageNumber", PageNumber),
+        new SqlParameter("@PageSize", PageSize)
+            };
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(System.Data.CommandType.StoredProcedure, "PanditBhaktFullTranscriptSelect", parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                var jsonResult = JsonConvert.SerializeObject(dataTable);
+                return Ok(jsonResult);
             }
         }
 
@@ -1179,25 +1289,57 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
 
                         try
                         {
+                            //var firebaseMessage =
+                            //    new FirebaseAdmin.Messaging.Message()
+                            //    {
+                            //        Token = token,
+
+                            //        Notification =
+                            //            new FirebaseAdmin.Messaging.Notification()
+                            //            {
+                            //                Title = title,
+                            //                Body = message
+                            //            },
+
+                            //        Data =
+                            //            new Dictionary<string, string>()
+                            //            {
+                            //        { "NotificationType", notificationType },
+                            //        { "ReferenceID", referenceID }
+                            //            }
+                            //    };
+
                             var firebaseMessage =
-                                new FirebaseAdmin.Messaging.Message()
-                                {
-                                    Token = token,
+    new FirebaseAdmin.Messaging.Message()
+    {
+        Token = token,
 
-                                    Notification =
-                                        new FirebaseAdmin.Messaging.Notification()
-                                        {
-                                            Title = title,
-                                            Body = message
-                                        },
+        Notification =
+            new FirebaseAdmin.Messaging.Notification()
+            {
+                Title = title,
+                Body = message
+            },
 
-                                    Data =
-                                        new Dictionary<string, string>()
-                                        {
-                                    { "NotificationType", notificationType },
-                                    { "ReferenceID", referenceID }
-                                        }
-                                };
+        // Android notification settings
+        Android = new FirebaseAdmin.Messaging.AndroidConfig()
+        {
+            Priority = FirebaseAdmin.Messaging.Priority.High,
+
+            Notification = new FirebaseAdmin.Messaging.AndroidNotification()
+            {
+                ChannelId = "general",
+                Sound = "default"
+            }
+        },
+
+        Data =
+            new Dictionary<string, string>()
+            {
+                { "NotificationType", notificationType },
+                { "ReferenceID", referenceID }
+            }
+    };
 
                             string firebaseResponse =
                                 await FirebaseMessaging
@@ -1778,7 +1920,6 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
 
 
 
-
         [HttpPost]
         [EnableCors("AllowAll")]
         [Route("UploadImages")]
@@ -1799,7 +1940,25 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                     fileExtension = ".png";
                 }
 
-                string uniqueFileName = $"{DateTime.Now.Ticks}{fileExtension}"; // Unique file name
+                string uniqueFileName;
+
+                // ── PoojaPhoto: save using the provided name (entityID), not a ticks-based name ──
+                if (filePurpose == "PoojaPhoto")
+                {
+                    if (string.IsNullOrWhiteSpace(entityID))
+                    {
+                        return BadRequest(new { Status = "Error", Message = "entityID (service name) is required for PoojaPhoto uploads." });
+                    }
+
+                    // Sanitize: strip anything that isn't alphanumeric, to match the clean-name convention used on the client
+                    string safeName = Regex.Replace(entityID, @"[^a-zA-Z0-9]", "");
+                    uniqueFileName = $"{safeName}{fileExtension}";
+                }
+                else
+                {
+                    uniqueFileName = $"{DateTime.Now.Ticks}{fileExtension}"; // Unique file name
+                }
+
                 string fileFolderPath = Path.Combine(folderPath);
                 string filePath = Path.Combine(fileFolderPath, uniqueFileName);
 
@@ -1808,6 +1967,7 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                     Directory.CreateDirectory(fileFolderPath);
                 }
 
+                // FileMode.Create overwrites if the file already exists — correct behavior for replacing a service photo
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
@@ -1816,7 +1976,7 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                 return Ok(new
                 {
                     Status = "Success",
-                    FileUrl = $"/uploads/{filePurpose}/{uniqueFileName}", // Relative file path
+                    FileUrl = $"/uploads/{filePurpose}/{uniqueFileName}",
                     FilePurpose = filePurpose,
                     FileName = uniqueFileName
                 });
@@ -1826,6 +1986,56 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                 return StatusCode(500, new { Status = "Error", Message = ex.Message });
             }
         }
+
+
+
+        //[HttpPost]
+        //[EnableCors("AllowAll")]
+        //[Route("UploadImages")]
+        //public async Task<IActionResult> UploadImages([FromForm] IFormFile file, [FromForm] string entityType, [FromForm] string entityID, [FromForm] string filePurpose)
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //        {
+        //            return BadRequest(new { Status = "Error", Message = "No file provided." });
+        //        }
+
+        //        var folderPath = getServerPathByPurpose(filePurpose);
+        //        string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+        //        if (fileExtension != ".mp3")
+        //        {
+        //            fileExtension = ".png";
+        //        }
+
+        //        string uniqueFileName = $"{DateTime.Now.Ticks}{fileExtension}"; // Unique file name
+        //        string fileFolderPath = Path.Combine(folderPath);
+        //        string filePath = Path.Combine(fileFolderPath, uniqueFileName);
+
+        //        if (!Directory.Exists(fileFolderPath))
+        //        {
+        //            Directory.CreateDirectory(fileFolderPath);
+        //        }
+
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
+
+        //        return Ok(new
+        //        {
+        //            Status = "Success",
+        //            FileUrl = $"/uploads/{filePurpose}/{uniqueFileName}", // Relative file path
+        //            FilePurpose = filePurpose,
+        //            FileName = uniqueFileName
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { Status = "Error", Message = ex.Message });
+        //    }
+        //}
 
 
 
@@ -2143,7 +2353,43 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
 
 
 
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("FeedEngagementCount_Select")]
+        public IActionResult FeedEngagementCount_Select(int FeedID, int UserID)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@FeedID", FeedID),
+            new SqlParameter("@UserID", UserID == 0 ? (object)DBNull.Value : UserID)
+                };
 
+                using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+                    CommandType.StoredProcedure,
+                    "FeedEngagementCount_Select",
+                    parameters))
+                {
+                    var dataTable = new DataTable();
+                    dataTable.Load(dataReader);
+
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        var jsonResult = JsonConvert.SerializeObject(dataTable);
+                        return Ok(jsonResult);
+                    }
+                    else
+                    {
+                        return NotFound("No data found.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
 
 
 
@@ -2271,6 +2517,82 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
 
         }
 
+        [HttpGet]
+        [EnableCors("AllowAll")]
+        [Route("DownloadFile")]
+        public IActionResult DownloadFile(
+    string filePurpose,
+    string fileName)
+        {
+            try
+            {
+                var folderPath =
+                    getServerPathByPurpose(filePurpose);
+
+                var filePath =
+                    Path.Combine(folderPath, fileName);
+
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound();
+                }
+
+                string extension =
+                    Path.GetExtension(fileName)
+                        .ToLowerInvariant();
+
+                string contentType;
+
+                switch (extension)
+                {
+                    case ".m4a":
+                    case ".mp4":
+                        contentType = "audio/mp4";
+                        break;
+
+                    case ".mp3":
+                        contentType = "audio/mpeg";
+                        break;
+
+                    case ".webm":
+                        contentType = "audio/webm";
+                        break;
+
+                    case ".ogg":
+                        contentType = "audio/ogg";
+                        break;
+
+                    case ".aac":
+                        contentType = "audio/aac";
+                        break;
+
+                    default:
+                        contentType =
+                            "application/octet-stream";
+                        break;
+                }
+
+                var bytes =
+                    System.IO.File.ReadAllBytes(filePath);
+
+                return File(
+                    bytes,
+                    contentType
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        Status = "Error",
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+
 
         [HttpGet]
         [EnableCors("AllowAll")]
@@ -2345,6 +2667,12 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                 PathData = "ClientApp\\dist\\assets\\BookingPhoto\\";
             if (imagePurpose == "AartiAudio")
                 PathData = "ClientApp\\dist\\assets\\AartiAudio\\";
+            if (imagePurpose == "PoojaPhoto")
+                PathData = "ClientApp\\dist\\assets\\img\\";
+            if (imagePurpose == "ChatAudio")
+                PathData = "ClientApp\\dist\\assets\\ChatAudio\\";
+            if (imagePurpose == "feed")
+                PathData = "ClientApp\\dist\\assets\\feed\\";
 
 
 

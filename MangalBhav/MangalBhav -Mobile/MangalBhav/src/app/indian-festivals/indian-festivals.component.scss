@@ -557,3 +557,243 @@ ion-content {
     padding: 10px 0 16px !important;
   }
 }
+
+.panchang-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: 6px;
+  border: 1px solid #f0e2c0;
+
+  .panchang-date-label { font-size: 13px; font-weight: 600; color: #5a4326; }
+
+  .panchang-date-actions {
+    display: flex;
+    gap: 2px;
+    ion-button { --padding-start: 6px; --padding-end: 6px; margin: 0; }
+  }
+}
+
+.panchang-picker-section {
+  margin: 12px 0 20px;
+}
+
+.panchang-date-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #f0c869;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+
+  ion-icon { font-size: 20px; color: #ff9800; }
+
+  .panchang-native-date {
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5a4326;
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .panchang-selected-label {
+    margin-left: auto;
+    font-size: 12px;
+    color: #a5772e;
+  }
+}
+
+.panchang-action-card {
+  display: flex;
+  gap: 8px;
+
+  .pac-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid #f0c869;
+    border-radius: 12px;
+    padding: 10px 4px;
+    font-size: 11px;
+    color: #7a4a00;
+    font-weight: 600;
+
+    ion-icon { font-size: 20px; }
+
+    &.primary { background: #ff9800; color: #fff; border-color: #ff9800; }
+    &:disabled { opacity: 0.6; }
+  }
+}
+
+.panchang-not-found {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #b23c3c;
+  text-align: center;
+}
+
+
+.panchang-picker-card {
+  background: linear-gradient(135deg, #fff8e7, #ffe9c7);
+  border: 1px solid #f0c869;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(200, 130, 20, 0.12);
+
+  .ppc-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .ppc-icon { font-size: 26px; }
+
+    .ppc-text {
+      display: flex;
+      flex-direction: column;
+      .ppc-title { font-weight: 700; font-size: 15px; color: #7a4a00; }
+      .ppc-sub { font-size: 11px; color: #a5772e; }
+    }
+  }
+
+  .panchang-calendar-wrap {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #f0e2c0;
+    overflow: hidden;
+
+    .panchang-calendar {
+      width: 100%;
+      --background: #fff;
+      border-radius: 14px;
+    }
+  }
+
+  .panchang-selected-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7a4a00;
+
+    ion-icon { font-size: 16px; color: #ff9800; }
+  }
+
+  .panchang-action-card {
+    display: flex;
+    gap: 8px;
+
+    .pac-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: #fff;
+      border: 1px solid #f0c869;
+      border-radius: 12px;
+      padding: 10px 4px;
+      font-size: 11px;
+      color: #7a4a00;
+      font-weight: 600;
+
+      ion-icon { font-size: 20px; }
+
+      &.primary { background: #ff9800; color: #fff; border-color: #ff9800; }
+      &:disabled { opacity: 0.6; }
+    }
+  }
+
+  .panchang-not-found {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    background: #fdf1ee;
+    border: 1px solid #f3c9c0;
+    border-radius: 12px;
+    padding: 12px;
+
+    ion-icon { font-size: 18px; color: #c0392b; }
+    p { margin: 0; font-size: 13px; color: #b23c3c; }
+  }
+}
+
+
+
+.feed-reels-wrap {
+  padding: 12px 12px 0;
+}
+
+.feed-date-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 4px 12px;
+
+  .fdh-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .fdh-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7a4a1a;
+    white-space: nowrap;
+  }
+}
+
+
+.panchang-card {
+  width: 100%;
+  height: auto;
+  aspect-ratio: unset;       // ← override whatever fixed aspect-ratio .reel-card uses
+  padding: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.panchang-img {
+  width: 100%;
+  height: auto;               // ← let it grow to its natural (tall) height instead of being cropped
+  object-fit: contain;
+  display: block;
+}
+
+.panchang-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 14px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: #ff6a00;
+  color: #fff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+
+  ion-icon { font-size: 16px; }
+}
+

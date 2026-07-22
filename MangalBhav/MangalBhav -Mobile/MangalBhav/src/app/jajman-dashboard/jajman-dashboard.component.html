@@ -33,15 +33,24 @@
     <!-- ===== QUICK ACTIONS ===== -->
     <div class="section-label">{{ t.quickActions }}</div>
 
+
+
     <div class="dashboard-grid">
-
-
 
       <div class="dash-card" (click)="openPage('booking')">
         <div class="dash-icon">📅</div>
         <span>{{ t.myBookings }}</span>
       </div>
 
+      <div class="dash-card" (click)="openPage('allchats')">
+        <div class="dash-icon">🙏</div>
+        <span>{{ t.askPanditJi }}</span>
+      </div>
+
+      <div class="dash-card" (click)="openPage('mangalmart')">
+        <div class="dash-icon">🛍️</div>
+        <span>{{ t.mangalMart }}</span>
+      </div>
 
       <div class="dash-card" (click)="openPage('user-profile')">
         <div class="dash-icon">👤</div>
@@ -65,7 +74,10 @@
         <div class="dash-icon">🛕</div>
         <span>{{ t.myMandirs }}</span>
       </div>
-
+      <div class="dash-card" (click)="openPage('allchats')">
+        <div class="dash-icon">💬</div>
+        <span>{{ t.chatSupport }}</span>
+      </div>
 
     </div>
 

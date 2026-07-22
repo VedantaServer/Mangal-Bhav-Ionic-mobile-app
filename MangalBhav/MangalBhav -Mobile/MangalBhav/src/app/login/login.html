@@ -1045,6 +1045,54 @@
 
       </div>
 
+      <div *ngIf="registerStep === 'photo'" class="role-wrapper">
+
+        <div class="step-heading">
+          <span class="step-badge">Almost Done</span>
+          <h3 class="step-title">Upload Your Photo 🧘</h3>
+          <p class="step-desc">Yajmans trust Pandits with a clear profile photo</p>
+        </div>
+
+        <input type="file" accept="image/*" hidden #panditPhotoInput (change)="onPanditPhotoSelected($event)" />
+
+        <div (click)="panditPhotoInput.click()"
+          style="display:flex; flex-direction:column; align-items:center; gap:10px; margin: 10px 0 20px; cursor:pointer;">
+          <div style="position:relative; width:110px; height:110px; border-radius:50%;
+                      border: 2.5px solid rgba(255,149,0,0.35); overflow:hidden;
+                      background:#FFF8EC; display:flex; align-items:center; justify-content:center;">
+            <img [src]="panditPhotoPreview || 'assets/uploadfile.png'"
+                 style="width:100%; height:100%; object-fit:cover;" />
+            <div style="position:absolute; bottom:2px; right:2px; width:30px; height:30px; border-radius:50%;
+                        background:#FF9500; display:flex; align-items:center; justify-content:center;
+                        border:2px solid #fff;">
+              <ion-icon name="camera-outline" style="color:#fff; font-size:16px;"></ion-icon>
+            </div>
+          </div>
+          <p style="font-size:12px; color:#7A4D00; margin:0;">
+            {{ panditPhotoPreview ? 'Tap to change photo' : 'Tap to upload your photo' }}
+          </p>
+        </div>
+
+        <button class="auth-btn" (click)="continueAfterPanditPhoto()" [disabled]="isUploadingPanditPhoto">
+          <span>✅</span> {{ isUploadingPanditPhoto ? 'Saving...' : 'Continue' }} <span class="btn-arr">→</span>
+        </button>
+
+        <div class="auth-divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">✦ ॐ ✦</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <p class="auth-switch">
+          <span class="auth-switch-link" (click)="skipPanditPhoto()">Skip for now</span>
+          &nbsp;|&nbsp;
+          <span class="auth-switch-link" (click)="backToRoleSelection()">← Back</span>
+        </p>
+
+      </div>
+
+
+
     </div>
 
     <!-- Back button -->

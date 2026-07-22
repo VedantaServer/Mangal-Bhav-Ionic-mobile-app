@@ -1,58 +1,71 @@
-<div class="mb-nav-wrapper">
-  <svg class="mb-curve-svg" [attr.viewBox]="'0 0 ' + navWidth + ' 70'"
-       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path [attr.d]="currentPath" fill="#ffffff"/>
+<div class="mb-nav-wrapper"  #navWrapper>
+  <svg class="mb-curve-svg" [attr.viewBox]="'0 0 ' + navWidth + ' 70'" preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <path [attr.d]="currentPath" fill="#ffffff" />
   </svg>
 
   <div class="mb-tab-row">
 
-    <!-- 1. Pooja -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('tab3')" (click)="openPage('tabs/tab3')">
+    <div class="mb-tab-btn" [class.tab-active]="isPoojaActive()" (click)="openPooja()">
       <div class="mb-active-fab">
-        <img src="/assets/pooja.png" class="mb-fab-img"/>
+        <img src="/assets/pooja.png" class="mb-fab-img" />
       </div>
-      <img src="/assets/pooja.png" class="mb-tab-img"/>
+      <img src="/assets/pooja.png" class="mb-tab-img" />
       <span class="mb-tab-label">Pooja</span>
     </div>
 
-    <!-- 2. Temple -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('openfindmandir')" (click)="openPage('tabs/openfindmandir')">
+    <div class="mb-tab-btn" [class.tab-active]="isActive('openfindmandir')" (click)="openPage('openfindmandir')">
       <div class="mb-active-fab">
-        <img src="/assets/temple.png" class="mb-fab-img"/>
+        <img src="/assets/temple.png" class="mb-fab-img" />
       </div>
-      <img src="/assets/temple.png" class="mb-tab-img"/>
+      <img src="/assets/temple.png" class="mb-tab-img" />
       <span class="mb-tab-label">Temple</span>
     </div>
 
-    <!-- 3. Center (Seva/Yagna) -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('open-community-page')" (click)="openPage('open-community-page')">
+    <div class="mb-tab-btn" [class.tab-active]="isActive('open-community-page')" (click)="communityAction()">
+
       <div class="mb-active-fab">
-        <img src="/assets/yagna2.png" class="mb-fab-img" style="border-radius:50%;"/>
+
+        <ng-container *ngIf="isActive('open-community-page'); else activeIcon">
+          <ion-icon name="add" class="community-plus"></ion-icon>
+        </ng-container>
+
+        <ng-template #activeIcon>
+          <img src="/assets/swastik.png" class="mb-fab-img" style="border-radius:50%;" />
+        </ng-template>
+
       </div>
-      <img src="/assets/yagna2.png" class="mb-tab-img" style="border-radius:50%; width:46px; height:46px;"/>
+
+      <img *ngIf="!isActive('open-community-page')" src="/assets/swastik.png" class="mb-tab-img"
+        style="border-radius:50%;width:46px;height:46px;" />
+
     </div>
 
-    <!-- 4. Pandit -->
     <div class="mb-tab-btn" [class.tab-active]="isActive('find-pandit') || isActive('open-find-pandit')" (click)="action4()">
       <div class="mb-active-fab">
-        <img src="/assets/pandit.png" class="mb-fab-img"/>
+        <img src="/assets/pandit.png" class="mb-fab-img" />
       </div>
-      <img src="/assets/pandit.png" class="mb-tab-img"/>
-      <span class="mb-tab-label">Pandit Ji</span>
+      <img src="/assets/pandit.png" class="mb-tab-img" />
+      <span class="mb-tab-label">Pandit ji</span>
     </div>
 
-    <!-- 5. Profile -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('tab1') || isActive('jajmandashboard')" (click)="openPage('tabs/tab1')">
+    <div class="mb-tab-btn" [class.tab-active]="isProfileActive()" (click)="openProfile()" *ngIf="!adminloggedin">
       <div class="mb-active-fab">
-        <img src="assets/user.png" class="mb-fab-img" style="border-radius:50%;"
-             (error)="profilePhotoUrl = 'assets/user.png'"/>
+        <img src="/assets/user.png" class="mb-fab-img" />
       </div>
-      <img src="assets/user.png" class="mb-tab-img" style="border-radius:50%;"
-           (error)="profilePhotoUrl = 'assets/user.png'"/>
+      <img src="/assets/user.png" class="mb-tab-img" />
       <span class="mb-tab-label">
-        {{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}
+        {{ isLoggedIn ? (userDetails?.FullName?.split(' ')[0] || 'Me') : 'Signup' }}
       </span>
     </div>
 
+    <div class="mb-tab-btn" [class.tab-active]="isAdminDashboardActive()" (click)="openAdminDashboard()"
+      *ngIf="adminloggedin">
+      <div class="mb-active-fab">
+        <img src="/assets/user.png" class="mb-fab-img" />
+      </div>
+      <img src="/assets/user.png" class="mb-tab-img" />
+      <span class="mb-tab-label">Admin</span>
+    </div>
   </div>
 </div>

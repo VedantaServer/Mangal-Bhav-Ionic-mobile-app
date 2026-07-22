@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnDestroy } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
@@ -6,6 +6,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { App } from '@capacitor/app';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { filter } from 'rxjs';
+import { NotificationSoundService } from './services/notification-sound.service';
+import { ApiNU } from '../providers';   // ← adjust path to match your project structure
 
 declare let gtag: Function;
 
@@ -15,22 +17,29 @@ declare let gtag: Function;
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   lblMessage: string = 'Please waiting, setting up!';
 
-  // NEW
   showAppBanner = false;
   storeUrl = '';
 
   readonly PLAY_URL = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
   readonly APPSTORE_URL = 'https://apps.apple.com/in/app/mangal-bhav/id6764030842';
 
+  // ── Global unread-count polling ──
+  private unreadPollHandle: any = null;
+  private readonly UNREAD_POLL_MS = 5000;
+  private prevUnreadCount: number | null = null; // null = not fetched yet
+  private userDetails: any;
+
   constructor(
     private router: Router,
     private platform: Platform,
     private storage: Storage,
     public routerCtrl: NavController,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private soundService: NotificationSoundService,
+    private apinu: ApiNU
   ) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -44,19 +53,54 @@ export class AppComponent {
     this.initializeApp();
     this.setupDeepLinks();
     this.initAnalytics();
-    this.checkAppBanner(); // NEW
+    this.checkAppBanner();
+     // NEW
+  }
+
+  // NEW — polls unread count app-wide (any screen), rings on increase
+  private async startGlobalUnreadPolling() {
+    this.userDetails = await this.storage.get('account');
+    if (!this.userDetails?.UserID) return; // not logged in, nothing to poll
+
+    this.stopGlobalUnreadPolling();
+    this.checkUnreadCount(); // initial fetch, sets baseline (no sound on first check)
+    this.unreadPollHandle = setInterval(() => this.checkUnreadCount(), this.UNREAD_POLL_MS);
+  }
+
+  private checkUnreadCount() {
+    this.apinu.postUrlData(
+      'GetUnreadNotificationCount?userID=' + Number(this.userDetails.UserID), null
+    ).subscribe((res: any) => {
+      const currentCount = res[0]?.UnreadCount ?? 0;
+
+      if (this.prevUnreadCount !== null && currentCount > this.prevUnreadCount) {
+        this.ngZone.run(() => this.soundService.play());
+      }
+
+      this.prevUnreadCount = currentCount;
+    });
+  }
+
+  private stopGlobalUnreadPolling() {
+    if (this.unreadPollHandle) {
+      clearInterval(this.unreadPollHandle);
+      this.unreadPollHandle = null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopGlobalUnreadPolling();
   }
 
   // NEW
   private checkAppBanner() {
-    // Only show on real mobile browsers, never inside the installed native app
     if (Capacitor.isNativePlatform()) return;
 
     const ua = navigator.userAgent || '';
     const isAndroid = /Android/i.test(ua);
     const isiOS = /iPhone|iPad|iPod/i.test(ua);
 
-    if (!isAndroid && !isiOS) return; // desktop browser, skip
+    if (!isAndroid && !isiOS) return;
     if (sessionStorage.getItem('appBannerDismissed')) return;
 
     this.storeUrl = isAndroid ? this.PLAY_URL : this.APPSTORE_URL;
@@ -97,5 +141,7 @@ export class AppComponent {
     await this.platform.ready();
     await this.storage.create();
     const accountValue = await this.storage.get('account');
+
+    this.startGlobalUnreadPolling(); 
   }
 }

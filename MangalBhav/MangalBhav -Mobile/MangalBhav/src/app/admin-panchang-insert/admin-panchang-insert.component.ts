@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import { forkJoin } from 'rxjs';
+import { concatMap, forkJoin, from, map, toArray } from 'rxjs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -167,17 +167,15 @@ export class AdminPanchangInsertComponent implements OnInit {
     });
   }
 
-
-
-
-
   saveDailyPanchang() {
 
     const isoDate = new Date(this.panchangDate).toISOString();
     const dateAdded = new Date().toISOString();
 
-    const inserts: any[] = [];
-    const updates: any[] = [];
+    // Single ordered list of operations in EXACT panchangSections/keys order
+    // (i.e. master-data order) so we can fire requests one-at-a-time and
+    // guarantee DB insert order matches this order — forkJoin can't guarantee that.
+    const operations: { type: 'insert' | 'update'; payload: any }[] = [];
 
     this.panchangSections.forEach(section => {
       section.keys.forEach(key => {
@@ -185,10 +183,26 @@ export class AdminPanchangInsertComponent implements OnInit {
         const val = (key.Value || '').trim();
 
         if (key.DailyPanchangID > 0) {
-          // existing record — only send update if value actually changed
           if (val !== (key.OriginalValue || '').trim() && val.length > 0) {
-            updates.push({
-              DailyPanchangID: key.DailyPanchangID,
+            operations.push({
+              type: 'update',
+              payload: {
+                DailyPanchangID: key.DailyPanchangID,
+                SectionHeading: section.Identifier,
+                Key1: key.Identifier,
+                Value1: val,
+                PanchangDate: isoDate,
+                Language: this.language,
+                Location: this.location,
+                DateAdded: dateAdded
+              }
+            });
+          }
+        } else if (val.length > 0) {
+          operations.push({
+            type: 'insert',
+            payload: {
+              DailyPanchangID: 0,
               SectionHeading: section.Identifier,
               Key1: key.Identifier,
               Value1: val,
@@ -196,37 +210,33 @@ export class AdminPanchangInsertComponent implements OnInit {
               Language: this.language,
               Location: this.location,
               DateAdded: dateAdded
-            });
-          }
-        } else if (val.length > 0) {
-          // no existing record, and user filled it in — new insert
-          inserts.push({
-            DailyPanchangID: 0,
-            SectionHeading: section.Identifier,
-            Key1: key.Identifier,
-            Value1: val,
-            PanchangDate: isoDate,
-            Language: this.language,
-            Location: this.location,
-            DateAdded: dateAdded
+            }
           });
         }
 
       });
     });
 
-    if (inserts.length === 0 && updates.length === 0) {
+    if (operations.length === 0) {
       alert('No new or changed values to save.');
       return;
     }
 
-    const insertCalls = inserts.map(p => this.apinu.postUrlData('DailyPanchangInsert', p));
-    const updateCalls = updates.map(p => this.apinu.postUrlData('DailyPanchangUpdate', p));
+    from(operations).pipe(
+      concatMap(op =>
+        this.apinu.postUrlData(
+          op.type === 'insert' ? 'DailyPanchangInsert' : 'DailyPanchangUpdate',
+          op.payload
+        ).pipe(map((res: any) => ({ op, res })))
+      ),
+      toArray()
+    ).subscribe((results: any[]) => {
+      const failed = results.filter(r => !(r.res?.DailyPanchangID > 0));
+      const insertedCount = results.filter(r => r.op.type === 'insert').length;
+      const updatedCount = results.filter(r => r.op.type === 'update').length;
 
-    forkJoin([...insertCalls, ...updateCalls]).subscribe((results: any[]) => {
-      const failed = results.filter(r => !(r?.DailyPanchangID > 0));
       if (failed.length === 0) {
-        alert(`Saved: ${inserts.length} new, ${updates.length} updated.`);
+        alert(`Saved: ${insertedCount} new, ${updatedCount} updated.`);
         this.loadExistingValuesForDate(); // refresh so OriginalValue/IDs sync
       } else {
         alert(`${failed.length} of ${results.length} entries failed to save.`);
@@ -234,6 +244,72 @@ export class AdminPanchangInsertComponent implements OnInit {
     });
 
   }
+
+
+
+  // saveDailyPanchang() {
+
+  //   const isoDate = new Date(this.panchangDate).toISOString();
+  //   const dateAdded = new Date().toISOString();
+
+  //   const inserts: any[] = [];
+  //   const updates: any[] = [];
+
+  //   this.panchangSections.forEach(section => {
+  //     section.keys.forEach(key => {
+
+  //       const val = (key.Value || '').trim();
+
+  //       if (key.DailyPanchangID > 0) {
+  //         // existing record — only send update if value actually changed
+  //         if (val !== (key.OriginalValue || '').trim() && val.length > 0) {
+  //           updates.push({
+  //             DailyPanchangID: key.DailyPanchangID,
+  //             SectionHeading: section.Identifier,
+  //             Key1: key.Identifier,
+  //             Value1: val,
+  //             PanchangDate: isoDate,
+  //             Language: this.language,
+  //             Location: this.location,
+  //             DateAdded: dateAdded
+  //           });
+  //         }
+  //       } else if (val.length > 0) {
+  //         // no existing record, and user filled it in — new insert
+  //         inserts.push({
+  //           DailyPanchangID: 0,
+  //           SectionHeading: section.Identifier,
+  //           Key1: key.Identifier,
+  //           Value1: val,
+  //           PanchangDate: isoDate,
+  //           Language: this.language,
+  //           Location: this.location,
+  //           DateAdded: dateAdded
+  //         });
+  //       }
+
+  //     });
+  //   });
+
+  //   if (inserts.length === 0 && updates.length === 0) {
+  //     alert('No new or changed values to save.');
+  //     return;
+  //   }
+
+  //   const insertCalls = inserts.map(p => this.apinu.postUrlData('DailyPanchangInsert', p));
+  //   const updateCalls = updates.map(p => this.apinu.postUrlData('DailyPanchangUpdate', p));
+
+  //   forkJoin([...insertCalls, ...updateCalls]).subscribe((results: any[]) => {
+  //     const failed = results.filter(r => !(r?.DailyPanchangID > 0));
+  //     if (failed.length === 0) {
+  //       alert(`Saved: ${inserts.length} new, ${updates.length} updated.`);
+  //       this.loadExistingValuesForDate(); // refresh so OriginalValue/IDs sync
+  //     } else {
+  //       alert(`${failed.length} of ${results.length} entries failed to save.`);
+  //     }
+  //   });
+
+  // }
 
 
   clearValues() {
@@ -394,219 +470,219 @@ export class AdminPanchangInsertComponent implements OnInit {
 
 
   // ── Build a "list" shape identical to what DailyPanchangSelectByQuery returns,
-//    but sourced from the CURRENT (unsaved) form state ──
-private buildPreviewList(): any[] {
-  const list: any[] = [];
-  const isoDate = new Date(this.panchangDate).toISOString();
+  //    but sourced from the CURRENT (unsaved) form state ──
+  private buildPreviewList(): any[] {
+    const list: any[] = [];
+    const isoDate = new Date(this.panchangDate).toISOString();
 
-  this.panchangSections.forEach(section => {
-    section.keys.forEach(key => {
-      const val = (key.Value || '').trim();
-      if (val.length > 0) {
-        list.push({
-          SectionHeading: section.Identifier,
-          Key1: key.Identifier,
-          Value1: val,
-          PanchangDate: isoDate,
-          Location: this.location
-        });
+    this.panchangSections.forEach(section => {
+      section.keys.forEach(key => {
+        const val = (key.Value || '').trim();
+        if (val.length > 0) {
+          list.push({
+            SectionHeading: section.Identifier,
+            Key1: key.Identifier,
+            Value1: val,
+            PanchangDate: isoDate,
+            Location: this.location
+          });
+        }
+      });
+    });
+
+    return list;
+  }
+
+  // ── Same dynamic section-builder used on the community page ──
+  private async buildPanchangHtmlFromList(list: any[]): Promise<string> {
+    const templateHtml = await firstValueFrom(
+      this.http.get('assets/panchang/index.html', { responseType: 'text' })
+    );
+    if (!templateHtml) return '';
+
+    const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
+
+    const sectionMap = new Map<string, Array<{ key: string, value1: string }>>();
+    list.forEach((item: any) => {
+      const section = (item.SectionHeading || '').trim();
+      const key = (item.Key1 || '').trim();
+      const value = item.Value1 != null ? String(item.Value1).trim() : '';
+      if (!section) return;
+      if (!sectionMap.has(section)) sectionMap.set(section, []);
+      if (key || value) sectionMap.get(section)!.push({ key, value1: value });
+    });
+
+    const first = list[0];
+    const dateEl = doc.getElementById('panchang-date');
+    const locEl = doc.getElementById('panchang-location');
+    if (dateEl) {
+      dateEl.textContent = new Date(this.panchangDate).toLocaleDateString('hi-IN', {
+        day: '2-digit', month: 'long', year: 'numeric'
+      });
+    }
+    if (locEl) locEl.textContent = this.location || (first?.Location || '');
+
+    const sectionContainers = doc.querySelectorAll<HTMLElement>('[data-section]');
+    sectionContainers.forEach(container => {
+      const sectionName = container.getAttribute('data-section')?.trim();
+      if (!sectionName || !sectionMap.has(sectionName)) return;
+
+      const items = sectionMap.get(sectionName)!;
+
+      if (container.hasAttribute('data-key')) {
+        const key = container.getAttribute('data-key')?.trim();
+        const match = items.find(i => i.key === key);
+        container.textContent = match?.value1 || '—';
+        return;
+      }
+
+      const existingRows = container.querySelectorAll('.kv-row, .graha-row, .mini-card');
+      existingRows.forEach(row => row.remove());
+
+      items.forEach(item => {
+        const row = doc.createElement('div');
+        row.className = 'kv-row';
+
+        const labelDiv = doc.createElement('div');
+        labelDiv.className = 'label';
+        if (item.key) labelDiv.innerHTML = `<span class="ico">◆</span>${item.key}:`;
+
+        const valDiv = doc.createElement('div');
+        valDiv.className = 'val';
+        valDiv.textContent = item.value1 || '—';
+
+        row.appendChild(labelDiv);
+        row.appendChild(valDiv);
+        container.appendChild(row);
+      });
+    });
+
+    doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+      const src = img.getAttribute('src') || '';
+      if (src && !src.startsWith('http') && !src.startsWith('data:')) {
+        img.setAttribute('src', `assets/panchang/${src}`);
       }
     });
-  });
 
-  return list;
-}
-
-// ── Same dynamic section-builder used on the community page ──
-private async buildPanchangHtmlFromList(list: any[]): Promise<string> {
-  const templateHtml = await firstValueFrom(
-    this.http.get('assets/panchang/index.html', { responseType: 'text' })
-  );
-  if (!templateHtml) return '';
-
-  const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
-
-  const sectionMap = new Map<string, Array<{ key: string, value1: string }>>();
-  list.forEach((item: any) => {
-    const section = (item.SectionHeading || '').trim();
-    const key = (item.Key1 || '').trim();
-    const value = item.Value1 != null ? String(item.Value1).trim() : '';
-    if (!section) return;
-    if (!sectionMap.has(section)) sectionMap.set(section, []);
-    if (key || value) sectionMap.get(section)!.push({ key, value1: value });
-  });
-
-  const first = list[0];
-  const dateEl = doc.getElementById('panchang-date');
-  const locEl = doc.getElementById('panchang-location');
-  if (dateEl) {
-    dateEl.textContent = new Date(this.panchangDate).toLocaleDateString('hi-IN', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    });
+    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
   }
-  if (locEl) locEl.textContent = this.location || (first?.Location || '');
 
-  const sectionContainers = doc.querySelectorAll<HTMLElement>('[data-section]');
-  sectionContainers.forEach(container => {
-    const sectionName = container.getAttribute('data-section')?.trim();
-    if (!sectionName || !sectionMap.has(sectionName)) return;
-
-    const items = sectionMap.get(sectionName)!;
-
-    if (container.hasAttribute('data-key')) {
-      const key = container.getAttribute('data-key')?.trim();
-      const match = items.find(i => i.key === key);
-      container.textContent = match?.value1 || '—';
+  // ── Called by "Preview" button ──
+  async previewPanchang() {
+    const list = this.buildPreviewList();
+    if (!list.length) {
+      alert('Please fill in at least one value before previewing.');
       return;
     }
 
-    const existingRows = container.querySelectorAll('.kv-row, .graha-row, .mini-card');
-    existingRows.forEach(row => row.remove());
+    this.isBuildingPreview = true;
+    try {
+      this.panchangHtmlString = await this.buildPanchangHtmlFromList(list);
+      this.showPreviewModal = true;
 
-    items.forEach(item => {
-      const row = doc.createElement('div');
-      row.className = 'kv-row';
+      // wait a tick for the modal + iframe to exist in the DOM, then inject
+      setTimeout(() => {
+        if (this.previewFrame?.nativeElement) {
+          this.previewFrame.nativeElement.srcdoc = this.panchangHtmlString;
+        }
+      }, 0);
 
-      const labelDiv = doc.createElement('div');
-      labelDiv.className = 'label';
-      if (item.key) labelDiv.innerHTML = `<span class="ico">◆</span>${item.key}:`;
-
-      const valDiv = doc.createElement('div');
-      valDiv.className = 'val';
-      valDiv.textContent = item.value1 || '—';
-
-      row.appendChild(labelDiv);
-      row.appendChild(valDiv);
-      container.appendChild(row);
-    });
-  });
-
-  doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
-    const src = img.getAttribute('src') || '';
-    if (src && !src.startsWith('http') && !src.startsWith('data:')) {
-      img.setAttribute('src', `assets/panchang/${src}`);
+    } catch (err) {
+      console.error('Preview build failed:', err);
+      alert('Could not build preview.');
+    } finally {
+      this.isBuildingPreview = false;
     }
-  });
-
-  return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
-}
-
-// ── Called by "Preview" button ──
-async previewPanchang() {
-  const list = this.buildPreviewList();
-  if (!list.length) {
-    alert('Please fill in at least one value before previewing.');
-    return;
   }
 
-  this.isBuildingPreview = true;
-  try {
-    this.panchangHtmlString = await this.buildPanchangHtmlFromList(list);
-    this.showPreviewModal = true;
-
-    // wait a tick for the modal + iframe to exist in the DOM, then inject
-    setTimeout(() => {
-      if (this.previewFrame?.nativeElement) {
-        this.previewFrame.nativeElement.srcdoc = this.panchangHtmlString;
-      }
-    }, 0);
-
-  } catch (err) {
-    console.error('Preview build failed:', err);
-    alert('Could not build preview.');
-  } finally {
-    this.isBuildingPreview = false;
+  closePreview() {
+    this.showPreviewModal = false;
   }
-}
 
-closePreview() {
-  this.showPreviewModal = false;
-}
-
-// ── Called by "Download" button inside the preview modal ──
-async downloadPanchangPreviewAsImage() {
-  if (!this.panchangHtmlString || this.isDownloadingPreview) return;
-  this.isDownloadingPreview = true;
-  try {
-    await this.downloadPanchangAsImage(this.panchangHtmlString);
-  } finally {
-    this.isDownloadingPreview = false;
+  // ── Called by "Download" button inside the preview modal ──
+  async downloadPanchangPreviewAsImage() {
+    if (!this.panchangHtmlString || this.isDownloadingPreview) return;
+    this.isDownloadingPreview = true;
+    try {
+      await this.downloadPanchangAsImage(this.panchangHtmlString);
+    } finally {
+      this.isDownloadingPreview = false;
+    }
   }
-}
 
-// ── Same iframe-capture logic as the community page ──
-private async downloadPanchangAsImage(htmlString: string) {
-  try {
-    const CAPTURE_WIDTH = 1600;
+  // ── Same iframe-capture logic as the community page ──
+  private async downloadPanchangAsImage(htmlString: string) {
+    try {
+      const CAPTURE_WIDTH = 1600;
 
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.left = '-9999px';
-    iframe.style.top = '0';
-    iframe.style.width = `${CAPTURE_WIDTH}px`;
-    iframe.style.height = '1600px';
-    document.body.appendChild(iframe);
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.left = '-9999px';
+      iframe.style.top = '0';
+      iframe.style.width = `${CAPTURE_WIDTH}px`;
+      iframe.style.height = '1600px';
+      document.body.appendChild(iframe);
 
-    const doc = iframe.contentDocument || iframe.contentWindow!.document;
-    doc.open();
-    doc.write(htmlString);
-    doc.close();
+      const doc = iframe.contentDocument || iframe.contentWindow!.document;
+      doc.open();
+      doc.write(htmlString);
+      doc.close();
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const sheetEl = doc.querySelector('.sheet') as HTMLElement;
-    const actualHeight = sheetEl
-      ? sheetEl.getBoundingClientRect().height + 48
-      : doc.body.scrollHeight;
+      const sheetEl = doc.querySelector('.sheet') as HTMLElement;
+      const actualHeight = sheetEl
+        ? sheetEl.getBoundingClientRect().height + 48
+        : doc.body.scrollHeight;
 
-    iframe.style.height = `${actualHeight}px`;
+      iframe.style.height = `${actualHeight}px`;
 
-    const canvas = await html2canvas(doc.body, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: true,
-      width: CAPTURE_WIDTH,
-      height: actualHeight,
-      windowWidth: CAPTURE_WIDTH,
-      windowHeight: actualHeight,
-    });
-
-    document.body.removeChild(iframe);
-
-    const dataUrl = canvas.toDataURL('image/png');
-    await this.saveFile(dataUrl, 'panchang-preview.png', 'image/png');
-
-  } catch (err) {
-    console.error('downloadPanchangAsImage failed:', err);
-    alert('Error creating image.');
-  }
-}
-
-private async saveFile(dataUrl: string, fileName: string, mimeType: string) {
-  try {
-    if (Capacitor.isNativePlatform()) {
-      const base64Data = dataUrl.split(',')[1];
-      const writeResult = await Filesystem.writeFile({
-        path: fileName,
-        data: base64Data,
-        directory: Directory.Cache
+      const canvas = await html2canvas(doc.body, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: true,
+        width: CAPTURE_WIDTH,
+        height: actualHeight,
+        windowWidth: CAPTURE_WIDTH,
+        windowHeight: actualHeight,
       });
-      try {
-        await FileOpener.open({ filePath: writeResult.uri, contentType: mimeType });
-      } catch {
-        await Share.share({ title: 'Panchang Preview', url: writeResult.uri, dialogTitle: 'Save or share Panchang' });
-      }
-    } else {
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = fileName;
-      a.click();
+
+      document.body.removeChild(iframe);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      await this.saveFile(dataUrl, 'panchang-preview.png', 'image/png');
+
+    } catch (err) {
+      console.error('downloadPanchangAsImage failed:', err);
+      alert('Error creating image.');
     }
-  } catch (err) {
-    console.error('saveFile failed:', err);
-    alert('File could not be saved.');
   }
-}
+
+  private async saveFile(dataUrl: string, fileName: string, mimeType: string) {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const base64Data = dataUrl.split(',')[1];
+        const writeResult = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache
+        });
+        try {
+          await FileOpener.open({ filePath: writeResult.uri, contentType: mimeType });
+        } catch {
+          await Share.share({ title: 'Panchang Preview', url: writeResult.uri, dialogTitle: 'Save or share Panchang' });
+        }
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = fileName;
+        a.click();
+      }
+    } catch (err) {
+      console.error('saveFile failed:', err);
+      alert('File could not be saved.');
+    }
+  }
 
 }

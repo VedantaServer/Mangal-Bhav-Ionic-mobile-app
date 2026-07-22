@@ -147,6 +147,8 @@ export class ApiNU {
   }
 
 
+  
+
   postUrlDataByImage(urlextension: any, body: any): any {
     return this.httpClient.post(this.baseURL + urlextension, body);
   }

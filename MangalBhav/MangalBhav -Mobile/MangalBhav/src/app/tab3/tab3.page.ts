@@ -418,7 +418,7 @@ export class Tab3Page {
 
     this.userDetails = await this.storage.get("account");
 
-    this.Language = this.userDetails.Languages;
+     this.Language = this.userDetails?.Languages || 'English';
     // alert(this.Language)
     //alert(typeof(this.Language))
     // console.log(this.userDetails);
@@ -448,10 +448,9 @@ export class Tab3Page {
 
 
   getServiceImagePath(serviceName: string): string {
-    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
-    return `assets/img/${englishName}.png`;
+    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
+    return `${this.imgBaseUrl}/${englishName}.png`;
   }
-
   loadPujaSection() {
     forkJoin({
       categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
@@ -557,18 +556,19 @@ export class Tab3Page {
     });
   }
 
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
 
   getCategoryImage(name: string): string {
     const n = name?.toLowerCase() || '';
-    if (n.includes('birth')) return 'assets/img/PunsavanSanskar2.jfif';
-    if (n.includes('childhood')) return 'assets/img/AnnaprashanCeremony.jfif';
-    if (n.includes('marriage')) return 'assets/img/WeddingCeremony(VivahSanskar).jfif';
-    if (n.includes('house') || n.includes('property')) return 'assets/img/GrihaPraveshPuja.jfif';
-    if (n.includes('dosha') || n.includes('special')) return 'assets/img/GaneshPuja.jfif';
-    if (n.includes('antim') || n.includes('death')) return 'assets/img/AntimSanskar.jfif';
-    if (n.includes('navagraha')) return 'assets/img/NavagrahaShantiPuja3.jfif';
-    if (n.includes('education')) return 'assets/img/UpanayanCeremony.jfif';
-    return 'assets/img/default.jpg';
+    if (n.includes('birth')) return `${this.imgBaseUrl}/PunsavanSanskar2.jfif`;
+    if (n.includes('childhood')) return `${this.imgBaseUrl}/AnnaprashanCeremony.jfif`;
+    if (n.includes('marriage')) return `${this.imgBaseUrl}/WeddingCeremony(VivahSanskar).jfif`;
+    if (n.includes('house') || n.includes('property')) return `${this.imgBaseUrl}/GrihaPraveshPuja.jfif`;
+    if (n.includes('dosha') || n.includes('special')) return `${this.imgBaseUrl}/GaneshPuja.jfif`;
+    if (n.includes('antim') || n.includes('death')) return `${this.imgBaseUrl}/AntimSanskar.jfif`;
+    if (n.includes('navagraha')) return `${this.imgBaseUrl}/NavagrahaShantiPuja3.jfif`;
+    if (n.includes('education')) return `${this.imgBaseUrl}/UpanayanCeremony.jfif`;
+    return `${this.imgBaseUrl}/default.jpg`;
   }
   slideCarousel(carouselId: string, direction: 'prev' | 'next') {
     const carousel = document.getElementById(carouselId);
@@ -754,8 +754,7 @@ export class Tab3Page {
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '../../assets/img/default.jpg';
-    // If even default fails, use a CSS gradient placeholder
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
 
@@ -777,11 +776,11 @@ export class Tab3Page {
 
   getServiceImages(serviceName: string): string[] {
     const cleanName = serviceName;
-
+  
     return [
-      `assets/img/${cleanName}.png`,
-      `assets/img/${cleanName}2.jfif`,
-      `assets/img/${cleanName}3.jfif`
+      `${this.imgBaseUrl}/${cleanName}.png`,
+      `${this.imgBaseUrl}/${cleanName}2.jfif`,
+      `${this.imgBaseUrl}/${cleanName}3.jfif`
     ];
   }
 

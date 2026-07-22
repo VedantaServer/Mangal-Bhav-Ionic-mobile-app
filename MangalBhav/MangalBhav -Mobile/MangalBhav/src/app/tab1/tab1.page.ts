@@ -48,6 +48,9 @@ export class Tab1Page {
       mySeva: 'My Seva',
       bookedSeva: 'Booked Seva',
       myBookings: 'My Bookings',
+      
+      askPanditJi: 'Ask Pandit Ji',
+      mangalMart: 'Mangal Mart',
       status: 'Status',
 
       scanToBook: 'Scan to Book',
@@ -55,7 +58,8 @@ export class Tab1Page {
       currentLocation: 'Current Location',
       available: 'Available',
 
-      changeLang: 'Change Language'
+      changeLang: 'Change Language',
+      chatSupport: 'Chat & Support',
     },
 
     hi: {
@@ -75,12 +79,16 @@ export class Tab1Page {
       myBookings: 'मेरी बुकिंग्स',
       status: 'स्थिति',
 
+      askPanditJi: 'पंडित जी से पूछें',
+      mangalMart: 'मंगल मार्ट',
+
       scanToBook: 'बुक करने के लिए स्कैन करें',
 
       currentLocation: 'वर्तमान स्थान',
       available: 'उपलब्ध',
 
-      changeLang: 'भाषा बदलें'
+      changeLang: 'भाषा बदलें',
+      chatSupport: 'चैट व सहायता',
     }
   };
   showBroadcastModal = false;
@@ -118,6 +126,15 @@ export class Tab1Page {
     }
 
     await PushNotifications.register();
+
+    await PushNotifications.createChannel({
+      id: 'general',
+      name: 'General Notifications',
+      description: 'General app notifications',
+      importance: 5,
+      visibility: 1,
+      sound: 'default'
+    });
 
     PushNotifications.addListener(
       'registration',
@@ -180,7 +197,7 @@ export class Tab1Page {
     this.fetchUnreadCount();
     this.checkMobileAppVersion();
 
-    this.language = this.userDetails.Languages;
+    this.language = this.userDetails?.Languages || 'English';
     this.FullName = this.userDetails.FullName;
     this.loadProfilePhoto();
     this.loadReferralCode();
@@ -267,7 +284,7 @@ export class Tab1Page {
           this.showBroadcastModal = true;
         }
       },
-      error: (err:any) => console.error('Broadcast fetch failed:', err)
+      error: (err: any) => console.error('Broadcast fetch failed:', err)
     });
   }
 
@@ -288,7 +305,7 @@ export class Tab1Page {
   //   this.fetchUnreadCount();
   //   this.checkMobileAppVersion();
 
-  //   this.language = this.userDetails.Languages;
+  //    this.language = this.userDetails?.Languages || 'English';
   //   this.FullName = this.userDetails.FullName;
   //   // console.log('ACCOUNT OBJECT:', this.userDetails);
   //   this.loadProfilePhoto();
@@ -571,7 +588,7 @@ export class Tab1Page {
   }
 
 
-  APP_DOWNLOAD_LINK = 'https://play.google.com/store/apps/details?id=com.mangalbhav.app';
+  APP_DOWNLOAD_LINK = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
 
 
   // ✅ Share App download link directly on WhatsApp (web fallback)
@@ -684,7 +701,7 @@ export class Tab1Page {
       }
     });
   }
-  
+
   async copyReferralCode(event: Event) {
     event.stopPropagation();   // prevent navigating to profile
     try {
@@ -697,7 +714,7 @@ export class Tab1Page {
       alert.present();
     } catch { }
   }
-  
+
   async shareReferralOnWhatsApp(event: Event) {
     event.stopPropagation();   // prevent navigating to profile
     const name = this.FullName || 'A friend';
@@ -708,7 +725,7 @@ export class Tab1Page {
       `🎟️ *${this.referralCode}*\n\n` +
       `📱 Download: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n\n` +
       `✦ ॐ Mangal Bhav ✦`;
-  
+
     window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');
   }
 

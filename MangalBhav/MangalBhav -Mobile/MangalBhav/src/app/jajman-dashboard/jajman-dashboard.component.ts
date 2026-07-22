@@ -32,6 +32,8 @@ export class JajmanDashboardComponent implements OnInit {
   pendingPanditCategoryID: any;
   sloganName!: any;
   pendingPanditServiceID: any;
+ 
+
   labels = {
     en: {
       myFamily: 'My Family',
@@ -48,8 +50,11 @@ export class JajmanDashboardComponent implements OnInit {
       me: 'Me',
       myTransactions: 'My Transactions',
       myMandirs: 'My Mandirs',
+      chatSupport: 'Chat & Support',
+      askPanditJi: 'Ask Pandit Ji',
+      mangalMart: 'Mangal Mart',
     },
-
+  
     hi: {
       myFamily: 'मेरा परिवार',
       myMandirs: 'मेरे मंदिर',
@@ -58,16 +63,20 @@ export class JajmanDashboardComponent implements OnInit {
       greetingTitle: 'अपनी अगली पूजा की योजना बनाएं',
       logoSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
       quickActions: 'त्वरित कार्य',
-
       myBookings: 'मेरी बुकिंग्स',
       profile: 'प्रोफ़ाइल',
       logoTitle: 'मंगल.भाव:',
       festivals: 'दैनिक पंचांग',
       followUs: 'सोशल मीडिया पर फॉलो करें',
       explore: 'जीवन देखें',
-      me: 'मैं'
+      me: 'मैं',
+      chatSupport: 'चैट व सहायता',
+      askPanditJi: 'पंडित जी से पूछें',
+      mangalMart: 'मंगल मार्ट',
     }
   };
+
+
   language: any;
   currentMobileAppVersion: string = '';
   mobileAppVersion: any;
@@ -95,8 +104,18 @@ export class JajmanDashboardComponent implements OnInit {
       return;
     }
 
+    //await PushNotifications.register();
     await PushNotifications.register();
 
+    await PushNotifications.createChannel({
+      id: 'general',
+      name: 'General Notifications',
+      description: 'General app notifications',
+      importance: 5,
+      visibility: 1,
+      sound: 'default'
+    });
+    
     PushNotifications.addListener(
       'registration',
       (token) => {
@@ -162,7 +181,7 @@ export class JajmanDashboardComponent implements OnInit {
     this.FullName = this.userDetails.FullName;
 
     this.fetchUnreadCount();
-    this.language = this.userDetails.Languages;
+    this.language = this.userDetails?.Languages || 'English';
     this.checkMobileAppVersion();
     this.loadReferralCode();
     this.checkAndShowBroadcast();   // ← add this

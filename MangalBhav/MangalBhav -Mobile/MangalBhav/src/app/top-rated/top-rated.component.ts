@@ -304,18 +304,19 @@ export class TopRatedComponent implements OnInit {
   imageIntervals: { [key: string]: any } = {};
 
   getCleanName(serviceName: string): string {
-    let cleanName = serviceName.split('/')[0].trim();
-    cleanName = cleanName.replace(/\s+/g, '');
-    cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, '');
+     let cleanName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
     return cleanName;
   }
+
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+
 
   getServiceImages(serviceName: string): string[] {
     const cleanName = this.getCleanName(serviceName);
     return [
-      `assets/img/${cleanName}.png`,
-      `assets/img/${cleanName}2.jfif`,
-      `assets/img/${cleanName}3.jfif`
+      `${this.imgBaseUrl}/${cleanName}.png`,
+      `${this.imgBaseUrl}/${cleanName}2.jfif`,
+      `${this.imgBaseUrl}/${cleanName}3.jfif`
     ];
   }
 
@@ -348,7 +349,7 @@ export class TopRatedComponent implements OnInit {
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '../../assets/img/default.jpg';
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
 

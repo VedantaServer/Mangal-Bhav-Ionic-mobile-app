@@ -257,3 +257,25 @@ ion-header {
     border-radius: 8px;
   }
 }
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #2e7d32;
+}
+
+.delete-btn {
+  background: #d32f2f;
+}

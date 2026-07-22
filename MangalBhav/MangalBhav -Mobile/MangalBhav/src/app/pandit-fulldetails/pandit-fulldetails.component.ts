@@ -169,12 +169,35 @@ export class PanditFulldetailsComponent implements OnInit {
 
   ngOnInit() {
 
-    this.apinu.postUrlData('GetPanditDetails', null)
-      .subscribe((res: any) => {
-        console.log(res)
-        this.panditList = res;
-        this.displayList = res;
-      })
+    this.apinu.postUrlData('GetPanditDetails', null).subscribe({
+      next: (res: any) => {
+        let data: any = res;
+
+        // Unwrap if the response came back as a raw JSON string
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+          } catch {
+            data = [];
+          }
+        }
+
+        // Defensive: handle accidental double-array wrapping
+        if (Array.isArray(data) && Array.isArray(data[0])) {
+          data = data[0];
+        }
+
+        this.panditList = data ?? [];
+        this.displayList = [...this.panditList];
+
+        console.log('Pandit List:', this.panditList);
+      },
+      error: (err: any) => {
+        console.error('GetPanditDetails error', err);
+        this.panditList = [];
+        this.displayList = [];
+      }
+    });
   }
 
   async login(loginUsername: any) {
@@ -338,10 +361,10 @@ export class PanditFulldetailsComponent implements OnInit {
         color === 'success'
           ? 'checkmark-circle'
           : color === 'danger'
-          ? 'close-circle'
-          : color === 'warning'
-          ? 'warning'
-          : 'information-circle',
+            ? 'close-circle'
+            : color === 'warning'
+              ? 'warning'
+              : 'information-circle',
       buttons: [
         {
           text: '✕',
@@ -349,7 +372,7 @@ export class PanditFulldetailsComponent implements OnInit {
         }
       ]
     });
-  
+
     await toast.present();
   }
 
@@ -361,7 +384,7 @@ export class PanditFulldetailsComponent implements OnInit {
         'warning'
       );
     }
-  
+
     const confirm = await this.alertCtrl.create({
       header: 'Confirm Verification',
       message: `Are you sure you want to mark <b>${this.selectedVerificationPandit.FullName}</b> as <b>${this.verificationStatus}</b>?`,
@@ -373,49 +396,49 @@ export class PanditFulldetailsComponent implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-  
+
             // Load profile first
             this.apinu.postUrlData(
               `ProfilesNUSelectByQuery?Query=UserID=${this.selectedVerificationPandit.UserID}`,
               null
             ).subscribe((res: any) => {
-  
+
               if (!res.ProfileList || res.ProfileList.length === 0) {
                 this.showToastMessage('Profile not found.', 'danger');
                 return;
               }
-  
+
               const profile = {
                 ...res.ProfileList[0],
                 VerificationStatus: this.verificationStatus,
                 DateModified: new Date(),
                 UpdatedByUser: 'ADMIN' // or logged in UserID
               };
-  
+
               this.apinu.postUrlData(
                 'ProfilesUpdate',
                 profile
               ).subscribe(() => {
-  
+
                 // Update UI immediately
                 this.selectedVerificationPandit.VerificationStatus = this.verificationStatus;
-  
+
                 this.closeVerificationPopup();
-  
+
                 this.showToastMessage(
                   `Verification status updated to ${this.verificationStatus}.`,
                   'success'
                 );
-  
+
               });
-  
+
             });
-  
+
           }
         }
       ]
     });
-  
+
     confirm.present();
   }
   openVerificationPopup(pandit: any) {

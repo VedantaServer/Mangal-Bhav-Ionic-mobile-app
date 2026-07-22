@@ -329,7 +329,7 @@ export class OpenFindPanditComponent implements OnInit {
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/img/default.jpg';
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
 
@@ -351,13 +351,14 @@ export class OpenFindPanditComponent implements OnInit {
       .replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
   }
 
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+
   getServiceImages(serviceName: string): string[] {
     const n = this.getCleanName(serviceName);
-    return [`assets/img/${n}.png`, `assets/img/${n}2.jfif`, `assets/img/${n}3.jfif`];
+    return [`${this.imgBaseUrl}/${n}.png`, `${this.imgBaseUrl}/${n}2.jfif`, `${this.imgBaseUrl}/${n}3.jfif`];
   }
-
   getCurrentImage(serviceName: string): string {
-    if (!serviceName) return 'assets/img/default.jpg';
+    if (!serviceName) return `${this.imgBaseUrl}/default.jpg`;
     const key = this.getCleanName(serviceName);
     const images = this.getServiceImages(serviceName);
     if (!(key in this.currentImageIndex)) {

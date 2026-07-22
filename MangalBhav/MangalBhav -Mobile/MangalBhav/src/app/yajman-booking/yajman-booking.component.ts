@@ -90,7 +90,7 @@ export class YajmanBookingComponent implements OnInit {
 
 
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages;
+     this.language = this.userDetails?.Languages || 'English';
 
     this.apinu.postUrlData(
       `MarkNotificationsSeen?UserID=${this.userDetails.UserID}&flag=${Number(1)}`,
@@ -320,22 +320,23 @@ export class YajmanBookingComponent implements OnInit {
   imageIntervals: { [key: string]: any } = {};
 
   getCleanName(serviceName: string): string {
-    let cleanName = serviceName.split('/')[0].trim();
-    cleanName = cleanName.replace(/\s+/g, '');
-    cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, '');
+     let cleanName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
     return cleanName;
   }
 
-  getServiceImages(serviceName: string): string[] {
-    const cleanName = this.getCleanName(serviceName);
 
-    return [
-      `assets/img/${cleanName}.png`,
-      `assets/img/${cleanName}2.jfif`,
-      `assets/img/${cleanName}3.jfif`
-    ];
-  }
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
 
+
+getServiceImages(serviceName: string): string[] {
+  const cleanName = this.getCleanName(serviceName);
+
+  return [
+    `${this.imgBaseUrl}/${cleanName}.png`,
+    `${this.imgBaseUrl}/${cleanName}2.jfif`,
+    `${this.imgBaseUrl}/${cleanName}3.jfif`
+  ];
+}
   startSlideshow(serviceName: string) {
     const key = this.getCleanName(serviceName);
 
@@ -360,25 +361,24 @@ export class YajmanBookingComponent implements OnInit {
     return images[this.currentImageIndex[key] || 0];
   }
 
+
   getServiceImage(serviceName: string): string {
 
     if (!serviceName)
-      return 'assets/img/default.jfif';
-
+      return `${this.imgBaseUrl}/default.jfif`;
+  
     let cleanName = serviceName.split('/')[0].trim();
-
+  
     cleanName = cleanName.replace(/\s+/g, '');
-    cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, '');
-
-    //   console.log(cleanName);
-
-    return `assets/img/${cleanName}.png`;
+    cleanName = cleanName.replace(/[^a-zA-Z0-9&]/g, '');
+  
+    return `${this.imgBaseUrl}/${cleanName}.png`;
   }
+
   // Fallback if image fails to load
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = '../../assets/img/default.jpg';
-    // If even default fails, use a CSS gradient placeholder
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
 

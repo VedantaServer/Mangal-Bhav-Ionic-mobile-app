@@ -96,10 +96,10 @@ export class MandirInsertUpdateComponent implements OnInit {
   pageNumber = 1;
   pageSize = 10;
 
- // pageNumber = 1;
-//pageSize = 10;
-query: string = 'tenantID=1 ORDER BY DateAdded ASC';
-searchTimeout: any;
+  // pageNumber = 1;
+  //pageSize = 10;
+  query: string = 'tenantID=1 ORDER BY DateAdded ASC';
+  searchTimeout: any;
 
 
   // slider state per card
@@ -125,20 +125,20 @@ searchTimeout: any;
   loadSocialMedia() {
 
     if (!this.Mandir.MandirID ||
-        this.Mandir.MandirID === '-1') {
+      this.Mandir.MandirID === '-1') {
       return;
     }
-  
+
     this.apinu.postUrlData(
       `EntitySocialMediaSelectByQuery?Query=EntityType='MANDIR' AND EntityID=${this.Mandir.MandirID}`,
       null
-    ).subscribe((res:any)=>{
-  
+    ).subscribe((res: any) => {
+
       this.socialMediaList =
         res.EntitySocialMediaList || [];
-  
+
     });
-  
+
   }
   // ── Location ───────────────────────────────────────────────────
 
@@ -253,17 +253,17 @@ searchTimeout: any;
   onMandirSearch() {
     clearTimeout(this.searchTimeout);
     const q = this.mandirSearchQuery?.trim();
-  
+
     this.searchTimeout = setTimeout(() => {
       this.pageNumber = 1;
       this.allMandirs = [];
       this.filteredMandirs = [];
       this.infiniteScrollEvent = null;
-  
+
       this.query = q
         ? `tenantID=1 AND (MandirName LIKE '%${q}%' OR GodName LIKE '%${q}%' OR City LIKE '%${q}%' OR State LIKE '%${q}%' OR Address LIKE '%${q}%') ORDER BY DateAdded DESC`
         : `tenantID=1 ORDER BY DateAdded DESC`;
-  
+
       this.loadMandirs();
     }, 500);
   }
@@ -595,16 +595,16 @@ searchTimeout: any;
       AddedByUser: '',
       UpdatedByUser: ''
     };
-  
+
     this.showSocialMediaForm = true;
   }
 
-  editSocialMedia(item:any) {
+  editSocialMedia(item: any) {
 
     this.socialMedia = {
       ...item
     };
-  
+
     this.showSocialMediaForm = true;
   }
 
@@ -614,67 +614,105 @@ searchTimeout: any;
       this.socialMedia.EntitySocialMediaID > 0
         ? 'EntitySocialMediaUpdate'
         : 'EntitySocialMediaInsert';
-  
+
     this.apinu.postUrlData(
       action,
       this.socialMedia
-    ).subscribe(()=>{
-  
+    ).subscribe(() => {
+
       this.showToast(
         'Saved Successfully',
         'success'
       );
-  
+
       this.showSocialMediaForm = false;
-  
+
       this.loadSocialMedia();
-  
+
     });
-  
+
   }
 
-  deleteSocialMedia(item:any) {
+  deleteSocialMedia(item: any) {
 
     this.apinu.postUrlData(
       'EntitySocialMediaDelete',
       item
-    ).subscribe(()=>{
-  
+    ).subscribe(() => {
+
       this.showToast(
         'Deleted Successfully',
         'success'
       );
-  
+
       this.loadSocialMedia();
-  
+
     });
-  
+
   }
 
 
 
-  
+
   getPlatformIcon(platform: string) {
 
     switch (platform) {
       case 'Instagram':
         return 'logo-instagram';
-  
+
       case 'Facebook':
         return 'logo-facebook';
-  
+
       case 'YouTube':
         return 'logo-youtube';
-  
+
       case 'LinkedIn':
         return 'logo-linkedin';
-  
+
       case 'WhatsApp':
         return 'logo-whatsapp';
-  
+
       default:
         return 'share-social-outline';
     }
-  
+
+  }
+
+
+  deleteMandir(item: any, event: Event) {
+
+    event.stopPropagation();
+
+    if (!confirm(`Delete "${item.MandirName}"?`)) {
+      return;
+    }
+
+    this.apinu.postUrlData(
+      `MandirDelete?mandirID=${item.MandirID}&tenantID=${item.TenantID}`,
+      null
+    ).subscribe({
+
+      next: () => {
+
+        this.showToast(
+          'Mandir deleted successfully.',
+          'success'
+        );
+
+        this.loadMandirs();
+
+      },
+
+      error: () => {
+
+        this.showToast(
+          'Unable to delete mandir.',
+          'danger'
+        );
+
+      }
+
+    });
+
   }
 }

@@ -1,32 +1,55 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonContent, IonicModule, NavController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import { ToastController } from '@ionic/angular';
 import { Api, ApiNU } from 'src/providers';
-import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
-import { LoggedoutbottomtabsComponent } from '../loggedoutbottomtabs/loggedoutbottomtabs.component';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
-import { IonContent } from '@ionic/angular';
-import { ViewChild, ElementRef } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import html2canvas from 'html2canvas';
+import { CommunityService } from '../services/community';
+import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Share } from '@capacitor/share';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { FileOpener } from '@capacitor-community/file-opener';
-interface SevaItem { icon: string; name: string; sound: string; count: number; toast: string; }
-interface PanchangData { label: string; value: string; sub: string; auspicious?: boolean; avoid?: boolean; }
-interface UpcomingEvent { day: string; month: string; title: string; time: string; location: string; free: boolean; }
-interface Prayer { initials: string; name: string; time: string; city: string; text: string; blessingsCount: number; userBlessed: boolean; }
+
 interface AartiStep { icon: string; label: string; sub: string; sub2?: string; }
+interface FeedItem {
+  FeedID: number;
+  Title: string;
+  Description: string;
+  MediaType: string;
+  MediaURL: string;
+  ThumbnailURL: string;
+  PublishDate: string;
+  DateAdded: string;
+  UserName: string;
+  UserPhoto: string;
+  FeedCategory: string;
+  Location: string;
+  SourceTable: string;
+  mediaBlobUrl?: string;
+
+  // ── Engagement ──
+  likeCount?: number;
+  commentCount?: number;
+  shareCount?: number;
+  viewCount?: number;
+  isLiked?: boolean;
+  myFeedLikeID?: number;
+  isLikeInFlight?: boolean;   // guards double-taps
+  hasBeenViewed?: boolean;    // guards duplicate FeedViewInsert calls
+}
+
+interface FeedDateGroup {
+  dateKey: string;      // yyyy-MM-dd
+  dateLabel: string;    // display label e.g. "आज", "19 जुलाई 2026"
+  items: FeedItem[];
+  panchangImage?: string;
+  panchangLoading?: boolean;
+}
 
 @Component({
   selector: 'app-open-community-page',
@@ -39,16 +62,11 @@ interface AartiStep { icon: string; label: string; sub: string; sub2?: string; }
     PanditjibottomtabsComponent, CommonBottomTabsComponent
   ]
 })
-export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDestroy {
+export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
-  @ViewChild('panchangCapture', { static: true }) panchangCapture!: ElementRef<HTMLElement>;
-  @ViewChild('pageContent', { static: false })
-  pageContent!: IonContent;
-  panchangHtml!: SafeHtml;
-  panchangHtmlRaw: string = '';
   userDetails: any;
-  todayFestivalsLabel = '🪔 आज के त्यौहार';
   userLoggedIn = false;
+  language = 'English';
 
   // ── Family Active Mandir (hero display) ───────────────
   familyActiveMandir: any = null;
@@ -58,130 +76,13 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
   familyMandirSlideIndex = 0;
   private familyMandirSlideTimer: any;
 
-  darshanaCount = 2847;
-  private darshanaInterval: any;
-
-  // ── Regular Toast ──────────────────────────────────────
+  // ── Toast ──────────────────────────────────────────────
   toastVisible = false;
   toastIcon = '🙏';
   toastMessage = '';
   private toastTimer: any;
 
-  // ── Mini Toast (no bg, tiny — for "आरती रोकी गई") ─────
-  miniToastVisible = false;
-  miniToastMessage = '';
-  private miniToastTimer: any;
-
-  isGlowing = false;
-  bellRinging = false;
-  mantraPlaying = false;
-  shankhPlaying = false;
-  private bellAudio: HTMLAudioElement | null = null;
-  private mantraAudio: HTMLAudioElement | null = null;
-  private shankhAudio: HTMLAudioElement | null = null;
-  private chalisaAudio: HTMLAudioElement | null = null;
-  private aartiBhajan: HTMLAudioElement | null = null;
-  // ── Canvas ─────────────────────────────────────────────
-  private canvas: HTMLCanvasElement | null = null;
-  private ctx: CanvasRenderingContext2D | null = null;
-  private particles: any[] = [];
-  private animationId = 0;
-  private flowersAutoStopTimer: any;
-
-  // ── Mantra ─────────────────────────────────────────────
-  private mantraIndex = 0;
-  readonly mantras = [
-    { sanskrit: 'ॐ हनुमते नमः', meaning: 'I bow to Lord Hanuman' },
-    { sanskrit: 'जय श्री राम', meaning: 'Victory to Lord Ram' },
-    { sanskrit: 'ॐ नमो हनुमते रुद्रावताराय', meaning: 'Salutations to Hanuman, avatar of Rudra' },
-    { sanskrit: 'राम राम राम', meaning: 'Chant of Lord Ram' },
-  ];
-  currentMantra = this.mantras[0];
-  private mantraTimer: any;
-
-  // ── 21-Second Mangal Aarti State Machine ───────────────
-  aartiPhase: 'idle' | 'running' | 'blessed' = 'idle';
-  currentAartiStepData: AartiStep = { icon: '🪔', label: 'मंगल आरती', sub: '' };
-  aartiProgress = 0;
-  private aartiTimers: any[] = [];
-  private aartiSeqInterval: any;
-  totalSanchay = 1284;
-  blessingCountdown = 60;
-  private blessingCDInterval: any;
-
-  // Sequence definition — matches the 21-sec flow
-  private readonly aartiSequence: Array<{ time: number; step: AartiStep; action: string }> = [
-    { time: 0, action: 'bell', step: { icon: '🔔', label: 'घंटी', sub: 'मंदिर घंटी बजाएं' } },
-    { time: 2000, action: 'shankh', step: { icon: '🐚', label: 'शंख नाद', sub: 'शंख ध्वनि' } },
-    { time: 4000, action: 'bhajan', step: { icon: '🚩', label: 'हनुमान जी दर्शन', sub: 'ॐ श्री हनुमते नमः' } },
-    { time: 6000, action: 'flowers', step: { icon: '🪔', label: 'मंगल आरती', sub: 'मंगल भवन अमंगल हारी,', sub2: 'द्रवहु सो दसरथ अजर बिहारी॥' } },
-    { time: 15000, action: 'petals', step: { icon: '🌺', label: 'पुष्प अर्पण', sub: 'भक्ति से पुष्प चढ़ाए' } },
-    { time: 18000, action: 'jai', step: { icon: '🙏', label: 'जय श्री राम', sub: 'जय बजरंग बली 🚩' } },
-    { time: 33000, action: 'stop_bhajan', step: { icon: '✨', label: 'आशीर्वाद', sub: 'तुम्हारी भक्ति स्वीकार हुई' } },
-    { time: 34000, action: 'complete', step: { icon: '✨', label: '', sub: '' } },
-  ];
-  // ── Seva ───────────────────────────────────────────────
-  sevaItems: SevaItem[] = [
-    { icon: '🧡', name: 'सिंदूर', sound: 'sindoor', count: 1243, toast: 'सिंदूर चढ़ाया गया 🧡' },
-    { icon: '🍬', name: 'प्रसाद', sound: 'prasad', count: 988, toast: 'प्रसाद अर्पित हुआ 🍬' },
-    { icon: '🥥', name: 'नारियल', sound: 'narial', count: 756, toast: 'नारियल फोड़ा गया 🥥' },
-    { icon: '🪷', name: 'कमल', sound: 'kamal', count: 2101, toast: 'कमल पुष्प चढ़ाया 🪷' },
-  ];
-
-  language = 'English';
-  chalisaPlaying = false;
-  chalisaProgress = 0;
-  currentVerse = 0;
-  chalisaTimeDisplay = '0:00';
-  private chalisaProgressInterval: any;
-  readonly chalisaVerses = [
-    'श्रीगुरु चरन सरोज रज, निज मनु मुकुरु सुधारि',
-    'बरनउँ रघुबर बिमल जसु, जो दायकु फल चारि',
-    'बुद्धिहीन तनु जानिके, सुमिरौं पवन-कुमार',
-    'बल बुधि बिद्या देहु मोहिं, हरहु कलेस बिकार',
-    'जय हनुमान ज्ञान गुन सागर',
-    'जय कपीस तिहुँ लोक उजागर',
-    'राम दूत अतुलित बल धामा',
-    'अंजनि-पुत्र पवनसुत नामा',
-  ];
-
-  todayDate = '';
-  panchangData: PanchangData[] = [];
-
-  upcomingEvents: UpcomingEvent[] = [
-    { day: '27', month: 'MAY', title: 'Mangalwar Sundarkand Path', time: '6:00 AM', location: 'Online', free: true },
-    { day: '31', month: 'MAY', title: 'Havan & Prasad Distribution', time: '7:00 AM', location: 'Delhi NCR', free: false },
-    { day: '04', month: 'JUN', title: 'Hanuman Jayanti Celebration', time: '5:00 AM', location: 'All Temples', free: true },
-  ];
-
-  prayerWall: Prayer[] = [
-    { initials: 'R', name: 'Rajesh Sharma', time: '2 hrs ago', city: 'Delhi', text: 'बजरंगबली की कृपा से मेरे पुत्र की परीक्षा में सफलता मिली। जय हनुमान 🙏', blessingsCount: 128, userBlessed: false },
-    { initials: 'S', name: 'Sunita Devi', time: '5 hrs ago', city: 'Varanasi', text: 'Please pray for my family\'s health and happiness. Jai Bajrangbali! 🔥', blessingsCount: 74, userBlessed: false },
-    { initials: 'A', name: 'Amit Tiwari', time: '8 hrs ago', city: 'Lucknow', text: 'मेरी माँ की बीमारी के लिए प्रार्थना करें। हनुमान जी जरूर सुनेंगे 🌺', blessingsCount: 201, userBlessed: false },
-  ];
-  PANCHANG_ICON_MAP: Record<string, string> = {
-    'सूर्योदय': '🌅', 'सूर्यास्त': '🌇',
-    'श्री संवत्': '📿', 'मास': '🗓️', 'अयन': '🧭', 'पक्ष': '🌓', 'ऋतु': '🍃',
-    'तिथि': '📆', 'नक्षत्र': '⭐', 'योग': '🕉️', 'करण': '🤝',
-    'अभिजीत मुहूर्त': '✅', 'राहुकाल': '⚠️',
-    'सूर्य': '☀️', 'चंद्र': '🌙', 'मंगल': '♂️', 'बुध': '☿️', 'गुरु': '♃',
-    'शुक्र': '♀️', 'शनि': '♄', 'राहु': '☊', 'केतु': '☋',
-  };
-  TWO_COL_SECTIONS = ['ग्रह स्थिति', 'संवत्सर एवं काल'];
-
-  todayFestivals: any[] = [];
-  festivalLoading = true;
-
-  allMandirs: any[] = [];
-  filteredMandirs: any[] = [];
-  mandirSearchQuery = '';
-  showAddMandirForm = false;
-  isSubmittingMandir = false;
-  selectedFrontImageFile: File | null = null;
-  frontImagePreview: string | null = null;
-  isUploadingFront = false;
-  MangalMudraPoints: number = 0;
-  // ── Family Mandir ──────────────────────────────────────
+  // ── Family Mandir (add/edit form) ─────────────────────
   showFamilyMandirForm = false;
   isSubmittingFamilyMandir = false;
 
@@ -195,85 +96,656 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     UpdatedByUser: ''
   };
 
-  Feed = {
-    //loop all columns here.
-    FeedID: -1,
-    TenantID: '',
-    UserID: '',
-    Title: '',
-    Description: '',
-    MediaType: '',
-    PostType: '',
-    MediaURL: '',
-    ThumbnailURL: '',
-    Duration: 0,
-    DisplayOrder: 1,
-    PublishDate: new Date(),
-    IsActive: true,
-    IsDeleted: true,
-    IsAdminPost: true,
-    DateAdded: new Date(),
-    DateModified: new Date(),
-    UpdatedByUser: '',
-    SourceTable: 'Feed',
-    SourceID: 0,
-    UserName: '',
-    UserPhoto: '',
-    FeedCategory: 'Feed',
-    Location: '',
-    Amount: 0,
-    IsAutoGenerated: true,
-  };
-
-
-  // Photo slots
   fmPhoto1File: File | null = null; fmPhoto1Preview: string | null = null; fmUploading1 = false;
   fmPhoto2File: File | null = null; fmPhoto2Preview: string | null = null; fmUploading2 = false;
   fmPhoto3File: File | null = null; fmPhoto3Preview: string | null = null; fmUploading3 = false;
 
-  // ── Family Mandir Audio slots ──────────────────────────
   fmAudio1File: File | null = null; fmAudio1Name: string | null = null; fmUploadingA1 = false;
   fmAudio2File: File | null = null; fmAudio2Name: string | null = null; fmUploadingA2 = false;
   fmAudio3File: File | null = null; fmAudio3Name: string | null = null; fmUploadingA3 = false;
-  // ── Family Mandir Aarti Audio players ──────────────────
-  familyAartiCurrentAudio: HTMLAudioElement | null = null;
-  familyAartiPlayingSlot: string | null = null;
-  familyAartiLoadingSlot: string | null = null;
-  panchangList: any;
 
-  // ── Feed / Post ────────────────────────────────────────
-  showFeedForm = false;
-  isSubmittingFeed = false;
+  // ── Feed reels ─────────────────────────────────────────
+  feedGroups: FeedDateGroup[] = [];
+  feedLoading = false;
+  feedAllLoaded = false;
+  private feedWindowDays = 3;
+  private feedWindowEnd: Date | null = null;   // exclusive upper bound for the NEXT fetch
+  private feedEmptyWindowStreak = 0;
+  private readonly feedMaxEmptyWindows = 6;    // give up after 6 empty windows (~30 days w/ nothing)
 
-  feedMediaFile: File | null = null;
-  feedMediaPreview: string | null = null;
-  feedMediaKind: 'image' | 'video' | null = null;   // drives which upload endpoint tag we use
-  isUploadingFeedMedia = false;
+
+  onFeedInfiniteScroll(event: any) {
+    // alert('l')
+    this.loadMoreFeed().then(() => {
+      event.target.complete();
+      if (this.feedAllLoaded) {
+        event.target.disabled = true;
+      }
+    });
+  }
+
+  /** Fires continuously on every scroll frame (since [scrollEvents]="true").
+   * Triggers loadMoreFeed() proactively once the user is within
+   * feedScrollThresholdPx of the bottom, instead of waiting for
+   * ion-infinite-scroll's own threshold/visibility detection. */
+  async onContentScroll(event: any) {
+    if (this.feedLoading || this.feedAllLoaded) return;
+
+    const scrollEl = await event.target.getScrollElement();
+    const scrollTop = scrollEl.scrollTop;
+    const scrollHeight = scrollEl.scrollHeight;
+    const clientHeight = scrollEl.clientHeight;
+
+    const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
+    if (distanceFromBottom <= this.feedScrollThresholdPx) {
+      this.loadMoreFeed();
+    }
+  }
+
+  private readonly feedScrollThresholdPx = 600; // start fetching this many px before the true bottom
+  // ── Panchang (per-date, rendered inline as image) ──────
+  PANCHANG_ICON_MAP: Record<string, string> = {
+    'सूर्योदय': '🌅', 'सूर्यास्त': '🌇',
+    'श्री संवत्': '📿', 'मास': '🗓️', 'अयन': '🧭', 'पक्ष': '🌓', 'ऋतु': '🍃',
+    'तिथि': '📆', 'नक्षत्र': '⭐', 'योग': '🕉️', 'करण': '🤝',
+    'अभिजीत मुहूर्त': '✅', 'राहुकाल': '⚠️',
+    'सूर्य': '☀️', 'चंद्र': '🌙', 'मंगल': '♂️', 'बुध': '☿️', 'गुरु': '♃',
+    'शुक्र': '♀️', 'शनि': '♄', 'राहु': '☊', 'केतु': '☋',
+  };
+  TWO_COL_SECTIONS = ['ग्रह स्थिति', 'संवत्सर एवं काल'];
+  private panchangKeyOrder: Map<string, number> = new Map();
 
   constructor(
     public api: Api,
-    public routerCtrl: NavController, private cdr: ChangeDetectorRef,
+    public routerCtrl: NavController,
     public apinu: ApiNU,
     private storage: Storage,
-    public toastController: ToastController, private sanitizer: DomSanitizer, public http: HttpClient,
+    public http: HttpClient, private communityService: CommunityService, private cdr: ChangeDetectorRef,
   ) { }
 
+
   async ngOnInit() {
-    this.userDetails = await this.storage.get('account');
-    if (this.userDetails?.LoginID) this.userLoggedIn = true;
+    await this.refreshUserDetails();
     this.language = this.userDetails?.Languages || 'English';
-    this.startDarshanaCounter();
-    this.startMantraRotation();
-    this.buildPanchang();
-    this.loadMangalMudraPoints();
     this.loadFamilyActiveMandir();
-    this.loadDailyDynamicPanchang()
+    this.loadMoreFeed();
+    this.loadMangalMudraPoints();
+
+    this.communityService.openFeedForm$.subscribe(() => {
+      this.openFeedForm();
+    });
+  }
+
+  // async ngOnInit() {
+  //   this.userDetails = await this.storage.get('account');
+  //   if (this.userDetails?.LoginID) this.userLoggedIn = true;
+  //   this.language = this.userDetails?.Languages || 'English';
+  //   this.loadFamilyActiveMandir();
+  //   this.loadMoreFeed();
+  //   this.loadMangalMudraPoints();
+
+  //   this.communityService.openFeedForm$.subscribe(() => {
+
+  //     this.openFeedForm();
+
+  //   });
+  // }
+
+  // ngOnDestroy() {
+  //   clearInterval(this.familyMandirSlideTimer);
+  //   clearTimeout(this.toastTimer);
+  //   this.feedGroups.forEach(g => g.items.forEach(i => {
+  //     if (i.mediaBlobUrl) URL.revokeObjectURL(i.mediaBlobUrl);
+  //   }));
+  // }
+
+  goBack() { this.routerCtrl.back(); }
+  openPage(p: any) { this.routerCtrl.navigateForward(`/${p}`); }
+
+  // ── Toasts ─────────────────────────────────────────────
+  showToast(icon: string, message: string) {
+    this.toastIcon = icon;
+    this.toastMessage = message;
+    this.toastVisible = true;
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => { this.toastVisible = false; }, 3000);
+  }
+
+  ionViewWillEnter() {
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'none';
+
+    // refresh login state every time the tab is entered
+    this.refreshUserDetails();
+  }
+
+  private async refreshUserDetails() {
+    this.userDetails = await this.storage.get('account');
+    this.userLoggedIn = !!this.userDetails?.LoginID;
+    this.cdr.markForCheck();
+  }
+  ionViewWillLeave() {
+    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
+    if (fab) fab.style.display = 'flex';
+  }
+
+  // ══════════════════════════════════════════════════════
+  // FAMILY MANDIR (top hero + add-your-own form)
+  // ══════════════════════════════════════════════════════
+
+  async openFamilyMandirForm() {
+    const userID = this.userDetails?.UserID;
+    if (!userID) {
+      this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
+
+
+      return;
+    }
+
+    this.apinu.postUrlData(
+      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`, null
+    ).subscribe({
+      next: (res: any) => {
+        const list = res.FamilyMemberList || [];
+        if (!list.length) {
+          this.showToast('🏠', 'पहले परिवार बनाएं या जॉइन करें');
+          this.routerCtrl.navigateForward('/myfamily');
+          return;
+        }
+        this.familyMandir = {
+          TenantID: this.userDetails?.TenantID || 1,
+          FamilyID: list[0].FamilyID,
+          MandirName: '', MandirDescription: '', GodName: '',
+          MandirPhoto1: '', MandirPhoto2: '', MandirPhoto3: '',
+          AartiName1: '', AartiName2: '', AartiName3: '',
+          IsActive: false,
+          DateAdded: new Date(), DateModified: new Date(),
+          UpdatedByUser: String(userID)
+        };
+        this.fmPhoto1File = null; this.fmPhoto1Preview = null;
+        this.fmPhoto2File = null; this.fmPhoto2Preview = null;
+        this.fmPhoto3File = null; this.fmPhoto3Preview = null;
+        this.fmAudio1File = null; this.fmAudio1Name = null;
+        this.fmAudio2File = null; this.fmAudio2Name = null;
+        this.fmAudio3File = null; this.fmAudio3Name = null;
+        this.showFamilyMandirForm = true;
+      }
+    });
+  }
+
+  onFmPhotoSelected(event: any, slot: 1 | 2 | 3) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    if (slot === 1) { this.fmPhoto1File = file; this.familyMandir.MandirPhoto1 = ''; reader.onload = (e: any) => this.fmPhoto1Preview = e.target.result; }
+    else if (slot === 2) { this.fmPhoto2File = file; this.familyMandir.MandirPhoto2 = ''; reader.onload = (e: any) => this.fmPhoto2Preview = e.target.result; }
+    else { this.fmPhoto3File = file; this.familyMandir.MandirPhoto3 = ''; reader.onload = (e: any) => this.fmPhoto3Preview = e.target.result; }
+  }
+
+  uploadFmPhoto(slot: 1 | 2 | 3) {
+    const file = slot === 1 ? this.fmPhoto1File : slot === 2 ? this.fmPhoto2File : this.fmPhoto3File;
+    if (!file) return;
+    if (slot === 1) this.fmUploading1 = true;
+    else if (slot === 2) this.fmUploading2 = true;
+    else this.fmUploading3 = true;
+
+    this.api.uploadImage([file], 'ProfilePhoto', 'mandir', 'ProfilePhoto').subscribe({
+      next: (res: any) => {
+        const ok = res?.Status === 'Success';
+        if (slot === 1) { this.fmUploading1 = false; if (ok) { this.familyMandir.MandirPhoto1 = res.FileName; this.fmPhoto1File = null; this.showToast('📷', 'फ़ोटो 1 अपलोड हुई ✅'); } }
+        else if (slot === 2) { this.fmUploading2 = false; if (ok) { this.familyMandir.MandirPhoto2 = res.FileName; this.fmPhoto2File = null; this.showToast('📷', 'फ़ोटो 2 अपलोड हुई ✅'); } }
+        else { this.fmUploading3 = false; if (ok) { this.familyMandir.MandirPhoto3 = res.FileName; this.fmPhoto3File = null; this.showToast('📷', 'फ़ोटो 3 अपलोड हुई ✅'); } }
+      },
+      error: () => {
+        if (slot === 1) this.fmUploading1 = false;
+        else if (slot === 2) this.fmUploading2 = false;
+        else this.fmUploading3 = false;
+        this.showToast('❌', 'अपलोड विफल, पुनः प्रयास करें');
+      }
+    });
+  }
+
+  uploadFmAudio(slot: 1 | 2 | 3) {
+    const file = slot === 1 ? this.fmAudio1File : slot === 2 ? this.fmAudio2File : this.fmAudio3File;
+    if (!file) return;
+    if (slot === 1) this.fmUploadingA1 = true;
+    else if (slot === 2) this.fmUploadingA2 = true;
+    else this.fmUploadingA3 = true;
+
+    this.api.uploadImage([file], 'AartiAudio', 'aarti', 'AartiAudio').subscribe({
+      next: (res: any) => {
+        const ok = res?.Status === 'Success';
+        if (slot === 1) { this.fmUploadingA1 = false; if (ok) { this.familyMandir.AartiName1 = res.FileName; this.fmAudio1File = null; this.showToast('🎵', 'आरती 1 ऑडियो अपलोड हुआ ✅'); } }
+        else if (slot === 2) { this.fmUploadingA2 = false; if (ok) { this.familyMandir.AartiName2 = res.FileName; this.fmAudio2File = null; this.showToast('🎵', 'आरती 2 ऑडियो अपलोड हुआ ✅'); } }
+        else { this.fmUploadingA3 = false; if (ok) { this.familyMandir.AartiName3 = res.FileName; this.fmAudio3File = null; this.showToast('🎵', 'आरती 3 ऑडियो अपलोड हुआ ✅'); } }
+      },
+      error: () => {
+        if (slot === 1) this.fmUploadingA1 = false;
+        else if (slot === 2) this.fmUploadingA2 = false;
+        else this.fmUploadingA3 = false;
+        this.showToast('❌', 'ऑडियो अपलोड विफल, पुनः प्रयास करें');
+      }
+    });
+  }
+
+  onFmAudioSelected(event: any, slot: 1 | 2 | 3) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+    if (slot === 1) { this.fmAudio1File = file; this.fmAudio1Name = file.name; this.familyMandir.AartiName1 = ''; }
+    else if (slot === 2) { this.fmAudio2File = file; this.fmAudio2Name = file.name; this.familyMandir.AartiName2 = ''; }
+    else { this.fmAudio3File = file; this.fmAudio3Name = file.name; this.familyMandir.AartiName3 = ''; }
+  }
+
+  submitFamilyMandir() {
+    if (!this.familyMandir.MandirName.trim()) { this.showToast('⚠️', 'मंदिर का नाम दर्ज करें'); return; }
+    if (!this.familyMandir.GodName.trim()) { this.showToast('⚠️', 'देवता का नाम दर्ज करें'); return; }
+    if (this.fmPhoto1File) { this.showToast('⚠️', 'फ़ोटो 1 पहले अपलोड करें ⬆'); return; }
+    if (this.fmPhoto2File) { this.showToast('⚠️', 'फ़ोटो 2 पहले अपलोड करें ⬆'); return; }
+    if (this.fmPhoto3File) { this.showToast('⚠️', 'फ़ोटो 3 पहले अपलोड करें ⬆'); return; }
+    if (this.fmAudio1File) { this.showToast('⚠️', 'आरती 1 ऑडियो पहले अपलोड करें ⬆'); return; }
+    if (this.fmAudio2File) { this.showToast('⚠️', 'आरती 2 ऑडियो पहले अपलोड करें ⬆'); return; }
+    if (this.fmAudio3File) { this.showToast('⚠️', 'आरती 3 ऑडियो पहले अपलोड करें ⬆'); return; }
+
+    this.isSubmittingFamilyMandir = true;
+    this.familyMandir.DateModified = new Date();
+
+    this.apinu.postUrlData('FamilyMandirInsert', this.familyMandir).subscribe({
+      next: () => {
+        this.isSubmittingFamilyMandir = false;
+        this.showFamilyMandirForm = false;
+        this.showToast('🛕', 'मंदिर जमा हुआ! Admin अनुमोदन के बाद दिखेगा 🙏');
+        this.loadFamilyActiveMandir();
+      },
+      error: () => {
+        this.isSubmittingFamilyMandir = false;
+        this.showToast('❌', 'कुछ गलत हुआ, पुनः प्रयास करें');
+      }
+    });
+  }
+
+  loadFamilyActiveMandir() {
+    const userID = this.userDetails?.UserID;
+    if (!userID) return;
+
+    this.apinu.postUrlData(
+      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`, null
+    ).subscribe({
+      next: (res: any) => {
+        const list = res.FamilyMemberList || [];
+        if (!list.length) return;
+
+        const familyID = list[0].FamilyID;
+        this.apinu.postUrlData(
+          `FamilyMandirSelectByQuery?Query=FamilyID=${familyID} AND IsActive=1`, null
+        ).subscribe({
+          next: (r: any) => {
+            const mandirs = r.FamilyMandirList || [];
+            if (!mandirs.length) return;
+
+            this.familyActiveMandir = mandirs[0];
+            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto1, 1);
+            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto2, 2);
+            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto3, 3);
+            this.startFamilyMandirSlideshow();
+          }
+        });
+      }
+    });
+  }
+
+  private loadFamilyMandirPhotoSlot(filename: string, slot: 1 | 2 | 3) {
+    if (!filename) return;
+    this.api.getImage('DownloadImages', {
+      imageName: filename, imagePurpose: 'ProfilePhoto'
+    }).subscribe({
+      next: (blob: any) => {
+        if (!blob?.type?.startsWith('image/')) return;
+        const url = URL.createObjectURL(blob);
+        if (slot === 1) this.familyMandirPhotoUrl = url;
+        else if (slot === 2) this.familyMandirPhoto2Url = url;
+        else this.familyMandirPhoto3Url = url;
+      }
+    });
+  }
+
+  private startFamilyMandirSlideshow() {
+    clearInterval(this.familyMandirSlideTimer);
+    this.familyMandirSlideTimer = setInterval(() => {
+      const count = [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
+        .filter(p => !!p).length;
+      if (count > 1) {
+        this.familyMandirSlideIndex = (this.familyMandirSlideIndex + 1) % count;
+      }
+    }, 4000);
+  }
+
+  get currentFamilyMandirPhoto(): string | null {
+    const photos = [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
+      .filter(p => !!p);
+    return photos[this.familyMandirSlideIndex] || null;
+  }
+
+  get familyMandirPhotoCount(): number {
+    return [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
+      .filter(p => !!p).length;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // FEED REELS — date-grouped, infinite scroll
+  // ══════════════════════════════════════════════════════
+
+  // onFeedInfiniteScroll(event: any) {
+  //   this.loadMoreFeed().then(() => {
+  //     event.target.complete();
+  //     if (this.feedAllLoaded) {
+  //       event.target.disabled = true;
+  //     }
+  //   });
+  // }
+
+
+  async loadMoreFeed() {
+    if (this.feedLoading || this.feedAllLoaded) return;
+    this.feedLoading = true;
+    try {
+      if (!this.feedWindowEnd) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        this.feedWindowEnd = tomorrow;
+      }
+
+      const windowEnd = this.feedWindowEnd;
+      const windowStart = new Date(windowEnd);
+      windowStart.setDate(windowStart.getDate() - this.feedWindowDays);
+
+      const startStr = this.toDateKey(windowStart.toISOString());
+      const endStr = this.toDateKey(windowEnd.toISOString());
+
+      const langCondition = this.buildLanguageCondition();
+
+      // Mirrors: CAST(DateAdded as date) >= startStr AND CAST(DateAdded as date) < endStr
+      const query =
+        `IsActive=1 AND IsDeleted=0 ` +
+        `AND CAST(PublishDate as date) >= '${startStr}' AND CAST(PublishDate as date) < '${endStr}' ` +
+        `AND (SourceTable='Feed' OR (${langCondition}))`;
+
+      const res: any = await firstValueFrom(
+        this.apinu.postUrlData(`FeedSelectByQuery?Query=${encodeURIComponent(query)}`, null)
+      );
+      const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+      const list: FeedItem[] = parsed?.FeedList || [];
+      list.sort((a, b) => new Date(b.DateAdded).getTime() - new Date(a.DateAdded).getTime());
+
+      this.appendFeedBatch(list);
+      this.feedWindowEnd = windowStart;
+
+      if (!list.length) {
+        this.feedEmptyWindowStreak++;
+        if (this.feedEmptyWindowStreak >= this.feedMaxEmptyWindows) {
+          this.feedAllLoaded = true;
+        }
+      } else {
+        this.feedEmptyWindowStreak = 0;
+      }
+    } catch (e) {
+      console.error('loadMoreFeed failed:', e);
+    } finally {
+      this.feedLoading = false;
+    }
+  }
+
+  /** Builds a SQL fragment that filters Title/Description by script,
+   * based on this.language ('Hindi' vs everything else = English).
+   * Uses a Devanagari Unicode range check with a binary collation so the
+   * range comparison is by raw code point, not linguistic sort order. */
+  private buildLanguageCondition(): string {
+    const isHindi = this.language === 'Hindi' || this.language === 'हिंदी';
+
+    return isHindi
+      ? `(Title LIKE N'%[ऀ-ॿ]%' COLLATE Latin1_General_100_BIN2 OR Description LIKE N'%[ऀ-ॿ]%' COLLATE Latin1_General_100_BIN2)`
+      : `(Title NOT LIKE N'%[ऀ-ॿ]%' COLLATE Latin1_General_100_BIN2 AND Description NOT LIKE N'%[ऀ-ॿ]%' COLLATE Latin1_General_100_BIN2)`;
+  }
+
+
+  // async loadMoreFeed() {
+  //   if (this.feedLoading || this.feedAllLoaded) return;
+  //   this.feedLoading = true;
+  //   try {
+  //     if (!this.feedWindowEnd) {
+  //       // First window: include today, so the exclusive upper bound is tomorrow.
+  //       // e.g. today=19 Jul, feedWindowDays=5 -> covers 15 Jul (inclusive) .. 20 Jul (exclusive)
+  //       const tomorrow = new Date();
+  //       tomorrow.setDate(tomorrow.getDate() + 1);
+  //       this.feedWindowEnd = tomorrow;
+  //     }
+
+  //     const windowEnd = this.feedWindowEnd;
+  //     const windowStart = new Date(windowEnd);
+  //     windowStart.setDate(windowStart.getDate() - this.feedWindowDays);
+
+  //     const startStr = this.toDateKey(windowStart.toISOString());
+  //     const endStr = this.toDateKey(windowEnd.toISOString());
+
+  //     // Mirrors: CAST(DateAdded as date) >= startStr AND CAST(DateAdded as date) < endStr
+  //     const query =
+  //       `(MediaURL <> '' OR ThumbnailURL <> '') AND IsActive=1 AND IsDeleted=0 AND CAST(DateAdded as date) >= '${startStr}' AND CAST(DateAdded as date) < '${endStr}'`;
+
+  //     const res: any = await firstValueFrom(
+  //       this.apinu.postUrlData(`FeedSelectByQuery?Query=${encodeURIComponent(query)}`, null)
+  //     );
+  //     const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+  //     const list: FeedItem[] = parsed?.FeedList || [];
+  //     list.sort((a, b) => new Date(b.DateAdded).getTime() - new Date(a.DateAdded).getTime());
+
+  //     this.appendFeedBatch(list);
+
+  //     // Move the window back for the next scroll trigger.
+  //     this.feedWindowEnd = windowStart;
+
+  //     if (!list.length) {
+  //       this.feedEmptyWindowStreak++;
+  //       if (this.feedEmptyWindowStreak >= this.feedMaxEmptyWindows) {
+  //         this.feedAllLoaded = true;
+  //       }
+  //     } else {
+  //       this.feedEmptyWindowStreak = 0;
+  //     }
+  //   } catch (e) {
+  //     console.error('loadMoreFeed failed:', e);
+  //   } finally {
+  //     this.feedLoading = false;
+  //   }
+  // }
+
+  // private appendFeedBatch(batch: FeedItem[]) {
+  //   batch.forEach(item => {
+  //     const dateKey = this.toDateKey(item.PublishDate || item.DateAdded);
+  //     let group = this.feedGroups.find(g => g.dateKey === dateKey);
+  //     if (!group) {
+  //       group = { dateKey, dateLabel: this.toDateLabel(dateKey), items: [] };
+  //       this.feedGroups.push(group);
+  //       this.feedGroups.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+  //       this.loadPanchangImageForGroup(group);
+  //     }
+  //     group.items.push(item);
+  //     this.loadFeedMedia(item);
+  //   });
+  // }
+
+  private appendFeedBatch(batch: FeedItem[]) {
+    batch.forEach(item => {
+      const dateKey = this.toDateKey(item.PublishDate || item.DateAdded);
+      let group = this.feedGroups.find(g => g.dateKey === dateKey);
+      if (!group) {
+        group = { dateKey, dateLabel: this.toDateLabel(dateKey), items: [] };
+        this.feedGroups.push(group);
+        this.feedGroups.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+        this.loadPanchangImageForGroup(group);
+      }
+      group.items.push(item);
+      this.loadFeedEngagementCounts(item);
+    });
+    this.observeFeedCards();
+  }
+
+  private loadFeedEngagementCounts(item: FeedItem) {
+    const userID = this.userDetails?.UserID || 0;
+    this.apinu.postUrlData(
+      `FeedEngagementCount_Select?FeedID=${item.FeedID}&UserID=${userID}`, null
+    ).subscribe({
+      next: (res: any) => {
+        const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+        const row = Array.isArray(parsed) ? parsed[0] : parsed;
+        if (!row) return;
+        item.likeCount = row.LikeCount ?? 0;
+        item.commentCount = row.CommentCount ?? 0;
+        item.shareCount = row.ShareCount ?? 0;
+        item.viewCount = row.ViewCount ?? 0;
+        item.isLiked = !!row.IsLikedByUser;
+        item.myFeedLikeID = row.MyFeedLikeID || undefined;
+      },
+      error: () => { /* leave counts undefined; template shows 0 */ }
+    });
+  }
+
+
+  toggleLike(item: FeedItem) {
+    const userID = this.userDetails?.UserID;
+    if (!userID) {
+      this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
+
+      return;
+    }
+    if (item.isLikeInFlight) return;
+    item.isLikeInFlight = true;
+
+    if (item.isLiked && item.myFeedLikeID) {
+      // Optimistic UI first
+      const prevCount = item.likeCount ?? 0;
+      item.isLiked = false;
+      item.likeCount = Math.max(0, prevCount - 1);
+      const likeIDToDelete = item.myFeedLikeID;
+      item.myFeedLikeID = undefined;
+
+      this.apinu.postUrlData(
+        `FeedLikeDelete?feedLikeID=${likeIDToDelete}&tenantID=${this.userDetails?.TenantID || 1}`, null
+      ).subscribe({
+        next: () => { item.isLikeInFlight = false; },
+        error: () => {
+          // revert on failure
+          item.isLiked = true;
+          item.likeCount = prevCount;
+          item.myFeedLikeID = likeIDToDelete;
+          item.isLikeInFlight = false;
+        }
+      });
+    } else {
+      const prevCount = item.likeCount ?? 0;
+      item.isLiked = true;
+      item.likeCount = prevCount + 1;
+
+      const feedLike = { FeedID: item.FeedID, UserID: userID, DateAdded: new Date() };
+      this.apinu.postUrlData('FeedLikeInsert', feedLike).subscribe({
+        next: (res: any) => {
+          item.myFeedLikeID = res.FeedLikeID;
+          item.isLikeInFlight = false;
+        },
+        error: () => {
+          item.isLiked = false;
+          item.likeCount = prevCount;
+          item.isLikeInFlight = false;
+        }
+      });
+    }
+  }
+
+  // shareFeed(item: FeedItem, shareType: string = 'WhatsApp') {
+  //   const userID = this.userDetails?.UserID || 0;
+  //   const feedShare = { FeedID: item.FeedID, UserID: userID, ShareType: shareType, SharedOn: new Date() };
+  //   this.apinu.postUrlData('FeedShareInsert', feedShare).subscribe({
+  //     next: () => { item.shareCount = (item.shareCount ?? 0) + 1; },
+  //     error: () => { /* silent — share UI already happened via native share sheet */ }
+  //   });
+
+  //   // Trigger the actual OS share sheet / WhatsApp deep link here, e.g.:
+  //   const shareUrl = `https://app.mangalbhav.com/feed/${item.FeedID}`;
+  //   if ((navigator as any).share) {
+  //     (navigator as any).share({ title: item.Title, url: shareUrl }).catch(() => { });
+  //   } else {
+  //     window.open(`https://wa.me/?text=${encodeURIComponent(item.Title + ' ' + shareUrl)}`, '_blank');
+  //   }
+  // }
+
+  private viewObserver?: IntersectionObserver;
+
+  ngAfterViewInit() {
+    this.viewObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const feedID = Number(entry.target.getAttribute('data-feed-id'));
+            const item = this.findFeedItemById(feedID);
+            if (item && !item.hasBeenViewed && this.userDetails?.UserID) {
+              item.hasBeenViewed = true;
+              this.recordFeedView(item);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }   // fires once at least 50% of the card is visible
+    );
+
+    // Observe cards as they render; re-run this after each appendFeedBatch too
+    this.observeFeedCards();
+    this.initCanvas();
   }
 
 
 
-  loadMangalMudraPoints() {
+  private observeFeedCards() {
+    setTimeout(() => {
+      document.querySelectorAll('.reel-card[data-feed-id]').forEach(el => {
+        this.viewObserver?.observe(el);
+      });
+    }, 100); // slight delay so *ngFor has rendered the new cards
+  }
 
+  private findFeedItemById(feedID: number): FeedItem | undefined {
+    for (const group of this.feedGroups) {
+      const found = group.items.find(i => i.FeedID === feedID);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  private recordFeedView(item: FeedItem) {
+    const userID = this.userDetails?.UserID || 0;
+    if (!userID) return;
+    const feedView = { FeedID: item.FeedID, UserID: userID, ViewedOn: new Date() };
+    this.apinu.postUrlData('FeedViewInsert', feedView).subscribe({
+      next: () => { item.viewCount = (item.viewCount ?? 0) + 1; },
+      error: () => { item.hasBeenViewed = false; /* allow retry on error */ }
+    });
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.familyMandirSlideTimer);
+    clearTimeout(this.toastTimer);
+    this.viewObserver?.disconnect();
+
+    // ── added back for Mangal Aarti ──
+    clearInterval(this.aartiSeqInterval);
+    clearInterval(this.blessingCDInterval);
+    clearTimeout(this.flowersAutoStopTimer);
+    clearTimeout(this.miniToastTimer);
+    this.aartiTimers.forEach(t => clearTimeout(t));
+    if (this.animationId) cancelAnimationFrame(this.animationId);
+    this.stopAllAudio();
+  }
+
+
+  loadMangalMudraPoints() {
     if (this.userDetails?.UserID) {
       this.apinu.postUrlData(`FamilyMangalMudraPointsSelectByQuery?Query=UserID=${this.userDetails?.UserID}`, null)
         .subscribe((res: any) => {
@@ -282,46 +754,8 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
           result.forEach((item: any) => {
             this.MangalMudraPoints += Number(item.PointsCount || 0);
           });
-          console.log(this.MangalMudraPoints);
         });
     }
-
-  }
-
-
-  ngAfterViewInit() { this.initCanvas(); }
-
-  ngOnDestroy() {
-    clearInterval(this.darshanaInterval);
-    clearInterval(this.mantraTimer);
-    clearInterval(this.chalisaProgressInterval);
-    clearInterval(this.aartiSeqInterval);
-    clearInterval(this.blessingCDInterval);
-    clearTimeout(this.flowersAutoStopTimer);
-    clearTimeout(this.toastTimer);
-    clearTimeout(this.miniToastTimer);
-    clearInterval(this.familyMandirSlideTimer);
-    this.aartiTimers.forEach(t => clearTimeout(t));
-    if (this.animationId) cancelAnimationFrame(this.animationId);
-    this.stopAllAudio();
-    this.stopFamilyAarti();
-  }
-
-  goBack() { this.routerCtrl.back(); }
-  openPage(p: any) { this.routerCtrl.navigateForward(`/${p}`); }
-
-  private startDarshanaCounter() {
-    this.darshanaInterval = setInterval(() => {
-      const delta = Math.floor(Math.random() * 11) - 5;
-      this.darshanaCount = Math.max(2000, this.darshanaCount + delta);
-    }, 3000);
-  }
-
-  private startMantraRotation() {
-    this.mantraTimer = setInterval(() => {
-      this.mantraIndex = (this.mantraIndex + 1) % this.mantras.length;
-      this.currentMantra = this.mantras[this.mantraIndex];
-    }, 8000);
   }
 
   // ── Audio helper ───────────────────────────────────────
@@ -333,24 +767,15 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     return audio;
   }
 
-  // ── Mantra strip ───────────────────────────────────────
-  playMantra() {
-    if (this.mantraPlaying) {
-      if (this.mantraAudio) { this.mantraAudio.pause(); this.mantraAudio.currentTime = 0; this.mantraAudio.onended = null; }
-      this.mantraAudio = null;
-      this.mantraPlaying = false;
-      this.showToast('🔇', 'मंत्र रोका गया');
-    } else {
-      this.mantraAudio = this.playAudio(this.mantraAudio, 'assets/audio/mantra.mp3', () => {
-        this.mantraPlaying = false;
-        this.mantraAudio = null;
-      });
-      this.mantraPlaying = true;
-      this.showToast('🔊', 'मंत्र बज रहा है...');
-    }
+  private stopAllAudio() {
+    [this.shankhAudio, this.bellAudio, this.aartiBhajan].forEach(a => {
+      if (a) { a.pause(); a.onended = null; }
+    });
+    this.shankhAudio = null; this.bellAudio = null; this.aartiBhajan = null;
+    this.bellRinging = false;
   }
 
-  // ── Canvas ─────────────────────────────────────────────
+  // ── Canvas / flowers ────────────────────────────────────
   initCanvas() {
     this.canvas = document.getElementById('flowerCanvas') as HTMLCanvasElement;
     if (!this.canvas) return;
@@ -427,7 +852,6 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.aartiProgress = 0;
     this.aartiTimers = [];
 
-    // ✅ Use real wall-clock time — immune to interval drift
     const startTime = Date.now();
     const TOTAL_MS = 34000;
 
@@ -436,14 +860,10 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
       this.aartiProgress = Math.min(100, (elapsed / TOTAL_MS) * 100);
     }, 100);
 
-    // Schedule each step in the sequence
     this.aartiSequence.forEach(item => {
       const t = setTimeout(() => {
         if (this.aartiPhase !== 'running') return;
-
-        if (item.action !== 'complete') {
-          this.currentAartiStepData = item.step;
-        }
+        if (item.action !== 'complete') this.currentAartiStepData = item.step;
 
         switch (item.action) {
           case 'bell':
@@ -451,22 +871,16 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
             this.bellAudio = this.playAudio(this.bellAudio, 'assets/audio/bell.mp3', () => { this.bellAudio = null; });
             setTimeout(() => { this.bellRinging = false; }, 1800);
             break;
-
           case 'shankh':
             if (this.bellAudio) { this.bellAudio.pause(); this.bellAudio = null; }
             this.shankhAudio = this.playAudio(null, 'assets/audio/shankh.mp3', () => { this.shankhAudio = null; });
             break;
-
           case 'bhajan':
             if (this.shankhAudio) { this.shankhAudio.pause(); this.shankhAudio = null; }
-            this.aartiBhajan = this.playAudio(null, 'assets/audio/aarti_bhajan.mp3', () => {
-              this.aartiBhajan = null;
-            });
+            this.aartiBhajan = this.playAudio(null, 'assets/audio/aarti_bhajan.mp3', () => { this.aartiBhajan = null; });
             break;
-
           case 'stop_bhajan':
             if (this.aartiBhajan) {
-              // Fade out gracefully
               const fadeOut = setInterval(() => {
                 if (!this.aartiBhajan) { clearInterval(fadeOut); return; }
                 this.aartiBhajan.volume = Math.max(0, this.aartiBhajan.volume - 0.1);
@@ -478,25 +892,17 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
               }, 80);
             }
             break;
-
           case 'flowers':
             this.startFlowers('flowers');
             break;
-
           case 'petals':
             this.startFlowers('petals');
             break;
-
-          case 'end_flowers':
-            this.stopFlowers();
-            break;
-
           case 'complete':
             this.completeAarti();
             break;
         }
       }, item.time);
-
       this.aartiTimers.push(t);
     });
   }
@@ -525,13 +931,9 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.stopAllAudio();
     this.stopFlowers();
     this.showChrome();
-    this.totalSanchay += 21;
-
 
     this.saveMangalMudraPoints();
 
-
-    // 60-second countdown, then restore button
     this.blessingCountdown = 30;
     this.blessingCDInterval = setInterval(() => {
       this.blessingCountdown--;
@@ -544,19 +946,14 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
   }
 
   saveMangalMudraPoints() {
-
     const userID = this.userDetails?.UserID;
     const tenantID = this.userDetails?.TenantID || 1;
 
-    // Check whether user belongs to a family
     this.apinu.postUrlData(
-      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`,
-      null
+      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`, null
     ).subscribe({
       next: (res: any) => {
-
         const list = res.FamilyMemberList || [];
-
         const payload = {
           TenantID: tenantID,
           FamilyID: list.length > 0 ? list[0].FamilyID : 0,
@@ -567,115 +964,12 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
           DateModified: new Date(),
           UpdatedByUser: userID.toString()
         };
-
-        this.apinu.postUrlData(
-          'FamilyMangalMudraPointsInsert',
-          payload
-        ).subscribe({
-          next: () => {
-            console.log('21 points added');
-            this.loadMangalMudraPoints();
-          },
-          error: (err: any) => {
-            console.log('Point insert failed', err);
-            this.loadMangalMudraPoints();
-          }
+        this.apinu.postUrlData('FamilyMangalMudraPointsInsert', payload).subscribe({
+          next: () => this.loadMangalMudraPoints(),
+          error: () => this.loadMangalMudraPoints()
         });
-
       }
     });
-  }
-  // ── Seva grid ──────────────────────────────────────────
-  offerSeva(seva: SevaItem) {
-    seva.count++;
-    this.showToast(seva.icon, seva.toast);
-    this.startFlowers('petals');
-    clearTimeout(this.flowersAutoStopTimer);
-    this.flowersAutoStopTimer = setTimeout(() => this.stopFlowers(), 4000);
-  }
-
-  // ── Chalisa ────────────────────────────────────────────
-  toggleChalisa() { this.chalisaPlaying ? this.pauseChalisa() : this.playChalisa(); }
-
-  private playChalisa() {
-    this.chalisaPlaying = true;
-    if (!this.chalisaAudio) this.chalisaAudio = new Audio('assets/audio/hanuman_chalisa.mp3');
-    this.chalisaAudio.play()?.catch(() => { });
-    this.chalisaProgressInterval = setInterval(() => {
-      this.chalisaProgress = Math.min(100, this.chalisaProgress + 0.2);
-      const totalSec = Math.floor((this.chalisaProgress / 100) * 504);
-      const m = Math.floor(totalSec / 60), s = totalSec % 60;
-      this.chalisaTimeDisplay = `${m}:${s.toString().padStart(2, '0')}`;
-      this.currentVerse = Math.floor((this.chalisaProgress / 100) * this.chalisaVerses.length) % this.chalisaVerses.length;
-      if (this.chalisaProgress >= 100) this.pauseChalisa();
-    }, 1000);
-  }
-
-  private pauseChalisa() {
-    this.chalisaPlaying = false;
-    clearInterval(this.chalisaProgressInterval);
-    this.chalisaAudio?.pause();
-  }
-
-  nextVerse() { this.currentVerse = (this.currentVerse + 1) % this.chalisaVerses.length; }
-  previousVerse() { this.currentVerse = (this.currentVerse - 1 + this.chalisaVerses.length) % this.chalisaVerses.length; }
-
-  // ── Panchang / Festivals ───────────────────────────────
-  private buildPanchang() {
-    const now = new Date();
-    this.todayDate = now.toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-   // this.fetchTodayFestivals();
-  }
-
-
-
-
-  getFestivalEmoji(name: string): string {
-    const n = (name || '').toLowerCase();
-    if (n.includes('diwali') || n.includes('deepavali')) return '🪔';
-    if (n.includes('holi')) return '🎨';
-    if (n.includes('navratri')) return '🕺';
-    if (n.includes('dussehra') || n.includes('durga')) return '🦁';
-    if (n.includes('ganesh')) return '🐘';
-    if (n.includes('krishna') || n.includes('janmashtami')) return '🦚';
-    if (n.includes('ram') || n.includes('navami')) return '🏹';
-    if (n.includes('eid')) return '🌙';
-    if (n.includes('christmas')) return '⛪';
-    if (n.includes('guru') || n.includes('nanak')) return '🙏';
-    if (n.includes('puja')) return '🪷';
-    if (n.includes('new year')) return '🎉';
-    if (n.includes('pradosh') || n.includes('प्रदोष')) return '🕉️';
-    if (n.includes('ekadashi') || n.includes('एकादशी')) return '🌿';
-    if (n.includes('purnima') || n.includes('पूर्णिमा')) return '🌕';
-    if (n.includes('amavasya') || n.includes('अमावस्या')) return '🌑';
-    if (n.includes('sankranti') || n.includes('संक्रांति')) return '🌞';
-    if (n.includes('shivratri') || n.includes('शिवरात्रि')) return '🔱';
-    if (n.includes('vrat') || n.includes('व्रत')) return '🙏';
-    return '🪔';
-  }
-
-  getFestivalName(f: any): string { return this.language === 'Hindi' && f.FestivalNameHindi?.trim() ? f.FestivalNameHindi.trim() : f.FestivalName; }
-  getFestivalDay(f: any): string { return this.language === 'Hindi' && f.FestivalDayHindi?.trim() ? f.FestivalDayHindi.trim() : f.FestivalDay?.trim(); }
-  getFestivalDesc(f: any): string { return this.language === 'Hindi' && f.DescriptionHindi?.trim() ? f.DescriptionHindi.trim() : f.Description?.trim(); }
-
-  // ── Events & Prayer ────────────────────────────────────
-  rsvpEvent(event: UpcomingEvent) { this.showToast('🗓️', `"${event.title}" के लिए RSVP हो गया!`); }
-
-  blessings(prayer: Prayer) {
-    if (prayer.userBlessed) { prayer.blessingsCount--; prayer.userBlessed = false; }
-    else { prayer.blessingsCount++; prayer.userBlessed = true; this.showToast('🙏', 'आशीर्वाद भेजा गया!'); }
-  }
-
-  openPrayerModal() { this.showToast('✍️', 'प्रार्थना लिखें...'); }
-  replyPrayer(prayer: Prayer) { this.showToast('💬', `${prayer.name} को उत्तर दें`); }
-
-  // ── Toasts ─────────────────────────────────────────────
-  showToast(icon: string, message: string) {
-    this.toastIcon = icon;
-    this.toastMessage = message;
-    this.toastVisible = true;
-    clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => { this.toastVisible = false; }, 3000);
   }
 
   showMiniToast(message: string) {
@@ -685,337 +979,165 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.miniToastTimer = setTimeout(() => { this.miniToastVisible = false; }, 2000);
   }
 
-  private stopAllAudio() {
-    [this.shankhAudio, this.bellAudio, this.chalisaAudio, this.mantraAudio, this.aartiBhajan].forEach(a => {
-      if (a) { a.pause(); a.onended = null; }
-    });
-    this.shankhAudio = null; this.bellAudio = null;
-    this.chalisaAudio = null; this.mantraAudio = null;
-    this.mantraPlaying = false; this.shankhPlaying = false; this.bellRinging = false; this.aartiBhajan = null;
+
+  @ViewChild(IonContent)
+  pageContent!: IonContent;
+
+  scrollToTop() {
+    this.pageContent.scrollToTop(500);
   }
 
-  // ── NEW property (add near other booleans) ────────────────
-  chromeHidden = false;
-
-  // ── REPLACE hideChrome() ──────────────────────────────────
   private hideChrome() {
     this.chromeHidden = true;
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
     if (fab) fab.style.display = 'none';
   }
 
-  // ── REPLACE showChrome() ──────────────────────────────────
   private showChrome() {
     this.chromeHidden = false;
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
     if (fab) fab.style.display = 'flex';
   }
 
-  // ── Open form — check family first ────────────────────
-  openFamilyMandirForm() {
-    const userID = this.userDetails?.UserID;
-    if (!userID) {
-      this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
-      this.routerCtrl.navigateForward('/login');
-      return;
+  /** Maps a Feed row's SourceTable to the imagePurpose the backend's
+   * getServerPathByPurpose() expects, so the file is looked up in the
+   * right assets subfolder. */
+  private getImagePurposeForFeedItem(item: FeedItem): string {
+    switch ((item.SourceTable || '').trim()) {
+      case 'Mandir': return 'ProfilePhoto';
+      case 'Profile': return 'ProfilePhoto';
+      case 'Service': return 'PoojaPhoto';
+      case 'Booking': return 'PoojaPhoto';
+      case 'Feed': return 'feed';
+      default: return 'feed';
     }
-
-    this.apinu.postUrlData(
-      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`, null
-    ).subscribe({
-      next: (res: any) => {
-        const list = res.FamilyMemberList || [];
-        if (!list.length) {
-          this.showToast('🏠', 'पहले परिवार बनाएं या जॉइन करें');
-          this.routerCtrl.navigateForward('/myfamily');
-          return;
-        }
-        // Reset and open
-        this.familyMandir = {
-          TenantID: this.userDetails?.TenantID || 1,
-          FamilyID: list[0].FamilyID,
-          MandirName: '', MandirDescription: '', GodName: '',
-          MandirPhoto1: '', MandirPhoto2: '', MandirPhoto3: '',
-          AartiName1: '', AartiName2: '', AartiName3: '',
-          IsActive: false,
-          DateAdded: new Date(), DateModified: new Date(),
-          UpdatedByUser: String(userID)
-        };
-        this.fmPhoto1File = null; this.fmPhoto1Preview = null;
-        this.fmPhoto2File = null; this.fmPhoto2Preview = null;
-        this.fmPhoto3File = null; this.fmPhoto3Preview = null;
-        this.showFamilyMandirForm = true;
-        this.fmAudio1File = null; this.fmAudio1Name = null;
-        this.fmAudio2File = null; this.fmAudio2Name = null;
-        this.fmAudio3File = null; this.fmAudio3Name = null;
-      }
-    });
   }
 
-  // ── Photo select ───────────────────────────────────────
-  onFmPhotoSelected(event: any, slot: 1 | 2 | 3) {
-    const file: File = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    if (slot === 1) { this.fmPhoto1File = file; this.familyMandir.MandirPhoto1 = ''; reader.onload = (e: any) => this.fmPhoto1Preview = e.target.result; }
-    else if (slot === 2) { this.fmPhoto2File = file; this.familyMandir.MandirPhoto2 = ''; reader.onload = (e: any) => this.fmPhoto2Preview = e.target.result; }
-    else { this.fmPhoto3File = file; this.familyMandir.MandirPhoto3 = ''; reader.onload = (e: any) => this.fmPhoto3Preview = e.target.result; }
-  }
-
-  // ── Photo upload (same api pattern as MandirInsertUpdate) ─
-  uploadFmPhoto(slot: 1 | 2 | 3) {
-    const file = slot === 1 ? this.fmPhoto1File : slot === 2 ? this.fmPhoto2File : this.fmPhoto3File;
-    if (!file) return;
-    if (slot === 1) this.fmUploading1 = true;
-    else if (slot === 2) this.fmUploading2 = true;
-    else this.fmUploading3 = true;
-
-    this.api.uploadImage([file], 'ProfilePhoto', 'mandir', 'ProfilePhoto').subscribe({
-      next: (res: any) => {
-        const ok = res?.Status === 'Success';
-        if (slot === 1) { this.fmUploading1 = false; if (ok) { this.familyMandir.MandirPhoto1 = res.FileName; this.fmPhoto1File = null; this.showToast('📷', 'फ़ोटो 1 अपलोड हुई ✅'); } }
-        else if (slot === 2) { this.fmUploading2 = false; if (ok) { this.familyMandir.MandirPhoto2 = res.FileName; this.fmPhoto2File = null; this.showToast('📷', 'फ़ोटो 2 अपलोड हुई ✅'); } }
-        else { this.fmUploading3 = false; if (ok) { this.familyMandir.MandirPhoto3 = res.FileName; this.fmPhoto3File = null; this.showToast('📷', 'फ़ोटो 3 अपलोड हुई ✅'); } }
-      },
-      error: () => {
-        if (slot === 1) this.fmUploading1 = false;
-        else if (slot === 2) this.fmUploading2 = false;
-        else this.fmUploading3 = false;
-        this.showToast('❌', 'अपलोड विफल, पुनः प्रयास करें');
-      }
-    });
-  }
-
-  // ── Submit ─────────────────────────────────────────────
-  submitFamilyMandir() {
-    if (!this.familyMandir.MandirName.trim()) { this.showToast('⚠️', 'मंदिर का नाम दर्ज करें'); return; }
-    if (!this.familyMandir.GodName.trim()) { this.showToast('⚠️', 'देवता का नाम दर्ज करें'); return; }
-    if (this.fmPhoto1File) { this.showToast('⚠️', 'फ़ोटो 1 पहले अपलोड करें ⬆'); return; }
-    if (this.fmPhoto2File) { this.showToast('⚠️', 'फ़ोटो 2 पहले अपलोड करें ⬆'); return; }
-    if (this.fmPhoto3File) { this.showToast('⚠️', 'फ़ोटो 3 पहले अपलोड करें ⬆'); return; }
-
-    if (this.fmAudio1File) { this.showToast('⚠️', 'आरती 1 ऑडियो पहले अपलोड करें ⬆'); return; }
-    if (this.fmAudio2File) { this.showToast('⚠️', 'आरती 2 ऑडियो पहले अपलोड करें ⬆'); return; }
-    if (this.fmAudio3File) { this.showToast('⚠️', 'आरती 3 ऑडियो पहले अपलोड करें ⬆'); return; }
-
-    this.isSubmittingFamilyMandir = true;
-    this.familyMandir.DateModified = new Date();
-
-    this.apinu.postUrlData('FamilyMandirInsert', this.familyMandir).subscribe({
-      next: () => {
-        this.isSubmittingFamilyMandir = false;
-        this.showFamilyMandirForm = false;
-        this.showToast('🛕', 'मंदिर जमा हुआ! Admin अनुमोदन के बाद दिखेगा 🙏');
-        this.loadFamilyActiveMandir();  // ← add this
-      },
-      error: () => {
-        this.isSubmittingFamilyMandir = false;
-        this.showToast('❌', 'कुछ गलत हुआ, पुनः प्रयास करें');
-      }
-    });
-  }
-  uploadFmAudio(slot: 1 | 2 | 3) {
-    const file = slot === 1 ? this.fmAudio1File : slot === 2 ? this.fmAudio2File : this.fmAudio3File;
-    if (!file) return;
-    if (slot === 1) this.fmUploadingA1 = true;
-    else if (slot === 2) this.fmUploadingA2 = true;
-    else this.fmUploadingA3 = true;
-
-    this.api.uploadImage([file], 'AartiAudio', 'aarti', 'AartiAudio').subscribe({
-      next: (res: any) => {
-        const ok = res?.Status === 'Success';
-        if (slot === 1) { this.fmUploadingA1 = false; if (ok) { this.familyMandir.AartiName1 = res.FileName; this.fmAudio1File = null; this.showToast('🎵', 'आरती 1 ऑडियो अपलोड हुआ ✅'); } }
-        else if (slot === 2) { this.fmUploadingA2 = false; if (ok) { this.familyMandir.AartiName2 = res.FileName; this.fmAudio2File = null; this.showToast('🎵', 'आरती 2 ऑडियो अपलोड हुआ ✅'); } }
-        else { this.fmUploadingA3 = false; if (ok) { this.familyMandir.AartiName3 = res.FileName; this.fmAudio3File = null; this.showToast('🎵', 'आरती 3 ऑडियो अपलोड हुआ ✅'); } }
-      },
-      error: () => {
-        if (slot === 1) this.fmUploadingA1 = false;
-        else if (slot === 2) this.fmUploadingA2 = false;
-        else this.fmUploadingA3 = false;
-        this.showToast('❌', 'ऑडियो अपलोड विफल, पुनः प्रयास करें');
-      }
-    });
-  }
-  onFmAudioSelected(event: any, slot: 1 | 2 | 3) {
-    const file: File = event.target.files[0];
-    if (!file) return;
-    if (slot === 1) { this.fmAudio1File = file; this.fmAudio1Name = file.name; this.familyMandir.AartiName1 = ''; }
-    else if (slot === 2) { this.fmAudio2File = file; this.fmAudio2Name = file.name; this.familyMandir.AartiName2 = ''; }
-    else { this.fmAudio3File = file; this.fmAudio3Name = file.name; this.familyMandir.AartiName3 = ''; }
-  }
-  loadFamilyActiveMandir() {
-    const userID = this.userDetails?.UserID;
-    if (!userID) return;
-
-    this.apinu.postUrlData(
-      `FamilyMembersSelectByQuery?Query=UserID=${userID} AND IsActive=1`, null
-    ).subscribe({
-      next: (res: any) => {
-        const list = res.FamilyMemberList || [];
-        if (!list.length) return;
-
-        const familyID = list[0].FamilyID;
-        this.apinu.postUrlData(
-          `FamilyMandirSelectByQuery?Query=FamilyID=${familyID} AND IsActive=1`, null
-        ).subscribe({
-          next: (r: any) => {
-            const mandirs = r.FamilyMandirList || [];
-            if (!mandirs.length) return;
-
-            this.familyActiveMandir = mandirs[0];
-            // Load all 3 photos
-            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto1, 1);
-            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto2, 2);
-            this.loadFamilyMandirPhotoSlot(this.familyActiveMandir.MandirPhoto3, 3);
-            this.startFamilyMandirSlideshow();
-          }
-        });
-      }
-    });
-  }
-
-  private loadFamilyMandirPhotoSlot(filename: string, slot: 1 | 2 | 3) {
-    if (!filename) return;
+  private loadFeedMedia(item: FeedItem) {
+    if (!item.MediaURL || item.mediaBlobUrl) return;
+    const imagePurpose = this.getImagePurposeForFeedItem(item);
     this.api.getImage('DownloadImages', {
-      imageName: filename, imagePurpose: 'ProfilePhoto'
+      imageName: item.MediaURL, imagePurpose
     }).subscribe({
-      next: (blob: any) => {
-        if (!blob?.type?.startsWith('image/')) return;
-        const url = URL.createObjectURL(blob);
-        if (slot === 1) this.familyMandirPhotoUrl = url;
-        else if (slot === 2) this.familyMandirPhoto2Url = url;
-        else this.familyMandirPhoto3Url = url;
-      }
+      next: (blob: any) => { item.mediaBlobUrl = URL.createObjectURL(blob); },
+      error: () => { /* leave placeholder */ }
     });
   }
 
-  private startFamilyMandirSlideshow() {
-    clearInterval(this.familyMandirSlideTimer);
-    this.familyMandirSlideTimer = setInterval(() => {
-      const count = [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
-        .filter(p => !!p).length;
-      if (count > 1) {
-        this.familyMandirSlideIndex = (this.familyMandirSlideIndex + 1) % count;
+  private toDateKey(dateStr: string): string {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  private toDateLabel(dateKey: string): string {
+    const today = this.toDateKey(new Date().toISOString());
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yKey = this.toDateKey(yesterday.toISOString());
+
+    if (dateKey === today) return '🪔 आज';
+    if (dateKey === yKey) return 'कल';
+
+    const d = new Date(dateKey + 'T00:00:00');
+    return d.toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // ══════════════════════════════════════════════════════
+  // PANCHANG — rendered inline as an image per feed date
+  // ══════════════════════════════════════════════════════
+
+  async loadPanchangImageForGroup(group: FeedDateGroup) {
+    if (group.panchangImage || group.panchangLoading) return;
+    group.panchangLoading = true;
+    try {
+      if (this.panchangKeyOrder.size === 0) {
+        await this.loadPanchangMasterOrder();
       }
-    }, 4000);
-  }
+      const list = await this.fetchPanchangListForDate(group.dateKey);
+      if (!list.length) return;
 
-  get currentFamilyMandirPhoto(): string | null {
-    const photos = [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
-      .filter(p => !!p);
-    return photos[this.familyMandirSlideIndex] || null;
-  }
+      const html = await this.buildPanchangHtmlFromList(list);
+      if (!html) return;
 
-  get familyMandirPhotoCount(): number {
-    return [this.familyMandirPhotoUrl, this.familyMandirPhoto2Url, this.familyMandirPhoto3Url]
-      .filter(p => !!p).length;
-  }
-  toggleFamilyAarti(filename: string, slot: string) {
-    if (!filename) return;
-
-    // Stop if same slot tapped again
-    if (this.familyAartiPlayingSlot === slot) {
-      this.stopFamilyAarti();
-      return;
+      group.panchangImage = await this.rasterizePanchangHtml(html);
+    } catch (e) {
+      console.error('panchang image load failed:', e);
+    } finally {
+      group.panchangLoading = false;
     }
+  }
 
-    this.stopFamilyAarti();
-    this.familyAartiLoadingSlot = slot;
-
-    this.api.getAudio('DownloadAudio', {
-      audioName: filename,
-      audioPurpose: 'AartiAudio'
-    }).subscribe({
-      next: (blob: any) => {
-        this.familyAartiLoadingSlot = null;
-        const url = URL.createObjectURL(blob);
-        this.familyAartiCurrentAudio = new Audio(url);
-        this.familyAartiPlayingSlot = slot;
-        this.scrollToMandirHero();
-        this.familyAartiCurrentAudio.play().catch(() => {
-
-          this.showToast('❌', 'ऑडियो चला नहीं');
-          this.familyAartiPlayingSlot = null;
-        });
-        this.familyAartiCurrentAudio.onended = () => {
-          this.familyAartiPlayingSlot = null;
-          URL.revokeObjectURL(url);
-        };
-      },
-      error: () => {
-        this.familyAartiLoadingSlot = null;
-        this.showToast('❌', 'ऑडियो लोड नहीं हुआ');
-      }
+  private fetchPanchangListForDate(dateKey: string): Promise<any[]> {
+    return new Promise((resolve) => {
+      const query =
+        `PanchangDate >= '${dateKey} 00:00:00.000' AND PanchangDate < '${this.nextDateKey(dateKey)} 00:00:00.000'`;
+      this.apinu.postUrlData(
+        `DailyPanchangSelectByQuery?Query=${encodeURIComponent(query)}`, null
+      ).subscribe({
+        next: (res: any) => {
+          const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+          resolve(parsed?.DailyPanchangList || parsed || []);
+        },
+        error: () => resolve([])
+      });
     });
   }
 
-  stopFamilyAarti() {
-    if (this.familyAartiCurrentAudio) {
-      this.familyAartiCurrentAudio.pause();
-      this.familyAartiCurrentAudio.onended = null;
-      this.familyAartiCurrentAudio = null;
-    }
-    this.familyAartiPlayingSlot = null;
-    this.familyAartiLoadingSlot = null;
+  private nextDateKey(dateKey: string): string {
+    const d = new Date(dateKey + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    return this.toDateKey(d.toISOString());
   }
 
-  async scrollToMandirHero() {
-    const el = document.getElementById('mandirHero');
-    if (!el) return;
+  private loadPanchangMasterOrder(): Promise<void> {
+    return new Promise((resolve) => {
+      this.apinu.postUrlData(
+        `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='Panchang'`)}`,
+        null
+      ).subscribe({
+        next: (res: any) => {
+          const list = typeof res.MasterDataList === 'string'
+            ? JSON.parse(res.MasterDataList)
+            : res.MasterDataList;
 
-    const scrollEl = await this.pageContent.getScrollElement();
-    const yOffset = el.offsetTop - 20;
+          const sections = list.filter((m: any) => !m.ParentItemID);
+          const keysAll = list.filter((m: any) => !!m.ParentItemID);
 
-    this.pageContent.scrollToPoint(0, yOffset, 600);
+          let idx = 0;
+          sections.forEach((s: any) => {
+            keysAll
+              .filter((k: any) => k.ParentItemID === s.MasterDataID)
+              .forEach((k: any) => {
+                this.panchangKeyOrder.set(`${s.Identifier}|${k.Identifier}`, idx++);
+              });
+          });
+          resolve();
+        },
+        error: () => resolve()
+      });
+    });
   }
 
-  ionViewWillEnter() {
-    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
-    if (fab) {
-      fab.style.display = 'none';
-    }
-  }
-
-  ionViewWillLeave() {
-    const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
-    if (fab) {
-      fab.style.display = 'flex';
-    }
-  }
-
-
-
-
-  private async buildPanchangView(list: any[]) {
+  /** Builds the panchang HTML (from assets/panchang/index.html template) for a given data list. */
+  private async buildPanchangHtmlFromList(list: any[]): Promise<string | null> {
     try {
       const templateHtml = await firstValueFrom(
         this.http.get('assets/panchang/index.html', { responseType: 'text' })
       );
-      if (!templateHtml) return;
+      if (!templateHtml) return null;
 
       const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
-
-      // ── GROUP DATA BY SECTION ──
-      // Map: sectionName -> Array of {key, value} objects
       const sectionMap = new Map<string, Array<{ key: string, value1: string }>>();
 
       list.forEach((item: any) => {
         const section = (item.SectionHeading || '').trim();
         const key = (item.Key1 || '').trim();
         const value = item.Value1 != null ? String(item.Value1).trim() : '';
-
         if (!section) return;
-
-        if (!sectionMap.has(section)) {
-          sectionMap.set(section, []);
-        }
-        if (key || value) { // Include even if key is empty (value-only entries)
-          sectionMap.get(section)!.push({ key, value1: value });
-        }
+        if (!sectionMap.has(section)) sectionMap.set(section, []);
+        if (key || value) sectionMap.get(section)!.push({ key, value1: value });
       });
 
-      // ── FILL DATE & LOCATION ──
       const first = list[0];
       if (first) {
         const dateEl = doc.getElementById('panchang-date');
@@ -1028,15 +1150,11 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
         if (locEl) locEl.textContent = first.Location || '';
       }
 
-      // ── DYNAMICALLY BUILD SECTIONS ──
-      // Find all section containers in the template that have data-section
       const sectionContainers = doc.querySelectorAll<HTMLElement>('[data-section]');
-
       sectionContainers.forEach(container => {
         const sectionName = container.getAttribute('data-section')?.trim();
         if (!sectionName || !sectionMap.has(sectionName)) return;
 
-        // const items = sectionMap.get(sectionName)!;
         const items = sectionMap.get(sectionName)!
           .slice()
           .sort((a, b) => {
@@ -1052,12 +1170,10 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
           return;
         }
 
-        container.innerHTML = ''; // clear any placeholder rows
-
+        container.innerHTML = '';
         const makeRow = (item: { key: string; value1: string }) => {
           const row = doc.createElement('div');
           row.className = 'kv-row';
-
           const labelDiv = doc.createElement('div');
           labelDiv.className = 'label';
           if (item.key) {
@@ -1065,33 +1181,25 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
             const sep = sectionName === 'ग्रह स्थिति' ? ' —' : ':';
             labelDiv.innerHTML = `<span class="ico">${icon}</span>${item.key}${sep}`;
           }
-
           const valDiv = doc.createElement('div');
           valDiv.className = 'val';
           valDiv.textContent = item.value1 || '—';
-
           row.appendChild(labelDiv);
           row.appendChild(valDiv);
           return row;
         };
 
         if (this.TWO_COL_SECTIONS.includes(sectionName)) {
-          // column-major split: first half down the left, second half down the right
-          // (built explicitly in JS rather than relying on CSS multi-column, which
-          // html2canvas does not reliably support)
           container.style.display = 'flex';
           container.style.flexDirection = 'row';
           container.style.gap = '18px';
-
           const half = Math.ceil(items.length / 2);
           const leftCol = doc.createElement('div');
           leftCol.style.cssText = 'flex:1; display:flex; flex-direction:column;';
           const rightCol = doc.createElement('div');
           rightCol.style.cssText = 'flex:1; display:flex; flex-direction:column;';
-
           items.slice(0, half).forEach(item => leftCol.appendChild(makeRow(item)));
           items.slice(half).forEach(item => rightCol.appendChild(makeRow(item)));
-
           container.appendChild(leftCol);
           container.appendChild(rightCol);
         } else {
@@ -1099,7 +1207,6 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
         }
       });
 
-      // ── FIX IMAGE PATHS ──
       doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
         const src = img.getAttribute('src') || '';
         if (src && !src.startsWith('http') && !src.startsWith('data:')) {
@@ -1107,444 +1214,216 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
         }
       });
 
-      const finalHtml = doc.documentElement.innerHTML;
-      this.panchangHtmlRaw = `<!DOCTYPE html><html>${finalHtml}</html>`;
-      this.panchangHtml = this.sanitizer.bypassSecurityTrustHtml(finalHtml);
-      this.cdr.detectChanges();
-
+      return `<!DOCTYPE html><html>${doc.documentElement.innerHTML}</html>`;
     } catch (err) {
-      console.error('Error building panchang view:', err);
+      console.error('Error building panchang html:', err);
+      return null;
     }
   }
 
+  /** Renders a panchang HTML string into an image via an offscreen iframe + html2canvas. */
+  private async rasterizePanchangHtml(html: string): Promise<string> {
+    const CAPTURE_WIDTH = 1100;
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.left = '-9999px';
+    iframe.style.top = '0';
+    iframe.style.width = `${CAPTURE_WIDTH}px`;
+    iframe.style.height = '1000px';
+    document.body.appendChild(iframe);
 
-  panchangReady = false;
-  isDownloadingPanchang = false;
+    const doc = iframe.contentDocument || iframe.contentWindow!.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
 
-  async loadDailyDynamicPanchang() {
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-    if (this.panchangKeyOrder.size === 0) {
-      await this.loadPanchangMasterOrder();
+    const sheetEl = doc.querySelector('.sheet') as HTMLElement;
+    const actualHeight = sheetEl ? sheetEl.getBoundingClientRect().height + 24 : doc.body.scrollHeight;
+    iframe.style.height = `${actualHeight}px`;
+
+    const canvas = await html2canvas(doc.body, {
+      scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false,
+      width: CAPTURE_WIDTH, height: actualHeight,
+      windowWidth: CAPTURE_WIDTH, windowHeight: actualHeight,
+    });
+
+    document.body.removeChild(iframe);
+    return canvas.toDataURL('image/png');
+  }
+
+  imgBaseUrl = 'https://app.mangalbhav.com/assets';
+
+  /** Maps a Feed row's SourceTable directly to the actual static folder
+   * name used on the server (per getServerPathByPurpose), NOT the
+   * imagePurpose string — some purposes (e.g. PoojaPhoto -> "img") don't
+   * match their folder name 1:1. */
+  private getFeedMediaFolder(item: FeedItem): string {
+    switch ((item.SourceTable || '').trim()) {
+      case 'Mandir': return 'ProfilePhoto';
+      case 'Profile': return 'ProfilePhoto';
+      case 'Service': return 'img';        // PoojaPhoto purpose -> "img" folder
+      case 'Booking': return 'img';        // ⚠️ confirm: should this be 'BookingPhoto' instead?
+      case 'Feed': return 'feed';
+      default: return 'feed';
     }
+  }
+
+  /** Builds a direct static URL for a feed item's media, bypassing the
+   * DownloadImages API + blob conversion entirely. */
+  brokenMedia = new Set<number>(); // or string, matching item.ID type
+
+  hasFeedMedia(item: FeedItem): boolean {
+    return !!item.MediaURL && item.MediaURL.trim() !== '' && item.MediaURL !== 'null';
+  }
+
+  getFeedMediaPath(item: FeedItem): string {
+    const folder = this.getFeedMediaFolder(item);
+    return `${this.imgBaseUrl}/${folder}/${item.MediaURL}`;
+  }
 
 
-    const today = new Date();
+  onMediaError(item: FeedItem): void {
+    this.brokenMedia.add(item.FeedID);
+    this.cdr.markForCheck();
+  }
 
-    const formatDateOnly = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  // ── Comments (bottom sheet) ────────────────────────────
+  showCommentsSheet = false;
+  activeCommentFeedID: number | null = null;
+  activeCommentFeedTitle = '';
+  commentsList: any[] = [];
+  commentsLoading = false;
+  newCommentText = '';
+  isSubmittingComment = false;
 
-    const startDate = formatDateOnly(today);
+  openComments(item: FeedItem) {
+    this.activeCommentFeedID = item.FeedID;
+    this.activeCommentFeedTitle = item.Title;
+    this.commentsList = [];
+    this.newCommentText = '';
+    this.showCommentsSheet = true;
+    this.loadComments(item.FeedID);
+  }
 
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const endDate = formatDateOnly(tomorrow);
+  closeComments() {
+    this.showCommentsSheet = false;
+    this.activeCommentFeedID = null;
+    this.commentsList = [];
+  }
 
-    const query =
-      `PanchangDate >= '${startDate} 00:00:00.000' AND PanchangDate < '${endDate} 00:00:00.000'`;
-
+  loadComments(feedID: number) {
+    this.commentsLoading = true;
+    const query = `FeedID=${feedID} AND IsDeleted=0`;
     this.apinu.postUrlData(
-      `DailyPanchangSelectByQuery?Query=${encodeURIComponent(query)}`,
-      null
+      `FeedCommentSelectByQuery?Query=${encodeURIComponent(query)}`, null
     ).subscribe({
-      next: async (res: any) => {
-
-        console.log('[panchang] api response', res);
-
+      next: (res: any) => {
         const parsed = typeof res === 'string' ? JSON.parse(res) : res;
-        this.panchangList = parsed?.DailyPanchangList || parsed || [];
-
-        console.log('[panchang] stored', this.panchangList.length, 'items');
-
-        try {
-          await this.buildPanchangView(this.panchangList);
-          console.log('[panchang] template built');
-
-          // ✅ just mark ready — no auto-download
-          this.panchangReady = this.panchangList.length > 0;
-
-        } catch (err) {
-          console.error('[panchang] build failed:', err);
-          this.panchangReady = false;
-        }
+        this.commentsList = (parsed?.FeedCommentList || [])
+          .sort((a: any, b: any) => new Date(b.DateAdded).getTime() - new Date(a.DateAdded).getTime());
+        this.commentsLoading = false;
       },
-      error: (err: any) => {
-        console.error('[panchang] api fetch failed:', err);
-        this.panchangReady = false;
-      }
-    });
-
-  }
-
-
-
-  downloadTodayPanchang() {
-    if (!this.panchangReady || this.panchangAction) return;
-    this.panchangAction = 'download';
-    setTimeout(async () => {
-      try { await this.downloadPanchangAsImage('download'); }
-      finally { this.panchangAction = null; }
-    }, 500);
-  }
-
-
-
-  // ✅ ADD THIS METHOD
-  private waitForDomRender(): Promise<void> {
-    return new Promise(resolve => {
-      // Give Angular time to render the innerHTML binding
-      setTimeout(() => resolve(), 100);
+      error: () => { this.commentsLoading = false; }
     });
   }
 
+  async submitComment() {
+    const text = this.newCommentText.trim();
+    if (!text || !this.activeCommentFeedID) return;
 
-
-
-  private waitForImagesToLoad(): Promise<void> {
-    const el = this.panchangCapture?.nativeElement;
-    if (!el) return Promise.resolve();
-    const imgs = Array.from(el.querySelectorAll('img'));
-    if (!imgs.length) return Promise.resolve();
-
-    return Promise.all(
-      imgs.map((img: any) =>
-        img.complete
-          ? Promise.resolve()
-          : new Promise<void>(resolve => {
-            img.onload = () => resolve();
-            img.onerror = () => resolve(); // don't block on a broken image
-          })
-      )
-    ).then(() => undefined);
-  }
-
-
-
-  async downloadPanchangAsImage(mode: 'view' | 'share' | 'download' = 'download') {
-    try {
-      const CAPTURE_WIDTH = 1100;
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.left = '-9999px';
-      iframe.style.top = '0';
-      iframe.style.width = `${CAPTURE_WIDTH}px`;
-      iframe.style.height = '1000px';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentDocument || iframe.contentWindow!.document;
-      doc.open();
-      doc.write(this.panchangHtmlRaw);
-      doc.close();
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const sheetEl = doc.querySelector('.sheet') as HTMLElement;
-      const actualHeight = sheetEl ? sheetEl.getBoundingClientRect().height + 24 : doc.body.scrollHeight;
-      iframe.style.height = `${actualHeight}px`;
-
-      const canvas = await html2canvas(doc.body, {
-        scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: true,
-        width: CAPTURE_WIDTH, height: actualHeight,
-        windowWidth: CAPTURE_WIDTH, windowHeight: actualHeight,
-      });
-
-      document.body.removeChild(iframe);
-
-      const dataUrl = canvas.toDataURL('image/png');
-      await this.saveFile(dataUrl, 'panchang.png', 'image/png', mode);
-    } catch (err) {
-      console.error('downloadPanchangAsImage failed:', err);
-      this.showToast('❌', 'इमेज बनाने में त्रुटि');
-    }
-  }
-
-
-
-  // Converts an asset path into a base64 data URI
-  private async toDataUrl(assetPath: string): Promise<string> {
-    const blob = await this.http.get(assetPath, { responseType: 'blob' }).toPromise();
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob as Blob);
-    });
-  }
-
-  async downloadPanchangAsPdf() {
-    try {
-      const canvas = await this.captureCanvas();
-      const imgData = canvas.toDataURL('image/png');
-
-      // ✅ LANDSCAPE: swap width/height for landscape orientation
-      const isLandscape = true; // or: canvas.width > canvas.height;
-
-      const pdf = new jsPDF({
-        orientation: 'landscape',  // ← CHANGED from 'portrait'
-        unit: 'px',
-        format: isLandscape ? [canvas.height, canvas.width] : [canvas.width, canvas.height]
-        // For landscape: height becomes width, width becomes height
-      });
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
-
-      const pdfDataUrl = pdf.output('datauristring');
-      await this.saveFile(pdfDataUrl, 'panchang.pdf', 'application/pdf');
-    } catch (err) {
-      console.error('downloadPanchangAsPdf failed:', err);
-      this.showToast('❌', 'PDF बनाने में त्रुटि');
-    }
-  }
-
-  // ✅ KEY FIX: Render panchangHtml in an off-screen iframe, then capture
-
-
-  private async captureCanvas(): Promise<HTMLCanvasElement> {
-    // Find the element that actually contains the rendered panchang HTML
-    // Add id="panchangContent" to your [innerHTML] div in the template
-    const el = document.getElementById('panchangContent') as HTMLElement;
-
-    if (!el) {
-      throw new Error('Panchang content element not found. Ensure #panchangContent exists on [innerHTML] container.');
-    }
-
-    // Ensure element has dimensions
-    if (el.offsetWidth === 0 || el.offsetHeight === 0) {
-      throw new Error('Panchang element has zero dimensions');
-    }
-
-    return html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,  // Allow tainted canvas for local images
-      backgroundColor: '#ffffff',
-      logging: true,
-      width: el.scrollWidth,
-      height: el.scrollHeight,
-      x: 0,
-      y: 0,
-      scrollX: 0,
-      scrollY: 0,
-    });
-  }
-
-
-
-  // Build the same HTML string that you inject via innerHTML
-
-  private async buildPanchangHtmlString(): Promise<string> {
-    const templateHtml = await firstValueFrom(
-      this.http.get('assets/panchang/index.html', { responseType: 'text' })
-    );
-    if (!templateHtml) return '';
-
-
-
-
-
-    // ✅ FIX: Use stored data instead of re-fetching API
-    const list = this.panchangList;
-
-    if (!list || list.length === 0) {
-      console.error('[panchang] No panchang data available. Call loadDailyDynamicPanchang first.');
-      return '';
-    }
-
-    console.log('[panchang] buildPanchangHtmlString using', list.length, 'items');
-
-    // Convert images to base64
-    const [logoBase64, hanumanBase64] = await Promise.all([
-      this.toDataUrl('assets/panchang/images/logo.jpeg').catch(() => ''),
-      this.toDataUrl('assets/panchang/images/hanuman.png').catch(() => '')
-    ]);
-
-    const doc = new DOMParser().parseFromString(templateHtml, 'text/html');
-
-    // Build value map
-    const valueMap = new Map<string, string[]>();
-    list.forEach((item: any) => {
-      const section = (item.SectionHeading || '').trim();
-      const key = (item.Key1 || '').trim();
-      const k = `${section}|${key}`;
-      const v = item.Value1 != null ? String(item.Value1).trim() : '';
-
-      console.log('[panchang] Mapping:', k, '=>', v || '(empty)');
-
-      if (!valueMap.has(k)) valueMap.set(k, []);
-      if (v) valueMap.get(k)!.push(v);
-    });
-
-    const first = list[0];
-    if (first) {
-      const dateEl = doc.getElementById('panchang-date');
-      const locEl = doc.getElementById('panchang-location');
-      if (dateEl && first.PanchangDate) {
-        dateEl.textContent = new Date(first.PanchangDate).toLocaleDateString('hi-IN', {
-          day: '2-digit', month: 'long', year: 'numeric'
-        });
-      }
-      if (locEl) locEl.textContent = first.Location || '';
-    }
-
-    // Fill data-key elements
-    doc.querySelectorAll<HTMLElement>('[data-key]').forEach(el => {
-      const section = (el.getAttribute('data-section') || '').trim();
-      const key = (el.getAttribute('data-key') || '').trim();
-      const lookupKey = `${section}|${key}`;
-      const values = valueMap.get(lookupKey);
-
-      console.log('[panchang] Looking up:', lookupKey, '=> found:', values);
-
-      el.textContent = values && values.length ? values.join(', ') : '—';
-    });
-
-    // Replace image src with base64
-    doc.querySelectorAll<HTMLImageElement>('img').forEach(img => {
-      const src = img.getAttribute('src') || '';
-      if (src.includes('logo.jpeg')) {
-        img.setAttribute('src', logoBase64 || 'assets/panchang/images/logo.jpeg');
-      } else if (src.includes('hanuman.png')) {
-        img.setAttribute('src', hanumanBase64 || 'assets/panchang/images/hanuman.png');
-      }
-    });
-
-    return `<!DOCTYPE html><html>${doc.documentElement.innerHTML}</html>`;
-  }
-
-  // Same as working certificate code
-  private waitForIframeImages(iframe: HTMLIFrameElement): Promise<void> {
-    return new Promise((resolve) => {
-      const doc = iframe.contentDocument;
-      if (!doc) { resolve(); return; }
-
-      const images = Array.from(doc.images);
-      if (images.length === 0) {
-        setTimeout(resolve, 50);
-        return;
-      }
-
-      let loaded = 0;
-      const done = () => {
-        loaded++;
-        if (loaded === images.length) resolve();
-      };
-
-      images.forEach(img => {
-        if (img.complete) {
-          done();
-        } else {
-          img.addEventListener('load', done);
-          img.addEventListener('error', done);
-        }
-      });
-
-      setTimeout(resolve, 3000); // safety net
-    });
-  }
-
-
-
-
-  private async saveFile(dataUrl: string, fileName: string, mimeType: string, mode: 'view' | 'share' | 'download' = 'download') {
-    try {
-      if (Capacitor.isNativePlatform()) {
-        const base64Data = dataUrl.split(',')[1];
-        const writeResult = await Filesystem.writeFile({
-          path: fileName, data: base64Data, directory: Directory.Cache
-        });
-
-        if (mode === 'share') {
-          await Share.share({ title: 'Panchang', url: writeResult.uri, dialogTitle: 'पंचांग साझा करें' });
-        } else if (mode === 'view') {
-          await FileOpener.open({ filePath: writeResult.uri, contentType: mimeType });
-        } else {
-          try {
-            await FileOpener.open({ filePath: writeResult.uri, contentType: mimeType });
-            this.showToast('✅', 'पंचांग सेव हो गया');
-          } catch (openErr) {
-            console.warn('FileOpener failed, falling back to Share:', openErr);
-            await Share.share({ title: 'Panchang', url: writeResult.uri, dialogTitle: 'Save or share Panchang' });
-          }
-        }
-      } else {
-        if (mode === 'view') {
-          window.open(dataUrl, '_blank');
-        } else if (mode === 'share' && (navigator as any).share) {
-          const blob = await (await fetch(dataUrl)).blob();
-          const file = new File([blob], fileName, { type: mimeType });
-          try {
-            await (navigator as any).share({ files: [file], title: 'Panchang' });
-          } catch {
-            const a = document.createElement('a'); a.href = dataUrl; a.download = fileName; a.click();
-          }
-        } else {
-          const a = document.createElement('a'); a.href = dataUrl; a.download = fileName; a.click();
-        }
-      }
-    } catch (err) {
-      console.error('saveFile failed:', err);
-      this.showToast('❌', 'फ़ाइल सेव नहीं हुई');
-    }
-  }
-
-
-  panchangAction: 'view' | 'share' | 'download' | null = null;
-
-  async viewTodayPanchang() {
-    if (!this.panchangReady || this.panchangAction) return;
-    this.panchangAction = 'view';
-    try { await this.downloadPanchangAsImage('view'); }
-    finally { this.panchangAction = null; }
-  }
-
-  async shareTodayPanchang() {
-    if (!this.panchangReady || this.panchangAction) return;
-    this.panchangAction = 'share';
-    try { await this.downloadPanchangAsImage('share'); }
-    finally { this.panchangAction = null; }
-  }
-
-
-  private panchangKeyOrder: Map<string, number> = new Map();
-
-  private loadPanchangMasterOrder(): Promise<void> {
-    return new Promise((resolve) => {
-      this.apinu.postUrlData(
-        `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='Panchang'`)}`,
-        null
-      ).subscribe({
-        next: (res: any) => {
-          const list = typeof res.MasterDataList === 'string'
-            ? JSON.parse(res.MasterDataList)
-            : res.MasterDataList;
-
-          // Mirrors admin-panchang-insert.component.ts's loadMasterData exactly,
-          // so this order can never drift from insert-time order.
-          const sections = list.filter((m: any) => !m.ParentItemID);
-          const keysAll = list.filter((m: any) => !!m.ParentItemID);
-
-          let idx = 0;
-          sections.forEach((s: any) => {
-            keysAll
-              .filter((k: any) => k.ParentItemID === s.MasterDataID)
-              .forEach((k: any) => {
-                this.panchangKeyOrder.set(`${s.Identifier}|${k.Identifier}`, idx++);
-              });
-          });
-
-          resolve();
-        },
-        error: () => resolve() // don't block rendering if this call fails
-      });
-    });
-  }
-
-
-  // ── Open form — reset Feed model ──────────────────────
-  openFeedForm() {
     const userID = this.userDetails?.UserID;
     if (!userID) {
       this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
-      this.routerCtrl.navigateForward('/login');
+
+
+      return;
+    }
+
+    this.isSubmittingComment = true;
+    const feedComment = {
+      FeedID: this.activeCommentFeedID,
+      UserID: userID,
+      Comment: text,
+      IsDeleted: false,
+      DateAdded: new Date(),
+      DateModified: new Date()
+    };
+
+    this.apinu.postUrlData('FeedCommentInsert', feedComment).subscribe({
+      next: (res: any) => {
+        this.isSubmittingComment = false;
+        this.newCommentText = '';
+        // Prepend locally so it shows instantly without a re-fetch
+        this.commentsList.unshift({
+          FeedCommentID: res.FeedCommentID,
+          FeedID: this.activeCommentFeedID,
+          UserID: userID,
+          UserName: this.userDetails?.Name || 'आप',
+          Comment: text,
+          DateAdded: new Date().toISOString()
+        });
+        // Bump the count on the underlying feed item too
+        const item = this.findFeedItemById(this.activeCommentFeedID!);
+        if (item) item.commentCount = (item.commentCount ?? 0) + 1;
+      },
+      error: () => {
+        this.isSubmittingComment = false;
+        this.showToast('❌', 'कमेंट पोस्ट नहीं हुआ, पुनः प्रयास करें');
+      }
+    });
+  }
+
+  // ── Feed / Post (create form) ──────────────────────────
+  showFeedForm = false;
+  isSubmittingFeed = false;
+
+  Feed = {
+    FeedID: -1,
+    TenantID: '' as any,
+    UserID: '' as any,
+    Title: '',
+    Description: '',
+    MediaType: '',
+    PostType: '',
+    MediaURL: '',
+    ThumbnailURL: '',
+    Duration: 0,
+    DisplayOrder: 1,
+    PublishDate: new Date(),
+    IsActive: true,
+    IsDeleted: true,
+    IsAdminPost: true,
+    DateAdded: new Date(),
+    DateModified: new Date(),
+    UpdatedByUser: '',
+    SourceTable: 'Feed',
+    SourceID: 0,
+    UserName: '',
+    UserPhoto: '',
+    FeedCategory: 'Feed',
+    Location: '',
+    Amount: 0,
+    IsAutoGenerated: true,
+  };
+
+  feedMediaFile: File | null = null;
+  feedMediaPreview: string | null = null;
+  feedMediaKind: 'image' | 'video' | null = null;
+  isUploadingFeedMedia = false;
+
+  // ── Open form — reset Feed model ──────────────────────
+  async openFeedForm() {
+
+
+    const isAdmin = await this.storage.get('adminloggedin') == 'true';
+    const userID = isAdmin ? 0 : this.userDetails?.UserID;
+
+    if (!userID && !isAdmin) {
+      this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
+
+
       return;
     }
 
@@ -1563,7 +1442,7 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
       PublishDate: new Date(),
       IsActive: true,
       IsDeleted: false,
-      IsAdminPost: false,
+      IsAdminPost: isAdmin ? true : false,
       DateAdded: new Date(),
       DateModified: new Date(),
       UpdatedByUser: String(userID),
@@ -1584,18 +1463,45 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
   }
 
   // ── Media select — detect image vs video from file.type ──
+  // onFeedMediaSelected(event: any) {
+  //   const file: File = event.target.files[0];
+  //   if (!file) return;
+
+  //   this.feedMediaKind = file.type.startsWith('video/') ? 'video' : 'image';
+  //   this.feedMediaFile = file;
+  //   this.Feed.MediaURL = '';
+  //   this.Feed.MediaType = this.feedMediaKind === 'video' ? 'Video' : 'Image';
+
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = (e: any) => this.feedMediaPreview = e.target.result;
+  //   this.uploadFeedMedia();
+  // }
+
   onFeedMediaSelected(event: any) {
+
     const file: File = event.target.files[0];
     if (!file) return;
 
-    this.feedMediaKind = file.type.startsWith('video/') ? 'video' : 'image';
     this.feedMediaFile = file;
-    this.Feed.MediaURL = '';       // clear any previously-uploaded filename
-    this.Feed.MediaType = this.feedMediaKind === 'video' ? 'Video' : 'Image';
+
+    this.feedMediaKind = file.type.startsWith('video')
+      ? 'video'
+      : 'image';
 
     const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+
+      this.feedMediaPreview = e.target.result;
+
+      // Upload immediately
+      this.uploadFeedMedia();
+
+    };
+
     reader.readAsDataURL(file);
-    reader.onload = (e: any) => this.feedMediaPreview = e.target.result;
+
   }
 
   removeFeedMedia() {
@@ -1606,12 +1512,10 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     this.Feed.MediaType = '';
   }
 
-  // ── Upload (same api.uploadImage pattern as photos/audio) ─
+  // ── Upload — same api.uploadImage pattern as photos/audio ─
   uploadFeedMedia() {
     if (!this.feedMediaFile) return;
     this.isUploadingFeedMedia = true;
-
-    const purpose = this.feedMediaKind === 'video' ? 'FeedVideo' : 'FeedPhoto';
 
     this.api.uploadImage([this.feedMediaFile], 'feed', 'feed', 'feed').subscribe({
       next: (res: any) => {
@@ -1653,4 +1557,142 @@ export class OpenCommunityPageComponent implements OnInit, AfterViewInit, OnDest
     });
   }
 
+  // async sharePanchangImage(group: FeedDateGroup) {
+  //   if (!group.panchangImage) return;
+  //   try {
+  //     const blob = await (await fetch(group.panchangImage)).blob();
+  //     const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
+
+  //     if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+  //       await (navigator as any).share({ files: [file], title: 'आज का पंचांग' });
+  //     } else if ((navigator as any).share) {
+  //       await (navigator as any).share({ title: 'आज का पंचांग', url: group.panchangImage });
+  //     } else {
+  //       const a = document.createElement('a');
+  //       a.href = group.panchangImage;
+  //       a.download = `panchang-${group.dateKey}.png`;
+  //       a.click();
+  //     }
+  //   } catch (e) {
+  //     console.error('sharePanchangImage failed:', e);
+  //     this.showToast('❌', 'शेयर नहीं हुआ');
+  //   }
+  // }
+
+  // ── Mangal Aarti (21-sec sequence) ─────────────────────
+  aartiPhase: 'idle' | 'running' | 'blessed' = 'idle';
+  currentAartiStepData: AartiStep = { icon: '🪔', label: 'मंगल आरती', sub: '' };
+  aartiProgress = 0;
+  private aartiTimers: any[] = [];
+  private aartiSeqInterval: any;
+  blessingCountdown = 60;
+  private blessingCDInterval: any;
+  MangalMudraPoints: number = 0;
+  isGlowing = false;
+  bellRinging = false;
+
+  private bellAudio: HTMLAudioElement | null = null;
+  private shankhAudio: HTMLAudioElement | null = null;
+  private aartiBhajan: HTMLAudioElement | null = null;
+
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private particles: any[] = [];
+  private animationId = 0;
+  private flowersAutoStopTimer: any;
+
+  miniToastVisible = false;
+  miniToastMessage = '';
+  private miniToastTimer: any;
+
+  chromeHidden = false;
+
+  // ── Collapse toggle for hero + aarti block ─────────────
+  mandirSectionCollapsed = false;
+  toggleMandirSection() {
+    this.mandirSectionCollapsed = !this.mandirSectionCollapsed;
+  }
+
+  private readonly aartiSequence: Array<{ time: number; step: AartiStep; action: string }> = [
+    { time: 0, action: 'bell', step: { icon: '🔔', label: 'घंटी', sub: 'मंदिर घंटी बजाएं' } },
+    { time: 2000, action: 'shankh', step: { icon: '🐚', label: 'शंख नाद', sub: 'शंख ध्वनि' } },
+    { time: 4000, action: 'bhajan', step: { icon: '🚩', label: 'हनुमान जी दर्शन', sub: 'ॐ श्री हनुमते नमः' } },
+    { time: 6000, action: 'flowers', step: { icon: '🪔', label: 'मंगल आरती', sub: 'मंगल भवन अमंगल हारी,', sub2: 'द्रवहु सो दसरथ अजर बिहारी॥' } },
+    { time: 15000, action: 'petals', step: { icon: '🌺', label: 'पुष्प अर्पण', sub: 'भक्ति से पुष्प चढ़ाए' } },
+    { time: 18000, action: 'jai', step: { icon: '🙏', label: 'जय श्री राम', sub: 'जय बजरंग बली 🚩' } },
+    { time: 33000, action: 'stop_bhajan', step: { icon: '✨', label: 'आशीर्वाद', sub: 'तुम्हारी भक्ति स्वीकार हुई' } },
+    { time: 34000, action: 'complete', step: { icon: '✨', label: '', sub: '' } },
+  ];
+
+
+
+  shareFeed(item: FeedItem, shareType: string = 'WhatsApp') {
+    const userID = this.userDetails?.UserID || 0;
+    const feedShare = { FeedID: item.FeedID, UserID: userID, ShareType: shareType, SharedOn: new Date() };
+    this.apinu.postUrlData('FeedShareInsert', feedShare).subscribe({
+      next: () => { item.shareCount = (item.shareCount ?? 0) + 1; },
+      error: () => { /* silent — share UI already happened via native share sheet */ }
+    });
+
+    const shareUrl = `https://app.mangalbhav.com/feed/${item.FeedID}`;
+
+    Share.share({
+      title: item.Title,
+      text: item.Title,
+      url: shareUrl,
+      dialogTitle: 'शेयर करें'
+    }).catch((err) => {
+      console.error('Native share failed:', err);
+      // fallback for browser/PWA context
+      if ((navigator as any).share) {
+        (navigator as any).share({ title: item.Title, url: shareUrl }).catch(() => { });
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(item.Title + ' ' + shareUrl)}`, '_blank');
+      }
+    });
+  }
+
+
+
+  async sharePanchangImage(group: FeedDateGroup) {
+    if (!group.panchangImage) return;
+
+    try {
+      if (Capacitor.isNativePlatform()) {
+        // Strip the "data:image/png;base64," prefix — Filesystem wants raw base64
+        const base64Data = group.panchangImage.split(',')[1];
+        const fileName = `panchang-${group.dateKey}.png`;
+
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache
+        });
+
+        await Share.share({
+          title: 'आज का पंचांग',
+          url: savedFile.uri,
+          dialogTitle: 'पंचांग शेयर करें'
+        });
+      } else {
+        // Web/PWA fallback — your existing logic
+        const blob = await (await fetch(group.panchangImage)).blob();
+        const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
+
+        if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+          await (navigator as any).share({ files: [file], title: 'आज का पंचांग' });
+        } else if ((navigator as any).share) {
+          await (navigator as any).share({ title: 'आज का पंचांग', url: group.panchangImage });
+        } else {
+          const a = document.createElement('a');
+          a.href = group.panchangImage;
+          a.download = `panchang-${group.dateKey}.png`;
+          a.click();
+        }
+      }
+    } catch (e) {
+      console.error('sharePanchangImage failed:', e);
+      this.showToast('❌', 'शेयर नहीं हुआ');
+    }
+  }
 }

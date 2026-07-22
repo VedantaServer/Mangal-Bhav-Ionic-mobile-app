@@ -109,7 +109,8 @@
     <!-- ===== SECTION LABEL ===== -->
     <div class="section-label">{{ t.mySeva }}</div>
 
-    <!-- ===== DASHBOARD GRID ===== -->
+
+
     <div class="dashboard-grid">
       <div class="dash-card" (click)="openPage('panditservice')">
         <div class="dash-icon">🕉️</div>
@@ -120,29 +121,41 @@
         <div class="dash-icon">📜</div>
         <span>{{ t.bookings }}</span>
       </div>
+
       <div class="dash-card" (click)="openPage('user-profile')">
         <div class="dash-icon">👤</div>
         <span>{{ t.profile }}</span>
       </div>
+
+      <div class="dash-card" (click)="openPage('allchats')">
+        <div class="dash-icon">💬</div>
+        <span>{{ t.chatSupport }}</span>
+      </div>
+
+      <div class="dash-card" (click)="openPage('mangalmart')">
+        <div class="dash-icon">🛍️</div>
+        <span>{{ t.mangalMart }}</span>
+      </div>
     </div>
+
 
     <!-- ===== SECTION LABEL ===== -->
     <div class="section-label">{{ t.bookedSeva }}</div>
 
     <!-- ===== SUMMARY ROW ===== -->
     <div class="dashboard-grid">
-
-
       <div class="dash-card" (click)="openPage('booking')">
         <div class="dash-icon">📅</div>
         <span>{{ t.myBookings }}</span>
       </div>
 
-
-
+      <div class="dash-card" (click)="openPage('allchats')">
+        <div class="dash-icon">🙏</div>
+        <span>{{ t.askPanditJi }}</span>
+      </div>
     </div>
 
-    <div class="referral-strip" *ngIf="referralCode" >
+    <div class="referral-strip" *ngIf="referralCode">
       <div class="referral-strip-left">
         <span class="referral-strip-icon">🎟️</span>
         <div class="referral-strip-text">
@@ -195,8 +208,8 @@
         </button>
 
         <button class="social-btn linkedin" (click)="followOn('linkedin')">
-          <img src="assets/linkdin.webp" class="social-icon" />
-          <span>LinkedIn</span>
+          <img src="assets/youtube.jpg" class="social-icon" />
+          <span>Youtube</span>
         </button>
 
       </div>

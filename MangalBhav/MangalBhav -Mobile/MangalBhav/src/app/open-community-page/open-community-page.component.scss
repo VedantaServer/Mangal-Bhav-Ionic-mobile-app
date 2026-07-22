@@ -19,7 +19,7 @@ ion-content { --background: var(--page-bg); }
 
 // ── Section Shared ─────────────────────────────────────
 .section {
-  padding: 16px 14px 4px;
+  padding:  4px;
   background: var(--page-bg);
   & + .section { border-top: 1px solid var(--border); }
 }
@@ -56,7 +56,7 @@ ion-content { --background: var(--page-bg); }
 .hanuman-img {
     width: 100%;
     max-width: 100%;
-    height: auto;
+    height: 70vh;
     display: block;
     transition: filter 0.4s ease;
 }
@@ -146,29 +146,6 @@ ion-content { --background: var(--page-bg); }
 
 .mantra-text    { color: var(--gold);  font-size: 16px; letter-spacing: 2px; font-family: 'Noto Sans Devanagari', serif; }
 .mantra-meaning { color: var(--amber); font-size: 10px; margin-top: 3px; letter-spacing: 0.5px; }
-
-// ── Regular Toast ──────────────────────────────────────
-.seva-toast {
-  position: absolute;
-  bottom: 60px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(26,8,0,0.92);
-  border: 1px solid var(--saffron);
-  border-radius: 30px;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  opacity: 0;
-  z-index: 20;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
-
-  &.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast-icon { font-size: 18px; }
-  .toast-text { color: var(--gold); font-size: 13px; font-weight: 600; }
-}
 
 // ── Mini Toast (आरती रोकी गई — no background, tiny) ──
 .mini-toast {
@@ -420,7 +397,7 @@ ion-content { --background: var(--page-bg); }
   background: linear-gradient(135deg, #8B1A00 0%, #5c1000 100%);
   border: 1.5px solid var(--saffron);
   border-radius: 18px;
-  padding: 14px 18px;
+  padding: 8px 18px;
   cursor: pointer;
   outline: none;
   transition: transform 0.15s, box-shadow 0.2s;
@@ -1129,7 +1106,7 @@ ion-content { --background: var(--page-bg); }
 .fm-sheet {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  max-height: 90vh;
+  height: 100vh;
   background: var(--card-bg);
   border-top: 2px solid var(--saffron);
   border-radius: 20px 20px 0 0;
@@ -1338,7 +1315,7 @@ ion-content { --background: var(--page-bg); }
 .fm-sheet {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  max-height: 90vh;
+  height: 100vh;
   background: #FFF8F0;                          // ← warm white
   border-top: 2px solid #FF8C00;
   border-radius: 20px 20px 0 0;
@@ -1776,4 +1753,875 @@ ion-content { --background: var(--page-bg); }
       &:disabled { opacity: 0.6; }
     }
   }
+}
+
+// ── Append to open-community-page.component.scss ──
+
+.feed-reels-wrap {
+  padding: 12px 12px 0;
+}
+
+.feed-date-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 4px 12px;
+
+  .fdh-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .fdh-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7a4a1a;
+    white-space: nowrap;
+  }
+}
+
+.reel-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 13;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #111;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+
+.reel-media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  background: #000; // fills the empty letterbox space, looks cleaner than white/transparent
+}
+
+.reel-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+}
+
+
+.reel-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 14px 16px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.35) 60%, transparent 100%);
+  color: #fff;
+}
+
+.reel-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.reel-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ff9933;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.reel-username {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reel-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.reel-desc {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+
+.reel-location {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+// ── Panchang card (inline image, no download/share UI) ──
+.panchang-card {
+  background: #fff;
+  aspect-ratio: unset;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.panchang-img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.panchang-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: #7a4a1a;
+  font-size: 13px;
+}
+
+.feed-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: #999;
+  font-size: 14px;
+}
+
+// ══════════════════════════════════════════════════════
+// COMMENTS SHEET — Instagram-style bottom sheet
+// ══════════════════════════════════════════════════════
+
+.comment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background 0.25s ease;
+  display: flex;
+  align-items: flex-end;
+
+  &.visible {
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+
+    .comment-sheet {
+      transform: translateY(0);
+    }
+  }
+}
+
+.comment-sheet {
+  width: 100%;
+  max-height: 75vh;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.comment-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d0d0d5;
+  margin: 10px auto 4px;
+  flex-shrink: 0;
+}
+
+.comment-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid #efefef;
+  flex-shrink: 0;
+}
+
+.comment-sheet-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment-sheet-close {
+  position: absolute;
+  right: 12px;
+  top: 4px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #8e8e8e;
+  padding: 8px;
+  line-height: 1;
+}
+
+.comment-sheet-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 16px 0;
+}
+
+.comments-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.comments-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: #8e8e8e;
+  font-size: 14px;
+
+  .comments-empty-icon {
+    font-size: 28px;
+  }
+}
+
+.comment-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  align-items: flex-start;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a56, #ff6a88);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-line {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #262626;
+  word-break: break-word;
+}
+
+.comment-username {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.comment-text {
+  color: #262626;
+}
+
+.comment-meta {
+  font-size: 11px;
+  color: #8e8e8e;
+  margin-top: 3px;
+}
+
+.comment-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-top: 1px solid #efefef;
+  flex-shrink: 0;
+  background: #fff;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
+.comment-input-avatar {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #8e8e8e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.comment-input-field {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: #f0f0f0;
+  border-radius: 18px;
+  padding: 9px 14px;
+  font-size: 13.5px;
+  color: #262626;
+
+  &::placeholder {
+    color: #8e8e8e;
+  }
+}
+
+.comment-send-btn {
+  border: none;
+  background: none;
+  color: #c9c9c9;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 6px 4px;
+  transition: color 0.15s ease;
+
+  &.active {
+    color: #ff6a00;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ENGAGEMENT BAR — like / comment / share / views
+// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// RIGHT-SIDE ACTION RAIL — Instagram / Snap / Reels style
+// ══════════════════════════════════════════════════════
+
+.reel-actions-rail {
+  position: absolute;
+  right: 10px;
+  bottom: 90px;         // sits above the caption block; tweak to match reel-overlay height
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  z-index: 5;
+}
+
+.rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  padding: 0;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.rail-icon {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  transition: transform 0.15s ease;
+
+  &.liked {
+    animation: rail-like-pop 0.3s ease;
+  }
+}
+
+@keyframes rail-like-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.rail-count {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.rail-views {
+  margin-top: 2px;
+  opacity: 0.9;
+
+  .rail-icon {
+    font-size: 20px;
+  }
+}
+
+.panchang-card {
+  width: 100%;
+  height: auto;
+  aspect-ratio: unset;       // ← override whatever fixed aspect-ratio .reel-card uses
+  padding: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.panchang-img {
+  width: 100%;
+  height: auto;               // ← let it grow to its natural (tall) height instead of being cropped
+  object-fit: contain;
+  display: block;
+}
+
+.panchang-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 14px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: #ff6a00;
+  color: #fff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 600;
+
+  ion-icon { font-size: 16px; }
+}
+
+
+.reel-actions-rail {
+  position: absolute;
+  right: 10px;
+  bottom: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 5;
+}
+
+.rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+
+  &:disabled { opacity: 0.6; }
+}
+
+.rail-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 24px;
+    color: #fff;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+
+    &.liked {
+      color: #ff3040;
+    }
+  }
+
+  &.small {
+    width: 34px;
+    height: 34px;
+    background: rgba(0, 0, 0, 0.25);
+
+    ion-icon { font-size: 18px; }
+  }
+}
+
+.rail-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+
+
+.seva-toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 9999999999999999999999;              // above everything — overlays, bottom tabs, all of it
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  &.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.toast-icon {
+  font-size: 16px;
+}
+
+.mandir-section-outer {
+  position: relative;
+}
+
+.mandir-collapse-inner {
+  overflow: hidden;
+  max-height: 900px;
+  opacity: 1;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+
+  &.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.mandir-toggle-btn {
+  position: relative;
+  display: block;
+  margin: -5px auto 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(30, 15, 5, 0.9);
+  border: 1px solid rgba(255, 180, 80, 0.4);
+  color: #ffb84d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 5;
+}
+
+.mangal-actions{
+  display:flex;
+  align-items:stretch;
+  gap:10px;
+}
+
+.mangal-aarti-btn{
+  flex:1;
+}
+
+.mandir-mini-btn{
+  width:92px;
+  border:none;
+  border-radius:16px;
+  background:#fff7e8;
+  color:#c96d00;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:600;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.mandir-mini-btn ion-icon{
+  font-size:24px;
+}
+
+.feed-media-card{
+  margin-bottom:22px;
+}
+
+.feed-media-picker{
+
+  width:100%;
+  height:220px;
+
+  border:2px dashed #d6d6d6;
+  border-radius:18px;
+
+  overflow:hidden;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:#fafafa;
+
+  cursor:pointer;
+
+  position:relative;
+}
+
+.feed-preview{
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+}
+
+.feed-placeholder{
+
+  text-align:center;
+
+  color:#999;
+
+  padding:20px;
+}
+
+.feed-placeholder ion-icon{
+
+  font-size:56px;
+
+  color:#ff8a00;
+
+  margin-bottom:10px;
+}
+
+.feed-placeholder-title{
+
+  font-size:17px;
+
+  font-weight:600;
+}
+
+.feed-placeholder-sub{
+
+  margin-top:6px;
+
+  font-size:13px;
+
+  color:#777;
+}
+
+.feed-actions{
+
+  margin-top:14px;
+
+  display:flex;
+
+  gap:12px;
+}
+
+.feed-upload-btn{
+
+  flex:1;
+
+  height:46px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#ff8a00;
+
+  color:#fff;
+
+  font-weight:600;
+}
+
+.feed-remove-btn{
+
+  width:120px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#efefef;
+
+  color:#444;
+}
+
+.feed-uploading{
+
+  position:absolute;
+
+  inset:0;
+
+  background:rgba(0,0,0,.55);
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  color:#fff;
+
+  gap:12px;
+
+  font-weight:600;
+
+  z-index:10;
+}
+
+
+.insta-post {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  padding-bottom: 10px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.ip-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.ip-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a56, #ff6a88);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ip-header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ip-username { font-size: 13.5px; font-weight: 700; color: #262626; }
+.ip-location { font-size: 11px; color: #8e8e8e; }
+
+.ip-media-wrap {
+  width: 100%;
+  max-height: 500px;      // cap so a very tall image doesn't take over the feed
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ip-media {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;    // no cropping; height follows the image's own ratio, capped at 500px
+  display: block;
+}
+
+.ip-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 12px 4px;
+}
+
+.ip-action-btn {
+  background: none;
+  border: none;
+  padding: 0;
+
+  ion-icon {
+    font-size: 25px;
+    color: #262626;
+
+    &.liked { color: #ff3040; }
+  }
+
+  &:disabled { opacity: 0.6; }
+}
+
+.ip-views {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #8e8e8e;
+  font-size: 12.5px;
+
+  ion-icon { font-size: 18px; }
+}
+
+.ip-like-count {
+  padding: 2px 12px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #262626;
+}
+
+.ip-caption {
+  padding: 4px 12px 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #262626;
+}
+
+.ip-caption-user { font-weight: 700; margin-right: 6px; }
+.ip-caption-title { font-weight: 500; }
+
+.ip-caption-desc {
+  padding: 2px 12px 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.ip-comment-link {
+  padding: 4px 12px 12px;
+  font-size: 12.5px;
+  color: #8e8e8e;
+  cursor: pointer;
+}
+
+.ip-media-wrap {
+  width: 100%;
+  height: 320px;          // fixed — same for every card
+  background: #000;
+  overflow: hidden;
+}
+
+.ip-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
 }

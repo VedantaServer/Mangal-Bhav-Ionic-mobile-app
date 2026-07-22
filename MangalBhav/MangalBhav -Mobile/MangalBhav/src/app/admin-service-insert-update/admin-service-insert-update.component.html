@@ -134,11 +134,21 @@
 
         </div>
 
-        <button class="edit-btn" (click)="editCategory(item)">
+        <div class="action-buttons">
+          <button class="edit-btn" (click)="editCategory(item)">
+            Edit
+          </button>
+
+          <button class="delete-btn" (click)="deleteCategory(item)">
+            Delete
+          </button>
+        </div>
+
+        <!-- <button class="edit-btn" (click)="editCategory(item)">
 
           Edit
 
-        </button>
+        </button> -->
 
       </div>
 
@@ -176,7 +186,7 @@
 
     <div class="list-card">
 
-      <div class="list-item" *ngFor="let item of poojaServiceList">
+      <!-- <div class="list-item" *ngFor="let item of poojaServiceList">
 
         <div>
 
@@ -195,6 +205,46 @@
           Edit
 
         </button>
+
+      </div> -->
+
+      <!-- SERVICE list — inside *ngFor="let item of poojaServiceList" -->
+      <div class="list-item" *ngFor="let item of poojaServiceList">
+
+        <div>
+          <div class="item-title">{{item.Name}}</div>
+          <div class="item-subtitle">{{item.DurationMinutes}} mins</div>
+        </div>
+
+        <!-- Hidden file input, one per row -->
+        <input #serviceImgInput type="file" accept="image/*" style="display:none"
+          (change)="onServiceImageFileSelected($event, item)" />
+
+        <!-- <button class="edit-btn" (click)="triggerServiceImageUpload(item, serviceImgInput)"
+          [disabled]="uploadingServiceImageID === item.ServiceID">
+          {{ uploadingServiceImageID === item.ServiceID ? 'Uploading...' : 'Upload Photo' }}
+        </button>
+
+        <button class="edit-btn" (click)="editService(item)">
+          Edit
+        </button> -->
+
+        <div class="action-buttons">
+
+          <button class="edit-btn" (click)="triggerServiceImageUpload(item, serviceImgInput)"
+            [disabled]="uploadingServiceImageID === item.ServiceID">
+            {{ uploadingServiceImageID === item.ServiceID ? 'Uploading...' : 'Upload Photo' }}
+          </button>
+
+          <button class="edit-btn" (click)="editService(item)">
+            Edit
+          </button>
+
+          <button class="delete-btn" (click)="deleteService(item)">
+            Delete
+          </button>
+
+        </div>
 
       </div>
 
@@ -253,11 +303,21 @@
 
         </div>
 
-        <button class="edit-btn" (click)="editMapping(item)">
+        <div class="action-buttons">
+          <button class="edit-btn" (click)="editMapping(item)">
+            Edit
+          </button>
+
+          <button class="delete-btn" (click)="deleteMapping(item)">
+            Delete
+          </button>
+        </div>
+
+        <!-- <button class="edit-btn" (click)="editMapping(item)">
 
           Edit
 
-        </button>
+        </button> -->
 
       </div>
 

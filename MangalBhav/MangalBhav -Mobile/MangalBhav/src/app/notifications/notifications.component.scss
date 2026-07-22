@@ -300,3 +300,39 @@ $default-color:  #455A64;
   letter-spacing: 4px;
   padding: 28px 0 12px;
 }
+
+.notif-card {
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+
+  &:active {
+    transform: scale(.98);
+  }
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff7a1a, #ff9a3d);
+  position: relative;
+
+  .clear-all-btn {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s ease, transform 0.1s ease;
+
+    &:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.35);
+    }
+  }
+}

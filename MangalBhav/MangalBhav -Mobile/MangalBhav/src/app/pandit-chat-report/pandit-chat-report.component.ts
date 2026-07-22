@@ -15,38 +15,41 @@ export class PanditChatReportComponent implements OnInit {
 
   activeTab: 'daily' | 'unanswered' = 'daily';
 
-  // ── Step 1: Pandit search ──
+  // ── Step 1: Pandit list (recent-active by default, or search) ──
   panditSearchText: string = '';
   panditList: any[] = [];
   selectedPandit: any = null;
   loadingPandits = false;
 
-  // ── Step 2: Day conversations ──
-  chatDate: string = new Date().toISOString().slice(0, 10);
-  conversations: any[] = [];
-  loadingConversations = false;
+  // ── Step 2: Yajman list for selected pandit — ALL yajman ever, paginated ──
+  yajmanList: any[] = [];
+  yajmanPage = 1;
+  yajmanPageSize = 20;
+  yajmanTotalCount = 0;
+  yajmanHasMore = true;
+  loadingYajman = false;
 
-  // ── Step 3: Transcript drill-down ──
+  // ── Step 3: Full transcript with selected yajman — paginated, newest page first ──
   selectedBhakt: any = null;
   transcript: any[] = [];
+  transcriptPage = 1;
+  transcriptPageSize = 50;
+  transcriptTotalCount = 0;
+  transcriptHasMore = true;
   loadingTranscript = false;
 
-  // ── Unanswered report (separate tab) ──
-  unansweredFromDate: string = '';
-  unansweredToDate: string = '';
+  // ── Unanswered report — all-time by default, paginated ──
   unansweredList: any[] = [];
+  unansweredPage = 1;
+  unansweredPageSize = 20;
+  unansweredTotalCount = 0;
+  unansweredHasMore = true;
   loadingUnanswered = false;
 
-  constructor(private apinu: ApiNU,public routerCtrl: NavController,) { }
+  constructor(private apinu: ApiNU, public routerCtrl: NavController) { }
 
   ngOnInit() {
-    const today = new Date();
-    const weekAgo = new Date();
-    weekAgo.setDate(today.getDate() - 7);
-    this.unansweredToDate = today.toISOString().slice(0, 10);
-    this.unansweredFromDate = weekAgo.toISOString().slice(0, 10);
-
-    this.searchPandits();
+    this.searchPandits(); // no search text -> SP returns last-7-days active pandits
   }
 
   switchTab(tab: 'daily' | 'unanswered') {
@@ -77,52 +80,100 @@ export class PanditChatReportComponent implements OnInit {
     this.selectedPandit = pandit;
     this.selectedBhakt = null;
     this.transcript = [];
-    this.loadConversations();
+    this.resetYajmanList();
   }
 
   backToPanditList() {
     this.selectedPandit = null;
-    this.conversations = [];
     this.selectedBhakt = null;
     this.transcript = [];
+    this.yajmanList = [];
   }
 
-  // ── Step 2 ──
-  loadConversations() {
-    if (!this.selectedPandit) return;
-    this.loadingConversations = true;
-    this.conversations = [];
+  // ── Step 2: Yajman list, paginated by count (not by date) ──
+
+  resetYajmanList() {
+    this.yajmanList = [];
+    this.yajmanPage = 1;
+    this.yajmanTotalCount = 0;
+    this.yajmanHasMore = true;
+    this.loadNextYajmanPage();
+  }
+
+  loadNextYajmanPage(event?: any) {
+    if (!this.selectedPandit || !this.yajmanHasMore) {
+      event?.target?.complete();
+      return;
+    }
+    if (!event) this.loadingYajman = true;
+
     this.apinu.postUrlData(
-      `PanditDailyConversationsSelect?PanditUserID=${this.selectedPandit.UserID}&ChatDate=${this.chatDate}`,
+      `PanditYajmanListSelect?PanditUserID=${this.selectedPandit.UserID}&PageNumber=${this.yajmanPage}&PageSize=${this.yajmanPageSize}`,
       null
     ).subscribe({
       next: (res: any) => {
-        this.conversations = res || [];
-        this.loadingConversations = false;
+        const page = (typeof res === 'string' ? JSON.parse(res) : res) || [];
+        this.yajmanList = [...this.yajmanList, ...page];
+        this.yajmanTotalCount = page[0]?.TotalYajmanCount ?? this.yajmanTotalCount;
+        this.yajmanPage++;
+        this.yajmanHasMore = this.yajmanList.length < this.yajmanTotalCount;
+
+        this.loadingYajman = false;
+        event?.target?.complete();
+
+        if (!event) {
+          setTimeout(() => this.fillScreenIfNeeded(
+            () => this.yajmanHasMore,
+            () => this.loadNextYajmanPage()
+          ), 50);
+        }
       },
       error: () => {
-        this.conversations = [];
-        this.loadingConversations = false;
+        this.loadingYajman = false;
+        event?.target?.complete();
       }
     });
   }
 
-  // ── Step 3 ──
+  // ── Step 3: Full transcript with a yajman, loads OLDER messages on scroll-up ──
+
   openTranscript(bhakt: any) {
     this.selectedBhakt = bhakt;
-    this.loadingTranscript = true;
     this.transcript = [];
+    this.transcriptPage = 1;
+    this.transcriptTotalCount = 0;
+    this.transcriptHasMore = true;
+    this.loadTranscriptPage();
+  }
+
+  loadTranscriptPage(event?: any) {
+    if (!this.selectedPandit || !this.selectedBhakt || !this.transcriptHasMore) {
+      event?.target?.complete();
+      return;
+    }
+    if (!event) this.loadingTranscript = true;
+
     this.apinu.postUrlData(
-      `PanditBhaktDayTranscriptSelect?PanditUserID=${this.selectedPandit.UserID}&BhaktUserID=${bhakt.BhaktUserID}&ChatDate=${this.chatDate}`,
+      `PanditBhaktFullTranscriptSelect?PanditUserID=${this.selectedPandit.UserID}&BhaktUserID=${this.selectedBhakt.BhaktUserID}&PageNumber=${this.transcriptPage}&PageSize=${this.transcriptPageSize}`,
       null
     ).subscribe({
       next: (res: any) => {
-        this.transcript = (typeof res === 'string' ? JSON.parse(res) : res) || [];
+        const page = (typeof res === 'string' ? JSON.parse(res) : res) || [];
+        this.transcriptTotalCount = page[0]?.TotalMessageCount ?? this.transcriptTotalCount;
+
+        // page comes back newest-first; reverse to oldest-first, then PREPEND (older messages go on top)
+        const ordered = [...page].reverse();
+        this.transcript = [...ordered, ...this.transcript];
+
+        this.transcriptPage++;
+        this.transcriptHasMore = (this.transcriptPage - 1) * this.transcriptPageSize < this.transcriptTotalCount;
+
         this.loadingTranscript = false;
+        event?.target?.complete();
       },
       error: () => {
-        this.transcript = [];
         this.loadingTranscript = false;
+        event?.target?.complete();
       }
     });
   }
@@ -132,25 +183,56 @@ export class PanditChatReportComponent implements OnInit {
     this.transcript = [];
   }
 
-  // ── Unanswered report ──
-  loadUnansweredReport() {
-    this.loadingUnanswered = true;
-    let query = `DateFrom=${this.unansweredFromDate}&DateTo=${this.unansweredToDate}`;
-    if (this.selectedPandit) {
-      query += `&PanditUserID=${this.selectedPandit.UserID}`;
+  // ── Unanswered report: all-time by default, paginated ──
+
+  loadUnansweredReport(event?: any) {
+    if (!this.unansweredHasMore) {
+      event?.target?.complete();
+      return;
     }
-    this.apinu.postUrlData(`UnansweredBhaktMessagesReportSelect?${query}`, null)
-      .subscribe({
-        next: (res: any) => {
-          this.unansweredList = (typeof res === 'string' ? JSON.parse(res) : res) || [];
-          this.loadingUnanswered = false;
-        },
-        error: () => {
-          this.unansweredList = [];
-          this.loadingUnanswered = false;
+    if (!event) this.loadingUnanswered = true;
+
+    // FromDate/ToDate left blank -> SP treats as NULL -> all-time
+    this.apinu.postUrlData(
+      `UnansweredBhaktMessagesReportSelect?PageNumber=${this.unansweredPage}&PageSize=${this.unansweredPageSize}`,
+      null
+    ).subscribe({
+      next: (res: any) => {
+        const page = (typeof res === 'string' ? JSON.parse(res) : res) || [];
+        this.unansweredList = [...this.unansweredList, ...page];
+        this.unansweredTotalCount = page[0]?.TotalUnansweredCount ?? this.unansweredTotalCount;
+        this.unansweredPage++;
+        this.unansweredHasMore = this.unansweredList.length < this.unansweredTotalCount;
+
+        this.loadingUnanswered = false;
+        event?.target?.complete();
+
+        if (!event) {
+          setTimeout(() => this.fillScreenIfNeeded(
+            () => this.unansweredHasMore,
+            () => this.loadUnansweredReport()
+          ), 50);
         }
-      });
+      },
+      error: () => {
+        this.loadingUnanswered = false;
+        event?.target?.complete();
+      }
+    });
   }
+
+  // ── Shared helper: Ionic's infinite scroll never fires if content doesn't
+  // fill the viewport (e.g. only 1-2 rows on first load). This tops it up. ──
+  private fillScreenIfNeeded(hasMoreFn: () => boolean, loadMoreFn: () => void) {
+    const content = document.querySelector('ion-content');
+    if (!content) return;
+    (content as any).getScrollElement().then((el: HTMLElement) => {
+      if (el.scrollHeight <= el.clientHeight && hasMoreFn()) {
+        loadMoreFn();
+      }
+    });
+  }
+
   isMine(role: string): boolean {
     return role === 'PANDIT';
   }

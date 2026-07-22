@@ -339,17 +339,17 @@ export class AdminServiceInsertUpdateComponent implements OnInit {
   editMapping(item: any) {
 
     console.log(item);
-  
+
     this.selectedTab = 'MAPPING';
-  
+
     this.Mapping.MappingID = item.MappingID;
     this.Mapping.CategoryID = item.CategoryID;
     this.Mapping.ServiceID = item.ServiceID;
     this.Mapping.TenantID = item.TenantID;
     this.Mapping.IsActive = item.IsActive;
-  
+
   }
-  
+
 
 
   resetMapping() {
@@ -381,5 +381,113 @@ export class AdminServiceInsertUpdateComponent implements OnInit {
     });
 
   }
+
+
+  // admin-service-insert-update.component.ts
+
+  uploadingServiceImageID: number | null = null;
+  selectedUploadService: any = null;
+
+  getCleanServiceName(name: string): string {
+    return (name || '').split('/')[0].trim().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+  }
+
+  triggerServiceImageUpload(item: any, fileInput: HTMLInputElement) {
+    this.selectedUploadService = item;
+    fileInput.click();
+  }
+
+  onServiceImageFileSelected(event: any, item: any) {
+    const file: File = event.target.files[0];
+    event.target.value = ''; // reset so selecting the same file again still fires change
+    if (!file) return;
+
+    if (!item.Name?.trim()) {
+      alert('This service has no name — cannot derive a filename.');
+      return;
+    }
+
+    const cleanName = this.getCleanServiceName(item.Name);
+    this.uploadingServiceImageID = item.ServiceID;
+
+    this.api.uploadImage(
+      [file],
+      'PoojaPhoto',   // entityType
+      cleanName,      // entityID → becomes the saved filename, e.g. "AntimSanskar.png"
+      'PoojaPhoto'    // filePurpose
+    ).subscribe({
+      next: (res: any) => {
+        this.uploadingServiceImageID = null;
+        if (res?.Status === 'Success') {
+          alert(`Photo saved as ${res.FileName} ✅`);
+        } else {
+          alert('Upload failed ❌');
+        }
+      },
+      error: () => {
+        this.uploadingServiceImageID = null;
+        alert('Upload error ❌');
+      }
+    });
+  }
+
+  deleteService(item: any) {
+
+    if (!confirm(`Delete "${item.Name}"?`)) {
+      return;
+    }
+  
+    this.apinu.postUrlData(
+      `ServicesDelete?serviceID=${item.ServiceID}&tenantID=${item.TenantID}`,
+      null
+    ).subscribe(() => {
+  
+      alert('Service deleted successfully.');
+  
+      this.loadServices();
+  
+    });
+  
+  }
+
+  deleteCategory(item: any) {
+
+    if (!confirm(`Delete "${item.CategoryName}"?`)) {
+      return;
+    }
+  
+    this.apinu.postUrlData(
+      `ServiceCategoryDelete?categoryID=${item.CategoryID}&tenantID=${item.TenantID}`,
+      null
+    ).subscribe(() => {
+  
+      alert('Category deleted successfully.');
+  
+      this.loadCategories();
+  
+    });
+  
+  }
+
+
+  deleteMapping(item: any) {
+
+    if (!confirm('Delete this mapping?')) {
+      return;
+    }
+  
+    this.apinu.postUrlData(
+      `ServiceCategoryMappingDelete?mappingID=${item.MappingID}&tenantID=${item.TenantID}`,
+      null
+    ).subscribe(() => {
+  
+      alert('Mapping deleted successfully.');
+  
+      this.loadMappings();
+  
+    });
+  
+  }
+  
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ElementRef, ViewChild } from '@angular/core';
 import { IonicModule, NavController, Platform } from '@ionic/angular';
@@ -12,10 +12,13 @@ import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { Router } from '@angular/router';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { FormsModule } from '@angular/forms';
 
+import { IonContent } from '@ionic/angular';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { FcmService } from 'src/providers/fcm/fcm';
 
 @Component({
   selector: 'app-tabscommonheader',
@@ -79,12 +82,15 @@ export class TabscommonheaderComponent implements OnInit {
     }
   };
 
+
+  showLogout = false;
+
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
     private plt: Platform,
-    private http: HttpClient,
+    private http: HttpClient, private router: Router, private fcm: FcmService,
     private alertCtrl: AlertController
   ) {
     // this.lblSchoolName = this.api.SchoolName;
@@ -100,11 +106,54 @@ export class TabscommonheaderComponent implements OnInit {
   }
 
 
-  async ngOnInit() {
-    this.userDetails = await this.storage.get("account");
+  ngOnInit() {
+    this.loadData();
 
+    this.checkCurrentRoute();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.checkCurrentRoute();
+      });
+  }
+
+  async loadData() {
+    this.userDetails = await this.storage.get("account");
     this.language = this.userDetails?.Languages;
   }
+
+  checkCurrentRoute() {
+    const url = this.router.url;
+
+    this.showLogout =
+      url.startsWith('/tabs/tab1') ||
+      url.startsWith('/jajmandashboard'); // change if your route name differs
+  }
+  async logout() {
+    await this.storage.clear();
+    this.routerCtrl.navigateForward('/login');
+
+    const deviceId = await this.fcm.getDeviceID();
+
+    this.apinu.postUrlData(`UserDeviceSelectByQuery?Query=DeviceID=${deviceId}`, null)
+      .subscribe(async (res: any) => {
+        console.log(res.UserDeviceList[0]);
+
+        const body = {
+          ...res.UserDeviceList[0],
+          IsActive: Boolean(0),
+          DateModified: new Date()
+        };
+
+        this.apinu.postUrlData(`UserDeviceUpdate`, body)
+          .subscribe(async (res: any) => {
+            await this.storage.clear();
+            this.routerCtrl.navigateForward('/open-community-page');
+          });
+      });
+  }
+
 
 
 
@@ -148,6 +197,14 @@ export class TabscommonheaderComponent implements OnInit {
       this.copied = true;
       setTimeout(() => this.copied = false, 2500);
     });
+  }
+
+
+
+  @Output() logoClicked = new EventEmitter<void>();
+
+  scrollToTop() {
+    this.logoClicked.emit();
   }
 
   // ── Share message (multi-language) ───────────────────────────────

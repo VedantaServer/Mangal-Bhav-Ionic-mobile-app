@@ -89,7 +89,7 @@ namespace FaceUPAI.API
 		/// Deletes a record from the NotificationQueue table by its primary key.
 		/// </summary>
 	[HttpPost]
-	[Authorize]
+	[EnableCors("AllowAll")]
 	[Route("NotificationQueueDelete")]
 		public  IActionResult NotificationQueueDelete(int iD, int tenantID)
 		{
@@ -110,7 +110,7 @@ namespace FaceUPAI.API
 		/// Selects a single record from the NotificationQueue table.
 		/// </summary>
 	[HttpPost]
-	[Authorize]
+	[EnableCors("AllowAll")]
 	[Route("NotificationQueueSelect")]
 		public IActionResult NotificationQueueSelect(int iD,int tenantID)
 		{
@@ -140,7 +140,7 @@ namespace FaceUPAI.API
 		/// Selects a single record from the NotificationQueue table.
 		/// </summary>
 	[HttpPost]
-	[Authorize]
+	[EnableCors("AllowAll")]
 	[Route("NotificationQueueSelectAll")]
 		public IActionResult NotificationQueueSelectAll(int tenantID){
 			return ApiHandler.Handle(() =>

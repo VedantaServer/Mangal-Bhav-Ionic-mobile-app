@@ -267,6 +267,26 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     } catch (_) { }
   }
 
+  // async ngOnInit() {
+  //   if (this.router.url === '/tabs/find-pandit') {
+  //     this.showbottomtab = false;
+  //   }
+
+  //   this.userDetails = await this.storage.get('account');
+  //   this.userLoggedIn = !!this.userDetails?.LoginID;
+  //   this.language = await this.storage.get('Language');
+
+  //   if (this.checkPanditDeepLink()) return;
+
+  //   localStorage.removeItem('findPanditThroghtFloating');
+  //   this.locationState = 'idle';
+  //   this.query = `1=1 ORDER BY U.UserID DESC`;
+  //   this.pageNumber = 1;
+  //   this.panditList = [];
+  //   this.loadPanditProfiles(this.query);
+  // }
+
+
   async ngOnInit() {
     if (this.router.url === '/tabs/find-pandit') {
       this.showbottomtab = false;
@@ -283,8 +303,26 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     this.query = `1=1 ORDER BY U.UserID DESC`;
     this.pageNumber = 1;
     this.panditList = [];
+    this.loadAllAvailableCities();   // ← NEW: global, independent of pagination
     this.loadPanditProfiles(this.query);
   }
+
+  // ── NEW ──
+  loadAllAvailableCities() {
+    this.apinu.postUrlData('LocationDistinctCitiesSelect', null)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+          this.availableCities = (parsed || [])
+            .map((r: any) => r.City)
+            .filter((c: string) => !!c);
+          this.cdr.markForCheck();
+        },
+        error: () => { /* chip row just stays empty on failure */ }
+      });
+  }
+
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -357,7 +395,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
               }
 
               this._completeInfiniteScroll(result.length < this.pageSize);
-              this._extractCities();
+
             },
             error: () => {
               this.isLoading = false;
@@ -382,10 +420,35 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+
   filterByCity(city: string) {
     this.selectedCity = (this.selectedCity === city) ? '' : city;
+    this.pageNumber = 1;
+    this.panditList = [];
+    this.infiniteScrollEvent = null;
+
+    if (!this.selectedCity) {
+      this.serverSideSearchActive = false;
+      this.query = (this.currentLat && this.currentLng)
+        ? this._distanceOrderBy(this.currentLat, this.currentLng)
+        : `1=1 ORDER BY U.UserID DESC`;
+    } else {
+      const safeCity = this._sanitizeSql(this.selectedCity);
+      this.serverSideSearchActive = true;
+      this.query = `
+    U.UserID IN (
+      SELECT PS.ProfileID FROM PanditServices PS
+      INNER JOIN Locations L ON L.LocationID = PS.LocationID
+      WHERE LTRIM(RTRIM(L.City)) COLLATE Latin1_General_CI_AI 
+            LIKE '${safeCity}%' COLLATE Latin1_General_CI_AI
+    )
+    ORDER BY U.UserID DESC`;
+    }
+
+    this.loadPanditProfiles(this.query);
     this.cdr.markForCheck();
   }
+
 
   private _completeInfiniteScroll(disable: boolean) {
     if (!this.infiniteScrollEvent) return;
@@ -458,6 +521,54 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────
   // SEARCH
   // ─────────────────────────────────────────────────────────────────────────
+  // onSearchChange(value: string) {
+  //   clearTimeout(this.searchTimeout);
+  //   const q = value?.trim();
+
+  //   if (!q) {
+  //     this.serverSideSearchActive = false;
+  //     this.pageNumber = 1;
+  //     this.panditList = [];
+  //     this.query = (this.currentLat && this.currentLng)
+  //       ? this._distanceOrderBy(this.currentLat, this.currentLng)
+  //       : `1=1 ORDER BY U.UserID DESC`;
+  //     this.loadPanditProfiles(this.query);
+  //     return;
+  //   }
+
+  //   if (q.length < 3) return;
+
+  //   this.searchTimeout = setTimeout(() => {
+  //     this.pageNumber = 1;
+  //     this.panditList = [];
+
+  //     if (/^MBP-/i.test(q)) {
+  //       if (!/^MBP-\d{4}-\d{4}$/i.test(q)) return;
+
+  //       this.apinu.postUrlData(
+  //         `UserReferralCodeSelectByQuery?Query= ReferralCode = '${this._sanitizeSql(q)}' AND IsActive = 1`, null
+  //       ).pipe(takeUntil(this.destroy$))
+  //         .subscribe({
+  //           next: (res: any) => {
+  //             const uid = Number(res?.UserReferralCodeList?.[0]?.UserID);
+  //             if (uid && !isNaN(uid)) {
+  //               this.serverSideSearchActive = true;
+  //               this.query = `U.UserID = ${uid} ORDER BY U.UserID DESC`;
+  //               this.loadPanditProfiles(this.query);
+  //               return;
+  //             }
+  //             this._doTextSearch(q);
+  //           },
+  //           error: () => this._doTextSearch(q)
+  //         });
+  //       return;
+  //     }
+
+  //     this._doTextSearch(q);
+  //   }, 500);
+  // }
+
+
   onSearchChange(value: string) {
     clearTimeout(this.searchTimeout);
     const q = value?.trim();
@@ -478,6 +589,12 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     this.searchTimeout = setTimeout(() => {
       this.pageNumber = 1;
       this.panditList = [];
+
+      // ── NEW: exact pincode match takes priority ──
+      if (/^\d{6}$/.test(q)) {
+        this._doPincodeSearch(q);
+        return;
+      }
 
       if (/^MBP-/i.test(q)) {
         if (!/^MBP-\d{4}-\d{4}$/i.test(q)) return;
@@ -505,6 +622,25 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
+  // ── NEW: exact pincode search ──
+  private _doPincodeSearch(pincode: string) {
+    this.serverSideSearchActive = true;
+
+    const orderBy = (this.currentLat && this.currentLng)
+      ? `ORDER BY ${this._haversineExpr(this.currentLat, this.currentLng)} ASC`
+      : `ORDER BY U.UserID DESC`;
+
+    this.query = `
+      U.UserID IN (
+        SELECT PS.ProfileID FROM PanditServices PS
+        INNER JOIN Locations L ON L.LocationID = PS.LocationID
+        WHERE L.Pincode = '${pincode}'
+      ) ${orderBy}`;
+
+    this.loadPanditProfiles(this.query);
+  }
+
+
   private _doTextSearch(q: string) {
     this.serverSideSearchActive = false;
     const safe = this._sanitizeSql(q);
@@ -519,12 +655,34 @@ export class FindPanditComponent implements OnInit, OnDestroy {
       OR U.UserID IN (
         SELECT PS.ProfileID FROM PanditServices PS
         INNER JOIN Locations L ON L.LocationID = PS.LocationID
-        WHERE L.Name LIKE '%${safe}%' OR L.City LIKE '%${safe}%' OR L.State LIKE '%${safe}%'
+        WHERE L.Name LIKE '%${safe}%' OR L.City LIKE '%${safe}%' OR L.State LIKE '%${safe}%' OR L.Pincode LIKE '%${safe}%'
       )
     ) ${orderBy}`;
 
     this.loadPanditProfiles(this.query);
   }
+
+
+  // private _doTextSearch(q: string) {
+  //   this.serverSideSearchActive = false;
+  //   const safe = this._sanitizeSql(q);
+
+  //   const orderBy = (this.currentLat && this.currentLng)
+  //     ? `ORDER BY ${this._haversineExpr(this.currentLat, this.currentLng)} ASC`
+  //     : `ORDER BY U.UserID DESC`;
+
+  //   this.query = `(
+  //     U.UserID IN (SELECT UserID FROM Profiles WHERE FullName LIKE '%${safe}%')
+  //     OR U.UserID IN (SELECT UserID FROM UserReferralCode WHERE ReferralCode LIKE '%${safe}%')
+  //     OR U.UserID IN (
+  //       SELECT PS.ProfileID FROM PanditServices PS
+  //       INNER JOIN Locations L ON L.LocationID = PS.LocationID
+  //       WHERE L.Name LIKE '%${safe}%' OR L.City LIKE '%${safe}%' OR L.State LIKE '%${safe}%'
+  //     )
+  //   ) ${orderBy}`;
+
+  //   this.loadPanditProfiles(this.query);
+  // }
 
   private _sanitizeSql(input: string): string {
     return input
@@ -558,10 +716,10 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   checkPanditDeepLink(): boolean {
     const raw = this.route.snapshot.queryParamMap.get('pandituserid');
     if (!raw) return false;
-  
+
     const uid = Number(raw);
     if (!uid || isNaN(uid) || uid <= 0 || !Number.isInteger(uid)) return false;
-  
+
     this.router.navigate(['/open-find-pandit', uid], { replaceUrl: true });
     return true;
   }
@@ -579,6 +737,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────────────────────────────────
   // FILTERED LIST
   // ─────────────────────────────────────────────────────────────────────────
+
   get filteredPanditList(): any[] {
     let list = this.panditList;
 
@@ -592,13 +751,14 @@ export class FindPanditComponent implements OnInit, OnDestroy {
           return name.includes(q) || lang.includes(q) || city.includes(q);
         });
       }
-    }
 
-    if (this.selectedCity) {
-      list = list.filter(item =>
-        item.profile?.City === this.selectedCity ||
-        item.profile?.State === this.selectedCity
-      );
+      // Only apply client-side city filter when server hasn't already filtered by it
+      if (this.selectedCity) {
+        list = list.filter(item =>
+          item.profile?.City === this.selectedCity ||
+          item.profile?.State === this.selectedCity
+        );
+      }
     }
 
     return list;
@@ -1122,7 +1282,7 @@ export class FindPanditComponent implements OnInit, OnDestroy {
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/img/default.jpg';
+    img.src = `${this.imgBaseUrl}/default.jpg`;
     img.onerror = null;
   }
 
@@ -1145,13 +1305,15 @@ export class FindPanditComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+
   getServiceImages(serviceName: string): string[] {
     const n = this.getCleanName(serviceName);
-    return [`assets/img/${n}.png`, `assets/img/${n}2.jfif`, `assets/img/${n}3.jfif`];
+    return [`${this.imgBaseUrl}/${n}.png`, `${this.imgBaseUrl}/${n}2.jfif`, `${this.imgBaseUrl}/${n}3.jfif`];
   }
 
   getCurrentImage(serviceName: string): string {
-    if (!serviceName) return 'assets/img/default.jpg';
+    if (!serviceName) return `${this.imgBaseUrl}/default.jpg`;
     const key = this.getCleanName(serviceName);
     if (!(key in this.currentImageIndex)) this.currentImageIndex[key] = 0;
     return this.getServiceImages(serviceName)[this.currentImageIndex[key] || 0];

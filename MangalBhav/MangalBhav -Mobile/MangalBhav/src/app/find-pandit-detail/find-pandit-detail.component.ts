@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, forkJoin, from, map, mergeMap, of, toArray, takeUntil } from 'rxjs';
 import { Capacitor } from '@capacitor/core';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
-
+import { Browser } from '@capacitor/browser';
 @Component({
   selector: 'app-find-pandit-detail',
   templateUrl: './find-pandit-detail.component.html',
@@ -21,7 +21,8 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
   userDetails: any;
   language: any;
   userLoggedIn = false;
-
+  panditFeedList: any[] = [];
+  isLoadingFeed = false;
   panditUserID: number | null = null;
   activePandit: any = null;       // { user, profile }
   activePanditServices: any[] = [];
@@ -49,13 +50,16 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private _cleanNameCache = new Map<string, string>();
+  panditSocialMediaList: any[] = [];
 
   labels = {
     en: {
       back: 'Back',
+      connectSocial: 'Connect with Pandit Ji',
+      linkNotAdded: 'link not added yet',
       panditProfile: '🙏 Pandit Profile',
       memberSince: 'Member since',
-      chat: 'Chat With Pandit Ji',
+      chat: 'Chat',
       experience: 'Experience',
       gender: 'Gender',
       languages: 'Languages',
@@ -111,10 +115,11 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
       back: 'वापस',
       appTitle: 'मंगल.भाव:',
       appSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+      connectSocial: 'पंडित जी से जुड़ें',
 
       panditProfile: '🙏 पंडित प्रोफ़ाइल',
       memberSince: 'सदस्य हैं',
-      chat: 'पंडित जी से संवाद करे',
+      chat: 'संवाद करे',
       experience: 'अनुभव',
       gender: 'लिंग',
       languages: 'भाषाएँ',
@@ -132,6 +137,7 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
       like: 'पसंद',
       liked: 'पसंद किया',
       share: 'साझा करें',
+      linkNotAdded: 'लिंक अभी नहीं जोड़ा गया',
       viewsLabel: 'दृश्य',
       likesLabel: 'पसंद',
       sharesLabel: 'साझा',
@@ -177,7 +183,7 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
     private storage: Storage,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef, private toastController: ToastController
   ) { }
 
   async ngOnInit() {
@@ -257,6 +263,8 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
           this.checkEngagements(this.activePandit);
           this.checkExistingLike(this.activePandit);
           this.fetchServices(this.activePandit);
+          this.loadSocialMediaForPandit(uid);
+          this.loadPanditFeed(uid);
         },
         error: () => {
           this.loadError = true;
@@ -624,9 +632,39 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
     return result;
   }
 
+
+  getServiceImagePath(serviceName: string): string {
+    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
+    return `${this.imgBaseUrl}/${englishName}.png`;
+  }
+
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+
   getServiceImages(serviceName: string): string[] {
     const n = this.getCleanName(serviceName);
     return [`assets/img/${n}.png`, `assets/img/${n}2.jfif`, `assets/img/${n}3.jfif`];
+  }
+
+  get socialLinksWithUrl(): any[] {
+    return (this.panditSocialMediaList || [])
+      .map(item => ({ ...item, Link: this.normalizeUrl(item.Link) }))
+      .filter(item => !!item.Link);
+  }
+
+  private normalizeUrl(link: string | null | undefined): string | null {
+    if (!link?.trim()) return null;
+    let candidate = link.trim();
+    if (!/^https?:\/\//i.test(candidate)) {
+      candidate = 'https://' + candidate;
+    }
+    try {
+      const url = new URL(candidate);
+      // require at least one dot in hostname to filter out garbage like "https://panditrajesh"
+      if (!url.hostname.includes('.')) return null;
+      return url.toString();
+    } catch {
+      return null;
+    }
   }
 
   getCurrentImage(serviceName: string): string {
@@ -638,4 +676,116 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
 
   openLightbox(url: string) { this.lightboxImageUrl = url; this.cdr.markForCheck(); }
   closeLightbox() { this.lightboxImageUrl = null; this.cdr.markForCheck(); }
+  private loadSocialMediaForPandit(panditUserID: number) {
+    this.apinu.postUrlData(
+      `EntitySocialMediaSelectByQuery?Query=EntityType='USER' and EntityID = ${panditUserID}`,
+      null
+    ).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.panditSocialMediaList = (res.EntitySocialMediaList || [])
+            .filter((item: any) => item.IsActive)
+            .map((item: any) => ({
+              ...item,
+              IconName:
+                item.Platform === 'Instagram' || item.Platform === 'WelcomeReel' ? 'logo-instagram' :
+                  item.Platform === 'Facebook' ? 'logo-facebook' :
+                    item.Platform === 'YouTube' ? 'logo-youtube' :
+                      item.Platform === 'WhatsApp' ? 'logo-whatsapp' :
+                        item.Platform === 'LinkedIn' ? 'logo-linkedin' :
+                          item.Platform === 'Twitter' ? 'logo-twitter' :
+                            item.Platform === 'Website' ? 'globe-outline' :
+                              'share-social-outline'
+            }));
+          this.cdr.markForCheck();
+        },
+        error: () => { /* silently ignore — non-critical */ }
+      });
+  }
+
+
+  async openSocialLink(item: any) {
+    if (!item.Link) {
+      const toast = await this.toastController.create({
+        message: `${item.Platform} ${this.t.linkNotAdded}`,
+        duration: 2500,
+        color: 'warning',
+        position: 'top'
+      });
+      toast.present();
+      return;
+    }
+    Browser.open({ url: item.Link });
+  }
+
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // FEED POSTS BY THIS PANDIT
+  // ─────────────────────────────────────────────────────────────────────────
+  private loadPanditFeed(uid: number) {
+    this.isLoadingFeed = true;
+    const query = `UserID=${uid} AND IsActive=1 AND IsDeleted=0`;
+
+    this.apinu.postUrlData(`FeedSelectByQuery?Query=${encodeURIComponent(query)}`, null)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+          const list = (parsed?.FeedList || [])
+            .sort((a: any, b: any) => new Date(b.DateAdded).getTime() - new Date(a.DateAdded).getTime());
+
+          this.panditFeedList = list;
+          this.isLoadingFeed = false;
+          this.cdr.markForCheck();
+          this.loadFeedEngagementCounts();
+        },
+        error: () => {
+          this.panditFeedList = [];
+          this.isLoadingFeed = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private loadFeedEngagementCounts() {
+    this.panditFeedList.forEach((item: any) => {
+      this.apinu.postUrlData(
+        `FeedEngagementCount_Select?FeedID=${item.FeedID}&UserID=${this.userDetails?.UserID || 0}`, null
+      ).pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res: any) => {
+            const parsed = typeof res === 'string' ? JSON.parse(res) : res;
+            const row = Array.isArray(parsed) ? parsed[0] : parsed;
+            if (!row) return;
+            item.likeCount = row.LikeCount ?? 0;
+            item.commentCount = row.CommentCount ?? 0;
+            item.shareCount = row.ShareCount ?? 0;
+            item.viewCount = row.ViewCount ?? 0;
+            this.cdr.markForCheck();
+          },
+          error: () => { /* leave counts undefined; template shows 0 */ }
+        });
+    });
+  }
+
+  hasFeedMedia(item: any): boolean {
+    return !!item.MediaURL && item.MediaURL.trim() !== '' && item.MediaURL !== 'null';
+  }
+
+  private getFeedMediaFolder(item: any): string {
+    switch ((item.SourceTable || '').trim()) {
+      case 'Mandir': return 'ProfilePhoto';
+      case 'Profile': return 'ProfilePhoto';
+      case 'Service': return 'img';
+      case 'Booking': return 'img';
+      case 'Feed': return 'feed';
+      default: return 'feed';
+    }
+  }
+
+  getFeedMediaPath(item: any): string {
+    const folder = this.getFeedMediaFolder(item);
+    return `https://app.mangalbhav.com/assets/${folder}/${item.MediaURL}`;
+  }
+
 }

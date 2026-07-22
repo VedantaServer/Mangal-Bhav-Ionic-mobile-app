@@ -11,7 +11,17 @@
   overflow: visible;
   background: transparent;
 }
+.community-plus{
+  font-size:34px;
+  color:white;
+}
 
+.community-plus {
+    font-size: 38px !important;
+    color: #ff8c00 !important;
+    display: block;
+    z-index: 9999;
+}
 
 .mb-curve-svg {
   position: absolute;

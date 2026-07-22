@@ -8,8 +8,9 @@ import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
-
+import { filter, Subscription } from 'rxjs';
+import { CommunityService } from '../services/community';
+import { OnDestroy, ElementRef, ViewChild } from '@angular/core';
 @Component({
   selector: 'app-panditjibottomtabs',
   templateUrl: './panditjibottomtabs.component.html',
@@ -20,18 +21,22 @@ import { filter } from 'rxjs';
 export class PanditjibottomtabsComponent implements OnInit {
   userDetails: any;
   profilePhotoUrl: string = 'assets/user.png';
-
+  isLoggedIn = false;
+  adminloggedin: boolean = false;
+  @ViewChild('navWrapper', { static: true }) navWrapperRef!: ElementRef<HTMLElement>;
   navWidth = 390;
   currentUrl = '';
   currentPath = '';
   private fromPath = '';
   private animFrame: any;
+  private loginTriggeredBy: 'pooja' | 'profile' = 'profile';
 
   private readonly TAB_COUNT = 5;
   private readonly BUMP_W = 79;
   private readonly H = 70;
   private readonly DIP_H = 81;
-
+  private routerSub?: Subscription;
+  private resizeObserver?: ResizeObserver;
   constructor(
     private alertCtrl: AlertController,
     private storage: Storage,
@@ -42,45 +47,66 @@ export class PanditjibottomtabsComponent implements OnInit {
     private common: CommonProvider,
     public routerCtrl: NavController,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private communityService: CommunityService
   ) {}
 
-  async ngOnInit() {
-    await this.storage.create();
-    this.userDetails = await this.storage.get('account');
-    this.currentUrl = this.router.url;
-
-    setTimeout(() => {
-      this.navWidth = window.innerWidth;
-      const idx = this.getActiveIndex();
-      this.currentPath = this.buildPath(idx);
-      this.fromPath = this.currentPath;
-      this.animateBump(idx);
-    }, 100);
-
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe(async (e: any) => {
-      this.currentUrl = e.urlAfterRedirects;
-      this.userDetails = await this.storage.get('account');
-      this.navWidth = window.innerWidth;
-      this.animateBump(this.getActiveIndex());
-    });
-
-    if (!this.userDetails?.UserID) return;
-
-    this.apinu.postUrlData(
-      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
-      null
-    ).subscribe((res: any) => {
-      if (res.ProfileList && res.ProfileList.length > 0) {
-        const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
-        if (rawUrl) {
-        //  this.loadProfileImage(rawUrl);
-        }
-      }
-    });
+  communityAction() {
+    if (this.isActive('open-community-page')) {
+      this.communityService.openFeedForm$.next();
+    } else {
+      this.openPage('open-community-page');
+    }
   }
+
+  // async ngOnInit() {
+  //   await this.storage.create();
+  //   this.userDetails = await this.storage.get('account');
+  //   this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
+  //   this.isLoggedIn = !!this.userDetails?.UserID;
+  //   this.currentUrl = this.router.url;
+
+  //   const saved = await this.storage.get('loginTriggeredBy');
+  //   this.loginTriggeredBy = saved || 'profile';
+
+  //   setTimeout(() => {
+  //     this.navWidth = window.innerWidth;
+  //     const idx = this.getActiveIndex();
+  //     this.currentPath = this.buildPath(idx);
+  //     this.fromPath = this.currentPath;
+  //     this.animateBump(idx);
+  //   }, 100);
+
+  //   this.router.events.pipe(
+  //     filter(e => e instanceof NavigationEnd)
+  //   ).subscribe(async (e: any) => {
+  //     this.currentUrl = e.urlAfterRedirects;
+  //     this.userDetails = await this.storage.get('account');
+  //     this.isLoggedIn = !!this.userDetails?.UserID;
+  //     this.navWidth = window.innerWidth;
+
+  //     if (!this.currentUrl.includes('login')) {
+  //       this.loginTriggeredBy = 'profile';
+  //       this.storage.set('loginTriggeredBy', 'profile');
+  //     }
+
+  //     this.animateBump(this.getActiveIndex());
+  //   });
+
+  //   if (!this.userDetails?.UserID) return;
+
+  //   this.apinu.postUrlData(
+  //     `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+  //     null
+  //   ).subscribe((res: any) => {
+  //     if (res.ProfileList && res.ProfileList.length > 0) {
+  //       const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
+  //       if (rawUrl) {
+  //         // this.loadProfileImage(rawUrl);
+  //       }
+  //     }
+  //   });
+  // }
 
   loadProfileImage(imageName: string) {
     this.api.getImage('DownloadImages', {
@@ -112,9 +138,47 @@ export class PanditjibottomtabsComponent implements OnInit {
     this.routerCtrl.navigateForward(`/open-find-pandit`);
   }
 
+  openPooja() {
+    if (this.isLoggedIn || this.adminloggedin) {
+      this.routerCtrl.navigateForward('/tabs/tab3');
+    } else {
+      this.routerCtrl.navigateForward('/login?from=pooja');
+    }
+  }
+
+  openProfile() {
+    if (!this.isLoggedIn) {
+      this.storage.set('openLoginSection', 'true');
+      this.routerCtrl.navigateForward('/login?from=profile');
+      return;
+    }
+    this.routerCtrl.navigateForward('/tabs/tab1');
+  }
+
+  isPoojaActive(): boolean {
+    if (this.currentUrl.includes('loggedin-home')) return true;
+    if (this.currentUrl.includes('login') && this.currentUrl.includes('from=pooja')) return true;
+    return false;
+  }
+
+  isProfileActive(): boolean {
+    if (this.currentUrl.includes('jajmandashboard')) return true;
+    if (this.currentUrl.includes('login') && this.currentUrl.includes('from=profile')) return true;
+    return false;
+  }
+
+  openAdminDashboard() {
+    this.router.navigateByUrl('/admindashboard');
+  }
+
+  isAdminDashboardActive(): boolean {
+    return this.router.url.startsWith('/admindashboard');
+  }
+
   private getActiveIndex(): number {
     const url = this.currentUrl || '';
-    if (url.includes('tab3') || url.includes('loggedin-home')) return 0;
+    if (url.includes('loggedin-home')) return 0;
+    if (url.includes('login') && url.includes('from=pooja')) return 0;
     if (url.includes('openfindmandir')) return 1;
     if (url.includes('open-community-page')) return 2;
     if (url.includes('find-pandit') || url.includes('open-find-pandit')) return 3;
@@ -172,4 +236,94 @@ export class PanditjibottomtabsComponent implements OnInit {
     };
     requestAnimationFrame(frame);
   }
+
+
+  async ngOnInit() {
+    await this.storage.create();
+    this.userDetails = await this.storage.get('account');
+    this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
+    this.isLoggedIn = !!this.userDetails?.UserID;
+    this.currentUrl = this.router.url;
+
+    const saved = await this.storage.get('loginTriggeredBy');
+    this.loginTriggeredBy = saved || 'profile';
+
+    this.recalcBumpWhenReady();
+    this.setupResizeObserver();
+
+    this.routerSub = this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe(async (e: any) => {
+      this.currentUrl = e.urlAfterRedirects;
+      this.userDetails = await this.storage.get('account');
+      this.isLoggedIn = !!this.userDetails?.UserID;
+
+      if (!this.currentUrl.includes('login')) {
+        this.loginTriggeredBy = 'profile';
+        this.storage.set('loginTriggeredBy', 'profile');
+      }
+
+      this.recalcBumpWhenReady();
+    });
+
+    if (!this.userDetails?.UserID) return;
+
+    this.apinu.postUrlData(
+      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.ProfileList && res.ProfileList.length > 0) {
+        const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
+        if (rawUrl) {
+          // this.loadProfileImage(rawUrl);
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.routerSub?.unsubscribe();
+    this.resizeObserver?.disconnect();
+    cancelAnimationFrame(this.animFrame);
+  }
+
+  /** Watches the nav bar's OWN rendered width directly, so any page-specific
+   * layout timing quirk (async content loading, scrollbar appearing/disappearing,
+   * fonts loading late, non-tab top-level routes rendering differently) self-corrects
+   * immediately instead of requiring a click to "wake up" the calculation. */
+  private setupResizeObserver() {
+    if (!this.navWrapperRef?.nativeElement || typeof ResizeObserver === 'undefined') return;
+
+    this.resizeObserver = new ResizeObserver(entries => {
+      const width = entries[0]?.contentRect?.width;
+      if (!width || Math.round(width) === Math.round(this.navWidth)) return;
+
+      this.navWidth = width;
+      const idx = this.getActiveIndex();
+      // Snap (no animation) — a resize-driven correction shouldn't visibly "slide"
+      this.currentPath = this.buildPath(idx);
+      this.fromPath = this.currentPath;
+      this.cdr.detectChanges();
+    });
+
+    this.resizeObserver.observe(this.navWrapperRef.nativeElement);
+  }
+
+  private recalcBumpWhenReady() {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.navWidth = window.innerWidth;
+        const idx = this.getActiveIndex();
+        if (!this.fromPath) {
+          this.currentPath = this.buildPath(idx);
+          this.fromPath = this.currentPath;
+        } else {
+          this.animateBump(idx);
+        }
+        this.cdr.detectChanges();
+      });
+    });
+  }
+
+
 }

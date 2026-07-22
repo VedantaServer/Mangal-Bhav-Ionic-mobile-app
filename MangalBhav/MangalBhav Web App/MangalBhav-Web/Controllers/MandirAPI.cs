@@ -105,31 +105,37 @@ namespace FaceUPAI.API
 			}, this);
 		}
 
-		/// <summary>
-		/// Deletes a record from the Mandir table by its primary key.
-		/// </summary>
-	[HttpPost]
-		[EnableCors("AllowAll")]
-		[Route("MandirDelete")]
-		public  IActionResult MandirDelete(int tenantID)
-		{
-			return ApiHandler.Handle(() =>
-	{
-			SqlParameter[] parameters = new SqlParameter[]
-			{
-				new SqlParameter("@TenantID", tenantID)
+        /// <summary>
+        /// Deletes a record from the Mandir table by its primary key.
+        /// </summary>
+        [HttpPost]
+        [EnableCors("AllowAll")]
+        [Route("MandirDelete")]
+        public IActionResult MandirDelete(int mandirID, int tenantID)
+        {
+            return ApiHandler.Handle(() =>
+            {
+                SqlParameter[] parameters =
+                {
+            new SqlParameter("@MandirID", mandirID),
+            new SqlParameter("@TenantID", tenantID)
+        };
 
-						};
+                var mandirDeletedID = Convert.ToInt32(
+                    DataAccess.ExecuteScalar(
+                        CommandType.StoredProcedure,
+                        "MandirDelete",
+                        parameters));
 
-			 var mandirDeletedID = Convert.ToInt32(DataAccess.ExecuteScalar(CommandType.StoredProcedure, "MandirDelete", parameters));
-			return Ok(new {MandirID =mandirDeletedID});
-			}, this);
-		}
+                return Ok(new { MandirID = mandirDeletedID });
 
-		/// <summary>
-		/// Selects a single record from the Mandir table.
-		/// </summary>
-	[HttpPost]
+            }, this);
+        }
+
+        /// <summary>
+        /// Selects a single record from the Mandir table.
+        /// </summary>
+        [HttpPost]
 		[EnableCors("AllowAll")]
 		[Route("MandirSelect")]
 		public IActionResult MandirSelect(int mandirID,int tenantID)

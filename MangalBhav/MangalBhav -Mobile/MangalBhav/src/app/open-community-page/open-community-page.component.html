@@ -1,201 +1,100 @@
-<!-- WAS: <app-tabscommonheader></app-tabscommonheader> -->
-<app-tabscommonheader [style.display]="chromeHidden ? 'none' : ''"></app-tabscommonheader>
+<app-tabscommonheader (logoClicked)="scrollToTop()"></app-tabscommonheader>
 
-<ion-content #pageContent [scrollEvents]="true">
+<ion-content #pageContent [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
 
-  <!-- ═══ DIVINE HERO SECTION ═══ -->
-  <div class="hero-wrapper" id="mandirHero">
 
-    <div class="hanuman-container" [class.glowing]="isGlowing">
+  <div class="mandir-section-outer">
+    <div class="mandir-collapse-inner" [class.collapsed]="mandirSectionCollapsed">
 
-      <!-- ── Family Mandir photo (approved) ── -->
-      <img *ngIf="familyActiveMandir && currentFamilyMandirPhoto" [src]="currentFamilyMandirPhoto"
-        class="hanuman-img mandir-hero-img" />
+      <div class="hero-wrapper" id="mandirHero">
+        <div class="hanuman-container" [class.glowing]="isGlowing">
 
-      <!-- ── Default Hanumanji ── -->
-      <img *ngIf="!familyActiveMandir || !currentFamilyMandirPhoto" src="assets/hanumanji.png" class="hanuman-img" />
+          <img *ngIf="familyActiveMandir && currentFamilyMandirPhoto" [src]="currentFamilyMandirPhoto"
+            class="hanuman-img mandir-hero-img" />
+          <img *ngIf="!familyActiveMandir || !currentFamilyMandirPhoto" src="assets/hanumanji.png"
+            class="hanuman-img" />
 
-      <div class="divine-aura" [class.active]="isGlowing"></div>
-      <canvas id="flowerCanvas" class="flower-canvas"></canvas>
+          <div class="divine-aura" [class.active]="isGlowing"></div>
+          <canvas id="flowerCanvas" class="flower-canvas"></canvas>
 
-      <!-- ── Mandir info overlay (shown when family mandir active) ── -->
-      <div class="mandir-info-overlay" *ngIf="familyActiveMandir">
-        <div class="mio-badge">🛕 मेरा मंदिर</div>
-        <div class="mio-name">{{ familyActiveMandir.MandirName }}</div>
-        <div class="mio-god">🪷 {{ familyActiveMandir.GodName }}</div>
-        <!-- Slideshow dots -->
-        <div class="mio-dots" *ngIf="familyMandirPhotoCount > 1">
-          <span class="mio-dot" [class.active]="familyMandirSlideIndex === 0" *ngIf="familyMandirPhotoUrl"></span>
-          <span class="mio-dot" [class.active]="familyMandirSlideIndex === 1" *ngIf="familyMandirPhoto2Url"></span>
-          <span class="mio-dot" [class.active]="familyMandirSlideIndex === 2" *ngIf="familyMandirPhoto3Url"></span>
+          <div class="mandir-info-overlay" *ngIf="familyActiveMandir">
+            <div class="mio-badge">🛕 मेरा मंदिर</div>
+            <div class="mio-name">{{ familyActiveMandir.MandirName }}</div>
+            <div class="mio-god">🪷 {{ familyActiveMandir.GodName }}</div>
+            <div class="mio-dots" *ngIf="familyMandirPhotoCount > 1">
+              <span class="mio-dot" [class.active]="familyMandirSlideIndex === 0" *ngIf="familyMandirPhotoUrl"></span>
+              <span class="mio-dot" [class.active]="familyMandirSlideIndex === 1" *ngIf="familyMandirPhoto2Url"></span>
+              <span class="mio-dot" [class.active]="familyMandirSlideIndex === 2" *ngIf="familyMandirPhoto3Url"></span>
+            </div>
+          </div>
         </div>
+
+        <div class="mini-toast" [class.show]="miniToastVisible">{{ miniToastMessage }}</div>
+      </div>
+
+      <!-- ═══ MANGAL AARTI BAR ═══ -->
+      <div class="mangal-aarti-bar">
+
+        <div class="mangal-actions" *ngIf="aartiPhase === 'idle'">
+
+          <button class="mangal-aarti-btn" (click)="startMangalAarti()">
+            <span class="mab-diya">🪔</span>
+            <div class="mab-center">
+              <span class="mab-title">मंगल आरती करें</span>
+              <span class="mab-sub">Perform Mangal Aarti</span>
+            </div>
+            <div class="mudra-mini">🪙 {{ MangalMudraPoints | number }} मंगल मुद्रा</div>
+          </button>
+
+          <!-- <button class="mandir-mini-btn" *ngIf="!familyActiveMandir" (click)="openFamilyMandirForm()">
+
+            <ion-icon name="business-outline"></ion-icon>
+            <span>मंदिर जोड़ें</span>
+          </button> -->
+
+        </div>
+
+
+
+        <div class="aarti-running-card" *ngIf="aartiPhase === 'running'">
+          <div class="arc-row">
+            <div class="arc-icon" [class.bell-ring]="bellRinging">{{ currentAartiStepData.icon }}</div>
+            <div class="arc-text">
+              <div class="arc-label">{{ currentAartiStepData.label }}</div>
+              <div class="arc-sub" *ngIf="currentAartiStepData.sub">{{ currentAartiStepData.sub }}</div>
+              <div class="arc-sub2" *ngIf="currentAartiStepData.sub2">{{ currentAartiStepData.sub2 }}</div>
+            </div>
+            <button class="arc-stop-btn" (click)="stopMangalAarti()">✕</button>
+          </div>
+          <div class="arc-progress-wrap">
+            <div class="arc-progress-bar">
+              <div class="arc-progress-fill" [style.width.%]="aartiProgress"></div>
+            </div>
+            <span class="arc-pct">{{ aartiProgress | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+
+        <div class="aarti-cooldown-card" *ngIf="aartiPhase === 'blessed'">
+          <div class="acc-line1">🚩 तथास्तु। कृपा बनी रहे।</div>
+          <div class="acc-line2">🪙 21 मंगल मुद्रा प्रसाद प्राप्त हुआ।</div>
+          <div class="acc-line3">✨ कुल मंगल मुद्रा: {{ MangalMudraPoints }} 🪙</div>
+          <div class="acc-timer">{{ blessingCountdown }} सेकंड बाद आरती उपलब्ध होगी</div>
+        </div>
+
+        <div class="mudra-mini" *ngIf="!familyActiveMandir" (click)="openFamilyMandirForm()">घर का मंदिर जोड़ें</div>
+        <!-- <div class="mudra-mini">🪙 {{ MangalMudraPoints | number }} मंगल मुद्रा</div> -->
       </div>
 
     </div>
 
-
-    <!-- Mini Toast (aarti stopped — no background, tiny) -->
-    <div class="mini-toast" [class.show]="miniToastVisible">{{ miniToastMessage }}</div>
-
-    <!-- Regular Toast -->
-    <div class="seva-toast" [class.show]="toastVisible">
-      <span class="toast-icon">{{ toastIcon }}</span>
-      <span class="toast-text">{{ toastMessage }}</span>
-    </div>
-
-
-
-  </div>
-
-  <!-- ═══ MANGAL AARTI — Single Centered Button ═══ -->
-  <div class="mangal-aarti-bar">
-
-    <!-- ── IDLE: start button ─────────────────────────── -->
-    <button class="mangal-aarti-btn" *ngIf="aartiPhase === 'idle'" (click)="startMangalAarti()">
-      <span class="mab-diya">🪔</span>
-      <div class="mab-center">
-        <span class="mab-title">मंगल आरती करें</span>
-        <span class="mab-sub">Perform Mangal Aarti</span>
-      </div>
-      <span class="mab-right">🚩</span>
+    <!-- Collapse / expand toggle -->
+    <button class="mandir-toggle-btn" (click)="toggleMandirSection()">
+      <ion-icon [name]="mandirSectionCollapsed ? 'chevron-down-outline' : 'chevron-up-outline'"></ion-icon>
     </button>
-
-    <!-- ── RUNNING: live sequence card ───────────────── -->
-    <div class="aarti-running-card" *ngIf="aartiPhase === 'running'">
-      <div class="arc-row">
-        <div class="arc-icon" [class.bell-ring]="bellRinging">{{ currentAartiStepData.icon }}</div>
-        <div class="arc-text">
-          <div class="arc-label">{{ currentAartiStepData.label }}</div>
-          <div class="arc-sub" *ngIf="currentAartiStepData.sub">{{ currentAartiStepData.sub }}</div>
-          <div class="arc-sub2" *ngIf="currentAartiStepData.sub2">{{ currentAartiStepData.sub2 }}</div>
-        </div>
-        <button class="arc-stop-btn" (click)="stopMangalAarti()">✕</button>
-      </div>
-      <div class="arc-progress-wrap">
-        <div class="arc-progress-bar">
-          <div class="arc-progress-fill" [style.width.%]="aartiProgress"></div>
-        </div>
-        <span class="arc-pct">{{ aartiProgress | number:'1.0-0' }}%</span>
-      </div>
-    </div>
-
-    <!-- ── BLESSED: cooldown card ────────────────────── -->
-    <div class="aarti-cooldown-card" *ngIf="aartiPhase === 'blessed'">
-      <div class="acc-line1">🚩 तथास्तु। कृपा बनी रहे।</div>
-      <div class="acc-line2">🪙 21 मंगल मुद्रा प्रसाद प्राप्त हुआ।</div>
-      <div class="acc-line3">✨ कुल मंगल मुद्रा: {{ MangalMudraPoints }} 🪙</div>
-      <div class="acc-timer">{{ blessingCountdown }} सेकंड बाद आरती उपलब्ध होगी</div>
-    </div>
-
-    <!-- ── Balance pill — always visible, tiny ────────── -->
-    <div class="mudra-mini">🪙 {{ MangalMudraPoints | number }} मंगल मुद्रा</div>
-
   </div>
 
-
-  <!-- ═══ FAMILY MANDIR AARTI PLAYERS ═══ -->
-  <div class="section family-aarti-section"
-    *ngIf="familyActiveMandir && (familyActiveMandir.AartiName1 || familyActiveMandir.AartiName2 || familyActiveMandir.AartiName3)">
-
-    <div class="section-header">
-      <span class="section-title">🎵 {{ familyActiveMandir.MandirName }} आरती</span>
-      <span class="fa-mandir-god">🪷 {{ familyActiveMandir.GodName }}</span>
-    </div>
-
-    <!-- Aarti 1 -->
-    <div class="fa-player-row" *ngIf="familyActiveMandir.AartiName1">
-      <div class="fa-player-icon" [class.fa-spinning]="familyAartiPlayingSlot === 'slot1'">🪔</div>
-      <div class="fa-player-info">
-        <div class="fa-player-name">आरती 1</div>
-        <div class="fa-player-file">{{ familyActiveMandir.AartiName1 }}</div>
-        <!-- progress bar when playing -->
-        <div class="fa-progress-bar" *ngIf="familyAartiPlayingSlot === 'slot1'">
-          <div class="fa-progress-fill fa-anim"></div>
-        </div>
-      </div>
-      <button class="fa-play-btn" [class.fa-playing]="familyAartiPlayingSlot === 'slot1'"
-        [class.fa-loading]="familyAartiLoadingSlot === 'slot1'"
-        (click)="toggleFamilyAarti(familyActiveMandir.AartiName1, 'slot1')">
-        <span *ngIf="familyAartiLoadingSlot === 'slot1'">⏳</span>
-        <span *ngIf="familyAartiLoadingSlot !== 'slot1'">
-          {{ familyAartiPlayingSlot === 'slot1' ? '⏸' : '▶' }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Aarti 2 -->
-    <div class="fa-player-row" *ngIf="familyActiveMandir.AartiName2">
-      <div class="fa-player-icon" [class.fa-spinning]="familyAartiPlayingSlot === 'slot2'">🪔</div>
-      <div class="fa-player-info">
-        <div class="fa-player-name">आरती 2</div>
-        <div class="fa-player-file">{{ familyActiveMandir.AartiName2 }}</div>
-        <div class="fa-progress-bar" *ngIf="familyAartiPlayingSlot === 'slot2'">
-          <div class="fa-progress-fill fa-anim"></div>
-        </div>
-      </div>
-      <button class="fa-play-btn" [class.fa-playing]="familyAartiPlayingSlot === 'slot2'"
-        [class.fa-loading]="familyAartiLoadingSlot === 'slot2'"
-        (click)="toggleFamilyAarti(familyActiveMandir.AartiName2, 'slot2')">
-        <span *ngIf="familyAartiLoadingSlot === 'slot2'">⏳</span>
-        <span *ngIf="familyAartiLoadingSlot !== 'slot2'">
-          {{ familyAartiPlayingSlot === 'slot2' ? '⏸' : '▶' }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Aarti 3 -->
-    <div class="fa-player-row" *ngIf="familyActiveMandir.AartiName3">
-      <div class="fa-player-icon" [class.fa-spinning]="familyAartiPlayingSlot === 'slot3'">🪔</div>
-      <div class="fa-player-info">
-        <div class="fa-player-name">आरती 3</div>
-        <div class="fa-player-file">{{ familyActiveMandir.AartiName3 }}</div>
-        <div class="fa-progress-bar" *ngIf="familyAartiPlayingSlot === 'slot3'">
-          <div class="fa-progress-fill fa-anim"></div>
-        </div>
-      </div>
-      <button class="fa-play-btn" [class.fa-playing]="familyAartiPlayingSlot === 'slot3'"
-        [class.fa-loading]="familyAartiLoadingSlot === 'slot3'"
-        (click)="toggleFamilyAarti(familyActiveMandir.AartiName3, 'slot3')">
-        <span *ngIf="familyAartiLoadingSlot === 'slot3'">⏳</span>
-        <span *ngIf="familyAartiLoadingSlot !== 'slot3'">
-          {{ familyAartiPlayingSlot === 'slot3' ? '⏸' : '▶' }}
-        </span>
-      </button>
-    </div>
-    <br><br>
-  </div>
-
- 
-
-  <!-- ═══ DOWNLOAD TODAY'S PANCHANG ═══ -->
-  <div class="section" *ngIf="panchangReady">
-    <div class="panchang-action-card">
-      <div class="pac-header">
-        <span class="pac-icon">🪔</span>
-        <div class="pac-text">
-          <span class="pac-title">आज का पंचांग</span>
-          <span class="pac-sub">Today's Panchang</span>
-        </div>
-      </div>
-      <div class="pac-actions">
-        <button class="pac-btn" [disabled]="!!panchangAction" (click)="viewTodayPanchang()">
-          <ion-icon [name]="panchangAction === 'view' ? 'hourglass-outline' : 'eye-outline'"></ion-icon>
-          <span>देखें</span>
-        </button>
-        <button class="pac-btn" [disabled]="!!panchangAction" (click)="shareTodayPanchang()">
-          <ion-icon [name]="panchangAction === 'share' ? 'hourglass-outline' : 'share-social-outline'"></ion-icon>
-          <span>शेयर</span>
-        </button>
-        <button class="pac-btn primary" [disabled]="!!panchangAction" (click)="downloadTodayPanchang()">
-          <ion-icon [name]="panchangAction === 'download' ? 'hourglass-outline' : 'download-outline'"></ion-icon>
-          <span>डाउनलोड</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  <!-- ═══ ADD YOUR OWN MANDIR ═══ -->
+  <!-- ═══ ADD / VIEW YOUR MANDIR ═══ -->
   <div class="section">
-    <!-- If active mandir exists → show "my mandir" card -->
     <div class="family-mandir-cta active-mandir" *ngIf="familyActiveMandir">
       <div class="fmc-icon">✅</div>
       <div class="fmc-content">
@@ -205,88 +104,126 @@
       <div class="fmc-arrow">🛕</div>
     </div>
 
-    <!-- If no active mandir → show add button -->
-    <div class="family-mandir-cta" *ngIf="!familyActiveMandir" (click)="openFamilyMandirForm()">
-      <div class="fmc-icon">🛕</div>
-      <div class="fmc-content">
-        <div class="fmc-title">अपना मंदिर जोड़ें</div>
-        <div class="fmc-sub">Add your family mandir to Mangal Bhav</div>
-      </div>
-      <div class="fmc-arrow">→</div>
-    </div>
-
-
-    <!-- ═══ ADD A COMMUNITY POST / FEED ═══ -->
-    <div class="section">
-      <div class="family-mandir-cta" (click)="openFeedForm()">
-        <div class="fmc-icon">🪔</div>
-        <div class="fmc-content">
-          <div class="fmc-title">पोस्ट जोड़ें</div>
-          <div class="fmc-sub">Share a photo or video with the community</div>
-        </div>
-        <div class="fmc-arrow">→</div>
-      </div>
-    </div>
   </div>
- 
 
+  <!-- ═══ FEED REELS ═══ -->
+  <div class="feed-reels-wrap">
 
+    <ng-container *ngFor="let group of feedGroups">
 
-
-
-
-  <!-- ═══ COMMUNITY HERO ═══ -->
-  <section class="comm-hero">
-    <div class="comm-hero-bg-om">ॐ</div>
-    <div class="comm-diya d1">🪔</div>
-    <div class="comm-diya d2">🪔</div>
-    <div class="comm-diya d3">🔥</div>
-    <div class="comm-diya d4">🔥</div>
-    <div class="comm-hero-inner">
-      <div class="comm-hero-badge">🙏 &nbsp; Mangal.Bhav Community</div>
-      <h1 class="comm-hero-title">मंगल भवः</h1>
-      <p class="comm-hero-devanagari">शांति · समृद्धि · संरक्षण</p>
-      <p class="comm-hero-desc">
-        A sacred community rooted in the timeless wisdom of Vedic tradition —
-        where every family finds peace, every home finds prosperity,
-        and every soul finds protection.
-      </p>
-      <div class="comm-hero-pills">
-        <span class="comm-pill">🌸 Peace</span>
-        <span class="comm-pill">🌟 Prosperity</span>
-        <span class="comm-pill">🛡️ Protection</span>
-        <span class="comm-pill">🔥 Sacred Fire</span>
+      <div class="feed-date-header">
+        <span class="fdh-line"></span>
+        <span class="fdh-label">{{ group.dateLabel }}</span>
+        <span class="fdh-line"></span>
       </div>
+
+
+      <div class="insta-post" *ngFor="let item of group.items" [attr.data-feed-id]="item.FeedID">
+
+        <!-- Header -->
+        <div class="ip-header">
+          <div class="ip-avatar">{{ (item.UserName || '?').charAt(0) }}</div>
+          <div class="ip-header-text">
+            <span class="ip-username">{{ item.UserName }}</span>
+            <span class="ip-location" *ngIf="item.Location">📍 {{ item.Location }}</span>
+          </div>
+        </div>
+
+        <!-- Media -->
+        <div class="ip-media-wrap" *ngIf="hasFeedMedia(item) && !brokenMedia.has(item.FeedID)">
+          <video *ngIf="item.MediaType === 'Video'" [src]="getFeedMediaPath(item)" class="ip-media" controls playsinline
+            muted (error)="onMediaError(item)"></video>
+          <img *ngIf="item.MediaType !== 'Video'" [src]="getFeedMediaPath(item)" class="ip-media"
+            (error)="onMediaError(item)" />
+        </div>
+
+        <!-- Caption BEFORE actions, only when there's no media -->
+        <ng-container *ngIf="!hasFeedMedia(item) || brokenMedia.has(item.FeedID)">
+          <div class="ip-caption">
+            <span class="ip-caption-user">{{ item.UserName }}</span>
+            <span class="ip-caption-title">{{ item.Title }}</span>
+          </div>
+          <div class="ip-caption-desc" *ngIf="item.Description">{{ item.Description }}</div>
+        </ng-container>
+
+        <!-- Actions row -->
+        <div class="ip-actions">
+          <button class="ip-action-btn" (click)="toggleLike(item)" [disabled]="item.isLikeInFlight">
+            <ion-icon [name]="item.isLiked ? 'heart' : 'heart-outline'" [class.liked]="item.isLiked"></ion-icon>
+          </button>
+          <button class="ip-action-btn" (click)="openComments(item)">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+          </button>
+          <button class="ip-action-btn" (click)="shareFeed(item)">
+            <ion-icon name="paper-plane-outline"></ion-icon>
+          </button>
+          <div class="ip-views">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>{{ item.viewCount ?? 0 }}</span>
+          </div>
+        </div>
+
+        <!-- Like count -->
+        <div class="ip-like-count" *ngIf="item.likeCount">{{ item.likeCount }} likes</div>
+
+        <!-- Caption AFTER actions, only when media is present (original Instagram order) -->
+        <ng-container *ngIf="hasFeedMedia(item) && !brokenMedia.has(item.FeedID)">
+          <div class="ip-caption">
+            <span class="ip-caption-user">{{ item.UserName }}</span>
+            <span class="ip-caption-title">{{ item.Title }}</span>
+          </div>
+          <div class="ip-caption-desc" *ngIf="item.Description">{{ item.Description }}</div>
+        </ng-container>
+
+        <!-- Comment count -->
+        <div class="ip-comment-link" *ngIf="item.commentCount" (click)="openComments(item)">
+          View all {{ item.commentCount }} comments
+        </div>
+      </div>
+
+
+      <div class="reel-card panchang-card" *ngIf="group.panchangImage || group.panchangLoading">
+        <img *ngIf="group.panchangImage" [src]="group.panchangImage" class="panchang-img" />
+
+        <button class="panchang-share-btn" *ngIf="group.panchangImage" (click)="sharePanchangImage(group)">
+          <ion-icon name="share-social-outline"></ion-icon>
+          <span>शेयर करें</span>
+        </button>
+
+        <div class="panchang-loading" *ngIf="group.panchangLoading && !group.panchangImage">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <span>पंचांग लोड हो रहा है...</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="feed-empty" *ngIf="!feedGroups.length && !feedLoading">
+      <span>🪔 अभी कोई पोस्ट नहीं</span>
     </div>
-  </section>
-  <!-- The element that contains the panchangHtml -->
-  <!-- <div #panchangCapture style="position: relative;">
-    <div [innerHTML]="panchangHtml"></div>
-  </div> -->
+
+    <ion-infinite-scroll (ionInfinite)="onFeedInfiniteScroll($event)" [disabled]="feedAllLoaded">
+      <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="और पोस्ट लोड हो रही हैं...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
   <div style="height: 80px;"></div>
 
 </ion-content>
-<!-- WAS: <app-panditjibottomtabs *ngIf="..."> -->
-<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'" [style.display]="chromeHidden ? 'none' : ''">
-</app-panditjibottomtabs>
 
-<!-- WAS: <app-common-bottom-tabs *ngIf="..."> -->
-<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'" [style.display]="chromeHidden ? 'none' : ''">
-</app-common-bottom-tabs>
-
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'"></app-common-bottom-tabs>
 
 <!-- ═══ FAMILY MANDIR FORM ═══ -->
-<div class="fm-overlay" [class.visible]="showFamilyMandirForm">
+<!-- <div class="fm-overlay" [class.visible]="showFamilyMandirForm">
   <div class="fm-sheet">
 
-    <!-- Header -->
     <div class="fm-header">
       <button class="fm-close" (click)="showFamilyMandirForm = false">✕</button>
       <div class="fm-header-title">🛕 अपना मंदिर जोड़ें</div>
       <div class="fm-header-sub">Admin approval के बाद दिखेगा</div>
     </div>
 
-    <!-- Scrollable body -->
     <div class="fm-body">
 
       <div class="fm-field">
@@ -307,11 +244,9 @@
           placeholder="मंदिर का संक्षिप्त विवरण..."></textarea>
       </div>
 
-      <!-- Photos -->
       <div class="fm-field">
         <label class="fm-label">फ़ोटो (अधिकतम 3)</label>
 
-        <!-- Slot 1 -->
         <div class="fm-photo-row">
           <div class="fm-thumb">
             <img *ngIf="fmPhoto1Preview" [src]="fmPhoto1Preview" class="fm-thumb-img" />
@@ -330,7 +265,6 @@
           </div>
         </div>
 
-        <!-- Slot 2 -->
         <div class="fm-photo-row">
           <div class="fm-thumb">
             <img *ngIf="fmPhoto2Preview" [src]="fmPhoto2Preview" class="fm-thumb-img" />
@@ -349,7 +283,6 @@
           </div>
         </div>
 
-        <!-- Slot 3 -->
         <div class="fm-photo-row">
           <div class="fm-thumb">
             <img *ngIf="fmPhoto3Preview" [src]="fmPhoto3Preview" class="fm-thumb-img" />
@@ -369,12 +302,9 @@
         </div>
       </div>
 
-      <!-- Aarti names (optional) -->
-      <!-- Aarti names + audio (optional) -->
       <div class="fm-field">
         <label class="fm-label">आरती ऑडियो (वैकल्पिक)</label>
 
-        <!-- Slot 1 -->
         <div class="fm-audio-row fm-mt">
           <span class="fm-audio-icon">🎵</span>
           <span class="fm-audio-filename" *ngIf="fmAudio1Name && !familyMandir.AartiName1">{{ fmAudio1Name }}</span>
@@ -390,7 +320,6 @@
           </button>
         </div>
 
-        <!-- Slot 2 -->
         <div class="fm-audio-row fm-mt">
           <span class="fm-audio-icon">🎵</span>
           <span class="fm-audio-filename" *ngIf="fmAudio2Name && !familyMandir.AartiName2">{{ fmAudio2Name }}</span>
@@ -406,7 +335,6 @@
           </button>
         </div>
 
-        <!-- Slot 3 -->
         <div class="fm-audio-row fm-mt">
           <span class="fm-audio-icon">🎵</span>
           <span class="fm-audio-filename" *ngIf="fmAudio3Name && !familyMandir.AartiName3">{{ fmAudio3Name }}</span>
@@ -422,6 +350,7 @@
           </button>
         </div>
       </div>
+
       <button class="fm-submit-btn" [disabled]="isSubmittingFamilyMandir" (click)="submitFamilyMandir()">
         {{ isSubmittingFamilyMandir ? 'जमा हो रहा है...' : '🛕 मंदिर जमा करें' }}
       </button>
@@ -430,8 +359,57 @@
       <div style="height: 48px;"></div>
     </div>
   </div>
-</div>
+</div> -->
 
+
+<!-- ═══ COMMENTS SHEET (Instagram-style) ═══ -->
+<div class="comment-overlay" [class.visible]="showCommentsSheet" (click)="closeComments()">
+  <div class="comment-sheet" (click)="$event.stopPropagation()">
+
+    <div class="comment-sheet-handle"></div>
+
+    <div class="comment-sheet-header">
+      <div class="comment-sheet-title">टिप्पणियाँ</div>
+      <button class="comment-sheet-close" (click)="closeComments()">✕</button>
+    </div>
+
+    <div class="comment-sheet-list">
+
+      <div class="comments-loading" *ngIf="commentsLoading">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+      </div>
+
+      <div class="comments-empty" *ngIf="!commentsLoading && !commentsList.length">
+        <span class="comments-empty-icon">🙏</span>
+        <span>पहली टिप्पणी करें</span>
+      </div>
+
+      <div class="comment-item" *ngFor="let c of commentsList">
+        <div class="comment-avatar">{{ (c.UserName || '?').charAt(0) }}</div>
+        <div class="comment-body">
+          <div class="comment-line">
+            <span class="comment-username">{{ c.UserName }}</span>
+            <span class="comment-text">{{ c.Comment }}</span>
+          </div>
+          <div class="comment-meta">{{ c.DateAdded | date:'MMM d, h:mm a' }}</div>
+        </div>
+      </div>
+
+      <div style="height: 12px;"></div>
+    </div>
+
+    <div class="comment-input-bar">
+      <div class="comment-input-avatar">{{ (userDetails?.Name || '?').charAt(0) }}</div>
+      <input class="comment-input-field" type="text" [(ngModel)]="newCommentText" placeholder="टिप्पणी जोड़ें..."
+        (keyup.enter)="submitComment()" />
+      <button class="comment-send-btn" [class.active]="newCommentText.trim()"
+        [disabled]="isSubmittingComment || !newCommentText.trim()" (click)="submitComment()">
+        {{ isSubmittingComment ? '···' : 'भेजें' }}
+      </button>
+    </div>
+
+  </div>
+</div>
 
 
 <!-- ═══ FEED / POST FORM ═══ -->
@@ -446,49 +424,68 @@
 
     <div class="fm-body">
 
+      <!-- ===== Media Picker ===== -->
+      <div class="feed-media-card">
+
+        <label class="feed-media-picker">
+
+          <input type="file" accept="image/*,video/*" hidden (change)="onFeedMediaSelected($event)" />
+
+          <!-- Preview -->
+          <img *ngIf="feedMediaPreview && feedMediaKind=='image'" [src]="feedMediaPreview" class="feed-preview" />
+
+          <video *ngIf="feedMediaPreview && feedMediaKind=='video'" [src]="feedMediaPreview" class="feed-preview" muted
+            controls>
+          </video>
+
+          <!-- Empty State -->
+          <div class="feed-placeholder" *ngIf="!feedMediaPreview">
+
+            <ion-icon name="image-outline"></ion-icon>
+
+            <div class="feed-placeholder-title">
+              फोटो या वीडियो जोड़ें
+            </div>
+
+            <div class="feed-placeholder-sub">
+              Tap to choose media
+            </div>
+
+          </div>
+
+        </label>
+
+        <div class="feed-actions">
+          <div class="feed-uploading" *ngIf="isUploadingFeedMedia">
+
+            <ion-spinner name="crescent"></ion-spinner>
+
+            <span>Uploading...</span>
+
+          </div>
+
+          <button class="feed-remove-btn" *ngIf="Feed.MediaURL" (click)="removeFeedMedia()">
+
+            🗑 Remove
+
+          </button>
+
+        </div>
+
+      </div>
+
+
       <div class="fm-field">
         <label class="fm-label">शीर्षक *</label>
         <input class="fm-input" type="text" [(ngModel)]="Feed.Title" placeholder="जैसे: मंगल आरती का प्रसाद" />
       </div>
 
-      <div class="fm-field">
+      <!-- <div class="fm-field">
         <label class="fm-label">विवरण</label>
         <textarea class="fm-input fm-textarea" [(ngModel)]="Feed.Description"
           placeholder="अपने अनुभव या संदेश के बारे में लिखें..."></textarea>
-      </div>
-
-      <!-- <div class="fm-field">
-        <label class="fm-label">श्रेणी</label>
-        <input class="fm-input" type="text" [(ngModel)]="Feed.FeedCategory" placeholder="जैसे: सेवा, दर्शन, प्रसाद" />
       </div> -->
 
-      <!-- Media (image OR video) -->
-      <div class="fm-field">
-        <label class="fm-label">फ़ोटो / वीडियो</label>
-
-        <div class="fm-photo-row">
-          <div class="fm-thumb">
-            <img *ngIf="feedMediaPreview && feedMediaKind === 'image'" [src]="feedMediaPreview" class="fm-thumb-img" />
-            <video *ngIf="feedMediaPreview && feedMediaKind === 'video'" [src]="feedMediaPreview" class="fm-thumb-img"
-              muted></video>
-            <span *ngIf="!feedMediaPreview">📷</span>
-            <span class="fm-tick" *ngIf="Feed.MediaURL">✅</span>
-          </div>
-          <div class="fm-photo-actions">
-            <label class="fm-pick-btn">
-              मीडिया चुनें
-              <input type="file" accept="image/*,video/*" style="display:none" (change)="onFeedMediaSelected($event)" />
-            </label>
-            <button class="fm-upload-btn" *ngIf="feedMediaFile && !Feed.MediaURL" [disabled]="isUploadingFeedMedia"
-              (click)="uploadFeedMedia()">
-              {{ isUploadingFeedMedia ? 'अपलोड...' : '⬆ Upload' }}
-            </button>
-            <button class="fm-upload-btn" *ngIf="Feed.MediaURL" (click)="removeFeedMedia()">
-              🗑 हटाएं
-            </button>
-          </div>
-        </div>
-      </div>
 
       <button class="fm-submit-btn" [disabled]="isSubmittingFeed" (click)="submitFeed()">
         {{ isSubmittingFeed ? 'जमा हो रहा है...' : '🪔 पोस्ट जमा करें' }}
@@ -498,4 +495,11 @@
       <div style="height: 48px;"></div>
     </div>
   </div>
+</div>
+
+
+<!-- ═══ GLOBAL TOAST — fixed to viewport, above everything ═══ -->
+<div class="seva-toast" [class.show]="toastVisible">
+  <span class="toast-icon">{{ toastIcon }}</span>
+  <span class="toast-text">{{ toastMessage }}</span>
 </div>

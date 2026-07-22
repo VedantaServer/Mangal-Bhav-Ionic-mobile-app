@@ -1589,3 +1589,38 @@ ion-icon[name="logo-whatsapp"] {
     font-size: 12px;
   }
 }
+
+.social-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-social-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #ff9800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-social-btn ion-icon {
+  font-size: 22px;
+}
+
+.add-social-btn:hover {
+  background: #f57c00;
+  transform: scale(1.05);
+}

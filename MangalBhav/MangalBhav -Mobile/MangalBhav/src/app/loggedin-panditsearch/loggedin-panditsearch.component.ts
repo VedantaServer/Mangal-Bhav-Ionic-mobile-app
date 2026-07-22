@@ -18,7 +18,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './loggedin-panditsearch.component.html',
   styleUrls: ['./loggedin-panditsearch.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class LoggedinPanditsearchComponent implements OnInit {
 
@@ -426,7 +426,7 @@ export class LoggedinPanditsearchComponent implements OnInit {
 
 
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages;
+    this.language = this.userDetails?.Languages || 'English';
     this.route.queryParams.subscribe(params => {
       this.categoryid = params['categoryid'];
       this.serviceid = params['serviceid'];
@@ -490,13 +490,15 @@ export class LoggedinPanditsearchComponent implements OnInit {
   }
   panditLocationMap: { [userID: number]: any } = {};
 
+  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
+
   getServiceImagePath(serviceName: string): string {
-    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '');
-    return `assets/img/${englishName}.png`;
+    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
+    return `${this.imgBaseUrl}/${englishName}.png`;
   }
 
   onImgError(event: any) {
-    event.target.src = 'assets/img/default-puja.png'; // or any fallback
+    event.target.src = `${this.imgBaseUrl}/default-puja.png`; // or any fallback
   }
 
   // loadPandits() {

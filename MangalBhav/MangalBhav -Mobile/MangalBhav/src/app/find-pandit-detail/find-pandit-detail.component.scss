@@ -5880,3 +5880,297 @@
     gap: 12px;
     padding-bottom: 8px;   // small buffer after the last card
   }
+
+  .pdp-social-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    margin: 0 16px 12px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  
+    &__label { font-size: 13px; color: #7A4D00; margin: 0; }
+    &__icons { display: flex; gap: 10px; }
+  }
+  .pdp-social-icon {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: #FFF3E0;
+    ion-icon { font-size: 18px; color: #b85c00; }
+  }
+
+  .pdp-social-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    margin: 16px 16px 20px;   // ← was 0 16px 12px — more top gap, more bottom gap
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  
+    &__label { font-size: 13px; color: #7A4D00; margin: 0; }
+    &__icons { display: flex; gap: 10px; }
+  }
+  .pdp-social-icon {
+    width: 38px; height: 38px;      // slightly bigger, matches your screenshot sizing
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: #FFF3E0;
+    transition: transform 0.15s ease;
+  
+    ion-icon { font-size: 19px; color: #b85c00; }
+  
+    &:active { transform: scale(0.92); }
+  }
+
+
+  .pdp-social-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pdp-social-link-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff8ee;
+    text-decoration: none;
+    color: #4a2c00;
+    font-weight: 500;
+  
+    ion-icon:first-child {
+      font-size: 20px;
+      color: #E07B00;
+    }
+  
+    span {
+      flex: 1;
+    }
+  
+    .pdp-social-link-arrow {
+      font-size: 16px;
+      color: #b08a5a;
+    }
+  }
+
+
+  // Large rectangular photo (replaces the circular avatar ring)
+.pdp-hero__photo-wrap {
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  height: 260px;
+  margin: -60px auto 0; // pulls it up over the banner, adjust to taste
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  border: 3px solid #fff;
+  background: #fdf3e2;
+}
+
+.pdp-hero__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+}
+
+.pdp-hero__photo-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  color: #b85c00;
+  background: #fdf3e2;
+}
+
+// Combined action + stats row
+.pdp-action-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 14px;
+  margin: 16px;
+  padding: 14px 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.pdp-action-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  ion-icon {
+    font-size: 22px;
+    color: #b85c00;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &--liked ion-icon {
+    color: #e03a3a;
+  }
+
+  &--loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  &--passive {
+    cursor: default;
+  }
+
+  &--chat {
+    ion-icon { color: #16a34a; }
+  }
+}
+
+.pdp-action-stat__count {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2b1a00;
+
+  &.pdp-has-likes {
+    color: #e03a3a;
+  }
+}
+
+.pdp-action-stat__label {
+  font-size: 11px;
+  color: #7a4d00;
+  font-weight: 500;
+}
+
+
+// Banner — shrink more
+.pdp-hero__banner {
+  height: 65px; // was 90px
+}
+
+// Photo — smaller, less overlap pull
+.pdp-hero__photo-wrap {
+  width: 84%;
+  max-width: 380px;
+  height: 190px;              // was 220px
+  margin: -35px auto 0;       // was -50px
+  border-radius: 12px;
+  border-width: 2px;          // was 3px, thinner border reclaims a few px
+}
+
+// Meta block — squeeze hard
+.pdp-hero__meta {
+  padding: 4px 16px 0;        // was 8px 16px 0
+}
+
+.pdp-hero__name {
+  margin: 4px 0 0;            // was 8px 0 2px
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.pdp-hero__since {
+  margin: 2px 0 2px;          // was 0 0 6px
+  font-size: 12px;
+}
+
+.pdp-hero__divider {
+  margin: 2px 0 4px;          // was 4px 0 8px
+  ion-icon { font-size: 14px; }
+}
+
+// Action-stats row — tighter outer + inner spacing
+.pdp-action-stats {
+  margin: 4px 16px 8px;       // was 8px 16px 12px
+  padding: 8px 6px;           // was 10px 8px
+  border-radius: 12px;
+}
+
+.pdp-action-stat {
+  gap: 1px;
+
+  ion-icon {
+    font-size: 18px;          // was 20px
+  }
+}
+
+.pdp-action-stat__count {
+  font-size: 13px;
+}
+
+.pdp-action-stat__label {
+  font-size: 9.5px;
+}
+
+
+.pdp-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdp-feed-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.pdp-feed-media-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #f5ede0;
+}
+
+.pdp-feed-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pdp-feed-body {
+  padding: 10px 12px;
+}
+
+.pdp-feed-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #2b1a00;
+}
+
+.pdp-feed-desc {
+  font-size: 12.5px;
+  color: #6b4a1a;
+  margin: 0 0 8px;
+}
+
+.pdp-feed-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: #b85c00;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

@@ -8,7 +8,8 @@
           <div class="nav-logo-sub">Sacred Conversations</div>
         </div>
       </div>
-      <button class="nav-icon-btn" title="Search">🔍</button>
+      <button class="nav-icon-btn" title="Reload" [class.spinning]="isReloading" [disabled]="isReloading"
+        (click)="reloadAll()">🔄</button>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -45,6 +46,11 @@
               <span class="chat-name">{{ u.DisplayName }}</span>
               <span class="chat-time">{{ u.LastMessageTime | date: 'hh:mm a' }}</span>
             </div>
+            <div class="chat-meta-row" *ngIf="u.Role || u.PhoneNumber">
+              <span class="chat-role" *ngIf="u.Role">{{ u.Role }}</span>
+              <span class="chat-meta-sep" *ngIf="u.Role && u.PhoneNumber">•</span>
+              <span class="chat-phone" *ngIf="u.PhoneNumber">{{ u.PhoneNumber }}</span>
+            </div>
             <div class="chat-bottom-row">
               <span class="chat-preview">{{ u.LastMessage || 'Tap to open' }}</span>
             </div>
@@ -78,6 +84,11 @@
             <div class="chat-top-row">
               <span class="chat-name">{{ u.DisplayName }}</span>
               <span class="chat-time">{{ u.LastMessageTime | date: 'hh:mm a' }}</span>
+            </div>
+            <div class="chat-meta-row" *ngIf="u.Role || u.PhoneNumber">
+              <span class="chat-role" *ngIf="u.Role">{{ u.Role }}</span>
+              <span class="chat-meta-sep" *ngIf="u.Role && u.PhoneNumber">•</span>
+              <span class="chat-phone" *ngIf="u.PhoneNumber">{{ u.PhoneNumber }}</span>
             </div>
             <div class="chat-bottom-row">
               <span class="chat-preview">{{ u.LastMessage || 'Tap to open' }}</span>
@@ -153,8 +164,10 @@
       </div>
     </div>
 
-    <!-- ══ ONE TO ONE PANDIT CHATS ══ -->
-    <ng-container *ngIf="!isSupportPerson && !isAskPandit">
+    <!-- ══ ONE TO ONE PANDIT CHATS ══
+         Shown for everyone, including Support/AskPandit admins — being staff
+         doesn't mean they don't also have their own Pandit conversations. -->
+    <ng-container>
       <div class="section-label" *ngIf="oneToOneChats.length > 0">🕉️ Pandit Conversations</div>
 
       <div class="loading-row" *ngIf="oneToOneLoading">

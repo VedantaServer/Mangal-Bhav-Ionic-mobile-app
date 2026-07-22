@@ -44,102 +44,73 @@
         <span class="pdp-hero__om">ॐ</span>
       </div>
 
-      <div class="pdp-hero__avatar-wrap">
-        <div class="pdp-hero__avatar-ring">
-
-          <div class="pdp-hero__initials" *ngIf="!profileImages[activePandit.profile?.UserID]">
-            {{ activePandit.profile?.FullName?.charAt(0) || '🙏' }}
-          </div>
-
-          <img *ngIf="profileImages[activePandit.profile?.UserID]" [src]="getProfileImage(activePandit.profile?.UserID)"
-            class="pdp-hero__avatar-img" (error)="onImgError($event)"
-            (click)="openLightbox(getProfileImage(activePandit.profile?.UserID))" />
-
-          <span class="pdp-hero__tilak"></span>
-
-          <span class="pdp-hero__expand" *ngIf="profileImages[activePandit.profile?.UserID]"
-            (click)="openLightbox(getProfileImage(activePandit.profile?.UserID))">
-            🔍
-          </span>
-
+      <!-- OLD: pdp-hero__avatar-wrap with circular ring -->
+      <!-- NEW: -->
+      <div class="pdp-hero__photo-wrap">
+        <div class="pdp-hero__photo-initials" *ngIf="!profileImages[activePandit.profile?.UserID]">
+          {{ activePandit.profile?.FullName?.charAt(0) || '🙏' }}
         </div>
+
+        <img *ngIf="profileImages[activePandit.profile?.UserID]" [src]="getProfileImage(activePandit.profile?.UserID)"
+          class="pdp-hero__photo-img" (error)="onImgError($event)"
+          (click)="openLightbox(getProfileImage(activePandit.profile?.UserID))" />
+
+        <span class="pdp-hero__tilak"></span>
       </div>
 
       <div class="pdp-hero__meta">
-        <h2 class="pdp-hero__name">{{ activePandit.profile?.FullName }}</h2>
+        <h2 class="pdp-hero__name">{{ activePandit.profile?.FullName }} <span
+            style="color: darkgreen;font-size: large;"><ion-icon name="chatbubble-ellipses-outline"
+              (click)="chatWithPandit(activePandit)"></ion-icon></span> </h2>
+
+
 
         <div class="pdp-hero__since" *ngIf="activePandit.user?.DateAdded">
           <ion-icon name="calendar-outline"></ion-icon>
           {{ t.memberSince }} {{ activePandit.user.DateAdded | date:'dd MMMM yyyy' }}
+
+
         </div>
 
-        <div class="pdp-hero__divider">
-          <span></span>
-          <ion-icon name="flame-outline"></ion-icon>
-          <span></span>
-        </div>
       </div>
 
-      <div class="pdp-actions">
 
-        <div class="pdp-actions__btn" [class.pdp-actions__btn--liked]="isPanditLiked(activePandit)"
-          [class.pdp-actions__btn--loading]="isTogglingLike || isPanditLikeChecking(activePandit)"
+      <div class="pdp-action-stats">
+
+        <div class="pdp-action-stat" [class.pdp-action-stat--liked]="isPanditLiked(activePandit)"
+          [class.pdp-action-stat--loading]="isTogglingLike || isPanditLikeChecking(activePandit)"
           (click)="toggleLike(activePandit)">
           <ng-container *ngIf="isPanditLikeChecking(activePandit); else likeIcon">
             <ion-spinner name="dots" style="width:18px;height:18px;color:#b85c00;"></ion-spinner>
           </ng-container>
           <ng-template #likeIcon>
             <ion-icon [name]="isPanditLiked(activePandit) ? 'heart' : 'heart-outline'"
-              [style.color]="isPanditLiked(activePandit) ? '#e03a3a' : 'inherit'">
-            </ion-icon>
+              [style.color]="isPanditLiked(activePandit) ? '#e03a3a' : 'inherit'"></ion-icon>
           </ng-template>
-          <span>{{ isPanditLiked(activePandit) ? t.liked : t.like }}</span>
+          <span class="pdp-action-stat__count" [class.pdp-has-likes]="likeCount > 0">{{ likeCount || 0 }}</span>
+          <span class="pdp-action-stat__label">{{ isPanditLiked(activePandit) ? t.liked : t.like }}</span>
         </div>
 
-        <div class="pdp-actions__btn" (click)="sharePandit(activePandit)">
+        <div class="pdp-action-stat" (click)="sharePandit(activePandit)">
           <ion-icon name="share-social-outline"></ion-icon>
-          <span>{{ t.share }}</span>
+          <span class="pdp-action-stat__count">{{ shareCount || 0 }}</span>
+          <span class="pdp-action-stat__label">{{ t.share }}</span>
         </div>
 
-        <div class="pdp-actions__btn" (click)="chatWithPandit(activePandit)">
-          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-          <span>{{ t.chat }}</span>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ══ ENGAGEMENT STATS ══ -->
-    <div class="pdp-engagement">
-      <div class="pdp-engagement__stat">
-        <span class="pdp-engagement__count">{{ viewsCount || 0 }}</span>
-        <span class="pdp-engagement__label">
+        <div class="pdp-action-stat pdp-action-stat--passive">
           <ion-icon name="eye-outline"></ion-icon>
-          {{ t.viewsLabel }}
-        </span>
-      </div>
-      <div class="pdp-engagement__divider"></div>
-      <div class="pdp-engagement__stat">
-        <span class="pdp-engagement__count pdp-engagement__count--likes" [class.pdp-has-likes]="likeCount > 0">
-          {{ likeCount || 0 }}
-        </span>
-        <span class="pdp-engagement__label">
-          <ion-icon name="heart-outline"></ion-icon>
-          {{ t.likesLabel }}
-        </span>
-      </div>
-      <div class="pdp-engagement__divider"></div>
-      <div class="pdp-engagement__stat">
-        <span class="pdp-engagement__count">{{ shareCount || 0 }}</span>
-        <span class="pdp-engagement__label">
-          <ion-icon name="share-social-outline"></ion-icon>
-          {{ t.sharesLabel }}
-        </span>
+          <span class="pdp-action-stat__count">{{ viewsCount || 0 }}</span>
+          <span class="pdp-action-stat__label">{{ t.viewsLabel }}</span>
+        </div>
+
+        <!-- <div class="pdp-action-stat pdp-action-stat--chat" (click)="chatWithPandit(activePandit)">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          <span class="pdp-action-stat__label">{{ t.chat }}</span>
+        </div> -->
+
       </div>
     </div>
 
-    <!-- ══ QUICK STATS ══ -->
     <div class="pdp-info-grid">
       <div class="pdp-info-item">
         <ion-icon name="time-outline"></ion-icon>
@@ -198,6 +169,22 @@
       <p class="pdp-section__text">{{ activePandit.profile?.Bio }}</p>
     </div>
 
+
+
+    <div class="pdp-section" *ngIf="socialLinksWithUrl.length">
+      <h4 class="pdp-section__title">{{ t.connectSocial }}</h4>
+      <div class="pdp-social-links-list">
+        <a *ngFor="let item of socialLinksWithUrl" [href]="item.Link" target="_blank" rel="noopener"
+          class="pdp-social-link-row" (click)="$event.stopPropagation()">
+          <ion-icon [name]="item.IconName"></ion-icon>
+          <span>{{ item.Platform }}</span>
+          <ion-icon name="open-outline" class="pdp-social-link-arrow"></ion-icon>
+        </a>
+      </div>
+    </div>
+
+
+
     <!-- ══ SERVICES ══ -->
     <div class="pdp-section">
       <h4 class="pdp-section__title">
@@ -213,7 +200,7 @@
       <div class="pdp-svc-list" *ngIf="!isLoadingServices">
         <div class="pdp-svc-card" *ngFor="let ps of activePanditServices">
           <div class="pdp-svc-card__img-wrap">
-            <img [src]="getCurrentImage(ps.ServiceDetails?.[0]?.Name)" class="pdp-svc-card__img"
+            <img [src]="getServiceImagePath(ps.ServiceDetails?.[0]?.Name)" class="pdp-svc-card__img"
               (error)="onImgError($event)" />
           </div>
           <div class="pdp-svc-card__body">
@@ -239,6 +226,47 @@
         <div *ngIf="!activePanditServices?.length" class="pdp-no-services">
           <span>🙏</span>
           <p>{{ t.noServices }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ POSTS BY THIS PANDIT ══ -->
+    <div class="pdp-section">
+      <h4 class="pdp-section__title">
+        <ion-icon name="images-outline"></ion-icon>
+        Posts
+      </h4>
+
+      <div class="pdp-svc-loading" *ngIf="isLoadingFeed">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading posts…</p>
+      </div>
+
+      <div class="pdp-feed-list" *ngIf="!isLoadingFeed">
+        <div class="pdp-feed-card" *ngFor="let f of panditFeedList">
+
+          <div class="pdp-feed-media-wrap" *ngIf="hasFeedMedia(f)">
+            <video *ngIf="f.MediaType === 'Video'" [src]="getFeedMediaPath(f)" class="pdp-feed-media" controls
+              playsinline muted></video>
+            <img *ngIf="f.MediaType !== 'Video'" [src]="getFeedMediaPath(f)" class="pdp-feed-media"
+              (error)="onImgError($event)" />
+          </div>
+
+          <div class="pdp-feed-body">
+            <h4 class="pdp-feed-title">{{ f.Title }}</h4>
+            <p class="pdp-feed-desc" *ngIf="f.Description">{{ f.Description }}</p>
+            <div class="pdp-feed-meta">
+              <span><ion-icon name="heart-outline"></ion-icon> {{ f.likeCount || 0 }}</span>
+              <span><ion-icon name="chatbubble-outline"></ion-icon> {{ f.commentCount || 0 }}</span>
+              <span><ion-icon name="eye-outline"></ion-icon> {{ f.viewCount || 0 }}</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div *ngIf="!panditFeedList?.length" class="pdp-no-services">
+          <span>🪔</span>
+          <p>No posts yet</p>
         </div>
       </div>
     </div>
@@ -276,7 +304,7 @@
       <div class="modal-wrapper">
 
         <div class="explore-img-wrap">
-          <img [src]="getCurrentImage(selectedService?.ServiceDetails?.[0]?.Name)" class="explore-img"
+          <img [src]="getServiceImagePath(selectedService?.ServiceDetails?.[0]?.Name)" class="explore-img"
             (error)="onImgError($event)" />
           <div class="explore-img-overlay"></div>
 

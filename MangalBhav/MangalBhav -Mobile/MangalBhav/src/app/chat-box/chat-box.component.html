@@ -75,7 +75,24 @@
                 {{ msg.SenderName || 'Member' }}
               </div>
               <div class="bubble" [ngClass]="isMine(msg.SenderID) ? 'bubble-out' : 'bubble-in'">
-                <p class="bubble-text">{{ msg.MessageText }}</p>
+                <!-- <p class="bubble-text">{{ msg.MessageText }}</p> -->
+
+                <!-- Text -->
+                <p class="bubble-text" *ngIf="msg.MessageType === 'Text'">
+                  {{ msg.MessageText }}
+                </p>
+
+                <!-- Audio -->
+                <div class="audio-message" *ngIf="msg.MessageType === 'Audio'">
+
+                  <audio *ngIf="audioUrls[msg.MediaURL]" [src]="audioUrls[msg.MediaURL]" controls preload="metadata">
+                  </audio>
+
+                  <div class="audio-loading" *ngIf="!audioUrls[msg.MediaURL]">
+                    Loading audio...
+                  </div>
+
+                </div>
                 <div class="bubble-meta">
                   <span class="msg-time">{{ msg.SentAt | date: 'hh:mm a' }}</span>
                   <span class="msg-tick" *ngIf="isMine(msg.SenderID)">✓✓</span>
@@ -94,7 +111,7 @@
 </ion-content>
 
 <!-- Input Bar -->
-<div class="input-bar" *ngIf="isLoggedIn">
+<!-- <div class="input-bar" *ngIf="isLoggedIn">
   <button class="attach-btn">📎</button>
   <div class="input-wrap">
     <input [(ngModel)]="newMessage" type="text" class="msg-input" placeholder="Type a message… 🙏"
@@ -103,7 +120,38 @@
   <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()">
     <span>➤</span>
   </button>
+</div> -->
+
+
+<div class="input-bar" *ngIf="isLoggedIn">
+
+  <button class="attach-btn" *ngIf="!isRecording">📎</button>
+
+  <div class="input-wrap" *ngIf="!isRecording">
+    <input [(ngModel)]="newMessage" type="text" class="msg-input" placeholder="Type a message… 🙏"
+      (keyup.enter)="sendMessage()" />
+  </div>
+
+  <button class="send-btn" *ngIf="newMessage.trim() && !isRecording" (click)="sendMessage()">
+    <span>➤</span>
+  </button>
+
+  <button class="mic-btn" *ngIf="!newMessage.trim() && !isRecording" (click)="startRecording()">
+    🎤
+  </button>
+
+  <!-- Recording state -->
+  <div class="recording-bar" *ngIf="isRecording">
+    <button class="cancel-recording-btn" (click)="cancelRecording()">🗑️</button>
+    <div class="recording-mid">
+      <span class="recording-dot">●</span>
+      <span class="recording-time">{{ recordingDuration }}s</span>
+    </div>
+    <button class="send-recording-btn" (click)="stopRecording()">➤</button>
+  </div>
+
 </div>
+
 
 <!-- ══ CHAT TERMS OVERLAY ══ -->
 <div class="chat-terms-overlay" *ngIf="showTermsModal">
@@ -129,7 +177,8 @@
           🔒 Privacy Protection
         </div>
         <ul class="chat-terms-list">
-          <li>Do not share or request personal contact information, including phone numbers, WhatsApp numbers, email addresses, home addresses, or social media handles.</li>
+          <li>Do not share or request personal contact information, including phone numbers, WhatsApp numbers, email
+            addresses, home addresses, or social media handles.</li>
           <li>Keep all communication within the platform to protect the privacy of both parties.</li>
         </ul>
       </div>
@@ -204,9 +253,7 @@
         <button class="chat-terms-decline-btn" (click)="declineTerms()">
           Go Back
         </button>
-        <button class="chat-terms-accept-btn"
-          [class.enabled]="termsChecked"
-          [disabled]="!termsChecked"
+        <button class="chat-terms-accept-btn" [class.enabled]="termsChecked" [disabled]="!termsChecked"
           (click)="acceptTerms()">
           🙏 Read & Accept
         </button>

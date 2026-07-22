@@ -1882,3 +1882,27 @@ ion-icon[name="logo-linkedin"] {
 ion-icon[name="logo-whatsapp"] {
   color: #25D366;
 }
+
+
+.mandir-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mandir-edit-btn,
+.mandir-delete-btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mandir-edit-btn {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.mandir-delete-btn {
+  background: #d32f2f;
+  color: #fff;
+}

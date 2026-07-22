@@ -15,128 +15,45 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content #ionContent>
+<ion-content #ionContent [scrollEvents]="true">
+
   <div class="festival-page-wrap">
 
-    <!-- LOADING -->
-    <div class="loading-state" *ngIf="isLoading">
-      <div class="loading-flame">🪔</div>
-      <p>{{ t.loading }}</p>
-      <ion-spinner name="crescent"></ion-spinner>
+    <div class="feed-reels-wrap">
+
+      <ng-container *ngFor="let entry of panchangEntries">
+
+        <div class="feed-date-header">
+          <span class="fdh-line"></span>
+          <span class="fdh-label">{{ entry.dateLabel }}</span>
+          <span class="fdh-line"></span>
+        </div>
+
+        <div class="reel-card panchang-card" *ngIf="entry.panchangImage || entry.panchangLoading">
+          <img *ngIf="entry.panchangImage" [src]="entry.panchangImage" class="panchang-img" />
+
+          <button class="panchang-share-btn" *ngIf="entry.panchangImage" (click)="sharePanchangImage(entry)">
+            <ion-icon name="share-social-outline"></ion-icon>
+            <span>शेयर करें</span>
+          </button>
+
+          <div class="panchang-loading" *ngIf="entry.panchangLoading && !entry.panchangImage">
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+            <span>पंचांग लोड हो रहा है...</span>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="feed-empty" *ngIf="!panchangEntries.length && !panchangFeedLoading">
+        <span>🪔 अभी कोई पंचांग उपलब्ध नहीं</span>
+      </div>
+
+      <ion-infinite-scroll (ionInfinite)="onPanchangInfiniteScroll($event)" [disabled]="panchangAllLoaded">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="और पंचांग लोड हो रहे हैं...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+
     </div>
 
-    <div *ngIf="!isLoading">
-
-      <!-- Month filter pills -->
-      <div class="month-filter-wrap">
-        <button class="month-pill" [class.active]="selectedMonth === null" (click)="filterByMonth(null)">
-          {{ t.all }}
-        </button>
-        <button class="month-pill" *ngFor="let m of availableMonths" [class.active]="selectedMonth === m.value"
-          (click)="filterByMonth(m.value)">
-          {{ m.label }}
-        </button>
-      </div>
-
-      <!-- Upcoming festival banner -->
-      <div class="goto-upcoming-wrap" *ngIf="upcomingFestival">
-        <button class="goto-upcoming-btn" (click)="goToUpcomingFestival()">
-          <ion-icon name="calendar-outline"></ion-icon>
-          {{ t.next }}: {{ getFestivalName(upcomingFestival) }}
-          — {{ upcomingFestival.FestivalDate | date:'dd MMM' }}
-        </button>
-      </div>
-
-      <!-- Count -->
-      <p class="festival-count">
-        🪔 {{ filteredFestivals.length }}
-        {{ filteredFestivals.length !== 1 ? t.festivalsPlural : t.festivals }}
-      </p>
-
-      <!-- ═══ Download Any Uploaded Panchang ═══ -->
-      <div class="panchang-download-section">
-        <p class="panchang-download-title">🪔 Daily Panchang Archive</p>
-
-        <div *ngIf="isLoadingPanchangDates" class="ion-text-center ion-padding">
-          <ion-spinner name="crescent"></ion-spinner>
-        </div>
-
-        <div *ngIf="!isLoadingPanchangDates && !panchangDatesList.length" class="ion-text-center ion-padding">
-          No panchang uploaded yet.
-        </div>
-
-        <div class="panchang-date-row" *ngFor="let p of panchangDatesList">
-          <span class="panchang-date-label">{{ p.display }}</span>
-          <ion-button size="small" fill="outline" color="warning" [disabled]="downloadingPanchangDate === p.dateStr"
-            (click)="downloadPanchangForDate(p.dateStr)">
-            <ion-icon slot="start" name="download-outline"></ion-icon>
-            {{ downloadingPanchangDate === p.dateStr ? 'Downloading...' : 'Download' }}
-          </ion-button>
-        </div>
-      </div>
-
-      <!-- Festival cards -->
-      <div class="festival-list">
-        <div class="festival-card" *ngFor="let festival of filteredFestivals" [id]="'festival-' + festival.FestivalID">
-
-          <!-- Date block -->
-          <div class="festival-date-block">
-            <div class="festival-day-num">{{ festival.FestivalDate | date:'dd' }}</div>
-            <div class="festival-month-label">{{ festival.FestivalDate | date:'MMM' }}</div>
-            <div class="festival-year-label">{{ festival.Year }}</div>
-          </div>
-
-          <!-- Info block -->
-          <div class="festival-info">
-
-            <!-- Name row -->
-            <div class="festival-name-row">
-              <h3 class="festival-name">{{ getFestivalName(festival) }}</h3>
-              <span class="festival-emoji">{{ getFestivalEmoji(festival.FestivalName) }}</span>
-            </div>
-
-            <!-- Day of week -->
-            <div class="festival-day-chip" *ngIf="getFestivalDay(festival)">
-              <ion-icon name="sunny-outline"></ion-icon>
-              {{ getFestivalDay(festival) }}
-            </div>
-
-            <!-- Description -->
-            <p class="festival-desc" *ngIf="getFestivalDesc(festival)">
-              {{ getFestivalDesc(festival) }}
-            </p>
-
-            <!-- Footer chips -->
-            <div class="festival-footer">
-
-              <!-- Type -->
-              <span class="festival-chip type-chip" *ngIf="festival.Type?.trim()">
-                {{ festival.Type.trim() }}
-              </span>
-
-              <!-- PrimaryType -->
-              <span class="festival-chip primary-chip" *ngIf="festival.PrimaryType?.trim()">
-                {{ festival.PrimaryType.trim() }}
-              </span>
-
-              <!-- States -->
-              <span class="festival-chip state-chip" *ngIf="festival.States?.trim()">
-                <ion-icon name="location-outline"></ion-icon>
-                {{ festival.States.trim() }}
-              </span>
-
-              <!-- Locations -->
-              <span class="festival-chip loc-chip" *ngIf="festival.Locations?.trim()">
-                {{ festival.Locations.trim() }}
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-    </div>
   </div>
 </ion-content>

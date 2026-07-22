@@ -562,3 +562,40 @@ ion-tab-bar.mb-tab-bar::part(native) {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/* ── Add these rules to all-chats.component.scss ──────────────── */
+
+.nav-icon-btn.spinning {
+  animation: spin-reload 0.6s linear;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@keyframes spin-reload {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.chat-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #8a7360;
+  margin: 1px 0 2px;
+  line-height: 1.2;
+}
+
+.chat-role {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.chat-meta-sep {
+  color: #c9b89a;
+}
+
+.chat-phone {
+  font-variant-numeric: tabular-nums;
+}

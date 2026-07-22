@@ -2,7 +2,7 @@
   <ion-toolbar>
     <div class="inner-header">
 
-      <button class="inner-back-btn" (click)="routerCtrl.back()">
+      <button class="inner-back-btn" (click)="openCommunity()">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
 
@@ -11,7 +11,7 @@
         <div class="inner-title-sub">{{ t.appSub }}</div>
       </div>
 
-      <div class="inner-logo">
+      <div class="inner-logo" (click)="openCommunity()">
         <img src="../../assets/mangalbhavlogo1.jpeg" />
       </div>
 
@@ -299,9 +299,15 @@
     </div>
 
     <!-- SOCIAL MEDIA SECTION -->
-    <div class="section-label">
-      <ion-icon name="share-social-outline"></ion-icon>
-      Social Media Profiles
+    <div class="section-label social-header">
+      <div class="section-title">
+        <ion-icon name="share-social-outline"></ion-icon>
+        <span>Social Media Profiles</span>
+      </div>
+
+      <button class="add-social-btn" (click)="openAddSocialMedia()">
+        <ion-icon name="add"></ion-icon>
+      </button>
     </div>
 
     <div class="form-container">
@@ -329,11 +335,6 @@
 
       </div>
 
-      <button class="submit-btn" (click)="openAddSocialMedia()">
-        <ion-icon name="add-circle-outline"></ion-icon>
-        Add Social Media
-      </button>
-
     </div>
 
     <!-- SAVE BUTTON -->
@@ -343,10 +344,6 @@
         {{ isEditMode ? t.updateProfile : t.createProfile }}
       </button>
 
-      <button class="logout-btn" (click)="logout()">
-        <ion-icon name="log-out-outline"></ion-icon>
-        {{ t.logout }}
-      </button>
 
       <button class="not-interested-btn" (click)="showNotInterestedModal = true">
         <ion-icon name="sad-outline"></ion-icon>
@@ -400,17 +397,16 @@
     {{ isEditSocialMedia ? 'Edit Social Media' : 'Add Social Media' }}
   </h3>
 
-  <ion-item>
-    <ion-select placeholder="Select Platform" [(ngModel)]="socialMedia.Platform">
-      <ion-select-option value="Instagram">Instagram</ion-select-option>
-      <ion-select-option value="Facebook">Facebook</ion-select-option>
-      <ion-select-option value="YouTube">YouTube</ion-select-option>
-      <ion-select-option value="WhatsApp">WhatsApp</ion-select-option>
-      <ion-select-option value="LinkedIn">LinkedIn</ion-select-option>
-      <ion-select-option value="Twitter">X (Twitter)</ion-select-option>
-      <ion-select-option value="Website">Website</ion-select-option>
-    </ion-select>
-  </ion-item>
+  <ion-select placeholder="Select Platform" [(ngModel)]="socialMedia.Platform">
+    <ion-select-option value="Instagram">Instagram</ion-select-option>
+    <ion-select-option value="WelcomeReel">Instagram Welcome Reel</ion-select-option>
+    <ion-select-option value="Facebook">Facebook</ion-select-option>
+    <ion-select-option value="YouTube">YouTube</ion-select-option>
+    <ion-select-option value="WhatsApp">WhatsApp</ion-select-option>
+    <ion-select-option value="LinkedIn">LinkedIn</ion-select-option>
+    <ion-select-option value="Twitter">X (Twitter)</ion-select-option>
+    <ion-select-option value="Website">Website</ion-select-option>
+  </ion-select>
 
   <ion-item>
     <ion-input placeholder="Username" [(ngModel)]="socialMedia.Username"></ion-input>
@@ -444,8 +440,7 @@
     <div class="kyc-header">
 
       <div class="kyc-icon" [class.verified]="isKYCVerified">
-        <ion-icon
-          [name]="isKYCVerified ? 'shield-checkmark' : 'shield-outline'"
+        <ion-icon [name]="isKYCVerified ? 'shield-checkmark' : 'shield-outline'"
           [color]="isKYCVerified ? 'success' : 'medium'">
         </ion-icon>
       </div>
@@ -499,7 +494,8 @@
     <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
       <small style="color:#888;">{{ kycT.verifiedGender }}</small>
       <span style="font-weight:600; color:#2d2d2d;">
-        {{ kycStatus.verifiedGender === 'M' ? 'Male' : kycStatus.verifiedGender === 'F' ? 'Female' : kycStatus.verifiedGender }}
+        {{ kycStatus.verifiedGender === 'M' ? 'Male' : kycStatus.verifiedGender === 'F' ? 'Female' :
+        kycStatus.verifiedGender }}
       </span>
     </div>
 

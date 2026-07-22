@@ -328,7 +328,7 @@ export class UserProfileComponent implements OnInit {
     public apinu: ApiNU,
     public api: Api,
     private storage: Storage,
-    private fcm: FcmService,
+    private fcm: FcmService, private navCtrl: NavController,
     private plt: Platform,
     private http: HttpClient, public toastController: ToastController,
     private alertCtrl: AlertController) {
@@ -363,7 +363,7 @@ export class UserProfileComponent implements OnInit {
 
   // async ngOnInit() {
   //   this.userDetails = await this.storage.get("account");
-  //   this.language = this.userDetails.Languages;
+  //    this.language = this.userDetails?.Languages || 'English';
   //   this.profile.UserID = this.userDetails.UserID;
   //   this.profile.TenantID = this.userDetails.TenantID;
   //   this.profile.PhoneNumber = this.userDetails.LoginID;
@@ -406,7 +406,7 @@ export class UserProfileComponent implements OnInit {
 
   async ngOnInit() {
     this.userDetails = await this.storage.get("account");
-    this.language = this.userDetails.Languages;
+    this.language = this.userDetails?.Languages || 'English';
     this.profile.UserID = this.userDetails.UserID;
     this.profile.TenantID = this.userDetails.TenantID;
     this.profile.PhoneNumber = this.userDetails.LoginID;
@@ -422,7 +422,7 @@ export class UserProfileComponent implements OnInit {
     ).subscribe((res: any) => {
       this.userDetails = res.UserList[0];
       this.selectedRole = this.userDetails?.Role;
-     // this.loadReferralCode();
+      // this.loadReferralCode();
       this.loadBankDetails();
       done();
     });
@@ -753,7 +753,11 @@ export class UserProfileComponent implements OnInit {
     this.showSocialModal = true;
   }
 
+
+
   saveSocialMedia() {
+    if (!this.validateSocialMedia()) return;
+
     const action = this.isEditSocialMedia
       ? 'EntitySocialMediaUpdate'
       : 'EntitySocialMediaInsert';
@@ -770,9 +774,65 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  private validateSocialMedia(): boolean {
+    if (!this.socialMedia.Platform?.trim()) {
+      this.showToast('Please select a platform', 'warning');
+      return false;
+    }
+    if (!this.socialMedia.Username?.trim()) {
+      this.showToast('Please enter a username', 'warning');
+      return false;
+    }
+    if (!this.socialMedia.DisplayName?.trim()) {
+      this.showToast('Please enter a display name', 'warning');
+      return false;
+    }
+    if (!this.socialMedia.Link?.trim()) {
+      this.showToast('Please enter a profile URL', 'warning');
+      return false;
+    }
+    if (!this.isValidUrl(this.socialMedia.Link)) {
+      this.showToast('Please enter a valid URL (e.g. https://instagram.com/username)', 'warning');
+      return false;
+    }
+    return true;
+  }
+
+  private isValidUrl(link: string): boolean {
+    let candidate = link.trim();
+    if (!/^https?:\/\//i.test(candidate)) {
+      candidate = 'https://' + candidate;
+      this.socialMedia.Link = candidate; // auto-fix so it's saved with protocol
+    }
+    try {
+      const url = new URL(candidate);
+      return url.hostname.includes('.');
+    } catch {
+      return false;
+    }
+  }
+
+  // saveSocialMedia() {
+  //   const action = this.isEditSocialMedia
+  //     ? 'EntitySocialMediaUpdate'
+  //     : 'EntitySocialMediaInsert';
+
+  //   this.socialMedia.DateModified = new Date();
+
+  //   this.apinu.postUrlData(action, this.socialMedia).subscribe((res: any) => {
+  //     this.showToast(
+  //       this.isEditSocialMedia ? 'Social media updated' : 'Social media added',
+  //       'success'
+  //     );
+  //     this.showSocialModal = false;
+  //     this.loadSocialMedia();
+  //   });
+  // }
+
   getPlatformClass(platform: string) {
     switch (platform) {
       case 'Instagram': return 'platform-instagram';
+      case 'WelcomeReel': return 'platform-instagram';
       case 'Facebook': return 'platform-facebook';
       case 'YouTube': return 'platform-youtube';
       case 'LinkedIn': return 'platform-linkedin';
@@ -781,6 +841,10 @@ export class UserProfileComponent implements OnInit {
       case 'Website': return 'platform-website';
       default: return 'platform-default';
     }
+  }
+
+  openCommunity() {
+    this.navCtrl.navigateForward('/open-community-page');
   }
 
   deleteSocialMedia(item: any) {
@@ -1131,14 +1195,14 @@ export class UserProfileComponent implements OnInit {
 
 
   // Add this property alongside other KYC properties
-showKYCDetails = false;
+  showKYCDetails = false;
 
-// Add this method
-openKYCDetails() {
-  if (this.isKYCVerified) {
-    this.showKYCDetails = true;
-  } else {
-    this.openKYCModal();
+  // Add this method
+  openKYCDetails() {
+    if (this.isKYCVerified) {
+      this.showKYCDetails = true;
+    } else {
+      this.openKYCModal();
+    }
   }
-}
 }
