@@ -1,4 +1,4 @@
-<app-tabscommonheader (logoClicked)="scrollToTop()"></app-tabscommonheader>
+<app-tabscommonheader *ngIf="showbottomAndHeader" (logoClicked)="scrollToTop()"></app-tabscommonheader>
 
 <ion-content #pageContent [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
 
@@ -107,7 +107,7 @@
   </div>
 
   <!-- ═══ FEED REELS ═══ -->
-  <div class="feed-reels-wrap">
+  <div class="feed-reels-wrap" style="margin-top: 15px;">
 
     <ng-container *ngFor="let group of feedGroups">
 
@@ -126,16 +126,22 @@
           <div class="ip-header-text">
             <span class="ip-username">{{ item.UserName }}</span>
             <span class="ip-location" *ngIf="item.Location">📍 {{ item.Location }}</span>
+            <span class="ip-date" *ngIf="item.PublishDate">🕐 {{ item.PublishDate | date:'d MMM, h:mm a' }}</span>
           </div>
         </div>
 
+
+
         <!-- Media -->
-        <div class="ip-media-wrap" *ngIf="hasFeedMedia(item) && !brokenMedia.has(item.FeedID)">
-          <video *ngIf="item.MediaType === 'Video'" [src]="getFeedMediaPath(item)" class="ip-media" controls playsinline
-            muted (error)="onMediaError(item)"></video>
-          <img *ngIf="item.MediaType !== 'Video'" [src]="getFeedMediaPath(item)" class="ip-media"
-            (error)="onMediaError(item)" />
+        <div class="ip-media-wrap" *ngIf="hasFeedMedia(item) && !brokenMedia.has(item.FeedID)"
+          (click)="openFeedDetail(item)">
+          <video *ngIf="item.MediaType?.trim()?.toLowerCase() !== 'image'" [src]="getFeedMediaPath(item)"
+            class="ip-media" controls playsinline muted (error)="onMediaError(item)"></video>
+          <img *ngIf="item.MediaType?.trim()?.toLowerCase() === 'image'" [src]="getFeedMediaPath(item)" class="ip-media"
+            crossorigin="anonymous" (error)="onMediaError(item)" />
         </div>
+
+
 
         <!-- Caption BEFORE actions, only when there's no media -->
         <ng-container *ngIf="!hasFeedMedia(item) || brokenMedia.has(item.FeedID)">
@@ -154,8 +160,9 @@
           <button class="ip-action-btn" (click)="openComments(item)">
             <ion-icon name="chatbubble-outline"></ion-icon>
           </button>
-          <button class="ip-action-btn" (click)="shareFeed(item)">
-            <ion-icon name="paper-plane-outline"></ion-icon>
+          <button class="ip-action-btn" (click)="shareFeedAsImage(item)" [disabled]="isPreparingShare">
+            <ion-spinner *ngIf="isPreparingShare" name="dots" style="width:18px;height:18px;"></ion-spinner>
+            <ion-icon *ngIf="!isPreparingShare" name="paper-plane-outline"></ion-icon>
           </button>
           <div class="ip-views">
             <ion-icon name="eye-outline"></ion-icon>
@@ -183,7 +190,8 @@
 
 
       <div class="reel-card panchang-card" *ngIf="group.panchangImage || group.panchangLoading">
-        <img *ngIf="group.panchangImage" [src]="group.panchangImage" class="panchang-img" />
+        <img *ngIf="group.panchangImage" [src]="group.panchangImage" class="panchang-img"
+          (click)="group.panchangImage && openPanchangDetail()" />
 
         <button class="panchang-share-btn" *ngIf="group.panchangImage" (click)="sharePanchangImage(group)">
           <ion-icon name="share-social-outline"></ion-icon>
@@ -211,8 +219,8 @@
 
 </ion-content>
 
-<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT'"></app-panditjibottomtabs>
-<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT'"></app-common-bottom-tabs>
+<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomAndHeader"></app-panditjibottomtabs>
+<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT' && showbottomAndHeader"></app-common-bottom-tabs>
 
 <!-- ═══ FAMILY MANDIR FORM ═══ -->
 <!-- <div class="fm-overlay" [class.visible]="showFamilyMandirForm">
@@ -412,94 +420,39 @@
 </div>
 
 
-<!-- ═══ FEED / POST FORM ═══ -->
-<div class="fm-overlay" [class.visible]="showFeedForm">
-  <div class="fm-sheet">
-
-    <div class="fm-header">
-      <button class="fm-close" (click)="showFeedForm = false">✕</button>
-      <div class="fm-header-title">🪔 पोस्ट जोड़ें</div>
-      <div class="fm-header-sub">Admin approval के बाद दिखेगी</div>
-    </div>
-
-    <div class="fm-body">
-
-      <!-- ===== Media Picker ===== -->
-      <div class="feed-media-card">
-
-        <label class="feed-media-picker">
-
-          <input type="file" accept="image/*,video/*" hidden (change)="onFeedMediaSelected($event)" />
-
-          <!-- Preview -->
-          <img *ngIf="feedMediaPreview && feedMediaKind=='image'" [src]="feedMediaPreview" class="feed-preview" />
-
-          <video *ngIf="feedMediaPreview && feedMediaKind=='video'" [src]="feedMediaPreview" class="feed-preview" muted
-            controls>
-          </video>
-
-          <!-- Empty State -->
-          <div class="feed-placeholder" *ngIf="!feedMediaPreview">
-
-            <ion-icon name="image-outline"></ion-icon>
-
-            <div class="feed-placeholder-title">
-              फोटो या वीडियो जोड़ें
-            </div>
-
-            <div class="feed-placeholder-sub">
-              Tap to choose media
-            </div>
-
-          </div>
-
-        </label>
-
-        <div class="feed-actions">
-          <div class="feed-uploading" *ngIf="isUploadingFeedMedia">
-
-            <ion-spinner name="crescent"></ion-spinner>
-
-            <span>Uploading...</span>
-
-          </div>
-
-          <button class="feed-remove-btn" *ngIf="Feed.MediaURL" (click)="removeFeedMedia()">
-
-            🗑 Remove
-
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="fm-field">
-        <label class="fm-label">शीर्षक *</label>
-        <input class="fm-input" type="text" [(ngModel)]="Feed.Title" placeholder="जैसे: मंगल आरती का प्रसाद" />
-      </div>
-
-      <!-- <div class="fm-field">
-        <label class="fm-label">विवरण</label>
-        <textarea class="fm-input fm-textarea" [(ngModel)]="Feed.Description"
-          placeholder="अपने अनुभव या संदेश के बारे में लिखें..."></textarea>
-      </div> -->
-
-
-      <button class="fm-submit-btn" [disabled]="isSubmittingFeed" (click)="submitFeed()">
-        {{ isSubmittingFeed ? 'जमा हो रहा है...' : '🪔 पोस्ट जमा करें' }}
-      </button>
-
-      <div class="fm-note">📋 Admin अनुमोदन के बाद आपकी पोस्ट फ़ीड में दिखाई देगी।</div>
-      <div style="height: 48px;"></div>
-    </div>
-  </div>
-</div>
 
 
 <!-- ═══ GLOBAL TOAST — fixed to viewport, above everything ═══ -->
 <div class="seva-toast" [class.show]="toastVisible">
   <span class="toast-icon">{{ toastIcon }}</span>
   <span class="toast-text">{{ toastMessage }}</span>
+</div>
+
+
+<!-- Share preview modal -->
+<div class="share-preview-overlay" *ngIf="showSharePreview" (click)="cancelSharePreview()">
+  <div class="share-preview-card" (click)="$event.stopPropagation()">
+
+    <div class="share-preview-header">
+      <span>शेयर पूर्वावलोकन</span>
+      <button class="share-preview-close" (click)="cancelSharePreview()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <div class="share-preview-img-wrap">
+      <img [src]="sharePreviewImageUrl" class="share-preview-img" />
+    </div>
+
+    <div class="share-preview-actions">
+      <button class="share-preview-btn share-preview-btn--cancel" (click)="cancelSharePreview()">
+        रद्द करें
+      </button>
+      <button class="share-preview-btn share-preview-btn--confirm" (click)="confirmShare()">
+        <ion-icon name="paper-plane-outline"></ion-icon>
+        शेयर करें
+      </button>
+    </div>
+
+  </div>
 </div>

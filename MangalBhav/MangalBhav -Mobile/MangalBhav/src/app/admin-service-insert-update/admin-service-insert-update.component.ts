@@ -67,7 +67,7 @@ export class AdminServiceInsertUpdateComponent implements OnInit {
     IsActive: true,
     DateAdded: new Date(),
     DateModified: new Date(),
-    UpdatedByUser: 'Admin'
+    UpdatedByUser: '1'   // repurposed: sort order, kept as string
   };
 
   // ==========================
@@ -231,52 +231,114 @@ export class AdminServiceInsertUpdateComponent implements OnInit {
   // SERVICE
   // ==================================
 
+  // saveService() {
+
+  //   if (!this.Service.Name) {
+  //     alert('Please enter service name');
+  //     return;
+  //   }
+
+  //   this.Service.DateModified = new Date();
+
+  //   const apiName =
+  //     this.Service.ServiceID > 0
+  //       ? 'ServicesUpdate'
+  //       : 'ServicesInsert';
+
+  //   this.apinu.postUrlData(
+  //     apiName,
+  //     this.Service
+  //   ).subscribe((res: any) => {
+
+  //     alert(
+  //       this.Service.ServiceID > 0
+  //         ? 'Service Updated'
+  //         : 'Service Added'
+  //     );
+
+  //     this.resetService();
+
+  //     this.loadServices();
+
+  //   });
+
+  // }
+
+
   saveService() {
 
     if (!this.Service.Name) {
       alert('Please enter service name');
       return;
     }
-
+  
     this.Service.DateModified = new Date();
-
+  
+    // UpdatedByUser is used as order — ensure it's always sent as a string
+    this.Service.UpdatedByUser = String(this.Service.UpdatedByUser ?? '1').trim();
+  
     const apiName =
       this.Service.ServiceID > 0
         ? 'ServicesUpdate'
         : 'ServicesInsert';
-
+  
     this.apinu.postUrlData(
       apiName,
       this.Service
     ).subscribe((res: any) => {
-
+  
       alert(
         this.Service.ServiceID > 0
           ? 'Service Updated'
           : 'Service Added'
       );
-
+  
       this.resetService();
-
+  
       this.loadServices();
-
+  
     });
-
+  
   }
-
 
   editService(item: any) {
 
-    console.log('SERVICE CLICKED');
-    console.log(item);
-
     this.selectedTab = 'SERVICE';
-
+  
     this.Service = {
-      ...item
+      ...item,
+      UpdatedByUser: item.UpdatedByUser || '1' // load existing order, fallback if missing
     };
-
+  
   }
+  // editService(item: any) {
+
+  //   console.log('SERVICE CLICKED');
+  //   console.log(item);
+
+  //   this.selectedTab = 'SERVICE';
+
+  //   this.Service = {
+  //     ...item
+  //   };
+
+  // }
+  // resetService() {
+
+  //   this.Service = {
+  //     ServiceID: -1,
+  //     TenantID: 1,
+  //     Name: '',
+  //     Description: '',
+  //     DurationMinutes: 60,
+  //     IsActive: true,
+  //     DateAdded: new Date(),
+  //     DateModified: new Date(),
+  //     UpdatedByUser: 'Admin'
+  //   };
+
+  // }
+
   resetService() {
 
     this.Service = {
@@ -288,9 +350,9 @@ export class AdminServiceInsertUpdateComponent implements OnInit {
       IsActive: true,
       DateAdded: new Date(),
       DateModified: new Date(),
-      UpdatedByUser: 'Admin'
+      UpdatedByUser: '1'
     };
-
+  
   }
 
   // ==================================

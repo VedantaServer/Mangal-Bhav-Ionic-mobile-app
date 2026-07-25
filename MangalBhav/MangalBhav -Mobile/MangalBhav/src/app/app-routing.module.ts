@@ -57,6 +57,8 @@ import { AdminBroadcastInsertComponent } from './admin-broadcast-insert/admin-br
 import { FindPanditDetailComponent } from './find-pandit-detail/find-pandit-detail.component';
 import { PanditChatReportComponent } from './pandit-chat-report/pandit-chat-report.component';
 import { AdminUserSignupReportComponent } from './admin-user-signup-report/admin-user-signup-report.component';
+import { FeedDetailsComponent } from './feed-details/feed-details.component';
+import { DigitalCardComponent } from './digital-card/digital-card.component';
 
 const routes: Routes = [
 
@@ -138,7 +140,7 @@ const routes: Routes = [
     path: 'open-find-pandit',
     component: FindPanditComponent  // directly use the standalone component
   }
-  
+
   ,
   {
     path: 'panditchatreport',
@@ -168,7 +170,7 @@ const routes: Routes = [
     component: OpenCommunityPageComponent  // directly use the standalone component
   },
 
-  
+
   {
     path: 'adminreports',
     component: AdminReposrtsComponent  // directly use the standalone component
@@ -185,11 +187,18 @@ const routes: Routes = [
   {
     path: 'pandit-list',
     component: OpenPanditSearchComponent  // directly use the standalone component
-  }
-  ,
+  },
+  { path: 'digital-card', component: DigitalCardComponent },
+  { path: 'digital-card/:userId', component: DigitalCardComponent },
+
   {
     path: 'india-festival',
     component: IndianFestivalsComponent  // directly use the standalone component
+  }
+  ,
+  {
+    path: 'feed/:id',
+    component: FeedDetailsComponent  // directly use the standalone component
   }
   ,
   {

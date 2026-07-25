@@ -227,6 +227,7 @@ export class JajmanDashboardComponent implements OnInit {
   }
 
   // ── Broadcast message: check storage first, only hit API if not yet seen today ──
+ 
   private async checkAndShowBroadcast() {
     const today = new Date();
     this.broadcastDateStr =
@@ -234,10 +235,20 @@ export class JajmanDashboardComponent implements OnInit {
 
     const seenKey = `broadcast_seen_${this.broadcastDateStr}`;
     const alreadySeen = await this.storage.get(seenKey);
-    if (alreadySeen) return; // already dismissed today's broadcast — skip API entirely
+    if (alreadySeen) return;
+
+    const role ='Yajman' ; // e.g. 'Pandit'
+    const genericDomain = 'BroadcastMessage';
+    const roleDomain = role ? `BroadcastMessage-${role}` : null;
+
+    const domainFilter = roleDomain
+      ? `(Domain='${genericDomain}' OR Domain='${roleDomain}')`
+      : `Domain='${genericDomain}'`;
+
+    const query = `${domainFilter} AND Identifier='${this.broadcastDateStr}'`;
 
     this.apinu.postUrlData(
-      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='BroadcastMessage' AND Identifier='${this.broadcastDateStr}'`)}`,
+      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(query)}`,
       null
     ).subscribe({
       next: (res: any) => {
@@ -245,9 +256,13 @@ export class JajmanDashboardComponent implements OnInit {
           ? JSON.parse(res.MasterDataList)
           : (res.MasterDataList || []);
 
-        if (!list.length) return; // no broadcast configured for today
+        if (!list.length) return;
 
-        this.broadcastMessage = list[0].Description || '';
+        // Prefer role-specific entry over generic if both came back
+        const roleEntry = roleDomain ? list.find((x: any) => x.Domain === roleDomain) : null;
+        const chosen = roleEntry || list.find((x: any) => x.Domain === genericDomain) || list[0];
+
+        this.broadcastMessage = chosen?.Description || '';
         if (this.broadcastMessage.trim()) {
           this.showBroadcastModal = true;
         }

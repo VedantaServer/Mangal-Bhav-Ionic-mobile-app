@@ -415,7 +415,7 @@ export class LoggedinHomeComponent implements OnInit {
     if (!this.userDetails) {
       this.Language = (await this.storage.get('language')) || 'English';
     } else {
-       this.Language = this.userDetails?.Languages || 'English';
+      this.Language = this.userDetails?.Languages || 'English';
     }
 
     const isLoggedIn = await this.storage.get("IsUserLoggedIn");
@@ -471,7 +471,7 @@ export class LoggedinHomeComponent implements OnInit {
 
   getServiceImagePath(serviceName: string): string {
     const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
- //   console.log(`${this.imgBaseUrl}/${englishName}.png`)
+    //   console.log(`${this.imgBaseUrl}/${englishName}.png`)
     return `${this.imgBaseUrl}/${englishName}.png`;
   }
 
@@ -481,6 +481,35 @@ export class LoggedinHomeComponent implements OnInit {
   //   return `assets/img/${englishName}.png`;
   // }
 
+  // loadPujaSection() {
+  //   forkJoin({
+  //     categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
+  //     services: this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null),
+  //     mapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+  //   }).subscribe((res: any) => {
+
+  //     const categories = res.categories.ServiceCategoryList;
+  //     const services = res.services.ServiceList;               // ✅ fixed key
+  //     const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
+
+  //     // Build each category with its services attached
+  //     this.enrichedCategories = categories.map((cat: any) => {
+
+  //       const serviceIDs = mapping
+  //         .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
+  //         .map((m: any) => m.ServiceID);
+
+  //       const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+
+  //       return { ...cat, services: catServices };
+  //     });
+
+  //     console.log('Enriched Categories:', this.enrichedCategories);
+  //     this.loadAllServiceCounts();
+  //   });
+  // }
+
+
   loadPujaSection() {
     forkJoin({
       categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
@@ -489,25 +518,34 @@ export class LoggedinHomeComponent implements OnInit {
     }).subscribe((res: any) => {
 
       const categories = res.categories.ServiceCategoryList;
-      const services = res.services.ServiceList;               // ✅ fixed key
-      const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
+      const services = res.services.ServiceList;
+      const mapping = res.mapping.ServiceCategoryMappingList;
 
-      // Build each category with its services attached
       this.enrichedCategories = categories.map((cat: any) => {
 
         const serviceIDs = mapping
           .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
           .map((m: any) => m.ServiceID);
 
-        const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+        const catServices = services
+          .filter((s: any) => serviceIDs.includes(s.ServiceID))
+          .sort((a: any, b: any) => {
+            const orderA = parseInt(a.UpdatedByUser, 10);
+            const orderB = parseInt(b.UpdatedByUser, 10);
+            const safeA = isNaN(orderA) ? 999 : orderA;
+            const safeB = isNaN(orderB) ? 999 : orderB;
+            return safeA - safeB;
+          });
 
         return { ...cat, services: catServices };
       });
 
       console.log('Enriched Categories:', this.enrichedCategories);
       this.loadAllServiceCounts();
+
     });
   }
+
 
   // Extract English name for image lookup
   getServiceEnglishName(fullName: string): string {

@@ -797,65 +797,6 @@ export class IndianFestivalsComponent implements OnInit {
     }
   }
 
-  /** Same as community page's rasterizePanchangHtml */
-  // private async rasterizePanchangHtml(html: string): Promise<string> {
-  //   const CAPTURE_WIDTH = 1100;
-  //   const iframe = document.createElement('iframe');
-  //   iframe.style.position = 'fixed';
-  //   iframe.style.left = '-9999px';
-  //   iframe.style.top = '0';
-  //   iframe.style.width = `${CAPTURE_WIDTH}px`;
-  //   iframe.style.height = '1000px';
-  //   document.body.appendChild(iframe);
-
-  //   const doc = iframe.contentDocument || iframe.contentWindow!.document;
-  //   doc.open();
-  //   doc.write(html);
-  //   doc.close();
-
-  //   await new Promise(resolve => setTimeout(resolve, 800));
-
-  //   const sheetEl = doc.querySelector('.sheet') as HTMLElement;
-  //   const actualHeight = sheetEl ? sheetEl.getBoundingClientRect().height + 24 : doc.body.scrollHeight;
-  //   iframe.style.height = `${actualHeight}px`;
-
-  //   const canvas = await html2canvas(doc.body, {
-  //     scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false,
-  //     width: CAPTURE_WIDTH, height: actualHeight,
-  //     windowWidth: CAPTURE_WIDTH, windowHeight: actualHeight,
-  //   });
-
-  //   document.body.removeChild(iframe);
-  //   return canvas.toDataURL('image/png');
-  // }
-
-  // async sharePanchangImage() {
-  //   if (!this.panchangImage) return;
-  //   try {
-  //     if (Capacitor.isNativePlatform()) {
-  //       const base64Data = this.panchangImage.split(',')[1];
-  //       const fileName = `panchang-${this.selectedPanchangDate}.png`;
-  //       const savedFile = await Filesystem.writeFile({ path: fileName, data: base64Data, directory: Directory.Cache });
-  //       await Share.share({ title: 'आज का पंचांग', url: savedFile.uri, dialogTitle: 'पंचांग शेयर करें' });
-  //     } else {
-  //       const blob = await (await fetch(this.panchangImage)).blob();
-  //       const file = new File([blob], `panchang-${this.selectedPanchangDate}.png`, { type: 'image/png' });
-  //       if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
-  //         await (navigator as any).share({ files: [file], title: 'आज का पंचांग' });
-  //       } else if ((navigator as any).share) {
-  //         await (navigator as any).share({ title: 'आज का पंचांग', url: this.panchangImage });
-  //       } else {
-  //         const a = document.createElement('a');
-  //         a.href = this.panchangImage;
-  //         a.download = `panchang-${this.selectedPanchangDate}.png`;
-  //         a.click();
-  //       }
-  //     }
-  //   } catch (e) {
-  //     console.error('sharePanchangImage failed:', e);
-  //   }
-  // }
-
   async downloadPanchangImage() {
     if (!this.panchangImage) return;
     const fileName = `panchang-${this.selectedPanchangDate}.png`;

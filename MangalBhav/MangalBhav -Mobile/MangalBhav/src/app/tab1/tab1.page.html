@@ -22,7 +22,7 @@
     <div class="greeting">
       <div class="greeting-text">
         <p class="greeting-sub">{{ t.greetingSubtitle }}</p>
-        <h2 class="greeting-title">{{ t.greetingTitle }}{{FullName}} <br> <span (click)="showIdCard = true"
+        <h2 class="greeting-title">{{ t.greetingTitle }}{{FullName}} <br> <span (click)="openPage('digital-card')"
             style="font-size: small;"><ion-icon name="qr-code-outline"></ion-icon> Show my QR</span>
         </h2>
       </div>
@@ -37,73 +37,9 @@
     </div>
 
     <!-- ID CARD POPUP -->
-    <div class="idcard-overlay" *ngIf="showIdCard" (click)="showIdCard = false">
-      <div class="idcard-popup" (click)="$event.stopPropagation()">
 
-        <!-- Close -->
-        <button class="idcard-close" (click)="showIdCard = false">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
+    <!-- ID CARD POPUP -->
 
-        <!-- Card Header -->
-        <div class="idcard-header">
-          <div class="idcard-brand-row">
-            <img src="../../assets/mangalbhavlogo1.jpeg" class="idcard-logo" />
-            <div>
-              <div class="idcard-brand-name">Mangal Bhav</div>
-              <div class="idcard-brand-sub">✦ Verified Pandit Ji ✦</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card Body -->
-        <div class="idcard-body">
-
-          <!-- Profile Photo -->
-          <div class="idcard-photo-wrap">
-            <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="idcard-photo" (error)="onImgError($event)" />
-            <div class="idcard-avatar-fallback" *ngIf="!profileImageUrl">
-              {{ FullName?.charAt(0) || '🙏' }}
-            </div>
-            <div class="idcard-photo-ring"></div>
-            <div class="idcard-verified-badge">
-              <ion-icon name="checkmark-circle"></ion-icon>
-            </div>
-          </div>
-
-          <!-- Name -->
-          <h2 class="idcard-name">{{ FullName }}</h2>
-
-          <!-- QR Code -->
-          <div class="idcard-qr-wrap" #qrSection>
-            <div class="idcard-qr-label">Scan to Book</div>
-            <qrcode #qrCode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="150" errorCorrectionLevel="M">
-            </qrcode>
-          </div>
-
-          <!-- ✅ Share Section -->
-          <div class="idcard-share-section">
-
-            <div class="idcard-share-buttons">
-
-              <!-- Share QR Image on WhatsApp -->
-              <button class="share-btn whatsapp" (click)="shareQROnWhatsApp()">
-                <ion-icon name="qr-code-outline"></ion-icon>
-                <span>Share QR</span>
-              </button>
-
-              <!-- Share App Download Link on WhatsApp -->
-              <button class="share-btn whatsapp-app" (click)="shareAppLinkOnWhatsApp()">
-                <ion-icon name="download-outline"></ion-icon>
-                <span>Share App</span>
-              </button>
-
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
 
     <!-- ===== SECTION LABEL ===== -->
@@ -220,6 +156,166 @@
 </ion-content>
 
 
+
+<div class="idcard-overlay" *ngIf="showIdCard" (click)="closeIdCard()">
+  <div class="idcard-flip-wrap" [class.flipped]="isCardFlipped" (click)="$event.stopPropagation()">
+
+    <button class="idcard-close" (click)="closeIdCard()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+
+    <div class="idcard-flip-inner">
+
+      <!-- ========== FRONT ========== -->
+      <div class="idcard-face idcard-front">
+
+        <div class="idcard-arch-header">
+          <div class="idcard-header-logo">
+            <img src="../../assets/mangalbhavlogo1.jpeg" />
+          </div>
+          <h2 class="idcard-brand-title">मंगल भव:</h2>
+          <p class="idcard-brand-tagline">✦ शांति &nbsp;•&nbsp; समृद्धि &nbsp;•&nbsp; सुरक्षा ✦</p>
+        </div>
+
+        <div class="idcard-ribbon">✦ अधिकृत वैदिक पुरोहित ✦</div>
+
+        <div class="idcard-photo-wrap">
+          <img *ngIf="profileImageUrl" [src]="profileImageUrl" class="idcard-photo" (error)="onImgError($event)" />
+          <div class="idcard-avatar-fallback" *ngIf="!profileImageUrl">
+            {{ FullName?.charAt(0) || '🙏' }}
+          </div>
+        </div>
+
+        <div class="idcard-name-box">{{ FullName }}</div>
+        <div class="idcard-designation">वैदिक पुरोहित एवं ज्योतिषाचार्य</div>
+
+        <div class="idcard-detail-table">
+          <div class="idcard-detail-row">
+            <span class="idcard-detail-label"><ion-icon name="id-card-outline"></ion-icon> पुरोहित आईडी</span>
+            <span class="idcard-detail-colon">:</span>
+            <span class="idcard-detail-value">{{ userDetails?.UserID }}</span>
+          </div>
+          <div class="idcard-detail-row">
+            <span class="idcard-detail-label"><ion-icon name="person-outline"></ion-icon> श्रेणी</span>
+            <span class="idcard-detail-colon">:</span>
+            <span class="idcard-detail-value">{{ userDetails?.Category || '—' }}</span>
+          </div>
+          <div class="idcard-detail-row">
+            <span class="idcard-detail-label"><ion-icon name="star-outline"></ion-icon> अनुभव</span>
+            <span class="idcard-detail-colon">:</span>
+            <span class="idcard-detail-value">{{ userDetails?.Experience || '—' }}</span>
+          </div>
+          <div class="idcard-detail-row">
+            <span class="idcard-detail-label"><ion-icon name="book-outline"></ion-icon> विशेषज्ञता</span>
+            <span class="idcard-detail-colon">:</span>
+            <span class="idcard-detail-value">{{ userDetails?.Specialization || '—' }}</span>
+          </div>
+          <div class="idcard-detail-row">
+            <span class="idcard-detail-label"><ion-icon name="call-outline"></ion-icon> मोबाइल</span>
+            <span class="idcard-detail-colon">:</span>
+            <span class="idcard-detail-value">{{ userDetails?.MobileNo || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="idcard-bottom-row">
+          <div class="idcard-qr-box" #qrSection>
+            <qrcode #qrCode [qrdata]="'pandituserid=' + userDetails.UserID" [width]="110" errorCorrectionLevel="M">
+            </qrcode>
+          </div>
+          <div class="idcard-verified-box">
+            <ion-icon name="shield-checkmark" class="idcard-verified-icon"></ion-icon>
+            <span class="idcard-verified-text">सत्यापित पुरोहित<br /><b>VERIFIED</b></span>
+          </div>
+        </div>
+
+        <p class="idcard-scan-hint">इस आईडी को स्कैन कर पुरोहित का प्रोफाइल एवं सेवाएं देखें</p>
+
+        <div class="idcard-footer-front">
+          <span class="idcard-lotus">🪷</span>
+          <p>विश्वास &nbsp;•&nbsp; सेवा &nbsp;•&nbsp; संस्कार</p>
+        </div>
+
+        <button class="idcard-flip-btn" (click)="isCardFlipped = true">
+          <ion-icon name="reload-outline"></ion-icon> नियम व सेवाएं देखें
+        </button>
+      </div>
+
+      <!-- ========== BACK ========== -->
+      <div class="idcard-face idcard-back">
+
+        <div class="idcard-arch-header idcard-arch-header--small">
+          <div class="idcard-header-logo idcard-header-logo--small">
+            <img src="../../assets/mangalbhavlogo1.jpeg" />
+          </div>
+          <div>
+            <h2 class="idcard-brand-title idcard-brand-title--small">मंगल भव:</h2>
+            <p class="idcard-brand-tagline idcard-brand-tagline--small">शांति • समृद्धि • सुरक्षा</p>
+          </div>
+        </div>
+
+        <div class="idcard-back-body">
+
+          <div class="idcard-section-label">✦ प्रमुख सेवाएं ✦</div>
+          <ul class="idcard-services-list">
+            <li *ngFor="let svc of panditServices">{{ svc }}</li>
+            <li *ngIf="!panditServices?.length" class="idcard-services-empty">सेवाएं शीघ्र जोड़ी जाएंगी</li>
+          </ul>
+
+          <div class="idcard-rules-banner">✦ महत्वपूर्ण नियम ✦</div>
+          <ul class="idcard-rules-list">
+            <li>मैं वैदिक विधि एवं शास्त्रानुसार पूजा/कर्मकांड सम्पन्न करूँगा।</li>
+            <li>समय की पाबंदी एवं शिष्टाचार का पूर्ण पालन करूँगा।</li>
+            <li>यजमान से व्यक्तिगत संपर्क (नंबर शेयरिंग) नहीं करूँगा।</li>
+            <li>मंगल भव: की सेवा नीति एवं दिशा-निर्देशों का पालन करूँगा।</li>
+            <li>धूम्रपान, नशा एवं अनुचित आचरण से दूर रहूँगा।</li>
+            <li>भारतीय संस्कृति एवं मर्यादा का सम्मान करूँगा।</li>
+          </ul>
+
+          <div class="idcard-validity-box">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>वैधता अवधि&nbsp;:&nbsp;{{ userDetails?.ValidityDate || '—' }}</span>
+          </div>
+
+          <div class="idcard-signature-row">
+            <div class="idcard-signature-block">
+              <p class="idcard-signature-script">Signature</p>
+              <p class="idcard-signature-name">निर्देशक</p>
+              <p class="idcard-signature-person">परशुराम दीक्षित</p>
+              <p class="idcard-signature-title">निर्देशक, मंगल भव:</p>
+            </div>
+            <div class="idcard-seal">
+              <span>मंगल भव:</span>
+              <b>अधिकृत</b>
+              <small>AUTHORISED</small>
+            </div>
+          </div>
+
+          <p class="idcard-shlok">॥ पूज्यन्ते वैदिकाः, तत्र देवता रमन्ते ॥</p>
+        </div>
+
+        <div class="idcard-footer-back">
+          <div class="idcard-footer-contact">
+            <span><ion-icon name="globe-outline"></ion-icon> www.mangalbhav.com</span>
+            <span><ion-icon name="mail-outline"></ion-icon> mangalbhav09@gmail.com</span>
+          </div>
+          <div class="idcard-footer-address">
+            <ion-icon name="location-outline"></ion-icon> L29, Connaught Place, Outer Circle, New Delhi – 110001,
+            India
+          </div>
+          <p class="idcard-disclaimer">
+            यह आईडी कार्ड केवल मंगल भव: अधिकृत पुरोहितों के उपयोग हेतु है। दुरुपयोग करने पर कानूनी कार्यवाही की
+            जाएगी।
+          </p>
+        </div>
+
+        <button class="idcard-flip-btn idcard-flip-btn--back" (click)="isCardFlipped = false">
+          <ion-icon name="reload-outline"></ion-icon> आगे देखें
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <div class="share-backdrop" *ngIf="showShareModal" (click)="closeShare()"></div>
 

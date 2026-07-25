@@ -6,13 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { TabsPageRoutingModule } from './tabs-routing.module';
 
 import { TabsPage } from './tabs.page';
+import { BottomNavBarComponent } from '../bottom-nav-bar/bottom-nav-bar.component';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    TabsPageRoutingModule
+    TabsPageRoutingModule,BottomNavBarComponent
   ],
   declarations: [TabsPage]
 })

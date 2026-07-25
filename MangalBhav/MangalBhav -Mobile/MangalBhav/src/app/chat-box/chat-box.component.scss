@@ -677,3 +677,29 @@ ion-content {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
   }
+
+  .mic-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #FF6F00 0%, #FFA040 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255, 111, 0, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  
+    ion-icon {
+      font-size: 20px;
+    }
+  
+    &:active {
+      transform: scale(0.92);
+      box-shadow: 0 1px 3px rgba(255, 111, 0, 0.3);
+    }
+  }

@@ -1,10 +1,26 @@
 <!-- <app-tabscommonheader></app-tabscommonheader> -->
-
+<ion-header [translucent]="false">
+  <div class="notif-header">
+    <button class="back-btn" (click)="goBack()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+    <div class="notif-header-title">
+      <span class="notif-header-om">🔔</span>
+      <div>
+        <h1 class="notif-title">Notifications</h1>
+        <p class="notif-sub">{{ notifications.length }} unread</p>
+      </div>
+    </div>
+    <button class="clear-all-btn" *ngIf="!isLoading && notifications.length > 0" (click)="clearAll()">
+      Clear all
+    </button>
+  </div>
+</ion-header>
 <ion-content [fullscreen]="true">
   <div class="notif-page">
 
     <!-- ── Page Header ── -->
-    <div class="notif-header">
+    <!-- <div class="notif-header">
       <button class="back-btn" (click)="goBack()">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
@@ -18,7 +34,7 @@
       <button class="clear-all-btn" *ngIf="!isLoading && notifications.length > 0" (click)="clearAll()">
         Clear all
       </button>
-    </div>
+    </div> -->
 
     <!-- ── Loading Skeleton ── -->
     <div *ngIf="isLoading" class="skeleton-list">

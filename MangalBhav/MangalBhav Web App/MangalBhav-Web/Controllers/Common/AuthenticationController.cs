@@ -1935,7 +1935,7 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                 var folderPath = getServerPathByPurpose(filePurpose);
                 string fileExtension = Path.GetExtension(file.FileName).ToLower();
 
-                if (fileExtension != ".mp3")
+                if (fileExtension != ".mp3"  && fileExtension != ".mp4")
                 {
                     fileExtension = ".png";
                 }

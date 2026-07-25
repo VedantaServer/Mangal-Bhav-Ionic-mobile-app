@@ -1,0 +1,176 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="inner-title-block">
+        <div class="inner-title">Post</div>
+        <div class="inner-title-sub">✦ Mangal.Bhav ✦</div>
+      </div>
+
+      <div class="inner-logo" routerLink="/open-community-page">
+        <img src="../../assets/mangalbhavlogo1.jpeg" />
+      </div>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fd-content">
+
+  <!-- Loading -->
+  <div class="fd-loading" *ngIf="loading">
+    <ion-spinner name="crescent" color="warning"></ion-spinner>
+    <span>लोड हो रहा है...</span>
+  </div>
+
+  <!-- Not found -->
+  <div class="fd-notfound" *ngIf="!loading && notFound">
+    <span class="fd-notfound-icon">🪔</span>
+    <span>यह पोस्ट उपलब्ध नहीं है</span>
+    <button class="fd-back-btn" (click)="goBack()">वापस जाएं</button>
+  </div>
+
+  <!-- Post card -->
+  <div class="fd-card insta-post" *ngIf="!loading && item as post">
+
+    <div class="ip-header">
+      <div class="ip-avatar">{{ (post.UserName || '?').charAt(0) }}</div>
+      <div class="ip-header-text">
+        <span class="ip-username">{{ post.UserName }}</span>
+        <span class="ip-meta-row">
+          <span class="ip-location" *ngIf="post.Location">📍 {{ post.Location }}</span>
+          <span class="ip-date" *ngIf="post.PublishDate">🕐 {{ post.PublishDate | date:'d MMM, h:mm a' }}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="ip-media-wrap" *ngIf="hasFeedMedia(post) && !brokenMedia" (click)="openSourcePage()">
+      <video *ngIf="post.MediaType === 'Video'" [src]="getFeedMediaPath(post)" class="ip-media" controls playsinline
+        muted crossorigin="anonymous" (error)="onMediaError()"></video>
+      <img *ngIf="post.MediaType !== 'Video'" [src]="getFeedMediaPath(post)" class="ip-media" crossorigin="anonymous"
+        (error)="onMediaError()" />
+    </div>
+
+    <ng-container *ngIf="!hasFeedMedia(post) || brokenMedia">
+      <div class="ip-caption">
+        <span class="ip-caption-user">{{ post.UserName }}</span>
+        <span class="ip-caption-title">{{ post.Title }}</span>
+      </div>
+      <div class="ip-caption-desc" *ngIf="post.Description">{{ post.Description }}</div>
+    </ng-container>
+
+    <button class="ip-source-btn" *ngIf="getSourcePageLink(post)" (click)="openSourcePage()">
+      <span>{{ getSourceLabel(post) }}</span>
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+
+    <div class="ip-actions">
+      <button class="ip-action-btn" (click)="toggleLike()" [disabled]="post.isLikeInFlight">
+        <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'" [class.liked]="post.isLiked"></ion-icon>
+      </button>
+      <button class="ip-action-btn" (click)="focusCommentInput()">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+      </button>
+      <button class="ip-action-btn" (click)="shareFeedAsImage(post)" [disabled]="isPreparingShare">
+        <ion-spinner *ngIf="isPreparingShare" name="dots" style="width:18px;height:18px;"></ion-spinner>
+        <ion-icon *ngIf="!isPreparingShare" name="paper-plane-outline"></ion-icon>
+      </button>
+      <div class="ip-views">
+        <ion-icon name="eye-outline"></ion-icon>
+        <span>{{ post.viewCount ?? 0 }}</span>
+      </div>
+    </div>
+
+    <div class="ip-like-count" *ngIf="post.likeCount">{{ post.likeCount }} likes</div>
+
+    <ng-container *ngIf="hasFeedMedia(post) && !brokenMedia">
+      <div class="ip-caption">
+        <span class="ip-caption-user">{{ post.UserName }}</span>
+        <span class="ip-caption-title">{{ post.Title }}</span>
+      </div>
+      <div class="ip-caption-desc" *ngIf="post.Description">{{ post.Description }}</div>
+    </ng-container>
+  </div>
+
+  <!-- Comments -->
+  <div class="fd-comments" *ngIf="!loading && item">
+    <div class="fd-comments-title">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      टिप्पणियाँ <span class="fd-comments-count">{{ item.commentCount ?? 0 }}</span>
+    </div>
+
+    <div class="comments-loading" *ngIf="commentsLoading">
+      <ion-spinner name="crescent" color="warning"></ion-spinner>
+    </div>
+
+    <div class="comments-empty" *ngIf="!commentsLoading && !commentsList.length">
+      <span class="comments-empty-icon">🙏</span>
+      <span>पहली टिप्पणी करें</span>
+    </div>
+
+    <div class="comment-item" *ngFor="let c of commentsList">
+      <div class="comment-avatar">{{ (c.UserName || '?').charAt(0) }}</div>
+      <div class="comment-body">
+        <div class="comment-line">
+          <span class="comment-username">{{ c.UserName }}</span>
+          <span class="comment-text">{{ c.Comment }}</span>
+        </div>
+        <div class="comment-meta">{{ c.DateAdded | date:'MMM d, h:mm a' }}</div>
+      </div>
+    </div>
+
+    <div style="height: 90px;"></div>
+  </div>
+
+</ion-content>
+
+<!-- Sticky comment input -->
+<div class="comment-input-bar fd-input-bar" *ngIf="!loading && item">
+  <div class="comment-input-avatar">{{ (userDetails?.Name || '?').charAt(0) }}</div>
+  <input #commentInput class="comment-input-field" type="text" [(ngModel)]="newCommentText"
+    placeholder="टिप्पणी जोड़ें..." (keyup.enter)="submitComment()" />
+  <button class="comment-send-btn" [class.active]="newCommentText.trim()"
+    [disabled]="isSubmittingComment || !newCommentText.trim()" (click)="submitComment()">
+    <ion-icon *ngIf="!isSubmittingComment" name="send" [class.active]="newCommentText.trim()"></ion-icon>
+    <span *ngIf="isSubmittingComment">···</span>
+  </button>
+</div>
+
+<!-- Toast -->
+<div class="seva-toast" [class.show]="toastVisible">
+  <span class="toast-icon">{{ toastIcon }}</span>
+  <span class="toast-text">{{ toastMessage }}</span>
+</div>
+
+
+<!-- Share preview modal -->
+<div class="share-preview-overlay" *ngIf="showSharePreview" (click)="cancelSharePreview()">
+  <div class="share-preview-card" (click)="$event.stopPropagation()">
+
+    <div class="share-preview-header">
+      <span>शेयर पूर्वावलोकन</span>
+      <button class="share-preview-close" (click)="cancelSharePreview()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <div class="share-preview-img-wrap">
+      <img [src]="sharePreviewImageUrl" class="share-preview-img" />
+    </div>
+
+    <div class="share-preview-actions">
+      <button class="share-preview-btn share-preview-btn--cancel" (click)="cancelSharePreview()">
+        रद्द करें
+      </button>
+      <button class="share-preview-btn share-preview-btn--confirm" (click)="confirmShare()">
+        <ion-icon name="paper-plane-outline"></ion-icon>
+        शेयर करें
+      </button>
+    </div>
+
+  </div>
+</div>

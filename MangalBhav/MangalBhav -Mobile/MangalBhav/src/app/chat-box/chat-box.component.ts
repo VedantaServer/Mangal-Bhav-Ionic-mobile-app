@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule, IonContent, NavController } from '@ionic/angular';
+import { IonicModule, IonContent, NavController, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FormsModule } from '@angular/forms';
@@ -9,8 +9,8 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
-import fixWebmDuration from 'fix-webm-duration';
 import { Capacitor } from '@capacitor/core';
+
 @Component({
   selector: 'app-chat-box',
   templateUrl: './chat-box.component.html',
@@ -28,10 +28,12 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   withUserID: number = 0;
   chatType: string = '';
   withUserName: string = 'Pandit Ji';
-  isLoggedIn: boolean = false;   // ← add this
+  isLoggedIn: boolean = false;
+  headerTitle: string = '';
+
   // ── Notification sound state ──
-private isInitialLoad = true;
-private notificationAudioCtx: AudioContext | null = null;
+  private isInitialLoad = true;
+  private notificationAudioCtx: AudioContext | null = null;
 
   @ViewChild('chatContent') content!: IonContent;
 
@@ -46,16 +48,16 @@ private notificationAudioCtx: AudioContext | null = null;
     AskPandit: 'जय श्री राम 🙏 पंडित जी जल्द ही आपके प्रश्न का उत्तर देंगे।'
   };
 
-  constructor(private route: ActivatedRoute,
+  constructor(
+    private route: ActivatedRoute,
     private routerCtrl: NavController,
     private apinu: ApiNU,
     private api: Api,
     private storage: Storage,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    public toastController: ToastController
   ) { }
-
-
 
   private playNotificationSound() {
     try {
@@ -63,13 +65,11 @@ private notificationAudioCtx: AudioContext | null = null;
         this.notificationAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
       }
       const ctx = this.notificationAudioCtx;
-  
-      // Some browsers/webviews suspend the context until a user gesture happens.
-      // Resuming here is a no-op if it's already running.
+
       if (ctx.state === 'suspended') {
         ctx.resume();
       }
-  
+
       const playTone = (freq: number, startTime: number, duration: number) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -83,15 +83,14 @@ private notificationAudioCtx: AudioContext | null = null;
         osc.start(startTime);
         osc.stop(startTime + duration);
       };
-  
+
       const now = ctx.currentTime;
-      playTone(880, now, 0.15);         // ding
-      playTone(1108, now + 0.18, 0.2);  // dong
+      playTone(880, now, 0.15);
+      playTone(1108, now + 0.18, 0.2);
     } catch (e) {
       console.error('Notification sound error:', e);
     }
   }
-
 
   async ngOnInit() {
 
@@ -108,8 +107,8 @@ private notificationAudioCtx: AudioContext | null = null;
     this.withUserName = withUserName || 'Pandit Ji';
 
     if (!this.isLoggedIn) {
-      // Just set a header label, skip terms + all data fetching
       this.GroupName = this.chatType === 'OneToOne' ? this.withUserName : 'Chat';
+      this.headerTitle = this.GroupName;
       return;
     }
 
@@ -118,15 +117,18 @@ private notificationAudioCtx: AudioContext | null = null;
     // ── OneToOne (Pandit direct chat) ──
     if (this.chatType === 'OneToOne') {
       this.GroupName = this.withUserName;
+      this.headerTitle = this.withUserName;
       this.loadOneToOneMessages();
       this.startPolling(() => this.loadOneToOneMessages());
       return;
     }
 
-
     // ── Support ──
     if (Number(groupId) === -1) {
       this.GroupName = 'Support';
+      this.headerTitle = this.withUserID && this.withUserName
+        ? `Support · ${this.withUserName}`
+        : 'Support';
       this.apinu.postUrlData(
         `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='Support' and identifier='Support'`}`, null
       ).subscribe((res: any) => {
@@ -141,6 +143,9 @@ private notificationAudioCtx: AudioContext | null = null;
     // ── AskPandit ──
     if (Number(groupId) === -2) {
       this.GroupName = 'AskPandit';
+      this.headerTitle = this.withUserID && this.withUserName
+        ? `AskPandit · ${this.withUserName}`
+        : 'AskPandit';
       this.apinu.postUrlData(
         `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='AskPandit' and identifier='AskPandit'`}`, null
       ).subscribe((res: any) => {
@@ -157,14 +162,11 @@ private notificationAudioCtx: AudioContext | null = null;
     this.apinu.postUrlData(`ChatGroupSelect?chatGroupID=${this.customGroupID}`, null)
       .subscribe((res: any) => {
         this.GroupName = res.ChatGroupList[0]?.GroupName;
+        this.headerTitle = this.GroupName;
         this.loadGroupMessages();
         this.startPolling(() => this.loadGroupMessages());
       });
-
-
   }
-
-
 
   // ── Polling helpers ─────────────────────────────────────
   private startPolling(reloadFn: () => void) {
@@ -178,18 +180,6 @@ private notificationAudioCtx: AudioContext | null = null;
       this.pollHandle = null;
     }
   }
-
-  // Assigns the freshly-fetched list and, only if the count actually grew
-  // (i.e. a genuinely new message arrived — not just a poll re-fetch of the
-  // same data), scrolls to bottom so the person sees it without losing their
-  // place if they were scrolled up reading older messages.
-  // private applyMessages(list: any[]) {
-  //   const prevLen = this.allMessagesOfCurrentChatBox?.length || 0;
-  //   this.allMessagesOfCurrentChatBox = list || [];
-  //   if (this.allMessagesOfCurrentChatBox.length > prevLen) {
-  //     setTimeout(() => this.scrollToBottom(), 60);
-  //   }
-  // }
 
   private scrollToBottom() {
     this.content?.scrollToBottom(250);
@@ -268,7 +258,6 @@ private notificationAudioCtx: AudioContext | null = null;
       isDeleted: false
     };
 
-
     this.apinu.postUrlData(`MessagesInsert`, body).subscribe(() => {
 
       const staffID = this.GroupName === 'Support' ? this.supportUserID
@@ -277,8 +266,6 @@ private notificationAudioCtx: AudioContext | null = null;
 
       const senderIsCustomer = staffID > 0 && Number(this.userDetails.UserID) !== Number(staffID);
 
-      // Only auto-reply if this is the customer's FIRST message in the thread —
-      // i.e. staff (or a previous auto-reply) hasn't sent anything yet.
       const shouldAutoReply = senderIsCustomer
         && (this.GroupName === 'Support' || this.GroupName === 'AskPandit')
         && !this.hasStaffAlreadyReplied(staffID);
@@ -290,12 +277,9 @@ private notificationAudioCtx: AudioContext | null = null;
       }
     });
 
-
     this.newMessage = '';
   }
 
-  // ── Fires the canned "we'll help you shortly" reply from the Support/
-  //    AskPandit account back to the customer, then refreshes the thread. ──
   private sendAutoReply(staffID: number, customerID: number) {
     const text = this.autoReplyText[this.GroupName] || 'We will get back to you shortly 🙏';
 
@@ -311,8 +295,6 @@ private notificationAudioCtx: AudioContext | null = null;
       isDeleted: false
     };
 
-    // Small delay so it visually lands a beat after the customer's message,
-    // reading as a reply rather than landing in the exact same instant.
     setTimeout(() => {
       this.apinu.postUrlData(`MessagesInsert`, autoBody).subscribe(() => {
         this.refreshAfterSend();
@@ -336,18 +318,16 @@ private notificationAudioCtx: AudioContext | null = null;
     this.routerCtrl.back();
   }
 
-  // Add this helper method
   isMine(senderID: number): boolean {
     return Number(senderID) === Number(this.userDetails?.UserID);
   }
+
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
   }
 
-
   showTermsModal = false;
   termsChecked = false;
-
 
   private checkTermsAcceptance() {
     const accepted = localStorage.getItem('chatTermsAccepted');
@@ -365,14 +345,15 @@ private notificationAudioCtx: AudioContext | null = null;
     this.goBack();
   }
 
-  // Returns true if the staff/support account has already sent at least one
-  // message in the currently loaded thread (including a prior auto-reply).
-  // Used to gate the auto-reply so it only fires on the customer's FIRST
-  // message, not every message.
   private hasStaffAlreadyReplied(staffID: number): boolean {
     const list = this.allMessagesOfCurrentChatBox || [];
     return list.some((m: any) => Number(m.SenderID) === Number(staffID));
   }
+
+  // ══════════════════════════════════════════════════════════
+  // AUDIO RECORDING
+  // ══════════════════════════════════════════════════════════
+
   isRecording = false;
   recordingDuration = 0;
 
@@ -380,19 +361,25 @@ private notificationAudioCtx: AudioContext | null = null;
   private audioChunks: Blob[] = [];
   private audioStream: MediaStream | null = null;
   private recordingTimer: any = null;
+  private recordingStartTime = 0;
 
   // Store downloaded audio URLs
   audioUrls: { [key: string]: string } = {};
 
-
-
   async startRecording() {
-    try {
-      this.audioStream =
-        await navigator.mediaDevices.getUserMedia({
-          audio: true
-        });
 
+    if (this.isRecording || this.audioStream) {
+      console.warn('Recording already in progress — ignoring tap');
+      return;
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.showToast('Microphone not supported on this device', 'danger');
+      return;
+    }
+
+    try {
+      this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       this.audioChunks = [];
 
       const mimeType = this.getSupportedMimeType();
@@ -404,151 +391,79 @@ private notificationAudioCtx: AudioContext | null = null;
       this.recordingStartTime = Date.now();
 
       this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
-        console.log(
-          'Audio chunk:',
-          event.data.size,
-          event.data.type
-        );
-
         if (event.data && event.data.size > 0) {
           this.audioChunks.push(event.data);
         }
       };
 
+      this.mediaRecorder.onerror = (event: any) => {
+        console.error('MediaRecorder error:', event.error);
+        this.showToast('Recording failed — please try again', 'danger');
+        this.cancelRecording();
+      };
+
       this.mediaRecorder.onstop = async () => {
 
-        const durationMs =
-          Date.now() - this.recordingStartTime;
+        const usedMimeType = this.mediaRecorder?.mimeType || mimeType || 'audio/webm';
 
-        const usedMimeType =
-          this.mediaRecorder?.mimeType ||
-          mimeType ||
-          'audio/webm';
+        const rawBlob = new Blob(this.audioChunks, { type: usedMimeType });
 
-        console.log('Recording stopped');
-        console.log('Duration MS:', durationMs);
-        console.log('Chunks:', this.audioChunks.length);
-
-        const rawBlob = new Blob(
-          this.audioChunks,
-          {
-            type: usedMimeType
-          }
-        );
-
-        console.log(
-          'Raw Blob:',
-          rawBlob.size,
-          rawBlob.type
-        );
-
-        // Stop microphone
-        this.audioStream
-          ?.getTracks()
-          .forEach(track => track.stop());
-
+        this.audioStream?.getTracks().forEach(track => track.stop());
         this.audioStream = null;
 
-        let finalBlob = rawBlob;
-
-        // Fix WebM duration metadata before uploading
-        if (usedMimeType.includes('webm')) {
-
-          try {
-
-            finalBlob = await fixWebmDuration(
-              rawBlob,
-              durationMs
-            );
-
-            console.log(
-              'Fixed WebM Blob:',
-              finalBlob.size,
-              finalBlob.type
-            );
-
-          }
-          catch (error) {
-
-            console.error(
-              'WebM duration fix failed:',
-              error
-            );
-
-            // Continue with original blob
-            finalBlob = rawBlob;
-
-          }
-
+        try {
+          // Convert to WAV so playback never depends on the WebView correctly
+          // streaming/seeking a WebM+Opus (or AAC/MP4) container — WAV is raw
+          // PCM with a trivial header, which every <audio> element decodes
+          // fully and reliably regardless of platform/WebView version.
+          const wavBlob = await this.convertToWav(rawBlob);
+          this.uploadAudioMessage(wavBlob, 'audio/wav');
+        } catch (error) {
+          console.error('WAV conversion failed, falling back to original format:', error);
+          this.uploadAudioMessage(rawBlob, usedMimeType);
         }
-
-        this.uploadAudioMessage(
-          finalBlob,
-          usedMimeType
-        );
-
       };
-      // Start without timeslice
+
       this.mediaRecorder.start(1000);
 
       this.isRecording = true;
       this.recordingDuration = 0;
 
       this.recordingTimer = setInterval(() => {
-
-        this.recordingDuration =
-          Math.floor(
-            (Date.now() - this.recordingStartTime)
-            / 1000
-          );
-
+        this.recordingDuration = Math.floor((Date.now() - this.recordingStartTime) / 1000);
       }, 250);
 
-    }
-    catch (error) {
+    } catch (error: any) {
+      console.error('Microphone error:', error);
 
-      console.error(
-        'Microphone error:',
-        error
-      );
+      this.audioStream?.getTracks().forEach(track => track.stop());
+      this.audioStream = null;
+      this.mediaRecorder = null;
+      this.isRecording = false;
 
+      if (error?.name === 'NotAllowedError' || error?.name === 'PermissionDeniedError') {
+        this.showToast('Microphone permission denied. Enable it in device settings.', 'danger');
+      } else if (error?.name === 'NotFoundError') {
+        this.showToast('No microphone found on this device', 'danger');
+      } else if (error?.name === 'NotReadableError') {
+        this.showToast('Microphone is busy — try again', 'danger');
+      } else {
+        this.showToast('Could not start recording. Please try again.', 'danger');
+      }
     }
   }
 
-
-
   stopRecording() {
-
-    if (
-      !this.mediaRecorder ||
-      this.mediaRecorder.state !== 'recording'
-    ) {
-      return;
-    }
-
-    console.log(
-      'Stopping recording after:',
-      Date.now() - this.recordingStartTime,
-      'ms'
-    );
+    if (!this.mediaRecorder || this.mediaRecorder.state !== 'recording') return;
 
     this.mediaRecorder.stop();
-
     this.isRecording = false;
 
     if (this.recordingTimer) {
-
-      clearInterval(
-        this.recordingTimer
-      );
-
+      clearInterval(this.recordingTimer);
       this.recordingTimer = null;
-
     }
-
   }
-
-
 
   cancelRecording() {
     if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
@@ -569,6 +484,61 @@ private notificationAudioCtx: AudioContext | null = null;
     }
   }
 
+  // Decodes the recorded blob (whatever container/codec MediaRecorder used)
+  // via Web Audio API and re-encodes it as a plain 16-bit PCM WAV file.
+  // WAV has no complex sample-table/seek structure to be misparsed by
+  // WebViews, which is what was causing playback to stop partway through
+  // otherwise perfectly valid WebM/Opus and AAC/MP4 recordings.
+  private async convertToWav(blob: Blob): Promise<Blob> {
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    const numChannels = audioBuffer.numberOfChannels;
+    const sampleRate = audioBuffer.sampleRate;
+    const bitDepth = 16;
+
+    const samples = audioBuffer.length * numChannels;
+    const buffer = new ArrayBuffer(44 + samples * 2);
+    const view = new DataView(buffer);
+
+    const writeString = (offset: number, str: string) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + samples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM format
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numChannels * (bitDepth / 8), true);
+    view.setUint16(32, numChannels * (bitDepth / 8), true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, samples * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < audioBuffer.length; i++) {
+      for (let ch = 0; ch < numChannels; ch++) {
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(ch)[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+        offset += 2;
+      }
+    }
+
+    await audioCtx.close();
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  async showToast(message: string, color = 'primary') {
+    const toast = await this.toastController.create({
+      message, duration: 4000, color, position: 'top'
+    });
+    toast.present();
+  }
 
   uploadAudioMessage(audioBlob: Blob, mimeType: string) {
 
@@ -577,7 +547,10 @@ private notificationAudioCtx: AudioContext | null = null;
 
     let extension = 'm4a';
 
-    if (mimeType.includes('webm')) {
+    if (mimeType.includes('wav')) {
+      extension = 'wav';
+    }
+    else if (mimeType.includes('webm')) {
       extension = 'webm';
     }
     else if (mimeType.includes('ogg')) {
@@ -593,60 +566,29 @@ private notificationAudioCtx: AudioContext | null = null;
       extension = 'm4a';
     }
 
-    const fileName =
-      `voice_${Date.now()}.${extension}`;
+    const fileName = `voice_${Date.now()}.${extension}`;
 
-    const audioFile = new File(
-      [audioBlob],
-      fileName,
-      {
-        type: mimeType
-      }
-    );
+    const audioFile = new File([audioBlob], fileName, { type: mimeType });
 
-    console.log(
-      'File being uploaded:',
-      audioFile.name,
-      audioFile.type,
-      audioFile.size
-    );
+    console.log('File being uploaded:', audioFile.name, audioFile.type, audioFile.size);
 
     this.api.uploadFiles(
       [audioFile],
       'Chat',
       this.userDetails.UserID,
       'ChatAudio'
-    )
-      .subscribe({
-
-        next: (res: any) => {
-
-          console.log(
-            'Upload response:',
-            res
-          );
-
-          if (res?.Status === 'Success') {
-
-            this.sendAudioMessage(
-              res.FileName
-            );
-
-          }
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Audio upload failed:',
-            err
-          );
-
+    ).subscribe({
+      next: (res: any) => {
+        console.log('Upload response:', res);
+        if (res?.Status === 'Success') {
+          this.sendAudioMessage(res.FileName);
         }
-
-      });
-
+      },
+      error: (err) => {
+        console.error('Audio upload failed:', err);
+        this.showToast('Failed to send voice message', 'danger');
+      }
+    });
   }
 
   sendAudioMessage(fileName: string) {
@@ -655,188 +597,68 @@ private notificationAudioCtx: AudioContext | null = null;
     let chatTypeToSend = this.GroupName;
 
     if (this.chatType === 'OneToOne') {
-
       recID = this.withUserID;
       chatTypeToSend = 'OneToOne';
-
     }
     else if (this.GroupName === 'Support') {
-
-      recID = this.withUserID
-        ? this.withUserID
-        : this.supportUserID;
-
+      recID = this.withUserID ? this.withUserID : this.supportUserID;
     }
     else if (this.GroupName === 'AskPandit') {
-
-      recID = this.withUserID
-        ? this.withUserID
-        : this.AskPanditUserID;
-
+      recID = this.withUserID ? this.withUserID : this.AskPanditUserID;
     }
 
     const body = {
-
-      chatGroupID:
-        this.chatType === 'OneToOne'
-          ? 0
-          : Number(this.customGroupID),
-
+      chatGroupID: this.chatType === 'OneToOne' ? 0 : Number(this.customGroupID),
       chatType: chatTypeToSend,
-
-      senderID:
-        this.userDetails.UserID,
-
-      receiverID:
-        recID,
-
+      senderID: this.userDetails.UserID,
+      receiverID: recID,
       messageText: '',
-
       messageType: 'Audio',
-
       mediaURL: fileName,
-
       sentAt: new Date(),
-
       isDeleted: false
-
     };
 
-    this.apinu
-      .postUrlData(
-        'MessagesInsert',
-        body
-      )
-      .subscribe(() => {
-
-        this.refreshAfterSend();
-
-      });
-
-  }
-
-
-  loadAudio(msg: any) {
-
-    if (
-      !msg.MediaURL ||
-      this.audioUrls[msg.MediaURL]
-    ) {
-      return;
-    }
-
-    this.apinu
-      .downloadFile(
-        'ChatAudio',
-        msg.MediaURL
-      )
-      .subscribe({
-
-        next: (blob: Blob) => {
-
-          console.log(
-            'Audio downloaded:',
-            msg.MediaURL,
-            blob.type,
-            blob.size
-          );
-
-          const url =
-            URL.createObjectURL(blob);
-
-          this.audioUrls[msg.MediaURL] =
-            url;
-
-        },
-
-        error: (err: any) => {
-
-          console.error(
-            'Audio download failed:',
-            err
-          );
-
-        }
-
-      });
-
-  }
-
-  // Chrome writes an invalid/Infinity duration on some MediaRecorder webm
-  // blobs, which truncates playback. Seeking to a huge timestamp forces
-  // Chrome to scan and recompute the real duration; this warms that up
-  // in the background so the <audio> element plays back correctly.
-  private fixAudioDuration(url: string) {
-    const tempAudio = new Audio();
-    tempAudio.src = url;
-    tempAudio.preload = 'metadata';
-
-    tempAudio.addEventListener('loadedmetadata', () => {
-      if (tempAudio.duration === Infinity || isNaN(tempAudio.duration)) {
-        tempAudio.currentTime = 1e101; // force seek past end
-        tempAudio.addEventListener('timeupdate', function fixed() {
-          tempAudio.removeEventListener('timeupdate', fixed);
-          tempAudio.currentTime = 0;
-          tempAudio.remove();
-        });
-      }
+    this.apinu.postUrlData('MessagesInsert', body).subscribe(() => {
+      this.refreshAfterSend();
     });
   }
 
-  // ── add this alongside your other recording fields ──
-  private recordingStartTime = 0;
+  private readonly chatAudioBaseUrl = 'https://app.mangalbhav.com/assets/ChatAudio/';
 
-  // ── ngOnDestroy: revoke blob URLs to avoid leaks ──
-  // ngOnDestroy() {
-  //   this.stopPolling();
-  //   Object.values(this.audioUrls).forEach(url => URL.revokeObjectURL(url));
-  // }
-
-  // private applyMessages(list: any[]) {
-
-  //   const prevLen =
-  //     this.allMessagesOfCurrentChatBox?.length || 0;
-
-  //   this.allMessagesOfCurrentChatBox =
-  //     list || [];
-
-  //   // Load audio files
-  //   this.allMessagesOfCurrentChatBox
-  //     .filter(
-  //       (msg: any) =>
-  //         msg.MessageType === 'Audio' &&
-  //         msg.MediaURL
-  //     )
-  //     .forEach(
-  //       (msg: any) =>
-  //         this.loadAudio(msg)
-  //     );
-
-  //   if (
-  //     this.allMessagesOfCurrentChatBox.length >
-  //     prevLen
-  //   ) {
-
-  //     setTimeout(
-  //       () => this.scrollToBottom(),
-  //       60
-  //     );
-
-  //   }
-
-  // }
+  getAudioUrl(mediaURL: string): string {
+    //console.log(`${this.chatAudioBaseUrl}${mediaURL}`)
+    return mediaURL ? `${this.chatAudioBaseUrl}${mediaURL}` : '';
+  }
 
 
-  // ── add these two helpers anywhere in the class ──
+  trackByMessageId(index: number, msg: any): any {
+    return msg.MessageID ?? index;
+  }
+
+
+  fixAudioElementDuration(event: Event) {
+    const audio = event.target as HTMLAudioElement;
+    console.log('duration:', audio.duration, 'readyState:', audio.readyState, 'src:', audio.src);
+
+    audio.addEventListener('ended', () => {
+      console.log('ENDED at currentTime:', audio.currentTime, 'vs duration:', audio.duration);
+    }, { once: true });
+
+    audio.addEventListener('error', () => {
+      console.log('AUDIO ERROR:', audio.error?.code, audio.error?.message);
+    }, { once: true });
+
+    audio.addEventListener('stalled', () => console.log('STALLED'), { once: true });
+    audio.addEventListener('suspend', () => console.log('SUSPEND'), { once: true });
+  }
 
 
   private applyMessages(list: any[]) {
 
     const prevLen = this.allMessagesOfCurrentChatBox?.length || 0;
     const newList = list || [];
-  
-    // Only ring for messages that arrive AFTER the chat has already loaded once,
-    // and only if at least one of the new ones wasn't sent by me.
+
     if (!this.isInitialLoad && newList.length > prevLen) {
       const newArrivals = newList.slice(prevLen);
       const hasIncoming = newArrivals.some((m: any) => !this.isMine(m.SenderID));
@@ -844,15 +666,12 @@ private notificationAudioCtx: AudioContext | null = null;
         this.playNotificationSound();
       }
     }
-  
+
     this.allMessagesOfCurrentChatBox = newList;
     this.isInitialLoad = false;
-  
-    // Load audio files
-    this.allMessagesOfCurrentChatBox
-      .filter((msg: any) => msg.MessageType === 'Audio' && msg.MediaURL)
-      .forEach((msg: any) => this.loadAudio(msg));
-  
+
+
+
     if (this.allMessagesOfCurrentChatBox.length > prevLen) {
       setTimeout(() => this.scrollToBottom(), 60);
     }
@@ -860,8 +679,12 @@ private notificationAudioCtx: AudioContext | null = null;
 
   ngOnDestroy() {
     this.stopPolling();
-    Object.values(this.audioUrls).forEach(url => URL.revokeObjectURL(url));
+
     this.notificationAudioCtx?.close();
+
+    if (this.isRecording) {
+      this.cancelRecording();
+    }
   }
 
   private getSupportedMimeType(): string {
@@ -871,58 +694,23 @@ private notificationAudioCtx: AudioContext | null = null;
     let preferred: string[];
 
     if (platform === 'ios') {
-
-      preferred = [
-        'audio/mp4',
-        'audio/aac'
-      ];
-
+      preferred = ['audio/mp4', 'audio/aac'];
     } else {
-
-      // Android / Web
       preferred = [
         'audio/webm;codecs=opus',
         'audio/webm',
         'audio/ogg;codecs=opus',
         'audio/mp4'
       ];
-
     }
 
     for (const type of preferred) {
-
       if (MediaRecorder.isTypeSupported(type)) {
-
-        console.log(
-          'Selected recording format:',
-          type
-        );
-
+        console.log('Selected recording format:', type);
         return type;
       }
-
     }
 
     return '';
-  }
-
-  private extensionFromMime(mimeType: string): string {
-    if (mimeType.includes('mp4')) return 'm4a';
-    if (mimeType.includes('aac')) return 'aac';
-    if (mimeType.includes('webm')) return 'webm';
-    if (mimeType.includes('ogg')) return 'ogg';
-    if (mimeType.includes('mpeg')) return 'mp3';
-    return 'webm';
-  }
-
-  private mimeFromExtension(ext: string): string {
-    const map: Record<string, string> = {
-      m4a: 'audio/mp4',
-      aac: 'audio/aac',
-      webm: 'audio/webm',
-      ogg: 'audio/ogg',
-      mp3: 'audio/mpeg'
-    };
-    return map[ext] || 'audio/webm';
   }
 }

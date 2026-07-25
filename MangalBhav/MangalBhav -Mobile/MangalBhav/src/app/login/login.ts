@@ -12,7 +12,7 @@ import { ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { filter, forkJoin } from 'rxjs';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
-
+import { BottomNavBarComponent, BottomNavTab } from '../bottom-nav-bar/bottom-nav-bar.component';
 import { ChangeDetectorRef } from '@angular/core';
 
 
@@ -21,7 +21,7 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: 'login.html',
   styleUrls: ['login.scss'],
   //standalone: true,  // 👈 makes it standalone
-  imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent]
+  imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent, BottomNavBarComponent]
 })
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;
@@ -246,6 +246,37 @@ export class LoginPage {
   //   return `assets/img/${englishName}.png`;
   // }
 
+  // loadPujaSection() {
+  //   forkJoin({
+  //     categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
+  //     services: this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null),
+  //     mapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
+  //   }).subscribe((res: any) => {
+
+  //     const categories = res.categories.ServiceCategoryList;
+  //     const services = res.services.ServiceList;               // ✅ fixed key
+  //     const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
+
+  //     // Build each category with its services attached
+  //     this.enrichedCategories = categories.map((cat: any) => {
+
+  //       const serviceIDs = mapping
+  //         .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
+  //         .map((m: any) => m.ServiceID);
+
+  //       const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+
+  //       return { ...cat, services: catServices };
+  //     });
+
+  //     console.log('Enriched Categories:', this.enrichedCategories);
+  //     this.loadAllServiceCounts();
+
+  //   });
+  // }
+
+
+
   loadPujaSection() {
     forkJoin({
       categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
@@ -254,17 +285,24 @@ export class LoginPage {
     }).subscribe((res: any) => {
 
       const categories = res.categories.ServiceCategoryList;
-      const services = res.services.ServiceList;               // ✅ fixed key
-      const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
+      const services = res.services.ServiceList;
+      const mapping = res.mapping.ServiceCategoryMappingList;
 
-      // Build each category with its services attached
       this.enrichedCategories = categories.map((cat: any) => {
 
         const serviceIDs = mapping
           .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
           .map((m: any) => m.ServiceID);
 
-        const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+        const catServices = services
+          .filter((s: any) => serviceIDs.includes(s.ServiceID))
+          .sort((a: any, b: any) => {
+            const orderA = parseInt(a.UpdatedByUser, 10);
+            const orderB = parseInt(b.UpdatedByUser, 10);
+            const safeA = isNaN(orderA) ? 999 : orderA;
+            const safeB = isNaN(orderB) ? 999 : orderB;
+            return safeA - safeB;
+          });
 
         return { ...cat, services: catServices };
       });
@@ -274,6 +312,7 @@ export class LoginPage {
 
     });
   }
+
 
   // Extract English name for image lookup
   getServiceEnglishName(fullName: string): string {
@@ -1225,6 +1264,26 @@ export class LoginPage {
           this.showToastMessage('Invalid referral code. Please check and retry.', 'danger');
         }
       });
+  }
+
+  get tabs(): BottomNavTab[] {
+    return [
+      { id: 'pooja', icon: '/assets/pooja.png', label: 'Pooja', matches: () => false },
+      { id: 'temple', icon: '/assets/temple.png', label: 'Temple', matches: () => false },
+      { id: 'community', icon: '/assets/yagna2.png', round: true, matches: () => false },
+      { id: 'pandit', icon: '/assets/pandit.png', label: 'Pandit Ji', matches: () => false },
+      { id: 'signup', icon: '/assets/user.png', label: 'Signup', matches: () => false },
+    ];
+  }
+
+  onTabSelected(id: string) {
+    switch (id) {
+      case 'pooja': this.backToMain(); break;
+      case 'temple': this.openPage('openfindmandir'); break;
+      case 'community': this.openPage('open-community-page'); break;
+      case 'pandit': this.action5(); break;
+      case 'signup': this.openLoginSection(); break;
+    }
   }
 
 }

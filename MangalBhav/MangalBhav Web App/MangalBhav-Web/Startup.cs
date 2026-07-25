@@ -81,6 +81,11 @@ namespace FaceUPAI
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+
+            // Enable CORS
+            app.UseCors("AllowAll");
+
             app.UseStaticFiles();
 
             if (!env.IsDevelopment())
@@ -88,10 +93,7 @@ namespace FaceUPAI
                 app.UseSpaStaticFiles();
             }
 
-            app.UseRouting();
-
-            // Enable CORS
-            app.UseCors("AllowAll");
+           
 
             app.UseAuthorization();
 

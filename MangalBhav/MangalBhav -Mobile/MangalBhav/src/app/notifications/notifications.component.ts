@@ -16,7 +16,7 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, CommonBottomTabsComponent, TabscommonheaderComponent]
+  imports: [CommonModule, IonicModule, FormsModule]
 })
 export class NotificationsComponent implements OnInit {
 

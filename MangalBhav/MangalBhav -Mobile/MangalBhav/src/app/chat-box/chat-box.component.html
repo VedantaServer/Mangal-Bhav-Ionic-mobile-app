@@ -7,13 +7,12 @@
           [ngClass]="GroupName === 'Support' ? 'support' : GroupName === 'AskPandit' ? 'pandit' : 'group'">
           <span *ngIf="GroupName === 'Support'">🛡️</span>
           <span *ngIf="GroupName === 'AskPandit'">🕉️</span>
-          <!-- OneToOne or group: show first letter -->
           <span *ngIf="GroupName !== 'Support' && GroupName !== 'AskPandit'">
             {{ GroupName.charAt(0) || '🙏' }}
           </span>
         </div>
         <div class="logo-text-block">
-          <div class="nav-logo-text">{{ GroupName || '…' }}</div>
+          <div class="nav-logo-text">{{ headerTitle || '…' }}</div>
           <div class="nav-logo-sub">Sacred Conversations</div>
         </div>
       </div>
@@ -50,7 +49,7 @@
 
       <!-- Messages -->
       <div class="messages-list" *ngIf="allMessagesOfCurrentChatBox?.length > 0">
-        <ng-container *ngFor="let msg of allMessagesOfCurrentChatBox; let i = index">
+        <ng-container *ngFor="let msg of allMessagesOfCurrentChatBox; let i = index; trackBy: trackByMessageId">
 
           <div class="date-separator"
             *ngIf="i === 0 || isDifferentDay(allMessagesOfCurrentChatBox[i-1].SentAt, msg.SentAt)">
@@ -83,16 +82,16 @@
                 </p>
 
                 <!-- Audio -->
-                <div class="audio-message" *ngIf="msg.MessageType === 'Audio'">
 
-                  <audio *ngIf="audioUrls[msg.MediaURL]" [src]="audioUrls[msg.MediaURL]" controls preload="metadata">
+                <div class="audio-message" *ngIf="msg.MessageType === 'Audio'" style="overflow: hidden;">
+                  <audio [src]="getAudioUrl(msg.MediaURL)" controls preload="auto"
+                    (loadedmetadata)="fixAudioElementDuration($event)">
                   </audio>
-
-                  <div class="audio-loading" *ngIf="!audioUrls[msg.MediaURL]">
-                    Loading audio...
-                  </div>
-
                 </div>
+
+
+
+
                 <div class="bubble-meta">
                   <span class="msg-time">{{ msg.SentAt | date: 'hh:mm a' }}</span>
                   <span class="msg-tick" *ngIf="isMine(msg.SenderID)">✓✓</span>
@@ -125,7 +124,7 @@
 
 <div class="input-bar" *ngIf="isLoggedIn">
 
-  <button class="attach-btn" *ngIf="!isRecording">📎</button>
+  <!-- <button class="attach-btn" *ngIf="!isRecording">📎</button> -->
 
   <div class="input-wrap" *ngIf="!isRecording">
     <input [(ngModel)]="newMessage" type="text" class="msg-input" placeholder="Type a message… 🙏"
@@ -137,7 +136,7 @@
   </button>
 
   <button class="mic-btn" *ngIf="!newMessage.trim() && !isRecording" (click)="startRecording()">
-    🎤
+    <ion-icon name="mic-outline"></ion-icon>
   </button>
 
   <!-- Recording state -->

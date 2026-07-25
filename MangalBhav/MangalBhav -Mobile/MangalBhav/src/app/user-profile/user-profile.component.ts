@@ -695,7 +695,15 @@ export class UserProfileComponent implements OnInit {
             this.showToast('Profile saved successfully ✅', 'success');
 
             if (previousRole !== this.selectedRole || previousLanguage !== payload.languages) {
-              window.location.reload();
+              // Instead of window.location.reload() (unreliable inside Capacitor WebView),
+              // navigate to root and let the app re-bootstrap through Angular's router.
+              this.navCtrl.navigateRoot('/', { animated: false }).then(() => {
+                // Small delay so navigation settles before re-entering the profile page,
+                // forcing components dependent on Role/Language to fully re-init.
+                setTimeout(() => {
+                  this.navCtrl.navigateRoot('/userprofile', { animated: false });
+                }, 150);
+              });
             }
 
           } else {
@@ -708,6 +716,49 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
+
+
+  // saveProfile() {
+  //   const payload = this.prepareProfileForSubmit();
+  //   const DBAction = this.isEditMode ? 'ProfilesUpdate' : 'ProfilesInsert';
+  //   const previousRole = this.userDetails.Role;
+  //   const previousLanguage = this.profileObject?.Languages;
+
+  //   this.apinu.postUrlData(DBAction, payload).subscribe(async (res: any) => {
+  //     if (res.ProfileID > 0) {
+
+  //       const userPayload = {
+  //         ...this.userDetails,
+  //         Role: this.selectedRole
+  //       };
+
+  //       this.apinu.postUrlData('UsersUpdate', userPayload).subscribe(async (userRes: any) => {
+  //         if (userRes.UserID > 0) {
+
+  //           const account = await this.storage.get('account');
+  //           account.Languages = payload.languages;
+  //           account.Role = this.selectedRole;
+  //           await this.storage.set('account', account);
+
+  //           this.userDetails.Role = this.selectedRole;
+  //           this.userDetails.Languages = payload.languages;
+
+  //           this.showToast('Profile saved successfully ✅', 'success');
+
+  //           if (previousRole !== this.selectedRole || previousLanguage !== payload.languages) {
+  //             window.location.reload();
+  //           }
+
+  //         } else {
+  //           this.showToast('Profile saved but role update failed ⚠️', 'danger');
+  //         }
+  //       });
+
+  //     } else {
+  //       this.showToast('Something went wrong ❌', 'danger');
+  //     }
+  //   });
+  // }
 
   async contactSupport() {
     this.showNotInterestedModal = false;

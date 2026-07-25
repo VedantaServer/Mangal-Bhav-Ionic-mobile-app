@@ -1,62 +1,6 @@
-<div class="mb-nav-wrapper">
-  <!-- Animated SVG curve -->
-  <svg class="mb-curve-svg" [attr.viewBox]="'0 0 ' + navWidth + ' 70'"
-       preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path [attr.d]="currentPath" fill="#ffffff"/>
-  </svg>
+<app-bottom-nav-bar [tabs]="tabs" (tabSelected)="onTabSelected($event)"></app-bottom-nav-bar>
 
-  <div class="mb-tab-row">
-
-    <!-- 1. Pooja -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('tab3')" (click)="openTab('tab3')">
-      <div class="mb-active-fab">
-        <img src="/assets/pooja.png" class="mb-fab-img"/>
-      </div>
-      <img src="/assets/pooja.png" class="mb-tab-img"/>
-      <span class="mb-tab-label">Pooja</span>
-    </div>
-
-    <!-- 2. Temple -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('openfindmandir')" (click)="openTab('openfindmandir')">
-      <div class="mb-active-fab">
-        <img src="/assets/temple.png" class="mb-fab-img"/>
-      </div>
-      <img src="/assets/temple.png" class="mb-tab-img"/>
-      <span class="mb-tab-label">Temple</span>
-    </div>
-
-    <!-- 3. Center (Seva/Yagna) -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('open-community-page')" (click)="openPage('open-community-page')">
-      <div class="mb-active-fab">
-        <img src="/assets/swastik.png" class="mb-fab-img" style="border-radius:50%;"/>
-      </div>
-      <img src="/assets/swastik.png" class="mb-tab-img" style="border-radius:50%; width:46px; height:46px;"/>
-    </div>
-
-    <!-- 4. Pandit -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('find-pandit')" (click)="action4()">
-      <div class="mb-active-fab">
-        <img src="/assets/pandit.png" class="mb-fab-img"/>
-      </div>
-      <img src="/assets/pandit.png" class="mb-tab-img"/>
-      <span class="mb-tab-label">Pandit Ji</span>
-    </div>
-
-    <!-- 5. Profile -->
-    <div class="mb-tab-btn" [class.tab-active]="isActive('tab1')" (click)="openTab('tab1')">
-      <div class="mb-active-fab">
-        <img src="/assets/user.png" class="mb-fab-img"/>
-      </div>
-      <img src="/assets/user.png" class="mb-tab-img"/>
-      <span class="mb-tab-label">
-        {{ userDetails?.FullName?.split(' ')?.[0] || 'Me' }}
-      </span>
-    </div>
-
-  </div>
-</div>
-
-<!-- The actual router outlet — ion-tabs still handles routing, just hidden visually -->
+<!-- ion-tabs still handles routing for the tab pages, just hidden visually -->
 <ion-tabs>
   <ion-tab-bar slot="bottom" style="display:none;"></ion-tab-bar>
 </ion-tabs>

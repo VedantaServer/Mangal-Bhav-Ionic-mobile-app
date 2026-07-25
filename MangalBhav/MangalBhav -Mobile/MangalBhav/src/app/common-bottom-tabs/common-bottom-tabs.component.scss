@@ -113,3 +113,199 @@
 
 
 
+
+
+
+
+// ══════════════════════════════════════════════════════════
+//  FEED / POST INSERT FORM (bottom sheet) — shared partial
+//  Used by CommonBottomTabsComponent + PanditjibottomtabsComponent
+// ══════════════════════════════════════════════════════════
+.fm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+    .fm-sheet { transform: translateY(0); }
+  }
+}
+
+.fm-sheet {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100vh;
+  background: #FFF8F0;
+  border-top: 2px solid #FF8C00;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+}
+
+.fm-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #F0D9B5;
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+  background: linear-gradient(135deg, #FFF3DC, #FFE8C0);
+  border-radius: 20px 20px 0 0;
+}
+
+.fm-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: #F0D0A0;
+  border: none;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  color: #8B1A00;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+
+.fm-header-title { color: #8B1A00; font-size: 16px; font-weight: 700; font-family: 'Noto Sans Devanagari', serif; }
+.fm-header-sub   { color: #B06020; font-size: 10px; margin-top: 3px; }
+
+.fm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  -webkit-overflow-scrolling: touch;
+  background: #FFF8F0;
+}
+
+.fm-field { margin-bottom: 16px; }
+.fm-label { display: block; color: #8B1A00; font-size: 11px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.3px; }
+
+.fm-input {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1.5px solid #E8C080;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #3A1A00;
+  font-size: 13px;
+  outline: none;
+  font-family: 'Noto Sans Devanagari', serif;
+  display: block;
+
+  &::placeholder { color: #C09060; opacity: 0.8; }
+  &:focus        { border-color: #FF8C00; box-shadow: 0 0 0 3px rgba(255,140,0,0.12); }
+}
+
+.fm-textarea { min-height: 80px; resize: none; }
+
+.fm-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #8B1A00, #C43D00);
+  border: 1.5px solid #FF8C00;
+  border-radius: 16px;
+  padding: 14px;
+  color: #FFD700;
+  font-size: 15px; font-weight: 700;
+  font-family: 'Noto Sans Devanagari', serif;
+  cursor: pointer;
+  outline: none;
+  margin-top: 8px;
+  transition: transform 0.15s;
+  box-shadow: 0 4px 16px rgba(139,26,0,0.25);
+
+  &:active   { transform: scale(0.98); }
+  &:disabled { opacity: 0.6; }
+}
+
+.fm-note {
+  text-align: center;
+  color: #B06020;
+  font-size: 10px;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+// ── Media picker card ──────────────────────────────────
+.feed-media-card { margin-bottom: 22px; }
+
+.feed-media-picker {
+  width: 100%;
+  height: 220px;
+  border: 2px dashed #d6d6d6;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+  cursor: pointer;
+  position: relative;
+}
+
+.feed-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-placeholder {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+
+  ion-icon {
+    font-size: 56px;
+    color: #ff8a00;
+    margin-bottom: 10px;
+  }
+}
+
+.feed-placeholder-title { font-size: 17px; font-weight: 600; }
+.feed-placeholder-sub   { margin-top: 6px; font-size: 13px; color: #777; }
+
+.feed-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+}
+
+.feed-upload-btn {
+  flex: 1;
+  height: 46px;
+  border: none;
+  border-radius: 12px;
+  background: #ff8a00;
+  color: #fff;
+  font-weight: 600;
+}
+
+.feed-remove-btn {
+  width: 120px;
+  border: none;
+  border-radius: 12px;
+  background: #efefef;
+  color: #444;
+}
+
+.feed-uploading {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  gap: 12px;
+  font-weight: 600;
+  z-index: 10;
+}

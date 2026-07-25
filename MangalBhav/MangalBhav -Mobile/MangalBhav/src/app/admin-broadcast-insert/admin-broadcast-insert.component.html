@@ -27,6 +27,15 @@
       <ion-card-content>
 
         <ion-item lines="none">
+          <ion-label position="stacked">Applicable To</ion-label>
+          <ion-select [(ngModel)]="selectedAudience" interface="popover" placeholder="Select audience">
+            <ion-select-option *ngFor="let a of audienceOptions" [value]="a.value">
+              {{ a.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none">
           <ion-label position="stacked">Message</ion-label>
           <ion-textarea [(ngModel)]="broadcastMessage" autoGrow="true" rows="4"
             placeholder="Enter the message to broadcast to all users...">

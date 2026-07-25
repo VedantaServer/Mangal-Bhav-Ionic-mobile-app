@@ -924,7 +924,7 @@
                 [style.text-transform]="'uppercase'" [disabled]="referralCodeValid === true">
               </ion-input>
               <button class="get-otp-btn" (click)="validateReferralCode()" *ngIf="referralCodeValid !== true"
-                [disabled]="!referralCode?.trim()">
+                [disabled]="!referralCode.trim()">
                 Apply
               </button>
               <button class="get-otp-btn" style="background: #16a34a;" *ngIf="referralCodeValid === true" disabled>
@@ -1111,7 +1111,9 @@
 </div> -->
 
 
-<ion-tab-bar slot="bottom" class="mb-tab-bar">
+<app-bottom-nav-bar [tabs]="tabs" (tabSelected)="onTabSelected($event)"></app-bottom-nav-bar>
+
+<!-- <ion-tab-bar slot="bottom" class="mb-tab-bar">
 
   <ion-tab-button class="mb-tab-btn" (click)="backToMain()">
     <img src="/assets/pooja.png" class="mb-center-fab-img" />
@@ -1144,7 +1146,7 @@
     <ion-label>Signup</ion-label>
   </ion-tab-button>
 
-</ion-tab-bar>
+</ion-tab-bar> -->
 
 
 

@@ -59,9 +59,7 @@
       </div>
 
       <div class="pdp-hero__meta">
-        <h2 class="pdp-hero__name">{{ activePandit.profile?.FullName }} <span
-            style="color: darkgreen;font-size: large;"><ion-icon name="chatbubble-ellipses-outline"
-              (click)="chatWithPandit(activePandit)"></ion-icon></span> </h2>
+        <h2 (click)="openDigitalID()" class="pdp-hero__name">{{ activePandit.profile?.FullName }} </h2>
 
 
 
@@ -88,25 +86,38 @@
               [style.color]="isPanditLiked(activePandit) ? '#e03a3a' : 'inherit'"></ion-icon>
           </ng-template>
           <span class="pdp-action-stat__count" [class.pdp-has-likes]="likeCount > 0">{{ likeCount || 0 }}</span>
-          <span class="pdp-action-stat__label">{{ isPanditLiked(activePandit) ? t.liked : t.like }}</span>
+          <!-- <span class="pdp-action-stat__label">{{ isPanditLiked(activePandit) ? t.liked : t.like }}</span> -->
         </div>
 
         <div class="pdp-action-stat" (click)="sharePandit(activePandit)">
           <ion-icon name="share-social-outline"></ion-icon>
           <span class="pdp-action-stat__count">{{ shareCount || 0 }}</span>
-          <span class="pdp-action-stat__label">{{ t.share }}</span>
+          <!-- <span class="pdp-action-stat__label">{{ t.share }}</span> -->
         </div>
 
         <div class="pdp-action-stat pdp-action-stat--passive">
           <ion-icon name="eye-outline"></ion-icon>
           <span class="pdp-action-stat__count">{{ viewsCount || 0 }}</span>
-          <span class="pdp-action-stat__label">{{ t.viewsLabel }}</span>
+          <!-- <span class="pdp-action-stat__label">{{ t.viewsLabel }}</span> -->
         </div>
 
         <!-- <div class="pdp-action-stat pdp-action-stat--chat" (click)="chatWithPandit(activePandit)">
           <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
           <span class="pdp-action-stat__label">{{ t.chat }}</span>
         </div> -->
+
+      </div>
+      <div class="pdp-action-stats">
+
+        <div class="pdp-action-stat pdp-action-stat--chat" (click)="chatWithPandit(activePandit)">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          <span class="pdp-action-stat__label">{{ t.chat }}</span>
+        </div>
+
+        <div class="pdp-action-stat pdp-action-stat--digitalid" (click)="openDigitalID()">
+          <ion-icon name="id-card-outline"></ion-icon>
+          <span class="pdp-action-stat__label">{{ t.digitalId }}</span>
+        </div>
 
       </div>
     </div>

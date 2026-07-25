@@ -19,6 +19,14 @@ export class AdminBroadcastInsertComponent implements OnInit {
   showList = false;
   isLoadingList = false;
 
+  // ── Audience targeting ─────────────────────────────────
+  audienceOptions = [
+    { value: 'All', label: 'All Users' },
+    { value: 'Pandit', label: 'Pandit' },
+    { value: 'Yajman', label: 'Yajman' },
+  ];
+  selectedAudience: string = 'All';
+
   // Today's date, shown to admin so they know which day this broadcast targets
   todayDisplay: string = '';
   private todayIdentifier: string = '';
@@ -37,6 +45,19 @@ export class AdminBroadcastInsertComponent implements OnInit {
     });
   }
 
+  /** Maps the selected audience to the Domain value used for storage/filtering.
+   * 'All' keeps the original domain unchanged (backward compatible with
+   * anything reading BroadcastMessage today); Pandit/Yajman get a suffixed domain. */
+  private getDomainForAudience(): string {
+    return this.selectedAudience === 'All'
+      ? 'BroadcastMessage'
+      : `BroadcastMessage-${this.selectedAudience}`;
+  }
+
+  private getAudienceLabel(): string {
+    return this.audienceOptions.find(a => a.value === this.selectedAudience)?.label || 'All Users';
+  }
+
   async onBroadcastClick() {
     if (!this.broadcastMessage.trim()) {
       const alert = await this.alertCtrl.create({
@@ -51,7 +72,7 @@ export class AdminBroadcastInsertComponent implements OnInit {
     // ── Confirmation before actually inserting ──
     const confirmAlert = await this.alertCtrl.create({
       header: 'Confirm Broadcast',
-      message: `This message will be shown to all users today (${this.todayDisplay}):\n\n"${this.broadcastMessage.trim()}"`,
+      message: `This message will be shown to ${this.getAudienceLabel()} today (${this.todayDisplay}):\n\n"${this.broadcastMessage.trim()}"`,
       buttons: [
         {
           text: 'Cancel',
@@ -70,7 +91,7 @@ export class AdminBroadcastInsertComponent implements OnInit {
     this.isSubmitting = true;
 
     const payload = {
-      Domain: 'BroadcastMessage',
+      Domain: this.getDomainForAudience(),
       Identifier: this.todayIdentifier,
       Description: this.broadcastMessage.trim(),
       TenantID: 1,
@@ -117,8 +138,10 @@ export class AdminBroadcastInsertComponent implements OnInit {
 
     this.isLoadingList = true;
 
+    // Fetch broadcasts for the currently-selected audience's domain,
+    // so the list reflects what's relevant to the dropdown selection.
     this.apinu.postUrlData(
-      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='BroadcastMessage'`)}`,
+      `MasterDataSelectByQuery?tenantID=-1&Query=${encodeURIComponent(`Domain='${this.getDomainForAudience()}'`)}`,
       null
     ).subscribe({
       next: (res: any) => {

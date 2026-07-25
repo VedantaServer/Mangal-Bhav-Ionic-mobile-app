@@ -8,7 +8,7 @@ import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibotto
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import html2canvas from 'html2canvas';
 import { CommunityService } from '../services/community';
 import { Share } from '@capacitor/share';
@@ -30,6 +30,7 @@ interface FeedItem {
   FeedCategory: string;
   Location: string;
   SourceTable: string;
+  SourceID?: number;
   mediaBlobUrl?: string;
 
   // ── Engagement ──
@@ -95,6 +96,8 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     DateAdded: new Date(), DateModified: new Date(),
     UpdatedByUser: ''
   };
+
+  showbottomAndHeader = true;
 
   fmPhoto1File: File | null = null; fmPhoto1Preview: string | null = null; fmUploading1 = false;
   fmPhoto2File: File | null = null; fmPhoto2Preview: string | null = null; fmUploading2 = false;
@@ -164,17 +167,51 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   ) { }
 
 
+  // async ngOnInit() {
+  //   await this.refreshUserDetails();
+  //   this.language = this.userDetails?.Languages || 'English';
+  //   this.loadFamilyActiveMandir();
+  //   this.loadMoreFeed();
+  //   this.loadMangalMudraPoints();
+
+  //   this.communityService.openFeedForm$.subscribe(() => {
+  //     this.openFeedForm();
+  //   });
+  // }
+
+
+
+  // class property
+  private feedFormSub?: Subscription;
+
   async ngOnInit() {
+    this.feedFormSub = this.communityService.openFeedForm$.subscribe(() => {
+      this.openFeedForm();
+    });
+
     await this.refreshUserDetails();
     this.language = this.userDetails?.Languages || 'English';
     this.loadFamilyActiveMandir();
     this.loadMoreFeed();
     this.loadMangalMudraPoints();
-
-    this.communityService.openFeedForm$.subscribe(() => {
-      this.openFeedForm();
-    });
   }
+
+  ngOnDestroy() {
+    clearInterval(this.familyMandirSlideTimer);
+    clearTimeout(this.toastTimer);
+    this.viewObserver?.disconnect();
+
+    clearInterval(this.aartiSeqInterval);
+    clearInterval(this.blessingCDInterval);
+    clearTimeout(this.flowersAutoStopTimer);
+    clearTimeout(this.miniToastTimer);
+    this.aartiTimers.forEach(t => clearTimeout(t));
+    if (this.animationId) cancelAnimationFrame(this.animationId);
+    this.stopAllAudio();
+
+    this.feedFormSub?.unsubscribe();
+  }
+
 
   // async ngOnInit() {
   //   this.userDetails = await this.storage.get('account');
@@ -729,20 +766,20 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    clearInterval(this.familyMandirSlideTimer);
-    clearTimeout(this.toastTimer);
-    this.viewObserver?.disconnect();
+  // ngOnDestroy() {
+  //   clearInterval(this.familyMandirSlideTimer);
+  //   clearTimeout(this.toastTimer);
+  //   this.viewObserver?.disconnect();
 
-    // ── added back for Mangal Aarti ──
-    clearInterval(this.aartiSeqInterval);
-    clearInterval(this.blessingCDInterval);
-    clearTimeout(this.flowersAutoStopTimer);
-    clearTimeout(this.miniToastTimer);
-    this.aartiTimers.forEach(t => clearTimeout(t));
-    if (this.animationId) cancelAnimationFrame(this.animationId);
-    this.stopAllAudio();
-  }
+  //   // ── added back for Mangal Aarti ──
+  //   clearInterval(this.aartiSeqInterval);
+  //   clearInterval(this.blessingCDInterval);
+  //   clearTimeout(this.flowersAutoStopTimer);
+  //   clearTimeout(this.miniToastTimer);
+  //   this.aartiTimers.forEach(t => clearTimeout(t));
+  //   if (this.animationId) cancelAnimationFrame(this.animationId);
+  //   this.stopAllAudio();
+  // }
 
 
   loadMangalMudraPoints() {
@@ -844,8 +881,75 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   }
 
   // ── 21-Second Mangal Aarti ─────────────────────────────
+  // startMangalAarti() {
+  //   if (this.aartiPhase !== 'idle') return;
+  //   this.hideChrome();
+  //   this.aartiPhase = 'running';
+  //   this.isGlowing = true;
+  //   this.aartiProgress = 0;
+  //   this.aartiTimers = [];
+
+  //   const startTime = Date.now();
+  //   const TOTAL_MS = 34000;
+
+  //   this.aartiSeqInterval = setInterval(() => {
+  //     const elapsed = Date.now() - startTime;
+  //     this.aartiProgress = Math.min(100, (elapsed / TOTAL_MS) * 100);
+  //   }, 100);
+
+  //   this.aartiSequence.forEach(item => {
+  //     const t = setTimeout(() => {
+  //       if (this.aartiPhase !== 'running') return;
+  //       if (item.action !== 'complete') this.currentAartiStepData = item.step;
+
+  //       switch (item.action) {
+  //         case 'bell':
+  //           this.bellRinging = true;
+  //           this.bellAudio = this.playAudio(this.bellAudio, 'assets/audio/bell.mp3', () => { this.bellAudio = null; });
+  //           setTimeout(() => { this.bellRinging = false; }, 1800);
+  //           break;
+  //         case 'shankh':
+  //           if (this.bellAudio) { this.bellAudio.pause(); this.bellAudio = null; }
+  //           this.shankhAudio = this.playAudio(null, 'assets/audio/shankh.mp3', () => { this.shankhAudio = null; });
+  //           break;
+  //         case 'bhajan':
+  //           if (this.shankhAudio) { this.shankhAudio.pause(); this.shankhAudio = null; }
+  //           this.aartiBhajan = this.playAudio(null, 'assets/audio/aarti_bhajan.mp3', () => { this.aartiBhajan = null; });
+  //           break;
+  //         case 'stop_bhajan':
+  //           if (this.aartiBhajan) {
+  //             const fadeOut = setInterval(() => {
+  //               if (!this.aartiBhajan) { clearInterval(fadeOut); return; }
+  //               this.aartiBhajan.volume = Math.max(0, this.aartiBhajan.volume - 0.1);
+  //               if (this.aartiBhajan.volume <= 0) {
+  //                 this.aartiBhajan.pause();
+  //                 this.aartiBhajan = null;
+  //                 clearInterval(fadeOut);
+  //               }
+  //             }, 80);
+  //           }
+  //           break;
+  //         case 'flowers':
+  //           this.startFlowers('flowers');
+  //           break;
+  //         case 'petals':
+  //           this.startFlowers('petals');
+  //           break;
+  //         case 'complete':
+  //           this.completeAarti();
+  //           break;
+  //       }
+  //     }, item.time);
+  //     this.aartiTimers.push(t);
+  //   });
+  // }
+
+
   startMangalAarti() {
     if (this.aartiPhase !== 'idle') return;
+
+    this.showbottomAndHeader = false;   // Hide header & bottom
+
     this.hideChrome();
     this.aartiPhase = 'running';
     this.isGlowing = true;
@@ -868,21 +972,41 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
         switch (item.action) {
           case 'bell':
             this.bellRinging = true;
-            this.bellAudio = this.playAudio(this.bellAudio, 'assets/audio/bell.mp3', () => { this.bellAudio = null; });
-            setTimeout(() => { this.bellRinging = false; }, 1800);
+            this.bellAudio = this.playAudio(this.bellAudio, 'assets/audio/bell.mp3', () => {
+              this.bellAudio = null;
+            });
+            setTimeout(() => {
+              this.bellRinging = false;
+            }, 1800);
             break;
+
           case 'shankh':
-            if (this.bellAudio) { this.bellAudio.pause(); this.bellAudio = null; }
-            this.shankhAudio = this.playAudio(null, 'assets/audio/shankh.mp3', () => { this.shankhAudio = null; });
+            if (this.bellAudio) {
+              this.bellAudio.pause();
+              this.bellAudio = null;
+            }
+            this.shankhAudio = this.playAudio(null, 'assets/audio/shankh.mp3', () => {
+              this.shankhAudio = null;
+            });
             break;
+
           case 'bhajan':
-            if (this.shankhAudio) { this.shankhAudio.pause(); this.shankhAudio = null; }
-            this.aartiBhajan = this.playAudio(null, 'assets/audio/aarti_bhajan.mp3', () => { this.aartiBhajan = null; });
+            if (this.shankhAudio) {
+              this.shankhAudio.pause();
+              this.shankhAudio = null;
+            }
+            this.aartiBhajan = this.playAudio(null, 'assets/audio/aarti_bhajan.mp3', () => {
+              this.aartiBhajan = null;
+            });
             break;
+
           case 'stop_bhajan':
             if (this.aartiBhajan) {
               const fadeOut = setInterval(() => {
-                if (!this.aartiBhajan) { clearInterval(fadeOut); return; }
+                if (!this.aartiBhajan) {
+                  clearInterval(fadeOut);
+                  return;
+                }
                 this.aartiBhajan.volume = Math.max(0, this.aartiBhajan.volume - 0.1);
                 if (this.aartiBhajan.volume <= 0) {
                   this.aartiBhajan.pause();
@@ -892,17 +1016,21 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
               }, 80);
             }
             break;
+
           case 'flowers':
             this.startFlowers('flowers');
             break;
+
           case 'petals':
             this.startFlowers('petals');
             break;
+
           case 'complete':
             this.completeAarti();
             break;
         }
       }, item.time);
+
       this.aartiTimers.push(t);
     });
   }
@@ -920,6 +1048,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     this.stopAllAudio();
     this.showChrome();
     this.showMiniToast('आरती रोकी गई');
+    this.showbottomAndHeader = true;
   }
 
   private completeAarti() {
@@ -941,6 +1070,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
         clearInterval(this.blessingCDInterval);
         this.aartiPhase = 'idle';
         this.aartiProgress = 0;
+        this.showbottomAndHeader = true;
       }
     }, 1000);
   }
@@ -1280,6 +1410,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
   getFeedMediaPath(item: FeedItem): string {
     const folder = this.getFeedMediaFolder(item);
+    //console.log(`${this.imgBaseUrl}/${folder}/${item.MediaURL}`)
     return `${this.imgBaseUrl}/${folder}/${item.MediaURL}`;
   }
 
@@ -1626,41 +1757,337 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
 
 
-  shareFeed(item: FeedItem, shareType: string = 'WhatsApp') {
-    const userID = this.userDetails?.UserID || 0;
-    const feedShare = { FeedID: item.FeedID, UserID: userID, ShareType: shareType, SharedOn: new Date() };
-    this.apinu.postUrlData('FeedShareInsert', feedShare).subscribe({
-      next: () => { item.shareCount = (item.shareCount ?? 0) + 1; },
-      error: () => { /* silent — share UI already happened via native share sheet */ }
-    });
+  // shareFeed(item: FeedItem, shareType: string = 'WhatsApp') {
+  //   const userID = this.userDetails?.UserID || 0;
+  //   const feedShare = { FeedID: item.FeedID, UserID: userID, ShareType: shareType, SharedOn: new Date() };
+  //   this.apinu.postUrlData('FeedShareInsert', feedShare).subscribe({
+  //     next: () => { item.shareCount = (item.shareCount ?? 0) + 1; },
+  //     error: () => { /* silent — share UI already happened via native share sheet */ }
+  //   });
 
-    const shareUrl = `https://app.mangalbhav.com/feed/${item.FeedID}`;
+  //   const shareUrl = `https://app.mangalbhav.com/feed/${item.FeedID}`;
 
-    Share.share({
-      title: item.Title,
-      text: item.Title,
-      url: shareUrl,
-      dialogTitle: 'शेयर करें'
-    }).catch((err) => {
-      console.error('Native share failed:', err);
-      // fallback for browser/PWA context
-      if ((navigator as any).share) {
-        (navigator as any).share({ title: item.Title, url: shareUrl }).catch(() => { });
-      } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(item.Title + ' ' + shareUrl)}`, '_blank');
-      }
-    });
+  //   Share.share({
+  //     title: item.Title,
+  //     text: item.Title,
+  //     url: shareUrl,
+  //     dialogTitle: 'शेयर करें'
+  //   }).catch((err) => {
+  //     console.error('Native share failed:', err);
+  //     // fallback for browser/PWA context
+  //     if ((navigator as any).share) {
+  //       (navigator as any).share({ title: item.Title, url: shareUrl }).catch(() => { });
+  //     } else {
+  //       window.open(`https://wa.me/?text=${encodeURIComponent(item.Title + ' ' + shareUrl)}`, '_blank');
+  //     }
+  //   });
+  // }
+
+
+  // async shareFeedAsImage(item: FeedItem) {
+
+  //   const cardEl = document.querySelector(
+  //     `.insta-post[data-feed-id="${item.FeedID}"]`
+  //   ) as HTMLElement;
+
+  //   if (!cardEl) {
+  //     this.showToast('❌', 'शेयर के लिए पोस्ट नहीं मिली');
+  //     return;
+  //   }
+
+  //   const userID = this.userDetails?.UserID || 0;
+  //   this.apinu.postUrlData('FeedShareInsert', {
+  //     FeedID: item.FeedID,
+  //     UserID: userID,
+  //     ShareType: 'Image',
+  //     SharedOn: new Date()
+  //   }).subscribe({
+  //     next: () => item.shareCount = (item.shareCount ?? 0) + 1,
+  //     error: () => { }
+  //   });
+
+  //   // ── Clone the card into a plain, top-level container so html2canvas
+  //   // never has to cross Ionic's Shadow DOM boundary to find it ──
+  //   const captureHost = document.createElement('div');
+  //   captureHost.style.position = 'fixed';
+  //   captureHost.style.left = '-9999px';
+  //   captureHost.style.top = '0';
+  //   captureHost.style.width = `${cardEl.offsetWidth || 400}px`;
+  //   captureHost.style.background = '#ffffff';
+  //   document.body.appendChild(captureHost);
+
+  //   const clone = cardEl.cloneNode(true) as HTMLElement;
+  //   // cloneNode copies attributes (incl. src/crossorigin) but video playback
+  //   // state isn't cloned — html2canvas can't render <video> anyway, so swap
+  //   // any cloned <video> for an <img> using the same crossorigin src.
+  //   clone.querySelectorAll('video').forEach((videoEl: HTMLVideoElement) => {
+  //     const img = document.createElement('img');
+  //     img.src = videoEl.currentSrc || videoEl.src;
+  //     img.className = videoEl.className;
+  //     img.crossOrigin = 'anonymous';
+  //     videoEl.replaceWith(img);
+  //   });
+
+  //   captureHost.appendChild(clone);
+
+  //   try {
+  //     // Wait for all images inside the clone to finish loading
+  //     await new Promise(resolve => setTimeout(resolve, 100));
+  //     const images = Array.from(captureHost.querySelectorAll('img'));
+  //     await Promise.all(images.map(img => {
+  //       if (img.complete) return Promise.resolve();
+  //       return new Promise<void>(resolve => {
+  //         img.onload = () => resolve();
+  //         img.onerror = () => resolve();
+  //       });
+  //     }));
+
+  //     const canvas = await html2canvas(clone, {
+  //       scale: 2,
+  //       useCORS: true,
+  //       allowTaint: false,
+  //       backgroundColor: '#ffffff',
+  //       logging: false,
+  //     });
+
+  //     const imageData = canvas.toDataURL('image/png');
+
+  //     if (Capacitor.isNativePlatform()) {
+  //       const base64Data = imageData.split(',')[1];
+  //       const fileName = `feed-${item.FeedID}.png`;
+  //       const savedFile = await Filesystem.writeFile({
+  //         path: fileName,
+  //         data: base64Data,
+  //         directory: Directory.Cache
+  //       });
+  //       await Share.share({
+  //         title: item.Title || 'Post',
+  //         url: savedFile.uri,
+  //         dialogTitle: 'पोस्ट शेयर करें'
+  //       });
+  //     } else {
+  //       const blob = await (await fetch(imageData)).blob();
+  //       const file = new File([blob], `feed-${item.FeedID}.png`, { type: 'image/png' });
+
+  //       if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+  //         await (navigator as any).share({ files: [file], title: item.Title || 'Post' });
+  //       } else if ((navigator as any).share) {
+  //         await (navigator as any).share({ title: item.Title || 'Post', url: imageData });
+  //       } else {
+  //         const a = document.createElement('a');
+  //         a.href = imageData;
+  //         a.download = `feed-${item.FeedID}.png`;
+  //         a.click();
+  //       }
+  //     }
+
+  //   } catch (e: any) {
+  //     console.error('shareFeedAsImage failed:', e?.name, e?.message, e);
+  //     if (e?.name === 'SecurityError' || /tainted/i.test(e?.message || '')) {
+  //       this.showToast('❌', 'फ़ोटो सर्वर CORS सेटिंग की वजह से शेयर नहीं हो पाया');
+  //     } else {
+  //       this.showToast('❌', 'शेयर नहीं हुआ');
+  //     }
+  //   } finally {
+  //     // Always clean up the offscreen clone
+  //     document.body.removeChild(captureHost);
+  //   }
+  // }
+
+
+
+
+  // async sharePanchangImage(group: FeedDateGroup) {
+  //   if (!group.panchangImage) return;
+
+  //   try {
+  //     if (Capacitor.isNativePlatform()) {
+  //       // Strip the "data:image/png;base64," prefix — Filesystem wants raw base64
+  //       const base64Data = group.panchangImage.split(',')[1];
+  //       const fileName = `panchang-${group.dateKey}.png`;
+
+  //       const savedFile = await Filesystem.writeFile({
+  //         path: fileName,
+  //         data: base64Data,
+  //         directory: Directory.Cache
+  //       });
+
+  //       await Share.share({
+  //         title: 'आज का पंचांग',
+  //         url: savedFile.uri,
+  //         dialogTitle: 'पंचांग शेयर करें'
+  //       });
+  //     } else {
+  //       // Web/PWA fallback — your existing logic
+  //       const blob = await (await fetch(group.panchangImage)).blob();
+  //       const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
+
+  //       if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+  //         await (navigator as any).share({ files: [file], title: 'आज का पंचांग' });
+  //       } else if ((navigator as any).share) {
+  //         await (navigator as any).share({ title: 'आज का पंचांग', url: group.panchangImage });
+  //       } else {
+  //         const a = document.createElement('a');
+  //         a.href = group.panchangImage;
+  //         a.download = `panchang-${group.dateKey}.png`;
+  //         a.click();
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.error('sharePanchangImage failed:', e);
+  //     this.showToast('❌', 'शेयर नहीं हुआ');
+  //   }
+  // }
+
+
+  // async shareFeedAsImage(item: FeedItem) {
+
+  //   const cardEl = document.querySelector(
+  //     `.insta-post[data-feed-id="${item.FeedID}"]`
+  //   ) as HTMLElement;
+
+  //   if (!cardEl) {
+  //     this.showToast('❌', 'शेयर के लिए पोस्ट नहीं मिली');
+  //     return;
+  //   }
+
+  //   const userID = this.userDetails?.UserID || 0;
+  //   this.apinu.postUrlData('FeedShareInsert', {
+  //     FeedID: item.FeedID,
+  //     UserID: userID,
+  //     ShareType: 'Image',
+  //     SharedOn: new Date()
+  //   }).subscribe({
+  //     next: () => item.shareCount = (item.shareCount ?? 0) + 1,
+  //     error: () => { }
+  //   });
+
+  //   const shareLink = this.getFeedShareLink(item);
+  //   const shareText = item.Title ? `${item.Title}\n\n${shareLink}` : shareLink;
+
+  //   const captureHost = document.createElement('div');
+  //   captureHost.style.position = 'fixed';
+  //   captureHost.style.left = '-9999px';
+  //   captureHost.style.top = '0';
+  //   captureHost.style.width = `${cardEl.offsetWidth || 400}px`;
+  //   captureHost.style.background = '#ffffff';
+  //   document.body.appendChild(captureHost);
+
+  //   const clone = cardEl.cloneNode(true) as HTMLElement;
+  //   clone.querySelectorAll('video').forEach((videoEl: HTMLVideoElement) => {
+  //     const img = document.createElement('img');
+  //     img.src = videoEl.currentSrc || videoEl.src;
+  //     img.className = videoEl.className;
+  //     img.crossOrigin = 'anonymous';
+  //     videoEl.replaceWith(img);
+  //   });
+
+  //   captureHost.appendChild(clone);
+
+  //   try {
+  //     await new Promise(resolve => setTimeout(resolve, 100));
+  //     const images = Array.from(captureHost.querySelectorAll('img'));
+  //     await Promise.all(images.map(img => {
+  //       if (img.complete) return Promise.resolve();
+  //       return new Promise<void>(resolve => {
+  //         img.onload = () => resolve();
+  //         img.onerror = () => resolve();
+  //       });
+  //     }));
+
+  //     const canvas = await html2canvas(clone, {
+  //       scale: 2,
+  //       useCORS: true,
+  //       allowTaint: false,
+  //       backgroundColor: '#ffffff',
+  //       logging: false,
+  //     });
+
+  //     const imageData = canvas.toDataURL('image/png');
+
+  //     // Overlay the sharing user's profile photo (bottom-left avatar),
+  //     // same treatment as the panchang share image.
+  //     const imageToShare = await this.addUserPhotoOverlay(imageData, 'bottom-right', 0.18);
+
+
+  //     if (Capacitor.isNativePlatform()) {
+  //       const base64Data = imageToShare.split(',')[1];
+  //       const fileName = `feed-${item.FeedID}.png`;
+  //       const savedFile = await Filesystem.writeFile({
+  //         path: fileName,
+  //         data: base64Data,
+  //         directory: Directory.Cache
+  //       });
+  //       await Share.share({
+  //         title: item.Title || 'Post',
+  //         text: shareText,          // ← link goes out with the shared image
+  //         url: savedFile.uri,
+  //         dialogTitle: 'पोस्ट शेयर करें'
+  //       });
+  //     } else {
+  //       const blob = await (await fetch(imageToShare)).blob();
+  //       const file = new File([blob], `feed-${item.FeedID}.png`, { type: 'image/png' });
+
+  //       if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+  //         await (navigator as any).share({
+  //           files: [file],
+  //           title: item.Title || 'Post',
+  //           text: shareText          // ← link included alongside the file
+  //         });
+  //       } else if ((navigator as any).share) {
+  //         await (navigator as any).share({
+  //           title: item.Title || 'Post',
+  //           text: shareText,
+  //           url: shareLink            // ← plain link fallback when file share isn't supported
+  //         });
+  //       } else {
+  //         // No native share API — download the image, and separately copy the link
+  //         const a = document.createElement('a');
+  //         a.href = imageToShare;
+  //         a.download = `feed-${item.FeedID}.png`;
+  //         a.click();
+
+  //         try {
+  //           await navigator.clipboard.writeText(shareLink);
+  //           this.showToast('🔗', 'लिंक कॉपी हो गया');
+  //         } catch { /* clipboard may be blocked; ignore silently */ }
+  //       }
+  //     }
+
+  //   } catch (e: any) {
+  //     console.error('shareFeedAsImage failed:', e?.name, e?.message, e);
+  //     if (e?.name === 'SecurityError' || /tainted/i.test(e?.message || '')) {
+  //       this.showToast('❌', 'फ़ोटो सर्वर CORS सेटिंग की वजह से शेयर नहीं हो पाया');
+  //     } else {
+  //       this.showToast('❌', 'शेयर नहीं हुआ');
+  //     }
+  //   } finally {
+  //     document.body.removeChild(captureHost);
+  //   }
+  // }
+
+
+  openFeedDetail(item: FeedItem) {
+    this.routerCtrl.navigateForward(`/feed/${item.FeedID}`);
   }
 
-
+  openPanchangDetail() {
+    this.routerCtrl.navigateForward('/india-festival');
+  }
 
   async sharePanchangImage(group: FeedDateGroup) {
     if (!group.panchangImage) return;
 
+    const shareLink = `${this.shareLinkBaseUrl}/india-festival`;
+    const shareText = `आज का पंचांग\n\n${shareLink}`;
+
     try {
+      // Composite the sharing user's photo onto a copy of the base image —
+      // group.panchangImage itself stays untouched since it's shared by all viewers
+      const imageToShare = await this.addUserPhotoOverlay(group.panchangImage,0.12);
+
       if (Capacitor.isNativePlatform()) {
-        // Strip the "data:image/png;base64," prefix — Filesystem wants raw base64
-        const base64Data = group.panchangImage.split(',')[1];
+        const base64Data = imageToShare.split(',')[1];
         const fileName = `panchang-${group.dateKey}.png`;
 
         const savedFile = await Filesystem.writeFile({
@@ -1671,28 +2098,489 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
         await Share.share({
           title: 'आज का पंचांग',
+          text: shareText,
           url: savedFile.uri,
           dialogTitle: 'पंचांग शेयर करें'
         });
       } else {
-        // Web/PWA fallback — your existing logic
-        const blob = await (await fetch(group.panchangImage)).blob();
+        const blob = await (await fetch(imageToShare)).blob();
         const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
 
         if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
-          await (navigator as any).share({ files: [file], title: 'आज का पंचांग' });
+          await (navigator as any).share({
+            files: [file],
+            title: 'आज का पंचांग',
+            text: shareText
+          });
         } else if ((navigator as any).share) {
-          await (navigator as any).share({ title: 'आज का पंचांग', url: group.panchangImage });
+          await (navigator as any).share({
+            title: 'आज का पंचांग',
+            text: shareText,
+            url: shareLink
+          });
         } else {
           const a = document.createElement('a');
-          a.href = group.panchangImage;
+          a.href = imageToShare;
           a.download = `panchang-${group.dateKey}.png`;
           a.click();
+
+          try {
+            await navigator.clipboard.writeText(shareLink);
+            this.showToast('🔗', 'लिंक कॉपी हो गया');
+          } catch { /* ignore */ }
         }
       }
     } catch (e) {
       console.error('sharePanchangImage failed:', e);
       this.showToast('❌', 'शेयर नहीं हुआ');
+    }
+  }
+
+
+
+  /** Loads the current user's profile photo via the DownloadImages API and
+ * resolves to a data URL. Uses the same blob-based approach as other photo
+ * loads in this component, so there's no CORS/tainted-canvas concern —
+ * the blob is same-origin once created. Resolves to null if unavailable. */
+  private loadUserProfilePhotoDataUrl(): Promise<string | null> {
+    return new Promise((resolve) => {
+      const photoFileName = this.userDetails?.ProfilePhoto || this.userDetails?.ProfilePhotoUrl;
+      if (!photoFileName) { resolve(null); return; }
+
+      this.api.getImage('DownloadImages', {
+        imageName: photoFileName, imagePurpose: 'ProfilePhoto'
+      }).subscribe({
+        next: (blob: any) => {
+          if (!blob?.type?.startsWith('image/')) { resolve(null); return; }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        },
+        error: () => resolve(null)
+      });
+    });
+  }
+
+
+
+  /** Draws the panchang base image onto a canvas, then overlays the sharing
+ * user's profile photo as a circular avatar. `position` picks the corner,
+ * `sizeRatio` controls avatar size as a fraction of the base image width. */
+  // private async addUserPhotoOverlay(
+  //   baseImageDataUrl: string,
+  //   position: 'bottom-left' | 'bottom-right' = 'bottom-left',
+  //   sizeRatio: number = 0.09
+  // ): Promise<string> {
+  //   const userPhotoDataUrl = await this.loadUserProfilePhotoDataUrl();
+  //   if (!userPhotoDataUrl) return baseImageDataUrl; // nothing to overlay, share as-is
+
+  //   const loadImage = (src: string): Promise<HTMLImageElement> => {
+  //     return new Promise((resolve, reject) => {
+  //       const img = new Image();
+  //       img.onload = () => resolve(img);
+  //       img.onerror = reject;
+  //       img.src = src;
+  //     });
+  //   };
+
+  //   try {
+  //     const [baseImg, userImg] = await Promise.all([
+  //       loadImage(baseImageDataUrl),
+  //       loadImage(userPhotoDataUrl)
+  //     ]);
+
+  //     const canvas = document.createElement('canvas');
+  //     canvas.width = baseImg.width;
+  //     canvas.height = baseImg.height;
+  //     const ctx = canvas.getContext('2d')!;
+
+  //     // Base image
+  //     ctx.drawImage(baseImg, 0, 0);
+
+  //     // Avatar sizing — scale relative to image width so it looks right at any resolution
+  //     const avatarSize = Math.round(baseImg.width * sizeRatio);
+  //     const margin = Math.round(baseImg.width * 0.03);
+  //     const cx = position === 'bottom-right'
+  //       ? baseImg.width - margin - avatarSize / 2
+  //       : margin + avatarSize / 2;
+  //     const cy = baseImg.height - margin - avatarSize / 2;
+
+  //     // White circular border behind the avatar
+  //     ctx.save();
+  //     ctx.beginPath();
+  //     ctx.arc(cx, cy, avatarSize / 2 + 4, 0, Math.PI * 2);
+  //     ctx.fillStyle = '#ffffff';
+  //     ctx.fill();
+  //     ctx.restore();
+
+  //     // Clip to circle and draw the user's photo, cover-fit into the circle
+  //     ctx.save();
+  //     ctx.beginPath();
+  //     ctx.arc(cx, cy, avatarSize / 2, 0, Math.PI * 2);
+  //     ctx.closePath();
+  //     ctx.clip();
+
+  //     const srcSize = Math.min(userImg.width, userImg.height);
+  //     const srcX = (userImg.width - srcSize) / 2;
+  //     const srcY = (userImg.height - srcSize) / 2;
+  //     ctx.drawImage(
+  //       userImg,
+  //       srcX, srcY, srcSize, srcSize,
+  //       cx - avatarSize / 2, cy - avatarSize / 2, avatarSize, avatarSize
+  //     );
+  //     ctx.restore();
+
+  //     return canvas.toDataURL('image/png');
+  //   } catch (e) {
+  //     console.error('addUserPhotoOverlay failed:', e);
+  //     return baseImageDataUrl; // fall back to the plain image if anything goes wrong
+  //   }
+  // }
+
+
+
+  private readonly shareLinkBaseUrl = 'https://app.mangalbhav.com';
+
+  /** Maps a Feed row's SourceTable to the page it should deep-link to when shared. */
+  // private getFeedShareLink(item: FeedItem): string {
+  //   switch ((item.SourceTable || '').trim()) {
+  //     case 'Profile':
+  //       // ⚠️ confirm: SourceID here should be the pandit/profile's UserID
+  //       return `${this.shareLinkBaseUrl}/open-find-pandit/${item.SourceID ?? ''}`;
+  //     case 'Mandir':
+  //       return `${this.shareLinkBaseUrl}/mandirfulldetails/${item.SourceID ?? ''}`;
+  //     case 'Service':
+  //     case 'Booking':
+  //       return `${this.shareLinkBaseUrl}/tabs/tab3`;
+  //     case 'Feed':
+  //     default:
+  //       return `${this.shareLinkBaseUrl}/open-community-page`;
+  //   }
+  // }
+
+  private getFeedShareLink(item: FeedItem): string {
+    return `${this.shareLinkBaseUrl}/feed/${item.FeedID}`;
+  }
+
+  // ── Share preview ──────────────────────────────────────
+  showSharePreview = false;
+  sharePreviewImageUrl: string | null = null;
+  isPreparingShare = false;
+  private pendingShareItem: FeedItem | null = null;
+  private pendingShareText = '';
+
+
+  async shareFeedAsImage(item: FeedItem) {
+
+    const cardEl = document.querySelector(
+      `.insta-post[data-feed-id="${item.FeedID}"]`
+    ) as HTMLElement;
+
+    if (!cardEl) {
+      this.showToast('❌', 'शेयर के लिए पोस्ट नहीं मिली');
+      return;
+    }
+
+    // Capture only the media itself — not header/caption/actions.
+    // Falls back to the whole card for text-only posts.
+    const mediaWrapEl = cardEl.querySelector('.ip-media-wrap') as HTMLElement | null;
+    const targetEl = mediaWrapEl || cardEl;
+
+    this.isPreparingShare = true;
+
+    const shareLink = this.getFeedShareLink(item);
+    const shareText = item.Title ? `${item.Title}\n\n${shareLink}` : shareLink;
+
+    const captureHost = document.createElement('div');
+    captureHost.style.position = 'fixed';
+    captureHost.style.left = '-9999px';
+    captureHost.style.top = '0';
+    captureHost.style.width = `${targetEl.offsetWidth || 400}px`;
+    captureHost.style.background = '#ffffff';
+    document.body.appendChild(captureHost);
+
+    const clone = targetEl.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('video').forEach((videoEl: HTMLVideoElement) => {
+      const img = document.createElement('img');
+      img.src = videoEl.currentSrc || videoEl.src;
+      img.className = videoEl.className;
+      img.crossOrigin = 'anonymous';
+      videoEl.replaceWith(img);
+    });
+
+    captureHost.appendChild(clone);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const images = Array.from(captureHost.querySelectorAll('img'));
+      await Promise.all(images.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise<void>(resolve => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+      }));
+
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      const imageData = canvas.toDataURL('image/png');
+      const imageToShare = await this.addUserPhotoOverlay(imageData, 0.16);
+
+      this.pendingShareItem = item;
+      this.pendingShareText = shareText;
+      this.sharePreviewImageUrl = imageToShare;
+      this.showSharePreview = true;
+
+    } catch (e: any) {
+      console.error('shareFeedAsImage failed:', e?.name, e?.message, e);
+      if (e?.name === 'SecurityError' || /tainted/i.test(e?.message || '')) {
+        this.showToast('❌', 'फ़ोटो सर्वर CORS सेटिंग की वजह से शेयर नहीं हो पाया');
+      } else {
+        this.showToast('❌', 'शेयर नहीं हुआ');
+      }
+    } finally {
+      document.body.removeChild(captureHost);
+      this.isPreparingShare = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  cancelSharePreview() {
+    this.showSharePreview = false;
+    this.sharePreviewImageUrl = null;
+    this.pendingShareItem = null;
+    this.pendingShareText = '';
+  }
+
+  async confirmShare() {
+    const item = this.pendingShareItem;
+    const imageToShare = this.sharePreviewImageUrl;
+    const shareText = this.pendingShareText;
+    const shareLink = item ? this.getFeedShareLink(item) : '';
+
+    if (!item || !imageToShare) {
+      this.cancelSharePreview();
+      return;
+    }
+
+    this.showSharePreview = false;
+
+    const userID = this.userDetails?.UserID || 0;
+    this.apinu.postUrlData('FeedShareInsert', {
+      FeedID: item.FeedID,
+      UserID: userID,
+      ShareType: 'Image',
+      SharedOn: new Date()
+    }).subscribe({
+      next: () => item.shareCount = (item.shareCount ?? 0) + 1,
+      error: () => { }
+    });
+
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const base64Data = imageToShare.split(',')[1];
+        const fileName = `feed-${item.FeedID}.png`;
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache
+        });
+        await Share.share({
+          title: item.Title || 'Post',
+          text: shareText,
+          url: savedFile.uri,
+          dialogTitle: 'पोस्ट शेयर करें'
+        });
+      } else {
+        const blob = await (await fetch(imageToShare)).blob();
+        const file = new File([blob], `feed-${item.FeedID}.png`, { type: 'image/png' });
+
+        if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+          await (navigator as any).share({
+            files: [file],
+            title: item.Title || 'Post',
+            text: shareText
+          });
+        } else if ((navigator as any).share) {
+          await (navigator as any).share({
+            title: item.Title || 'Post',
+            text: shareText,
+            url: shareLink
+          });
+        } else {
+          const a = document.createElement('a');
+          a.href = imageToShare;
+          a.download = `feed-${item.FeedID}.png`;
+          a.click();
+
+          try {
+            await navigator.clipboard.writeText(shareLink);
+            this.showToast('🔗', 'लिंक कॉपी हो गया');
+          } catch { /* clipboard may be blocked; ignore silently */ }
+        }
+      }
+    } catch (e) {
+      console.error('confirmShare failed:', e);
+      this.showToast('❌', 'शेयर नहीं हुआ');
+    } finally {
+      this.cancelSharePreview();
+    }
+  }
+
+  private async addUserPhotoOverlay(
+    baseImageDataUrl: string,
+    footerHeightRatio: number = 0.46
+  ): Promise<string> {
+    const userPhotoDataUrl = await this.loadUserProfilePhotoDataUrl();
+    const userName = this.userDetails?.Name || this.userDetails?.FullName || '';
+
+    const loadImage = (src: string): Promise<HTMLImageElement | null> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    };
+
+    try {
+      const baseImg = await loadImage(baseImageDataUrl);
+      if (!baseImg) return baseImageDataUrl;
+
+      const [userImg, logoImg] = await Promise.all([
+        userPhotoDataUrl ? loadImage(userPhotoDataUrl) : Promise.resolve(null),
+        loadImage('assets/mangalbhavlogo1.jpeg')
+      ]);
+
+      const footerHeight = Math.round(baseImg.width * footerHeightRatio);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = baseImg.width;
+      canvas.height = baseImg.height + footerHeight;
+      const ctx = canvas.getContext('2d')!;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(baseImg, 0, 0);
+
+      const sideMargin = Math.round(baseImg.width * 0.04);
+
+      const topRowHeight = footerHeight * 0.70;
+      const rowGap = footerHeight * 0.08;
+      const bottomRowHeight = footerHeight - topRowHeight - rowGap;
+
+      const topRowCy = baseImg.height + topRowHeight / 2;
+      const bottomRowCy = baseImg.height + topRowHeight + rowGap + bottomRowHeight / 2;
+
+      // ══════════ ROW 1 (left): user avatar + name ══════════
+      const avatarSize = Math.round(topRowHeight * 1.0);
+      const avatarCx = sideMargin + avatarSize / 2;
+
+      if (userImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avatarCx, topRowCy, avatarSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        const srcSize = Math.min(userImg.width, userImg.height);
+        const srcX = (userImg.width - srcSize) / 2;
+        const srcY = (userImg.height - srcSize) / 2;
+        ctx.drawImage(userImg, srcX, srcY, srcSize, srcSize,
+          avatarCx - avatarSize / 2, topRowCy - avatarSize / 2, avatarSize, avatarSize);
+        ctx.restore();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avatarCx, topRowCy, avatarSize / 2, 0, Math.PI * 2);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#C1440E';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (userName) {
+        const fontSize = Math.round(topRowHeight * 0.48);
+        const textX = userImg ? avatarCx + avatarSize / 2 + 16 : sideMargin;
+        const maxTextWidth = canvas.width - textX - sideMargin;
+        ctx.font = `600 ${fontSize}px sans-serif`;
+        let adjustedFontSize = fontSize;
+        while (ctx.measureText(userName).width > maxTextWidth && adjustedFontSize > 10) {
+          adjustedFontSize -= 1;
+          ctx.font = `600 ${adjustedFontSize}px sans-serif`;
+        }
+        ctx.save();
+        ctx.fillStyle = '#333333';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'left';
+        ctx.fillText(userName, textX, topRowCy);
+        ctx.restore();
+      }
+
+      // ══════════ ROW 2 (bottom-right block: "Powered by" — LOGO — "Mangal Bhav") ══════════
+      const rightEdge = canvas.width - sideMargin;
+      const logoSize = Math.round(bottomRowHeight * 1.45);
+      const textLogoGap = 8;
+      const poweredFontSize = Math.round(bottomRowHeight * 0.8);
+
+      ctx.font = `500 ${poweredFontSize}px sans-serif`;
+      const preText = 'Powered by';
+      const postText = 'Mangal Bhav';
+      const preTextWidth = ctx.measureText(preText).width;
+      const postTextWidth = ctx.measureText(postText).width;
+
+      // Whole "text — logo — text" block still anchors its right edge to the margin
+      const blockWidth = preTextWidth + textLogoGap + logoSize + textLogoGap + postTextWidth;
+      const blockLeftX = rightEdge - blockWidth;
+
+      const preTextStartX = blockLeftX;
+      const logoCx = blockLeftX + preTextWidth + textLogoGap + logoSize / 2;
+      const postTextStartX = blockLeftX + preTextWidth + textLogoGap + logoSize + textLogoGap;
+
+      // "Powered by"
+      ctx.save();
+      ctx.fillStyle = '#888888';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.font = `500 ${poweredFontSize}px sans-serif`;
+      ctx.fillText(preText, preTextStartX, bottomRowCy);
+      ctx.restore();
+
+      // Logo (in the middle)
+      if (logoImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(logoCx, bottomRowCy, logoSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        const srcSize = Math.min(logoImg.width, logoImg.height);
+        const srcX = (logoImg.width - srcSize) / 2;
+        const srcY = (logoImg.height - srcSize) / 2;
+        ctx.drawImage(logoImg, srcX, srcY, srcSize, srcSize,
+          logoCx - logoSize / 2, bottomRowCy - logoSize / 2, logoSize, logoSize);
+        ctx.restore();
+      }
+
+      // "Mangal Bhav"
+      ctx.save();
+      ctx.fillStyle = '#888888';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.font = `500 ${poweredFontSize}px sans-serif`;
+      ctx.fillText(postText, postTextStartX, bottomRowCy);
+      ctx.restore();
+
+      return canvas.toDataURL('image/png');
+    } catch (e) {
+      console.error('addUserPhotoOverlay failed:', e);
+      return baseImageDataUrl;
     }
   }
 }

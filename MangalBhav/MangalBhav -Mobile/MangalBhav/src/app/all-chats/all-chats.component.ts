@@ -328,15 +328,24 @@ export class AllChatsComponent implements OnInit {
   }
 
   // ── Navigate — pass userID so chatbox filters that conversation ──
-  openSupportChat(userID: number) {
+  // ── Navigate — pass userID + name so chatbox filters that conversation and shows who it's with ──
+  openSupportChat(item: any) {
     this.router.navigate(['/chatbox'], {
-      queryParams: { groupId: -1, withUserID: userID }
+      queryParams: {
+        groupId: -1,
+        withUserID: item.UserID,
+        withUserName: item.DisplayName
+      }
     });
   }
 
-  openAskPanditChat(userID: number) {
+  openAskPanditChat(item: any) {
     this.router.navigate(['/chatbox'], {
-      queryParams: { groupId: -2, withUserID: userID }
+      queryParams: {
+        groupId: -2,
+        withUserID: item.UserID,
+        withUserName: item.DisplayName
+      }
     });
   }
 

@@ -14,7 +14,7 @@ import { Browser } from '@capacitor/browser';
   styleUrls: ['./find-pandit-detail.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonicModule, TabscommonheaderComponent]
+  imports: [CommonModule, IonicModule]
 })
 export class FindPanditDetailComponent implements OnInit, OnDestroy {
 
@@ -55,6 +55,7 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
   labels = {
     en: {
       back: 'Back',
+      digitalId: 'Digital ID',
       connectSocial: 'Connect with Pandit Ji',
       linkNotAdded: 'link not added yet',
       panditProfile: '🙏 Pandit Profile',
@@ -115,6 +116,7 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
       back: 'वापस',
       appTitle: 'मंगल.भाव:',
       appSub: '✦ शांति · समृद्धि · सुरक्षा ✦',
+      digitalId: 'डिजिटल आईडी',
       connectSocial: 'पंडित जी से जुड़ें',
 
       panditProfile: '🙏 पंडित प्रोफ़ाइल',
@@ -210,6 +212,10 @@ export class FindPanditDetailComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+
+  openDigitalID(){
+    this.router.navigateByUrl(`/digital-card/${this.panditUserID}`);
+  }
   goBack() {
     // Prefer real back-navigation so the list page's scroll/filter state is preserved
     if (window.history.length > 1) {

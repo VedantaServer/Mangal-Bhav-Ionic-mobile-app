@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { Api, ApiNU } from '../../providers';
 import { CommonProvider } from 'src/providers/common/common';
 import { Storage } from '@ionic/storage-angular';
@@ -8,37 +8,27 @@ import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter } from 'rxjs';
 import { CommunityService } from '../services/community';
-import { OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { BottomNavBarComponent, BottomNavTab } from '../bottom-nav-bar/bottom-nav-bar.component';
+
 @Component({
   selector: 'app-panditjibottomtabs',
   templateUrl: './panditjibottomtabs.component.html',
   styleUrls: ['./panditjibottomtabs.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, BottomNavBarComponent]
 })
 export class PanditjibottomtabsComponent implements OnInit {
   userDetails: any;
   profilePhotoUrl: string = 'assets/user.png';
   isLoggedIn = false;
   adminloggedin: boolean = false;
-  @ViewChild('navWrapper', { static: true }) navWrapperRef!: ElementRef<HTMLElement>;
-  navWidth = 390;
   currentUrl = '';
-  currentPath = '';
-  private fromPath = '';
-  private animFrame: any;
   private loginTriggeredBy: 'pooja' | 'profile' = 'profile';
 
-  private readonly TAB_COUNT = 5;
-  private readonly BUMP_W = 79;
-  private readonly H = 70;
-  private readonly DIP_H = 81;
-  private routerSub?: Subscription;
-  private resizeObserver?: ResizeObserver;
   constructor(
-    private alertCtrl: AlertController,
+    private alertCtrl: AlertController, private toastCtrl: ToastController,
     private storage: Storage,
     public apinu: ApiNU,
     public api: Api,
@@ -49,64 +39,80 @@ export class PanditjibottomtabsComponent implements OnInit {
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private communityService: CommunityService
-  ) {}
+  ) { }
+
+  get tabs(): BottomNavTab[] {
+    return [
+      { id: 'pooja', icon: '/assets/pooja.png', label: 'Pooja', matches: () => this.isPoojaActive() },
+      { id: 'temple', icon: '/assets/temple.png', label: 'Temple', matches: (url) => url.includes('openfindmandir') },
+      { id: 'community', icon: '/assets/swastik.png', round: true, matches: (url) => url.includes('open-community-page') },
+      { id: 'pandit', icon: '/assets/pandit.png', label: 'Pandit ji', matches: (url) => url.includes('find-pandit') || url.includes('open-find-pandit') },
+      this.adminloggedin
+        ? { id: 'profile', icon: '/assets/user.png', label: 'Admin', matches: () => this.isAdminDashboardActive() }
+        : {
+          id: 'profile', icon: '/assets/user.png',
+          label: this.isLoggedIn ? (this.userDetails?.FullName?.split(' ')[0] || 'Me') : 'Signup',
+          matches: () => this.isProfileActive()
+        },
+    ];
+  }
+
+  onTabSelected(id: string) {
+    switch (id) {
+      case 'pooja': this.openPooja(); break;
+      case 'temple': this.openPage('openfindmandir'); break;
+      case 'community': this.communityAction(); break;
+      case 'pandit': this.action4(); break;
+      case 'profile': this.adminloggedin ? this.openAdminDashboard() : this.openProfile(); break;
+    }
+  }
 
   communityAction() {
     if (this.isActive('open-community-page')) {
-      this.communityService.openFeedForm$.next();
+      // this.communityService.openFeedForm$.next();
+      this.openFeedForm();
     } else {
       this.openPage('open-community-page');
     }
   }
 
-  // async ngOnInit() {
-  //   await this.storage.create();
-  //   this.userDetails = await this.storage.get('account');
-  //   this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
-  //   this.isLoggedIn = !!this.userDetails?.UserID;
-  //   this.currentUrl = this.router.url;
+  async ngOnInit() {
+    await this.storage.create();
+    this.userDetails = await this.storage.get('account');
+    this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
+    this.isLoggedIn = !!this.userDetails?.UserID;
+    this.currentUrl = this.router.url;
 
-  //   const saved = await this.storage.get('loginTriggeredBy');
-  //   this.loginTriggeredBy = saved || 'profile';
+    const saved = await this.storage.get('loginTriggeredBy');
+    this.loginTriggeredBy = saved || 'profile';
 
-  //   setTimeout(() => {
-  //     this.navWidth = window.innerWidth;
-  //     const idx = this.getActiveIndex();
-  //     this.currentPath = this.buildPath(idx);
-  //     this.fromPath = this.currentPath;
-  //     this.animateBump(idx);
-  //   }, 100);
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe(async (e: any) => {
+      this.currentUrl = e.urlAfterRedirects;
+      this.userDetails = await this.storage.get('account');
+      this.isLoggedIn = !!this.userDetails?.UserID;
 
-  //   this.router.events.pipe(
-  //     filter(e => e instanceof NavigationEnd)
-  //   ).subscribe(async (e: any) => {
-  //     this.currentUrl = e.urlAfterRedirects;
-  //     this.userDetails = await this.storage.get('account');
-  //     this.isLoggedIn = !!this.userDetails?.UserID;
-  //     this.navWidth = window.innerWidth;
+      if (!this.currentUrl.includes('login')) {
+        this.loginTriggeredBy = 'profile';
+        this.storage.set('loginTriggeredBy', 'profile');
+      }
+    });
 
-  //     if (!this.currentUrl.includes('login')) {
-  //       this.loginTriggeredBy = 'profile';
-  //       this.storage.set('loginTriggeredBy', 'profile');
-  //     }
+    if (!this.userDetails?.UserID) return;
 
-  //     this.animateBump(this.getActiveIndex());
-  //   });
-
-  //   if (!this.userDetails?.UserID) return;
-
-  //   this.apinu.postUrlData(
-  //     `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
-  //     null
-  //   ).subscribe((res: any) => {
-  //     if (res.ProfileList && res.ProfileList.length > 0) {
-  //       const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
-  //       if (rawUrl) {
-  //         // this.loadProfileImage(rawUrl);
-  //       }
-  //     }
-  //   });
-  // }
+    this.apinu.postUrlData(
+      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
+      null
+    ).subscribe((res: any) => {
+      if (res.ProfileList && res.ProfileList.length > 0) {
+        const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
+        if (rawUrl) {
+          // this.loadProfileImage(rawUrl);
+        }
+      }
+    });
+  }
 
   loadProfileImage(imageName: string) {
     this.api.getImage('DownloadImages', {
@@ -175,155 +181,137 @@ export class PanditjibottomtabsComponent implements OnInit {
     return this.router.url.startsWith('/admindashboard');
   }
 
-  private getActiveIndex(): number {
-    const url = this.currentUrl || '';
-    if (url.includes('loggedin-home')) return 0;
-    if (url.includes('login') && url.includes('from=pooja')) return 0;
-    if (url.includes('openfindmandir')) return 1;
-    if (url.includes('open-community-page')) return 2;
-    if (url.includes('find-pandit') || url.includes('open-find-pandit')) return 3;
-    return 4;
-  }
 
-  private buildPath(idx: number): string {
-    const W = this.navWidth;
-    const tabW = W / this.TAB_COUNT;
-    const cx = tabW * idx + tabW / 2;
-    const L = cx - this.BUMP_W / 2;
-    const R = cx + this.BUMP_W / 2;
-    const pad = 18;
-    return [
-      `M0,0`,
-      `L${L - pad},0`,
-      `Q${L},0 ${L + pad / 2},${this.DIP_H * 0.45}`,
-      `Q${cx},${this.DIP_H} ${R - pad / 2},${this.DIP_H * 0.45}`,
-      `Q${R},0 ${R + pad},0`,
-      `L${W},0 L${W},${this.H} L0,${this.H} Z`
-    ].join(' ');
-  }
+  // ── Feed / Post (create form) ──────────────────────────
+  showFeedForm = false;
+  isSubmittingFeed = false;
 
-  private parseNums(path: string): number[] {
-    return (path.match(/-?[\d.]+/g) || []).map(Number);
-  }
+  Feed: any = {};
 
-  private animateBump(targetIdx: number) {
-    const targetPath = this.buildPath(targetIdx);
+  feedMediaFile: File | null = null;
+  feedMediaPreview: string | null = null;
+  feedMediaKind: 'image' | 'video' | null = null;
+  isUploadingFeedMedia = false;
 
-    if (!this.fromPath) {
-      this.currentPath = targetPath;
-      this.fromPath = targetPath;
+  async openFeedForm() {
+    const userID = this.adminloggedin ? 0 : this.userDetails?.UserID;
+
+    if (!userID && !this.adminloggedin) {
+      this.showToast('कृपया पहले लॉगिन करें');
       return;
     }
 
-    const steps = 18;
-    let step = 0;
-    cancelAnimationFrame(this.animFrame);
-    const from = this.parseNums(this.fromPath);
-    const to = this.parseNums(targetPath);
-    const ease = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-
-    const frame = () => {
-      step++;
-      const t = ease(Math.min(step / steps, 1));
-      const nums = from.map((f, i) => f + (to[i] - f) * t);
-      let ni = 0;
-      this.currentPath = targetPath.replace(/-?[\d.]+/g, () => +nums[ni++].toFixed(2) as any);
-      if (step < steps) {
-        this.animFrame = requestAnimationFrame(frame);
-      } else {
-        this.fromPath = targetPath;
-      }
+    this.Feed = {
+      FeedID: -1,
+      TenantID: this.userDetails?.TenantID || 1,
+      UserID: userID,
+      Title: '',
+      Description: '',
+      MediaType: '',
+      PostType: 'Post',
+      MediaURL: '',
+      ThumbnailURL: '',
+      Duration: 0,
+      DisplayOrder: 1,
+      PublishDate: new Date(),
+      IsActive: true,
+      IsDeleted: false,
+      IsAdminPost: !!this.adminloggedin,
+      DateAdded: new Date(),
+      DateModified: new Date(),
+      UpdatedByUser: String(userID),
+      SourceTable: 'Feed',
+      SourceID: 0,
+      UserName: this.userDetails?.FullName || this.userDetails?.UserName || '',
+      UserPhoto: this.userDetails?.ProfilePhoto || '',
+      FeedCategory: 'Feed',
+      Location: '',
+      Amount: 0,
+      IsAutoGenerated: false,
     };
-    requestAnimationFrame(frame);
+
+    this.feedMediaFile = null;
+    this.feedMediaPreview = null;
+    this.feedMediaKind = null;
+    this.showFeedForm = true;
   }
 
+  onFeedMediaSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (!file) return;
 
-  async ngOnInit() {
-    await this.storage.create();
-    this.userDetails = await this.storage.get('account');
-    this.adminloggedin = await this.storage.get('adminloggedin') == 'true';
-    this.isLoggedIn = !!this.userDetails?.UserID;
-    this.currentUrl = this.router.url;
+    this.feedMediaFile = file;
+    this.feedMediaKind = file.type.startsWith('video') ? 'video' : 'image';
+    this.Feed.MediaType = this.feedMediaKind;
 
-    const saved = await this.storage.get('loginTriggeredBy');
-    this.loginTriggeredBy = saved || 'profile';
-
-    this.recalcBumpWhenReady();
-    this.setupResizeObserver();
-
-    this.routerSub = this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe(async (e: any) => {
-      this.currentUrl = e.urlAfterRedirects;
-      this.userDetails = await this.storage.get('account');
-      this.isLoggedIn = !!this.userDetails?.UserID;
-
-      if (!this.currentUrl.includes('login')) {
-        this.loginTriggeredBy = 'profile';
-        this.storage.set('loginTriggeredBy', 'profile');
-      }
-
-      this.recalcBumpWhenReady();
-    });
-
-    if (!this.userDetails?.UserID) return;
-
-    this.apinu.postUrlData(
-      `ProfilesNUSelectByQuery?Query= UserID = ${this.userDetails.UserID}`,
-      null
-    ).subscribe((res: any) => {
-      if (res.ProfileList && res.ProfileList.length > 0) {
-        const rawUrl = res.ProfileList[0].ProfilePhotoUrl;
-        if (rawUrl) {
-          // this.loadProfileImage(rawUrl);
-        }
-      }
-    });
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.feedMediaPreview = e.target.result;
+      this.uploadFeedMedia();
+    };
+    reader.readAsDataURL(file);
   }
 
-  ngOnDestroy() {
-    this.routerSub?.unsubscribe();
-    this.resizeObserver?.disconnect();
-    cancelAnimationFrame(this.animFrame);
+  removeFeedMedia() {
+    this.feedMediaFile = null;
+    this.feedMediaPreview = null;
+    this.feedMediaKind = null;
+    this.Feed.MediaURL = '';
+    this.Feed.MediaType = '';
   }
 
-  /** Watches the nav bar's OWN rendered width directly, so any page-specific
-   * layout timing quirk (async content loading, scrollbar appearing/disappearing,
-   * fonts loading late, non-tab top-level routes rendering differently) self-corrects
-   * immediately instead of requiring a click to "wake up" the calculation. */
-  private setupResizeObserver() {
-    if (!this.navWrapperRef?.nativeElement || typeof ResizeObserver === 'undefined') return;
+  uploadFeedMedia() {
+    if (!this.feedMediaFile) return;
+    this.isUploadingFeedMedia = true;
 
-    this.resizeObserver = new ResizeObserver(entries => {
-      const width = entries[0]?.contentRect?.width;
-      if (!width || Math.round(width) === Math.round(this.navWidth)) return;
-
-      this.navWidth = width;
-      const idx = this.getActiveIndex();
-      // Snap (no animation) — a resize-driven correction shouldn't visibly "slide"
-      this.currentPath = this.buildPath(idx);
-      this.fromPath = this.currentPath;
-      this.cdr.detectChanges();
-    });
-
-    this.resizeObserver.observe(this.navWrapperRef.nativeElement);
-  }
-
-  private recalcBumpWhenReady() {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.navWidth = window.innerWidth;
-        const idx = this.getActiveIndex();
-        if (!this.fromPath) {
-          this.currentPath = this.buildPath(idx);
-          this.fromPath = this.currentPath;
+    this.api.uploadImage([this.feedMediaFile], 'feed', 'feed', 'feed').subscribe({
+      next: (res: any) => {
+        this.isUploadingFeedMedia = false;
+        const ok = res?.Status === 'Success';
+        if (ok) {
+          this.Feed.MediaURL = res.FileName;
+          this.feedMediaFile = null;
+          this.showToast(this.feedMediaKind === 'video' ? 'वीडियो अपलोड हुआ ✅' : 'फ़ोटो अपलोड हुई ✅');
         } else {
-          this.animateBump(idx);
+          this.showToast('अपलोड विफल, पुनः प्रयास करें');
         }
-        this.cdr.detectChanges();
-      });
+      },
+      error: () => {
+        this.isUploadingFeedMedia = false;
+        this.showToast('अपलोड विफल, पुनः प्रयास करें');
+      }
     });
   }
 
+  submitFeed() {
+    if (!this.Feed.Title?.trim()) { this.showToast('शीर्षक दर्ज करें'); return; }
+    if (this.feedMediaFile) { this.showToast('मीडिया पहले अपलोड करें ⬆'); return; }
 
+    this.isSubmittingFeed = true;
+    this.Feed.DateModified = new Date();
+
+    this.apinu.postUrlData('FeedInsert', this.Feed).subscribe({
+      next: () => {
+        this.isSubmittingFeed = false;
+        this.showFeedForm = false;
+        this.showToast('पोस्ट जमा हुई! Admin अनुमोदन के बाद दिखेगी 🙏');
+
+        if (this.isActive('open-community-page')) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+
+      },
+      error: () => {
+        this.isSubmittingFeed = false;
+        this.showToast('कुछ गलत हुआ, पुनः प्रयास करें');
+      }
+    });
+  }
+
+  private async showToast(message: string) {
+    const toast = await this.toastCtrl.create({ message, duration: 2500, position: 'bottom' });
+    toast.present();
+  }
 }

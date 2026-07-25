@@ -1,1 +1,86 @@
 <app-bottom-nav-bar [tabs]="tabs" (tabSelected)="onTabSelected($event)"></app-bottom-nav-bar>
+
+<div class="fm-overlay" [class.visible]="showFeedForm">
+    <div class="fm-sheet">
+  
+      <div class="fm-header">
+        <button class="fm-close" (click)="showFeedForm = false">✕</button>
+        <div class="fm-header-title">🪔 पोस्ट जोड़ें</div>
+        <div class="fm-header-sub">Admin approval के बाद दिखेगी</div>
+      </div>
+  
+      <div class="fm-body">
+  
+        <!-- ===== Media Picker ===== -->
+        <div class="feed-media-card">
+  
+          <label class="feed-media-picker">
+  
+            <input type="file" accept="image/*,video/*" hidden (change)="onFeedMediaSelected($event)" />
+  
+            <!-- Preview -->
+            <img *ngIf="feedMediaPreview && feedMediaKind=='image'" [src]="feedMediaPreview" class="feed-preview" />
+  
+            <video *ngIf="feedMediaPreview && feedMediaKind=='video'" [src]="feedMediaPreview" class="feed-preview" muted
+              controls>
+            </video>
+  
+            <!-- Empty State -->
+            <div class="feed-placeholder" *ngIf="!feedMediaPreview">
+  
+              <ion-icon name="image-outline"></ion-icon>
+  
+              <div class="feed-placeholder-title">
+                फोटो या वीडियो जोड़ें
+              </div>
+  
+              <div class="feed-placeholder-sub">
+                Tap to choose media
+              </div>
+  
+            </div>
+  
+          </label>
+  
+          <div class="feed-actions">
+            <div class="feed-uploading" *ngIf="isUploadingFeedMedia">
+  
+              <ion-spinner name="crescent"></ion-spinner>
+  
+              <span>Uploading...</span>
+  
+            </div>
+  
+            <button class="feed-remove-btn" *ngIf="Feed.MediaURL" (click)="removeFeedMedia()">
+  
+              🗑 Remove
+  
+            </button>
+  
+          </div>
+  
+        </div>
+  
+  
+        <div class="fm-field">
+          <label class="fm-label">शीर्षक *</label>
+          <input class="fm-input" type="text" [(ngModel)]="Feed.Title" placeholder="जैसे: मंगल आरती का प्रसाद" />
+        </div>
+  
+        <!-- <div class="fm-field">
+          <label class="fm-label">विवरण</label>
+          <textarea class="fm-input fm-textarea" [(ngModel)]="Feed.Description"
+            placeholder="अपने अनुभव या संदेश के बारे में लिखें..."></textarea>
+        </div> -->
+  
+  
+        <button class="fm-submit-btn" [disabled]="isSubmittingFeed" (click)="submitFeed()">
+          {{ isSubmittingFeed ? 'जमा हो रहा है...' : '🪔 पोस्ट जमा करें' }}
+        </button>
+  
+        <div class="fm-note">📋 Admin अनुमोदन के बाद आपकी पोस्ट फ़ीड में दिखाई देगी।</div>
+        <div style="height: 48px;"></div>
+      </div>
+    </div>
+  </div>
+  

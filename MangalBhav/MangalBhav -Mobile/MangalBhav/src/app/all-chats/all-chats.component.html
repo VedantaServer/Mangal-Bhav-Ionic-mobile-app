@@ -37,7 +37,7 @@
       </div>
 
       <div class="chat-list" *ngIf="!inboxLoading && supportInbox.length > 0">
-        <div class="chat-card" *ngFor="let u of supportInbox" (click)="openSupportChat(u.UserID)">
+        <div class="chat-card" *ngFor="let u of supportInbox" (click)="openSupportChat(u)">
           <div class="chat-avatar support">
             <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
           </div>
@@ -76,7 +76,7 @@
       </div>
 
       <div class="chat-list" *ngIf="!inboxLoading && askPanditInbox.length > 0">
-        <div class="chat-card" *ngFor="let u of askPanditInbox" (click)="openAskPanditChat(u.UserID)">
+        <div class="chat-card" *ngFor="let u of askPanditInbox" (click)="openAskPanditChat(u)">
           <div class="chat-avatar pandit">
             <span>{{ u.DisplayName?.charAt(0)?.toUpperCase() || '?' }}</span>
           </div>
