@@ -23,6 +23,7 @@
     "@angular/router": "^20.0.0",
     "@awesome-cordova-plugins/in-app-browser": "^8.1.0",
     "@awesome-cordova-plugins/web-intent": "^8.1.0",
+    "@capacitor-community/background-geolocation": "^1.2.26",
     "@capacitor-community/file-opener": "^7.0.1",
     "@capacitor-community/http": "^1.4.1",
     "@capacitor-community/speech-recognition": "^7.0.1",

@@ -8,6 +8,7 @@ import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { filter } from 'rxjs';
 import { NotificationSoundService } from './services/notification-sound.service';
 import { ApiNU } from '../providers';   // ← adjust path to match your project structure
+import { LocationTrackingService } from 'src/providers/api/locationservice';
 
 declare let gtag: Function;
 
@@ -33,6 +34,7 @@ export class AppComponent implements OnDestroy {
   private userDetails: any;
 
   constructor(
+    private locationTrackingService: LocationTrackingService,
     private router: Router,
     private platform: Platform,
     private storage: Storage,
@@ -50,11 +52,12 @@ export class AppComponent implements OnDestroy {
         });
       });
 
+  }
+  ngOnInit() {
     this.initializeApp();
     this.setupDeepLinks();
     this.initAnalytics();
     this.checkAppBanner();
-     // NEW
   }
 
   // NEW — polls unread count app-wide (any screen), rings on increase
@@ -65,6 +68,7 @@ export class AppComponent implements OnDestroy {
     this.stopGlobalUnreadPolling();
     this.checkUnreadCount(); // initial fetch, sets baseline (no sound on first check)
     this.unreadPollHandle = setInterval(() => this.checkUnreadCount(), this.UNREAD_POLL_MS);
+    this.locationTrackingService.start(Number(this.userDetails.UserID));
   }
 
   private checkUnreadCount() {
@@ -90,6 +94,8 @@ export class AppComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.stopGlobalUnreadPolling();
+    this.locationTrackingService.stop(); // add
+
   }
 
   // NEW
@@ -142,6 +148,6 @@ export class AppComponent implements OnDestroy {
     await this.storage.create();
     const accountValue = await this.storage.get('account');
 
-    this.startGlobalUnreadPolling(); 
+    this.startGlobalUnreadPolling();
   }
 }

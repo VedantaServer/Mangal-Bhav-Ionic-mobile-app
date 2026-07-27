@@ -540,7 +540,7 @@ export class LoggedinHomeComponent implements OnInit {
         return { ...cat, services: catServices };
       });
 
-      console.log('Enriched Categories:', this.enrichedCategories);
+      //console.log('Enriched Categories:', this.enrichedCategories);
       this.loadAllServiceCounts();
 
     });
