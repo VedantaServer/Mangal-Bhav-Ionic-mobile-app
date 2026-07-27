@@ -139,6 +139,7 @@ export class AppComponent implements OnDestroy {
   }
 
   async initAnalytics() {
+    if (!Capacitor.isNativePlatform()) return; // skip on web
     await FirebaseAnalytics.setEnabled({ enabled: true });
     await FirebaseAnalytics.logEvent({ name: 'app_started' });
   }
