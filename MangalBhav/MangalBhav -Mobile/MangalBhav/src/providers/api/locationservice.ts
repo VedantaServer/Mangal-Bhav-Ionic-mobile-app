@@ -10,51 +10,58 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('Backg
 
 @Injectable({ providedIn: 'root' })
 export class LocationTrackingService {
-  private watcherId: string | null = null;
+    private watcherId: string | null = null;
 
-  constructor(private ngZone: NgZone, private apinu: ApiNU) {}
+    constructor(private ngZone: NgZone, private apinu: ApiNU) { }
 
-  async start(userId: number) {
-    if (!Capacitor.isNativePlatform()) return;
-    if (this.watcherId) return;
-
-    try {
-      this.watcherId = await BackgroundGeolocation.addWatcher(
-        {
-          backgroundTitle: 'Mangalbhav',
-          backgroundMessage: 'Checking nearby mandirs',
-          requestPermissions: true,
-          stale: false,
-          distanceFilter: 500,
-        },
-        (location, error) => {
-          if (error) {
-            console.error('Location watcher error', error);
-            return;
-          }
-          if (location) {
-            this.ngZone.run(() => this.reportLocation(userId, location.latitude, location.longitude));
-          }
+    async start(userId: number) {
+        if (!Capacitor.isNativePlatform()) return;
+        if (this.watcherId) return;
+         console.log('location started');
+        try {
+            this.watcherId = await BackgroundGeolocation.addWatcher(
+                {
+                    backgroundTitle: 'Mangalbhav',
+                    backgroundMessage: 'Checking nearby mandirs',
+                    requestPermissions: true,
+                    stale: false,
+                    distanceFilter: 500,
+                },
+                (location, error) => {
+                    if (error) {
+                        console.error('Location watcher error', error);
+                        return;
+                    }
+                    if (location) {
+                        this.ngZone.run(() => this.reportLocation(userId, location.latitude, location.longitude));
+                    }
+                }
+            );
+        } catch (err) {
+            console.error('Failed to start location watcher', err);
         }
-      );
-    } catch (err) {
-      console.error('Failed to start location watcher', err);
     }
-  }
 
-  private reportLocation(userId: number, lat: number, lng: number) {
-    this.apinu.postUrlData(
-      `UpdateUserLocation?userID=${userId}&lat=${lat}&lng=${lng}`,
-      null
-    ).subscribe({
-      error: (err: any) => console.error('Failed to report location', err),
-    });
-  }
-
-  async stop() {
-    if (this.watcherId) {
-      await BackgroundGeolocation.removeWatcher({ id: this.watcherId });
-      this.watcherId = null;
+    private reportLocation(userId: number, lat: number, lng: number) {
+        console.log(userId, lat, lng);
+        this.apinu.postUrlData(
+            'UserLocation/CheckNearbyMandir',
+            {
+                "userId": userId,
+                "lat": lat,
+                "lng": lng,
+                "radiusKm": 2
+            }
+        ).subscribe({
+            error: (err: any) => console.error('Failed to report location', err),
+        });
     }
-  }
+
+    async stop() {
+        console.log('location stopped');
+        if (this.watcherId) {
+            await BackgroundGeolocation.removeWatcher({ id: this.watcherId });
+            this.watcherId = null;
+        }
+    }
 }
