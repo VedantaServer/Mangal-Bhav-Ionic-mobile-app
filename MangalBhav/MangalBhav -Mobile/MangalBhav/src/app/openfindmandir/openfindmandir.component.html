@@ -383,11 +383,13 @@
 </div>
 
 
-<app-panditjibottomtabs
+
+<app-panditjibottomtabs *ngIf="showbottomtab"></app-panditjibottomtabs>
+<!-- <app-panditjibottomtabs
   *ngIf="userDetails?.Role == 'PANDIT' && showbottomtab">
 </app-panditjibottomtabs>
 
 <app-common-bottom-tabs
   *ngIf="userDetails?.Role != 'PANDIT'">
-</app-common-bottom-tabs>
+</app-common-bottom-tabs> -->
 

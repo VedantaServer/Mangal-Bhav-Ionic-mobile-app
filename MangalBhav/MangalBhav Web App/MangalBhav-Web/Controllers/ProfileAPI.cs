@@ -54,6 +54,8 @@ namespace FaceUPAI.API
                 new SqlParameter("@PinCode", profile.PinCode),
                 new SqlParameter("@Lat", profile.Lat),
                new SqlParameter("@Longitude", profile.Longitude),
+                   new SqlParameter("@Specializations", profile.Specializations),
+                new SqlParameter("@Category", profile.Category),
                 new SqlParameter("@IsActive", profile.IsActive),
 				new SqlParameter("@DateAdded", profile.DateAdded == DateTime.MinValue ? SqlDateTime.Null : profile.DateAdded ),
 				new SqlParameter("@DateModified", profile.DateModified == DateTime.MinValue ? SqlDateTime.Null : profile.DateModified ),
@@ -99,6 +101,8 @@ namespace FaceUPAI.API
                 new SqlParameter("@PinCode", profile.PinCode),
                 new SqlParameter("@Lat", profile.Lat),
               new SqlParameter("@Longitude", profile.Longitude),
+                  new SqlParameter("@Specializations", profile.Specializations),
+                new SqlParameter("@Category", profile.Category),
                 new SqlParameter("@IsActive", profile.IsActive),
 				new SqlParameter("@DateAdded", profile.DateAdded == DateTime.MinValue ? SqlDateTime.Null : profile.DateAdded ),
 				new SqlParameter("@DateModified", profile.DateModified == DateTime.MinValue ? SqlDateTime.Null : profile.DateModified ),
@@ -278,26 +282,26 @@ namespace FaceUPAI.API
 			}, this);
 		}
 
-		/// <summary>
-		/// Creates a new instance of the Profiles class and populates it with data from the specified SqlDataReader.
-		/// </summary>
-		public  Profile MakeProfile(SqlDataReader dataReader)
-		{
-			Profile profile = new Profile();
-			profile.ProfileID = DataAccess.GetInt32(dataReader, "ProfileID", 0);
-			profile.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
-			profile.UserID = DataAccess.GetInt32(dataReader, "UserID", 0);
-			profile.FullName = DataAccess.GetString(dataReader, "FullName", String.Empty);
-			profile.DOB = DataAccess.GetDateTime(dataReader, "DOB", DateTime.MinValue);
-			profile.Gender = DataAccess.GetString(dataReader, "Gender", String.Empty);
-			profile.PhoneNumber = DataAccess.GetString(dataReader, "PhoneNumber", String.Empty);
-			profile.Email = DataAccess.GetString(dataReader, "Email", String.Empty);
-			profile.ExperienceYears = DataAccess.GetInt32(dataReader, "ExperienceYears", 0);
-			profile.Bio = DataAccess.GetString(dataReader, "Bio", String.Empty);
-			profile.Languages = DataAccess.GetString(dataReader, "Languages", String.Empty);
-			profile.BasePrice = DataAccess.GetDecimal(dataReader, "BasePrice", Decimal.Zero);
-			profile.ProfilePhotoUrl = DataAccess.GetString(dataReader, "ProfilePhotoUrl", String.Empty);
-			profile.VerificationStatus = DataAccess.GetString(dataReader, "VerificationStatus", String.Empty);
+        /// <summary>
+        /// Creates a new instance of the Profiles class and populates it with data from the specified SqlDataReader.
+        /// </summary>
+        public Profile MakeProfile(SqlDataReader dataReader)
+        {
+            Profile profile = new Profile();
+            profile.ProfileID = DataAccess.GetInt32(dataReader, "ProfileID", 0);
+            profile.TenantID = DataAccess.GetInt32(dataReader, "TenantID", 0);
+            profile.UserID = DataAccess.GetInt32(dataReader, "UserID", 0);
+            profile.FullName = DataAccess.GetString(dataReader, "FullName", String.Empty);
+            profile.DOB = DataAccess.GetDateTime(dataReader, "DOB", DateTime.MinValue);
+            profile.Gender = DataAccess.GetString(dataReader, "Gender", String.Empty);
+            profile.PhoneNumber = DataAccess.GetString(dataReader, "PhoneNumber", String.Empty);
+            profile.Email = DataAccess.GetString(dataReader, "Email", String.Empty);
+            profile.ExperienceYears = DataAccess.GetInt32(dataReader, "ExperienceYears", 0);
+            profile.Bio = DataAccess.GetString(dataReader, "Bio", String.Empty);
+            profile.Languages = DataAccess.GetString(dataReader, "Languages", String.Empty);
+            profile.BasePrice = DataAccess.GetDecimal(dataReader, "BasePrice", Decimal.Zero);
+            profile.ProfilePhotoUrl = DataAccess.GetString(dataReader, "ProfilePhotoUrl", String.Empty);
+            profile.VerificationStatus = DataAccess.GetString(dataReader, "VerificationStatus", String.Empty);
             profile.AddressLine1 = DataAccess.GetString(dataReader, "AddressLine1", String.Empty);
             profile.AddressLine2 = DataAccess.GetString(dataReader, "AddressLine2", String.Empty);
             profile.City = DataAccess.GetString(dataReader, "City", String.Empty);
@@ -305,13 +309,15 @@ namespace FaceUPAI.API
             profile.PinCode = DataAccess.GetString(dataReader, "PinCode", String.Empty);
             profile.Lat = DataAccess.GetString(dataReader, "Lat", String.Empty);
             profile.Longitude = DataAccess.GetString(dataReader, "Longitude", String.Empty);
+            profile.Specializations = DataAccess.GetString(dataReader, "Specializations", String.Empty);
+            profile.Category = DataAccess.GetString(dataReader, "Category", String.Empty);
             profile.IsActive = DataAccess.GetBoolean(dataReader, "IsActive", false);
-			profile.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
-			profile.DateModified = DataAccess.GetDateTime(dataReader, "DateModified", DateTime.MinValue);
-			profile.UpdatedByUser = DataAccess.GetString(dataReader, "UpdatedByUser", String.Empty);
+            profile.DateAdded = DataAccess.GetDateTime(dataReader, "DateAdded", DateTime.MinValue);
+            profile.DateModified = DataAccess.GetDateTime(dataReader, "DateModified", DateTime.MinValue);
+            profile.UpdatedByUser = DataAccess.GetString(dataReader, "UpdatedByUser", String.Empty);
 
-			return profile;
-		}
+            return profile;
+        }
 
-	}
+    }
 	}

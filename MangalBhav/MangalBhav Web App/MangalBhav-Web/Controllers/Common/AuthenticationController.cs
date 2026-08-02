@@ -564,6 +564,43 @@ namespace FaceUPAI.Controllers
             }
         }
 
+
+
+        [HttpPost]
+        [Route("MobileDashboardMapSelectByRole")]
+        [EnableCors("AllowAll")]
+        public IActionResult MobileDashboardMapSelectByRole(int TenantID, String RoleName)
+        {
+            SqlParameter[] parameters = new SqlParameter[] {
+        new SqlParameter("@TenantID", TenantID),
+        new SqlParameter("@RoleName", RoleName)
+    };
+
+
+            using (SqlDataReader dataReader = DataAccess.ExecuteReader(
+              CommandType.StoredProcedure,
+              "MobileDashboardMapSelectByRole",
+              parameters))
+            {
+                var dataTable = new DataTable();
+                dataTable.Load(dataReader);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    // Convert DataTable to JSON
+                    var jsonResult = JsonConvert.SerializeObject(dataTable);
+                    return Ok(jsonResult); // return JSON result
+                }
+                else
+                {
+                    return NotFound("No data found.");
+                }
+            }
+
+
+        }
+
+
         [HttpPost]
         [Route("PanditDailyConversationsSelect")]
         [EnableCors("AllowAll")]

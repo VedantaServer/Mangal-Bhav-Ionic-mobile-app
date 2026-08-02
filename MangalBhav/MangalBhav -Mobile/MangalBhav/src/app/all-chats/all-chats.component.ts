@@ -50,12 +50,12 @@ export class AllChatsComponent implements OnInit {
   private userInfoCache = new Map<number, UserInfo>();
 
   constructor(
-    private routerCtrl: NavController,
+    public routerCtrl: NavController,
     private apinu: ApiNU,
     private api: Api,
     private storage: Storage,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) { }
 
   async ngOnInit() {

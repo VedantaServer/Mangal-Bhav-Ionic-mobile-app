@@ -209,13 +209,25 @@ export class Tab1Page {
     this.loadProfilePhoto();
     this.loadReferralCode();
     this.checkAndShowBroadcast();   // ← add this
+    this.loadDynamicDashboardIcons();
+
+
+    const isLoggedIn = await this.storage.get("IsUserLoggedIn");
 
     if (
-      await this.storage.get("IsUserLoggedIn") &&
-      this.userDetails?.Role !== 'PANDIT'
+      isLoggedIn !== "true"
     ) {
+      alert('IsUserLoggedIn')
       this.routerCtrl.navigateForward('/login');
     }
+
+
+    // if (
+    //   await this.storage.get("IsUserLoggedIn") &&
+    //   this.userDetails?.Role !== 'PANDIT'
+    // ) {
+    //   this.routerCtrl.navigateForward('/login');
+    // }
 
     if (this.FullName == null) {
       const alert = await this.alertCtrl.create({
@@ -265,6 +277,42 @@ export class Tab1Page {
     await this.initializePushNotifications();
   }
 
+
+  dashboardIcons: any[] = [];
+
+  loadDynamicDashboardIcons() {
+    this.apinu.postUrlData(
+      `MobileDashboardMapSelectByRole?TenantID=1&RoleName=${this.userDetails.Role}`,
+      null
+    ).subscribe((res: any) => {
+
+      console.log("Response:", res);
+
+      let list = res;
+
+      if (typeof list === 'string') {
+        list = JSON.parse(list);
+      }
+
+      if (!Array.isArray(list)) {
+        console.error("MobileDashboardList is not an array:", list);
+        this.dashboardIcons = [];
+        return;
+      }
+
+      this.dashboardIcons = list;
+    });
+  }
+
+
+  // Single handler for all dashboard tiles — decides navigation style based on PageUrl
+  onDashCardClick(item: any) {
+    if (item.PageUrl === 'yajman-booking') {
+      this.openPageee(item.PageUrl);   // needs queryParams: { id: 0 }
+    } else {
+      this.openPage(item.PageUrl);
+    }
+  }
   // ── Broadcast message: check storage first, only hit API if not yet seen today ──
   private async checkAndShowBroadcast() {
     const today = new Date();
@@ -275,7 +323,7 @@ export class Tab1Page {
     const alreadySeen = await this.storage.get(seenKey);
     if (alreadySeen) return;
 
-    const role ='Pandit' ; // e.g. 'Pandit'
+    const role = 'Pandit'; // e.g. 'Pandit'
     const genericDomain = 'BroadcastMessage';
     const roleDomain = role ? `BroadcastMessage-${role}` : null;
 
@@ -570,7 +618,7 @@ export class Tab1Page {
   async logout() {
 
     await this.storage.clear();
-    this.routerCtrl.navigateForward('/login');
+    this.routerCtrl.navigateForward('/open-community');
   }
 
 
@@ -745,7 +793,7 @@ export class Tab1Page {
       `${name} ne aapko *Mangal Bhav* par aane ka nimantran diya hai!\n\n` +
       `Sign up karte waqt yeh referral code use karein:\n` +
       `🎟️ *${this.referralCode}*\n\n` +
-      `📱 Download: https://play.google.com/store/apps/details?id=mobile.mangalbhav.com\n\n` +
+      `📱 Download: https://app.mangalbhav.com/login?joiningreferralcode=${this.referralCode}\n\n` +
       `✦ ॐ Mangal Bhav ✦`;
 
     window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');

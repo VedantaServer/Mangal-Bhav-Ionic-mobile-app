@@ -1,84 +1,53 @@
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component } from '@angular/core';
 import { Api, ApiNU } from '../../providers';
 import { Storage } from '@ionic/storage-angular';
 import { FcmService } from '../../providers/fcm/fcm';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, IonInput, NavController, Platform, ToastController } from '@ionic/angular';
+import { IonicModule, NavController, Platform, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-import { ViewChild } from '@angular/core';
+import { ViewChild, ChangeDetectorRef } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { filter, forkJoin } from 'rxjs';
 import { TabscommonheaderComponent } from '../tabscommonheader/tabscommonheader.component';
 import { BottomNavBarComponent, BottomNavTab } from '../bottom-nav-bar/bottom-nav-bar.component';
-import { ChangeDetectorRef } from '@angular/core';
-
 
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
   styleUrls: ['login.scss'],
-  //standalone: true,  // 👈 makes it standalone
   imports: [CommonModule, FormsModule, IonicModule, TabscommonheaderComponent, BottomNavBarComponent]
 })
 export class LoginPage {
   @ViewChild(IonContent) content!: IonContent;
 
-
-  @ViewChildren('phoneInput') phoneInputs!: QueryList<any>;
-
-  phoneDigits = new Array(10).fill('');
-  isPhoneComplete = false;
-  isSevaModalOpen = false;
   UserLanguage: any;
-  selectedAge: number | null = null;
-  selectedServiceType: string | null = null;
-  sevaTypes = [
-    { icon: '🔥', label: 'Havan / Yagna', value: 'Havan' },
-    { icon: '🪔', label: 'Griha Pravesh', value: 'GrihaPravesh' },
-    { icon: '💍', label: 'Vivah Sanskar', value: 'Vivah' },
-    { icon: '👶', label: 'Namkaran', value: 'Namkaran' },
-    { icon: '🌸', label: 'Satyanarayan Katha', value: 'Satyanarayan' },
-    { icon: '🕉️', label: 'Other Seva', value: 'Other' }
-  ];
 
   isLoading = false;
   LoginTitle: string = '';
   lblSchoolName: any;
   schoolLogo: any;
-  account: { password: string, username: string } = {
-    password: '',
-    username: ''
-  };
+  account: { password: string, username: string } = { password: '', username: '' };
 
   username: any;
   password: any;
 
   profilePreview: string | null = null;
 
-  showMainSection = true;
-
   signupName: string = '';
   signupAge: string = '';
-  showAuthLanding = false;
-  showLoginSection = false;
+  showLoginSection = true;
   showRegisterSection = false;
   isOtpRequesting: boolean = false;
 
-  registerStep: 'mobile' | 'otp' | 'form' | 'role' | 'photo' = 'mobile';
-  data: any;
+  registerStep: 'mobile' | 'otp' | 'role' | 'photo' = 'mobile';
   lblMessage: string = '';
   loadingData: boolean = false;
-  showLoginForm: boolean = false;
   forgetPassword: string = '';
   isOnline: any = true;
-  responseText!: string;
-  response!: string;
   tenantForImg: any = null;
   loginArea: any = false;
-  showIntro: boolean = true;
   mobileNumber: any;
   otp: any;
   selectedRole: string = '';
@@ -86,35 +55,26 @@ export class LoginPage {
   generatedOTP!: string;
   pendingPanditUserID: any;
   pendingPanditCategoryID: any;
+  pendingPanditServiceID: any;
   loginUsername: string = '';
   loginOtp: string = '';
   loginOtpSent: boolean = false;
   loginGeneratedOtp: string = '';
-  referCopied = false;
-  userReferCode: string = '';
   Language: any = 'English';
   referralCode: string = '';
   referrerUserID: number = 0;
-  referralCodeValid: boolean | null = null;  // null=unchecked, true=valid, false=invalid
+  referralCodeValid: boolean | null = null;
   termsAccepted: boolean = false;
   showTerms: boolean = true;
-  // Pandit profile photo — asked for right at registration
+
   panditPhotoFile: File | null = null;
   panditPhotoPreview: string | null = null;
   isUploadingPanditPhoto: boolean = false;
-  categoryList: any[] = [];
-  serviceList: any[] = [];
-  servicecategoryMapList: any[] = [];
-  enrichedCategories: any[] = [];  // ← this drives the HTML
 
-  // Add near the top of the class, with your other properties
-  imgBaseUrl = 'https://app.mangalbhav.com/assets/img';
-
-  serviceBookingCountMap: { [key: string]: number } = {};
-  pendingPanditServiceID: any;
   sloganName!: string[] | null;
   upiId: any;
   showPasswordOnScreen: boolean = false;
+
   constructor(public routerCtrl: NavController,
     public apinu: ApiNU,
     public api: Api,
@@ -124,9 +84,7 @@ export class LoginPage {
     private http: HttpClient,
     private toastCtrl: ToastController, private router: Router,
     private alertCtrl: AlertController, private route: ActivatedRoute
-  ) {
-
-  }
+  ) { }
 
   passwordType: string = 'password';
   passwordIcon: string = 'eye-off';
@@ -136,38 +94,17 @@ export class LoginPage {
   }
 
   toggleLanguage() {
-
-    if (this.Language === 'English') {
-      this.Language = 'Hindi';
-    } else {
-      this.Language = 'English';
-    }
-
+    this.Language = this.Language === 'English' ? 'Hindi' : 'English';
     this.storage.set('language', this.Language);
-
-    console.log("Current Language:", this.Language);
-
   }
-
-  sendWhatsApp() {
-    const url = `https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=9310050113&otp=101010`;
-    this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=9310050113&otp=101010`, null).subscribe((res: any) => {
-      console.log(res);
-    });
-  }
-
 
   async ionViewWillEnter() {
-
-
     const openLogin = await this.storage.get('openLoginSection');
     if (openLogin === 'true') {
-      await this.storage.remove('openLoginSection'); // ← clear immediately
+      await this.storage.remove('openLoginSection');
       this.openLoginSection();
       this.cdr.detectChanges();
     }
-
-
 
     this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
     this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
@@ -181,286 +118,39 @@ export class LoginPage {
     }
   }
 
-
   async ngOnInit() {
 
-    if (await this.storage.get('adminloggedin') == 'true') {
-      this.routerCtrl.navigateForward('/admindashboard');
-    }
+
+
+    this.route.queryParams.subscribe(params => {
+      const referral = params['joiningreferralcode'];
+      if (referral) {
+        this.referralCode = referral;
+        this.validateReferralCode(); 
+      }
+    });
+
 
     this.apinu.postUrlData(`MasterDataSelectByQuery?tenantID=-1&Query=${`domain='ShowPassword' and identifier='ShowPassword'`}`, null)
       .subscribe((res: any) => {
-        console.log(res.MasterDataList[0].Description)
-
         this.showPasswordOnScreen = res.MasterDataList[0].Description === 'true';
-
-      })
-
-    this.getSlogan();
-    const savedLang = await this.storage.get('language');
-
-    // alert(savedLang)
-    if (savedLang) {
-      this.Language = savedLang;
-    } else {
-      this.Language = 'English'; // default language
-      this.storage.set('language', this.Language);
-    }
-
-    // this.apinu.postUrlData('ImportFestivalsByYear',null)
-    // .subscribe((res:any)=>{
-    //   console.log(res)
-    // })
-
-    this.getAllCategories();
-    // this.getAllCategoryMap();
-    // this.getAllServices();
-
-    this.loadPujaSection();
-
-    this.userDetails = await this.storage.get("account");
-    // console.log(await this.storage.get("IsUserLoggedIn"))
-    // console.log(Boolean( await this.storage.get("IsUserLoggedIn")))
-    if (
-      await this.storage.get("IsUserLoggedIn")
-    ) {
-
-      if (this.userDetails?.Role == 'PANDIT') {
-        this.routerCtrl.navigateForward('/tabs/tab1');
-      } else {
-        this.routerCtrl.navigateForward('/jajmandashboard');
-      }
-
-    }
-  }
-
-
-  getServiceImagePath(serviceName: string): string {
-    const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
-    return `${this.imgBaseUrl}/${englishName}.png`;
-  }
-
-  // getServiceImagePath(serviceName: string): string {
-  //   const englishName = serviceName.split('/')[0].trim().replace(/\s+/g, '').replace(/&/g, '');
-  //   // console.log(englishName)
-  //   return `assets/img/${englishName}.png`;
-  // }
-
-  // loadPujaSection() {
-  //   forkJoin({
-  //     categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
-  //     services: this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null),
-  //     mapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
-  //   }).subscribe((res: any) => {
-
-  //     const categories = res.categories.ServiceCategoryList;
-  //     const services = res.services.ServiceList;               // ✅ fixed key
-  //     const mapping = res.mapping.ServiceCategoryMappingList; // ✅ fixed key
-
-  //     // Build each category with its services attached
-  //     this.enrichedCategories = categories.map((cat: any) => {
-
-  //       const serviceIDs = mapping
-  //         .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
-  //         .map((m: any) => m.ServiceID);
-
-  //       const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
-
-  //       return { ...cat, services: catServices };
-  //     });
-
-  //     console.log('Enriched Categories:', this.enrichedCategories);
-  //     this.loadAllServiceCounts();
-
-  //   });
-  // }
-
-
-
-  loadPujaSection() {
-    forkJoin({
-      categories: this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null),
-      services: this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null),
-      mapping: this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
-    }).subscribe((res: any) => {
-
-      const categories = res.categories.ServiceCategoryList;
-      const services = res.services.ServiceList;
-      const mapping = res.mapping.ServiceCategoryMappingList;
-
-      this.enrichedCategories = categories.map((cat: any) => {
-
-        const serviceIDs = mapping
-          .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
-          .map((m: any) => m.ServiceID);
-
-        const catServices = services
-          .filter((s: any) => serviceIDs.includes(s.ServiceID))
-          .sort((a: any, b: any) => {
-            const orderA = parseInt(a.UpdatedByUser, 10);
-            const orderB = parseInt(b.UpdatedByUser, 10);
-            const safeA = isNaN(orderA) ? 999 : orderA;
-            const safeB = isNaN(orderB) ? 999 : orderB;
-            return safeA - safeB;
-          });
-
-        return { ...cat, services: catServices };
       });
 
-      console.log('Enriched Categories:', this.enrichedCategories);
-      this.loadAllServiceCounts();
+    this.getSlogan();
 
-    });
-  }
+    const savedLang = await this.storage.get('language');
+    this.Language = savedLang || 'English';
+    if (!savedLang) this.storage.set('language', this.Language);
 
+    this.userDetails = await this.storage.get("account");
+    const islogged = await this.storage.get("IsUserLoggedIn");
 
-  // Extract English name for image lookup
-  getServiceEnglishName(fullName: string): string {
-    return fullName?.split('/')?.[0]?.trim() || fullName;
-  }
-
-  // Badge per service
-  getServiceBadge(serviceName: string): string {
-    const n = serviceName?.toLowerCase() || '';
-    if (n.includes('havan') || n.includes('homa')) return '🔥 Havan';
-    if (n.includes('katha') || n.includes('path')) return '📿 Katha';
-    if (n.includes('naming') || n.includes('naamkaran')) return '📛 Naming';
-    if (n.includes('mundan')) return '✂️ Mundan';
-    if (n.includes('annaprash')) return '🍚 First Food';
-    if (n.includes('upanayan') || n.includes('thread')) return '🧵 Sacred Thread';
-    if (n.includes('wedding') || n.includes('vivah')) return '💍 Vivah';
-    if (n.includes('griha')) return '🏡 Griha Pravesh';
-    if (n.includes('vastu')) return '🏠 Vastu';
-    if (n.includes('navagraha')) return '🪐 Navagraha';
-    if (n.includes('lakshmi')) return '🌼 Lakshmi';
-    if (n.includes('ganesh')) return '🐘 Ganesh';
-    if (n.includes('durga')) return '🦁 Durga';
-    if (n.includes('antim') || n.includes('sanskar') && n.includes('antim')) return '🕯️ Antyeshti';
-    if (n.includes('shraddha') || n.includes('pitru')) return '🙏 Shraddha';
-    return '🔥 Puja';
-  }
-
-
-  getAllCategories() {
-    this.apinu.postUrlData(`ServiceCategorySelectAll?tenantID=1`, null)
-      .subscribe((res: any) => {
-        this.categoryList = res.ServiceCategoryList;
-        this.selectedCategory = this.categoryList[3];
-      })
-  }
-  getAllServices() {
-    this.apinu.postUrlData(`ServiceSelectAll?tenantID=1`, null)
-      .subscribe((res: any) => {
-        this.serviceList = res.ServiceList;
-        //  console.log(res.ServiceList)
-      })
-  }
-
-  getAllCategoryMap() {
-    this.apinu.postUrlData(`ServiceCategoryMappingSelectAll?tenantID=1`, null)
-      .subscribe((res: any) => {
-        this.servicecategoryMapList = res.ServiceCategoryMappingList;
-        //console.log(res.ServiceCategoryMappingList)
-      })
-  }
-
-
-  getCategoryIcon(name: string): string {
-    const n = name?.toLowerCase() || '';
-    if (n.includes('birth')) return '🌱';
-    if (n.includes('childhood')) return '👶';
-    if (n.includes('marriage')) return '💍';
-    if (n.includes('house') || n.includes('property')) return '🏡';
-    if (n.includes('dosha') || n.includes('special')) return '⭐';
-    if (n.includes('antim') || n.includes('death')) return '🕯️';
-    if (n.includes('health')) return '🏥';
-    if (n.includes('navagraha')) return '🪐';
-    if (n.includes('education')) return '📚';
-    return '🪔';
-  }
-
-  gotToOpenPanditPage(categoryid: any, serviceid?: any) {
-    //alert(categoryid);
-
-    this.routerCtrl.navigateForward('/pandit-list', {
-      queryParams: {
-        categoryid: categoryid,
-        serviceid: serviceid || null
-      }
-    });
-  }
-
-
-  getCategoryImage(name: string): string {
-    const n = name?.toLowerCase() || '';
-    if (n.includes('birth')) return `${this.imgBaseUrl}/PunsavanSanskar2.jfif`;
-    if (n.includes('childhood')) return `${this.imgBaseUrl}/AnnaprashanCeremony.jfif`;
-    if (n.includes('marriage')) return `${this.imgBaseUrl}/WeddingCeremony(VivahSanskar).jfif`;
-    if (n.includes('house') || n.includes('property')) return `${this.imgBaseUrl}/GrihaPraveshPuja.jfif`;
-    if (n.includes('dosha') || n.includes('special')) return `${this.imgBaseUrl}/GaneshPuja.jfif`;
-    if (n.includes('antim') || n.includes('death')) return `${this.imgBaseUrl}/AntimSanskar.jfif`;
-    if (n.includes('navagraha')) return `${this.imgBaseUrl}/NavagrahaShantiPuja3.jfif`;
-    if (n.includes('education')) return `${this.imgBaseUrl}/UpanayanCeremony.jfif`;
-    return `${this.imgBaseUrl}/default.jpg`;
-  }
-
-
-
-  // getCategoryImage(name: string): string {
-  //   const n = name?.toLowerCase() || '';
-  //   if (n.includes('birth')) return 'assets/img/PunsavanSanskar2.jfif';
-  //   if (n.includes('childhood')) return 'assets/img/AnnaprashanCeremony.jfif';
-  //   if (n.includes('marriage')) return 'assets/img/WeddingCeremony(VivahSanskar).jfif';
-  //   if (n.includes('house') || n.includes('property')) return 'assets/img/GrihaPraveshPuja.jfif';
-  //   if (n.includes('dosha') || n.includes('special')) return 'assets/img/GaneshPuja.jfif';
-  //   if (n.includes('antim') || n.includes('death')) return 'assets/img/AntimSanskar.jfif';
-  //   if (n.includes('navagraha')) return 'assets/img/NavagrahaShantiPuja3.jfif';
-  //   if (n.includes('education')) return 'assets/img/UpanayanCeremony.jfif';
-  //   return 'assets/img/default.jpg';
-  // }
-  slideCarousel(carouselId: string, direction: 'prev' | 'next') {
-    const carousel = document.getElementById(carouselId);
-    if (!carousel) return;
-    const cardWidth = carousel.querySelector('.puja-card')?.clientWidth || 300;
-    carousel.scrollBy({ left: direction === 'next' ? cardWidth + 20 : -(cardWidth + 20), behavior: 'smooth' });
-  }
-
-
-  poojaList = [
-    {
-      title: 'Specific Poojas at Ghat / Temple',
-      experience: '4 year',
-      description: 'These rituals are performed at a particular temple / place of pilgrimage.',
-      count: 3,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtETvui1PCLoBiaEDAs-WZGsFqom6FK20IpQ&s'
-    },
-    {
-      title: 'Regular Poojas at Home',
-      experience: '4 year',
-      description: 'This includes all the poojas which are performed at home without any hassle.',
-      count: 3,
-      image: 'data:image/jpeg;base64,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'
-    },
-    {
-      title: 'Virtual / Online Pooja',
-      experience: '4 year',
-      description: 'All the poojas which are performed at home can also be performed online.',
-      count: 3,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZb1BlAoLIco497PyyLY8AG08ZSiVtoVba5A&s'
-    },
-    {
-      title: 'Katha Vachan',
-      experience: '4 year',
-      description: 'Katha vachan includes keertans, bhajans and spiritual discourses.',
-      count: 3,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmAqKqXthvBDnKl-t4O_t8v0qKnIJDPxd9Fw&s'
+    if (islogged === 'true') {
+      this.routerCtrl.navigateForward('/tabs/tab1');
     }
-  ];
-
+  }
 
   async action5() {
-    // await localStorage.setItem('openfindPanditThroghtFloating', 'openfindPanditThroghtFloating');
-
     this.routerCtrl.navigateForward(`/open-find-pandit`);
   }
 
@@ -469,19 +159,9 @@ export class LoginPage {
       this.showToastMessage('Please enter a valid 10-digit mobile number', 'danger');
       return;
     }
-
     this.isOtpRequesting = true;
-
-    if (this.loginUsername.toString() == "8796917944") {
-      await this.storage.set('adminloggedin', 'true');
-      this.routerCtrl.navigateForward('/admindashboard');
-      return;
-    }
-
     this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.loginUsername}`, null)
       .subscribe((res: any) => {
-        console.log(res);
-
         if (res.UserList.length === 0) {
           this.showToastMessage('Please register..', 'success');
           this.openRegisterSection();
@@ -490,302 +170,119 @@ export class LoginPage {
           this.goToOtp();
           return;
         } else {
-
-          // Generate OTP
           if (this.loginUsername.toString() == "9899252291") {
             this.loginGeneratedOtp = '111111';
           } else if (this.loginUsername.toString() == "9310050113") {
             this.loginGeneratedOtp = '111111';
-          }
-          else if (this.loginUsername.toString() == "9891643013") {
+          } else if (this.loginUsername.toString() == "9891643013") {
             this.loginGeneratedOtp = '111111';
-          }
-          else {
+          } else {
             this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           }
-
-
-
           this.apinu.postUrlData(`SendOtpSms?mobileNo=${this.loginUsername}&otp=${this.loginGeneratedOtp}`, null).subscribe({
-            next: (smsRes: any) => {
-              console.log('SMS OTP sent', smsRes);
-              this.loginOtpSent = true;
-            },
-            error: (smsErr: any) => {
-              this.isOtpRequesting = false;
-              console.error('SMS OTP failed:', smsErr);
-            }
+            next: () => { this.loginOtpSent = true; },
+            error: () => { this.isOtpRequesting = false; }
           });
-
         }
       });
   }
-
-
 
   resendLoginOtp() {
     this.loginOtp = '';
     this.loginOtpSent = false;
     this.getLoginOtp();
   }
-  // Step 2 — verify OTP then call VedantaLogin
+
   verifyLoginOtp() {
     if (!this.loginOtp || this.loginOtp.toString().length < 4) {
       this.showToastMessage('Please enter the OTP', 'success');
       return;
     }
-
     if (this.loginOtp.toString() !== this.loginGeneratedOtp.toString()) {
       this.showToastMessage('Invalid OTP. Please try again.', 'danger');
       return;
     }
-
-    // OTP matched — call login API
     this.userLogin();
   }
 
-
-
-
   userLogin() {
-
     this.apinu.postUrlData(`VedantaLogin?UserName=${this.loginUsername}`, null)
       .subscribe(async (res: any) => {
-        console.log(res)
         if (res) {
-          // this.fcm.initPush(res.UserID);
-          if (res.Role == 'PANDIT') {
-            await this.storage.set("account", res);
-            await this.storage.set("IsUserLoggedIn", "true");
-            await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/open-community-page');
-          } else {
-
-            await this.storage.set("account", res);
-            await this.storage.set("IsUserLoggedIn", "true");
-            await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateRoot('/open-community-page');
-          }
+          await this.storage.set("account", res);
+          await this.storage.set("IsUserLoggedIn", "true");
+          await this.storage.set("Language", res.Languages);
+          this.routerCtrl.navigateRoot('/open-community-page');
         }
-      })
+      });
   }
-
-
-
 
   onProfileSelected(event: any) {
     const file = event.target.files[0];
-
     if (!file) return;
-
     const reader = new FileReader();
-
-    reader.onload = () => {
-      this.profilePreview = reader.result as string;
-    };
-
+    reader.onload = () => { this.profilePreview = reader.result as string; };
     reader.readAsDataURL(file);
   }
 
-
-
-
-
-
-  scrollToPandit() {
-    this.isSevaModalOpen = true;
-  }
-  skipAndScroll() {
-    this.isSevaModalOpen = false;
-    setTimeout(() => {
-      const el = document.getElementById('pandit-section');
-      if (el) {
-        const yOffset = el.getBoundingClientRect().top + window.scrollY - 70;
-        this.content.scrollToPoint(0, yOffset, 600);
-      }
-    }, 400);
-  }
-
-  confirmAndScroll() {
-    console.log('Age:', this.selectedAge);
-    console.log('Service Type:', this.selectedServiceType);
-    this.isSevaModalOpen = false;
-    setTimeout(() => {
-      const el = document.getElementById('pandit-section');
-      if (el) {
-        const yOffset = el.getBoundingClientRect().top + window.scrollY - 70;
-        this.content.scrollToPoint(0, yOffset, 600);
-      }
-    }, 400);
-  }
-
-  doScroll() {
-    setTimeout(() => {
-      document.getElementById('pandit-section')?.scrollIntoView({
-        behavior: 'smooth', block: 'start'
-      });
-    }, 350);
-  }
-
-  onImgError(event: Event) {
-    const img = event.target as HTMLImageElement;
-    img.src = `${this.imgBaseUrl}/default.jpg`;  // was '../../assets/img/default.jpg'
-    img.onerror = null;
-  }
-
-  // onImgError(event: Event) {
-  //   const img = event.target as HTMLImageElement;
-  //   img.src = '../../assets/img/default.jpg';
-  //   // If even default fails, use a CSS gradient placeholder
-  //   img.onerror = null;
-  // }
-
-  currentImageIndex: { [key: string]: number } = {};
-  imageIntervals: { [key: string]: any } = {};
-
-  getCurrentImage(serviceName: string): string {
-    //console.log(serviceName)
-    const key = serviceName;
-    const images = this.getServiceImages(serviceName);
-
-    if (!(key in this.currentImageIndex)) {
-      this.startSlideshow(serviceName);
-    }
-
-    return images[this.currentImageIndex[key] || 0];
-  }
-
-
-  getServiceImages(serviceName: string): string[] {
-    const cleanName = serviceName;
-    return [
-      `${this.imgBaseUrl}/${cleanName}.png`,
-      `${this.imgBaseUrl}/${cleanName}2.jfif`,
-      `${this.imgBaseUrl}/${cleanName}3.jfif`
-    ];
-  }
-
-  startSlideshow(serviceName: string) {
-    const key = serviceName;
-
-    if (this.imageIntervals[key]) return; // avoid multiple intervals
-
-    this.currentImageIndex[key] = 0;
-
-    this.imageIntervals[key] = setInterval(() => {
-      this.currentImageIndex[key] =
-        (this.currentImageIndex[key] + 1) % 3;
-    }, 1000000); // change every 3 seconds
-  }
-
-  async explorePooja(cat: any) {
-    const el = document.getElementById(cat);
-    if (!el) return;
-
-    const scrollEl = await this.content.getScrollElement();
-    const yOffset = el.offsetTop - 80;
-
-    this.content.scrollToPoint(0, yOffset, 600);
-  }
-
   openRegisterSection() {
-    this.showMainSection = false;
     this.showLoginSection = false;
     this.showRegisterSection = true;
-
     this.registerStep = 'mobile';
   }
 
-
   goToOtp() {
-    // call API to send OTP here
-
     this.apinu.postUrlData(`UsersNUSelectByQuery?Query=LoginID=${this.mobileNumber}`, null)
       .subscribe((res: any) => {
-        console.log(res.UserList);
-
         if (res.UserList.length > 0) {
           this.showToastMessage('User Already Exists.Please login or use different mobile no.', 'danger');
-
           this.showRegisterSection = false;
           this.showLoginSection = true;
-
           return;
         } else {
           this.showToastMessage('Otp sent', 'success');
           this.generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-
-
           this.apinu.postUrlData(`SendOtpSms?mobileNo=${this.mobileNumber}&otp=${this.generatedOTP}`, null)
-            .subscribe((res: any) => {
-              this.registerStep = 'otp';
-            })
-
-          // alert(this.generatedOTP)
-          // this.http.post(`https://cscnu.vedantaerpserver.com/sendWhatsAppOtp?phoneno=${this.mobileNumber}&otp=${this.generatedOTP}`, null).subscribe((res: any) => {
-          //   this.registerStep = 'otp';
-          // });
+            .subscribe(() => { this.registerStep = 'otp'; });
         }
-      })
+      });
   }
 
-
-
-
   verifyOtp(): void {
-
-    // alert('clicked')
     if (!this.otp) {
       this.showToastMessage('Please enter valid otp', 'danger');
       return;
     }
-    //console.log(this.otp)
-    // console.log(this.generatedOTP)
-    // console.log(typeof(this.otp))
-    //console.log(typeof(this.generatedOTP))
     if (Number(this.otp) === Number(this.generatedOTP)) {
-      //  alert('correct');
       this.registerStep = 'role';
     } else {
-      this.showToastMessage('Incorrect Otp.', 'danger')
+      this.showToastMessage('Incorrect Otp.', 'danger');
     }
-
   }
-
 
   async selectRole(role: string) {
     if (!this.termsAccepted) {
       this.showToastMessage('कृपया नियम व शर्तें स्वीकार करें / Please accept Terms & Conditions to continue.', 'danger');
       return;
     }
-
     this.selectedRole = role;
-
-    // Ask Pandits to upload their profile photo right at registration
     if (role === 'PANDIT' && !this.panditPhotoFile) {
       this.registerStep = 'photo';
       return;
     }
-
     this.showConfirmAlert(role);
   }
 
   onPanditPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
-
     this.panditPhotoFile = file;
-
     const reader = new FileReader();
-    reader.onload = () => {
-      this.panditPhotoPreview = reader.result as string;
-    };
+    reader.onload = () => { this.panditPhotoPreview = reader.result as string; };
     reader.readAsDataURL(file);
   }
 
-  backToRoleSelection() {
-    this.registerStep = 'role';
-  }
+  backToRoleSelection() { this.registerStep = 'role'; }
 
   skipPanditPhoto() {
     this.panditPhotoFile = null;
@@ -801,177 +298,29 @@ export class LoginPage {
     this.showConfirmAlert('PANDIT');
   }
 
-  // async selectRole(role: string) {
-  //   if (!this.termsAccepted) {
-  //     this.showToastMessage('कृपया नियम व शर्तें स्वीकार करें / Please accept Terms & Conditions to continue.', 'danger');
-  //     return;
-  //   }
-  //   this.showConfirmAlert(role);
-  // }
-
   async showToastMessage(message: string, color: string = 'primary') {
     const toast = await this.toastCtrl.create({
-      message: message,
-      duration: 2000, // 2 seconds
-      position: 'bottom',
-      color: color, // success, danger, warning, primary
-      buttons: [
-        {
-          text: 'OK',
-          role: 'cancel'
-        }
-      ]
+      message, duration: 2000, position: 'bottom', color,
+      buttons: [{ text: 'OK', role: 'cancel' }]
     });
-
     await toast.present();
   }
-
 
   async showConfirmAlert(role: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirm Selection',
       message: `Are you sure you want to continue as ${role.toUpperCase()}?`,
       buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'Yes, Continue',
-          handler: () => {
-            this.confirmRole(role);
-          }
-        }
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Yes, Continue', handler: () => { this.confirmRole(role); } }
       ]
     });
-
     await alert.present();
   }
 
-  // confirmRole(role: string) {
-  //   this.selectedRole = role;
-
-  //   var body = {
-
-  //     "TenantID": Number(1),
-  //     "Role": String(role),
-  //     "LoginID": String(this.mobileNumber),
-  //     "PasswordHash": String('Pass@123'),
-  //     "IsLocked": Boolean(0),
-  //     "Status": String('ACTIVE'),
-  //     "LastLoginAt": new Date(),
-  //     "PasswordChangedAt": new Date(),
-  //     "DateAdded": new Date(),
-  //     "DateModified": new Date(),
-  //     "UpdatedByUser": String(this.mobileNumber)
-  //   }
-  //   this.apinu.postUrlData('UsersInsert', body)
-  //     .subscribe((res: any) => {
-  //       // console.log(res);
-
-
-  //       // Referral history insert (fire-and-forget)
-  //       if (this.referralCodeValid && this.referrerUserID > 0 && res.UserID) {
-  //         const referralBody = {
-  //           ReferrerUserID: this.referrerUserID,
-  //           ReferredUserID: Number(res.UserID),
-  //           ReferralCode: `${this.referralCode.trim().toUpperCase()}`,
-  //           ReferralDate: new Date()
-  //         };
-  //         this.apinu.postUrlData('UserReferralHistoryInsert', referralBody).subscribe({
-  //           next: (r: any) => console.log('Referral recorded', r),
-  //           error: (e: any) => console.error('Referral insert failed', e)
-  //         });
-  //       }
-
-
-  //       const bankbody = {
-  //         TenantId: Number(1),
-  //         UserID: Number(res.UserID),
-  //         AccountHolderName: "",
-  //         BankName: "",
-  //         AccountNumber: "",
-  //         IFSCCode: "",
-  //         BranchName: "",
-  //         UPIId: String(this.upiId || ''),
-  //         AccountType: "",
-  //         IsActive: Boolean(1),
-  //         DateAdded: new Date(),
-  //         DateModified: new Date(),
-  //         UpdatedByUser: Number(res.UserID)
-  //       }
-
-
-  //       this.apinu.postUrlData(`BankDetailsInsert`, bankbody)
-  //         .subscribe((res: any) => {
-  //           console.log(res)
-  //         })
-
-
-  //       this.showToastMessage('User Created Successfully!', 'success');
-
-
-  //       const body = {
-  //         profileID: 0,
-  //         tenantID: 1,
-  //         userID: res.UserID,
-  //         fullName: this.signupName || '',
-  //         dOB: new Date().toISOString(),
-  //         gender: '',
-  //         phoneNumber: String(this.mobileNumber) || '',
-  //         email: '',
-  //         experienceYears: 0,
-  //         bio: '',
-  //         languages: String(this.UserLanguage) || '',
-  //         basePrice: 0,
-  //         profilePhotoUrl: '',
-  //         verificationStatus: 'APPROVED',
-  //         AddressLine1: "",
-  //         AddressLine2: "",
-  //         City: "",
-  //         State: "",
-  //         PinCode: "",
-  //         Lat: "",
-  //         Longitude: "",
-  //         isActive: Boolean(1),
-  //         dateAdded: new Date().toISOString(),
-  //         dateModified: new Date().toISOString(),
-  //         updatedByUser: ''
-  //       }
-  //       this.apinu.postUrlData('ProfilesInsert', body).subscribe((res: any) => {
-  //         this.apinu.postUrlData(`VedantaLogin?UserName=${this.mobileNumber}`, null)
-  //           .subscribe(async (res: any) => {
-  //             console.log(res)
-  //             if (res) {
-  //               if (res.Role == 'PANDIT') {
-  //                 await this.storage.set("account", res);
-  //                 await this.storage.set("IsUserLoggedIn", "true");
-  //                 await this.storage.set("Language", res.Languages);
-  //                 this.routerCtrl.navigateForward('/tabs/tab1');
-  //               } else {
-
-  //                 await this.storage.set("account", res);
-  //                 await this.storage.set("IsUserLoggedIn", "true");
-  //                 await this.storage.set("Language", res.Languages);
-  //                 this.routerCtrl.navigateForward('/jajmandashboard');
-  //               }
-  //             }
-  //           })
-
-  //       })
-
-  //     })
-
-
-  // }
-
-
-
   confirmRole(role: string) {
     this.selectedRole = role;
-
     var body = {
-
       "TenantID": Number(1),
       "Role": String(role),
       "LoginID": String(this.mobileNumber),
@@ -983,14 +332,10 @@ export class LoginPage {
       "DateAdded": new Date(),
       "DateModified": new Date(),
       "UpdatedByUser": String(this.mobileNumber)
-    }
+    };
     this.apinu.postUrlData('UsersInsert', body)
       .subscribe((res: any) => {
-        // console.log(res);
-
         const newUserID = res.UserID;
-
-        // Referral history insert (fire-and-forget)
         if (this.referralCodeValid && this.referrerUserID > 0 && res.UserID) {
           const referralBody = {
             ReferrerUserID: this.referrerUserID,
@@ -999,42 +344,25 @@ export class LoginPage {
             ReferralDate: new Date()
           };
           this.apinu.postUrlData('UserReferralHistoryInsert', referralBody).subscribe({
-            next: (r: any) => console.log('Referral recorded', r),
-            error: (e: any) => console.error('Referral insert failed', e)
+            next: () => { }, error: () => { }
           });
         }
-
-
         const bankbody = {
           TenantId: Number(1),
           UserID: Number(res.UserID),
-          AccountHolderName: "",
-          BankName: "",
-          AccountNumber: "",
-          IFSCCode: "",
-          BranchName: "",
+          AccountHolderName: "", BankName: "", AccountNumber: "", IFSCCode: "", BranchName: "",
           UPIId: String(this.upiId || ''),
           AccountType: "",
           IsActive: Boolean(1),
           DateAdded: new Date(),
           DateModified: new Date(),
           UpdatedByUser: Number(res.UserID)
-        }
-
-
-        this.apinu.postUrlData(`BankDetailsInsert`, bankbody)
-          .subscribe((res: any) => {
-            console.log(res)
-          })
-
+        };
+        this.apinu.postUrlData(`BankDetailsInsert`, bankbody).subscribe(() => { });
 
         this.showToastMessage('User Created Successfully!', 'success');
-
-
         const body = {
-          profileID: 0,
-          tenantID: 1,
-          userID: newUserID,
+          profileID: 0, tenantID: 1, userID: newUserID,
           fullName: this.signupName || '',
           dOB: new Date().toISOString(),
           gender: '',
@@ -1046,196 +374,56 @@ export class LoginPage {
           basePrice: 0,
           profilePhotoUrl: '',
           verificationStatus: 'APPROVED',
-          AddressLine1: "",
-          AddressLine2: "",
-          City: "",
-          State: "",
-          PinCode: "",
-          Lat: "",
-          Longitude: "",
+          AddressLine1: "", AddressLine2: "", City: "", State: "", PinCode: "", Lat: "", Longitude: "",
           isActive: Boolean(1),
+          Specializations: '', Category: '',
           dateAdded: new Date().toISOString(),
           dateModified: new Date().toISOString(),
           updatedByUser: ''
-        }
+        };
         this.apinu.postUrlData('ProfilesInsert', body).subscribe((profileRes: any) => {
-
           const finalizeLogin = () => {
             this.apinu.postUrlData(`VedantaLogin?UserName=${this.mobileNumber}`, null)
               .subscribe(async (loginRes: any) => {
-                console.log(loginRes)
                 if (loginRes) {
-                  if (loginRes.Role == 'PANDIT') {
-                    await this.storage.set("account", loginRes);
-                    await this.storage.set("IsUserLoggedIn", "true");
-                    await this.storage.set("Language", loginRes.Languages);
-                    this.routerCtrl.navigateForward('/tabs/tab1');
-                  } else {
-
-                    await this.storage.set("account", loginRes);
-                    await this.storage.set("IsUserLoggedIn", "true");
-                    await this.storage.set("Language", loginRes.Languages);
-                    this.routerCtrl.navigateForward('/jajmandashboard');
-                  }
+                  await this.storage.set("account", loginRes);
+                  await this.storage.set("IsUserLoggedIn", "true");
+                  await this.storage.set("Language", loginRes.Languages);
+                  this.routerCtrl.navigateForward('/tabs/tab1');
                 }
-              })
+              });
           };
-
-          // Pandit uploaded a photo during registration — save it now that we have a UserID
           if (role === 'PANDIT' && this.panditPhotoFile && newUserID) {
             this.isUploadingPanditPhoto = true;
-
             this.api.uploadImage([this.panditPhotoFile], 'ProfilePhoto', newUserID.toString(), 'ProfilePhoto')
               .subscribe({
                 next: (uploadRes: any) => {
                   this.isUploadingPanditPhoto = false;
-
                   if (uploadRes?.Status === 'Success' && uploadRes?.FileName) {
                     const profileUpdateBody = { ...body, profileID: profileRes.ProfileID, profilePhotoUrl: uploadRes.FileName };
                     this.apinu.postUrlData('ProfilesUpdate', profileUpdateBody).subscribe({
-                      next: () => finalizeLogin(),
-                      error: () => finalizeLogin()
+                      next: () => finalizeLogin(), error: () => finalizeLogin()
                     });
                   } else {
                     finalizeLogin();
                   }
                 },
-                error: (err: any) => {
-                  this.isUploadingPanditPhoto = false;
-                  console.error('Pandit profile photo upload failed', err);
-                  finalizeLogin();
-                }
+                error: () => { this.isUploadingPanditPhoto = false; finalizeLogin(); }
               });
           } else {
             finalizeLogin();
           }
-
-        })
-
-      })
-
-
+        });
+      });
   }
 
-
-  backToMobile() {
-    this.registerStep = 'mobile';
-  }
-
-  openAuthLanding() {
-    this.showMainSection = false;
-    this.showAuthLanding = true;
-    this.showLoginSection = false;
-    this.showRegisterSection = false;
-  }
-
+  backToMobile() { this.registerStep = 'mobile'; }
 
   openLoginSection() {
-
-    //console.log('Before', this.showLoginSection);
-
-    this.showMainSection = false;
-    this.showAuthLanding = false;
     this.showRegisterSection = false;
     this.showLoginSection = true;
-
     this.cdr.detectChanges();
-
-    // console.log('After', this.showLoginSection);
   }
-
-
-  loadAllServiceCounts() {
-    this.enrichedCategories.forEach((cat: any) => {
-      cat.services.forEach((svc: any) => {
-
-        this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← default 10
-
-        this.apinu.postUrlData(`PanditServicesSelectAllByServiceID?serviceID=${svc.ServiceID}`, null)
-          .subscribe({
-            next: (res: any) => {
-
-              const panditServiceIDs = res.PanditServiceList?.map((p: any) => p.PanditServiceID) || [];
-
-              if (panditServiceIDs.length === 0) {
-                this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← no pandits = 10
-                return;
-              }
-
-              const bookingCalls = panditServiceIDs.map((psid: any) =>
-                this.apinu.postUrlData(`BookingsSelectAllByPanditServiceID?panditServiceID=${psid}`, null)
-              );
-
-              forkJoin(bookingCalls).subscribe({
-                next: (results: any) => {
-                  const totalCount = results.reduce((sum: number, r: any) => {
-                    return sum + (r?.BookingList?.length || 0);
-                  }, 0);
-
-                  // ← real count + 10
-                  this.serviceBookingCountMap[String(svc.ServiceID)] = totalCount + 5;
-                },
-                error: () => {
-                  this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← error = 10
-                }
-              });
-            },
-            error: () => {
-              this.serviceBookingCountMap[String(svc.ServiceID)] = 5; // ← error = 10
-            }
-          });
-      });
-    });
-  }
-
-  // @ViewChild(IonContent) content!: IonContent;
-
-  async backToMain() {
-    await this.storage.clear();
-    this.showMainSection = true;
-    this.showAuthLanding = false;
-    this.showLoginSection = false;
-    this.showRegisterSection = false;
-
-    setTimeout(() => {
-      this.content.scrollToTop(500);
-    }, 100);
-  }
-
-  copyReferCode() {
-    const code = `MANGAL${this.userReferCode}`;
-    navigator.clipboard.writeText(code).then(() => {
-      this.referCopied = true;
-      setTimeout(() => this.referCopied = false, 2500);
-    });
-  }
-
-  shareReferCode() {
-    const code = `MANGAL${this.userReferCode}`;
-    const msg = `🪔 Join me on Mangal.Bhav — A platform for booking verified pandits!\nUse my referral code *${code}* and get ₹50 off your first booking.\n\nDownload now: https://app.mangalbhav.com`;
-
-    if (navigator.share) {
-      navigator.share({ title: 'Mangal.Bhav Referral', text: msg });
-    } else {
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-  }
-
-  isCategoryDropdownOpen = false;
-  selectedCategory: any = null;
-
-  toggleCategoryDropdown() {
-    this.isCategoryDropdownOpen = !this.isCategoryDropdownOpen;
-  }
-
-  selectCategory(cat: any) {
-    this.selectedCategory = cat;
-    this.isCategoryDropdownOpen = false;
-    // same as before — scroll to that section
-    this.explorePooja(cat.CategoryName);
-  }
-
-
 
   openPage(pageName: any) {
     this.routerCtrl.navigateForward(`/${pageName}`);
@@ -1246,12 +434,9 @@ export class LoginPage {
     this.sloganName = this.api.getChalisaLine(randomIndex);
   }
 
-
   validateReferralCode() {
     const code = this.referralCode?.trim().toUpperCase();
     if (!code) return;
-
-    // The stored code in DB matches full "MANGALxxx" format
     this.apinu.postUrlData(`UserReferralCodeSelectByQuery?Query=ReferralCode='${code}'`, null)
       .subscribe((res: any) => {
         if (res.UserReferralCodeList?.length > 0) {
@@ -1268,22 +453,21 @@ export class LoginPage {
 
   get tabs(): BottomNavTab[] {
     return [
-      { id: 'pooja', icon: '/assets/pooja.png', label: 'Pooja', matches: () => false },
-      { id: 'temple', icon: '/assets/temple.png', label: 'Temple', matches: () => false },
-      { id: 'community', icon: '/assets/yagna2.png', round: true, matches: () => false },
-      { id: 'pandit', icon: '/assets/pandit.png', label: 'Pandit Ji', matches: () => false },
-      { id: 'signup', icon: '/assets/user.png', label: 'Signup', matches: () => false },
+      { id: 'pooja', icon: '/assets/pooja.png', label: 'Pooja', matches: (url) => url.includes('guest-home') },
+      { id: 'temple', icon: '/assets/temple.png', label: 'Temple', matches: (url) => url.includes('openfindmandir') },
+      { id: 'community', icon: '/assets/yagna2.png', round: true, matches: (url) => url.includes('open-community-page') },
+      { id: 'pandit', icon: '/assets/pandit.png', label: 'Pandit Ji', matches: (url) => url.includes('open-find-pandit') },
+      { id: 'signup', icon: '/assets/user.png', label: 'Signup', matches: (url) => url.includes('/login') },
     ];
   }
 
   onTabSelected(id: string) {
     switch (id) {
-      case 'pooja': this.backToMain(); break;
+      case 'pooja': this.routerCtrl.navigateForward('/guest-home'); break;
       case 'temple': this.openPage('openfindmandir'); break;
       case 'community': this.openPage('open-community-page'); break;
       case 'pandit': this.action5(); break;
       case 'signup': this.openLoginSection(); break;
     }
   }
-
 }

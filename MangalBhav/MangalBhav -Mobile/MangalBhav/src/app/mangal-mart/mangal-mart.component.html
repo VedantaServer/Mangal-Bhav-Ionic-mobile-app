@@ -2,6 +2,10 @@
   <ion-toolbar>
     <div class="inner-header">
 
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
       <div class="nav-logo" (click)="goHome()">
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">

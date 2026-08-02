@@ -27,7 +27,7 @@ export class LocationTrackingService {
                     stale: false,
                     distanceFilter: 500,
                 },
-                (location, error) => {
+                (location : any, error:any) => {
                     if (error) {
                         console.error('Location watcher error', error);
                         return;

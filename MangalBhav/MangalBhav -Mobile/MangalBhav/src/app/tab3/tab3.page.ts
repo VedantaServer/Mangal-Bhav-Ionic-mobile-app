@@ -388,7 +388,7 @@ export class Tab3Page {
 
   }
 
-    async showToast(message: string, color = 'primary') {
+  async showToast(message: string, color = 'primary') {
     const toast = await this.toastController.create({
       message, duration: 4000, color, position: 'top'
     });
@@ -418,14 +418,16 @@ export class Tab3Page {
 
     this.userDetails = await this.storage.get("account");
 
-     this.Language = this.userDetails?.Languages || 'English';
+    this.Language = this.userDetails?.Languages || 'English';
     // alert(this.Language)
     //alert(typeof(this.Language))
     // console.log(this.userDetails);
+    const isLoggedIn = await this.storage.get("IsUserLoggedIn");
+
     if (
-      await this.storage.get("IsUserLoggedIn") &&
-      this.userDetails?.Role !== 'PANDIT'
+      isLoggedIn !== "true"
     ) {
+      alert('IsUserLoggedIn')
       this.routerCtrl.navigateForward('/login');
     }
 
@@ -469,7 +471,16 @@ export class Tab3Page {
           .filter((m: any) => m.CategoryID === cat.CategoryID && m.IsActive)
           .map((m: any) => m.ServiceID);
 
-        const catServices = services.filter((s: any) => serviceIDs.includes(s.ServiceID));
+        // Add this .sort() before returning { ...cat, services: catServices }
+        const catServices = services
+          .filter((s: any) => serviceIDs.includes(s.ServiceID))
+          .sort((a: any, b: any) => {
+            const orderA = parseInt(a.UpdatedByUser, 10);
+            const orderB = parseInt(b.UpdatedByUser, 10);
+            const safeA = isNaN(orderA) ? 999 : orderA;
+            const safeB = isNaN(orderB) ? 999 : orderB;
+            return safeA - safeB;
+          });
 
         return { ...cat, services: catServices };
       });
@@ -614,7 +625,7 @@ export class Tab3Page {
 
   getLoginOtp() {
     if (!this.loginUsername || this.loginUsername.toString().length !== 10) {
-      this.showToast('Please enter a valid 10-digit mobile number' , 'danger');
+      this.showToast('Please enter a valid 10-digit mobile number', 'danger');
       return;
     }
 
@@ -622,13 +633,13 @@ export class Tab3Page {
       .subscribe((res: any) => {
         console.log(res);
         if (res.UserList.length === 0) {
-          this.showToast('Please register..','success');
+          this.showToast('Please register..', 'success');
           return;
         } else {
           // Generate OTP
           this.loginGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
           this.loginOtpSent = true;
-         // alert(this.loginGeneratedOtp)
+          // alert(this.loginGeneratedOtp)
           // Send via WhatsApp
           // const url = `https://sent.wbbox.in/pinwa/pinwav1.php?apikey=3480a5d0-031b-11f0-ad4f-92672d2d0c2d&from=918448971721&to=${this.loginUsername}&type=template&templateid=813743&placeholders=${this.loginGeneratedOtp}`;
 
@@ -776,7 +787,7 @@ export class Tab3Page {
 
   getServiceImages(serviceName: string): string[] {
     const cleanName = serviceName;
-  
+
     return [
       `${this.imgBaseUrl}/${cleanName}.png`,
       `${this.imgBaseUrl}/${cleanName}2.jfif`,
@@ -1118,7 +1129,7 @@ export class Tab3Page {
     this.explorePooja(cat.CategoryName);
   }
 
-    // ✅ Replace these with your real store links
+  // ✅ Replace these with your real store links
   androidLink = 'https://play.google.com/store/apps/details?id=mobile.mangalbhav.com';
   iosLink = 'https://apps.apple.com/app/mangalbhav/id000000000';
 

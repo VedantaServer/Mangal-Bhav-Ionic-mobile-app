@@ -80,6 +80,8 @@ export class UserProfileComponent implements OnInit {
     Lat: '',
     Longitude: '',
     VerificationStatus: '',
+    Specializations:'',
+    Category:'',
     IsActive: true,
     DateAdded: new Date().toISOString(),
     DateModified: new Date().toISOString(),
@@ -563,6 +565,8 @@ export class UserProfileComponent implements OnInit {
 
       verificationStatus: 'PENDING',
       isActive: Boolean(this.profile.IsActive),
+      Specializations:'',
+      Category:'',
       dateAdded: this.profile.DateAdded
         ? new Date(this.profile.DateAdded).toISOString()
         : new Date().toISOString(),
@@ -700,9 +704,9 @@ export class UserProfileComponent implements OnInit {
               this.navCtrl.navigateRoot('/', { animated: false }).then(() => {
                 // Small delay so navigation settles before re-entering the profile page,
                 // forcing components dependent on Role/Language to fully re-init.
-                setTimeout(() => {
-                  this.navCtrl.navigateRoot('/userprofile', { animated: false });
-                }, 150);
+                // setTimeout(() => {
+                //   this.navCtrl.navigateRoot('/user-profile', { animated: false });
+                // }, 150);
               });
             }
 

@@ -30,7 +30,7 @@ declare let gtag: Function;
     ZXingScannerModule,
     TabscommonheaderComponent,
     
-    PanditjibottomtabsComponent,CommonBottomTabsComponent
+    PanditjibottomtabsComponent
   ]
 })
 export class OpenfindmandirComponent implements OnInit {

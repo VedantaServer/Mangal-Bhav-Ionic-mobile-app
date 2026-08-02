@@ -1,513 +1,715 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
-<meta charset="UTF-8">
-<title>ॐ मंगल भव: दैनिक पंचांग ॐ</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Mukta:wght@400;500;600;700;800&display=swap');
+  <meta charset="UTF-8">
+  <title>ॐ मंगल भव: दैनिक पंचांग ॐ</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Mukta:wght@400;500;600;700;800&display=swap');
 
-  * { box-sizing: border-box; margin:0; padding:0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  body {
-    font-family: 'Noto Sans Devanagari','Mukta',sans-serif;
-    background:#e9e2d6;
-    padding:14px;
-  }
+    body {
+      font-family: 'Noto Sans Devanagari', 'Mukta', sans-serif;
+      background: #e9e2d6;
+      padding: 14px;
+    }
 
-  .sheet {
-    max-width:1160px;
-    margin:0 auto;
-    background:#fdf6ec;
-    border:3px solid #7a1d1d;
-    border-radius:14px;
-    padding:16px 20px 14px;
-    position:relative;
-    background-image:
-      radial-gradient(circle at top left, rgba(122,29,29,0.05), transparent 40%),
-      radial-gradient(circle at bottom right, rgba(122,29,29,0.05), transparent 40%);
-  }
+    .sheet {
+      max-width: 1160px;
+      margin: 0 auto;
+      background: #fdf6ec;
+      border: 3px solid #7a1d1d;
+      border-radius: 14px;
+      padding: 16px 20px 14px;
+      position: relative;
+      background-image:
+        radial-gradient(circle at top left, rgba(122, 29, 29, 0.05), transparent 40%),
+        radial-gradient(circle at bottom right, rgba(122, 29, 29, 0.05), transparent 40%);
+    }
 
-  /* ── HEADER ───────────────────────────────────────────── */
-  .header {
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding-bottom:6px;
-  }
-  .header-logo { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
-  .header-logo img { width:38px; height:38px; object-fit:contain; }
-  .header-logo .logo-text .name { font-family:'Mukta',serif; font-weight:800; font-size:15px; color:#1c1c1c; letter-spacing:0.5px; line-height:1.1; }
-  .header-logo .logo-text .tag { font-size:8px; letter-spacing:1px; color:#666; }
+    /* ── HEADER ───────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 6px;
+    }
 
-  .header-center { flex:1; text-align:center; }
-  .header-center h1 {
-    color:#a8431a;
-    font-size:26px;
-    font-weight:800;
-    letter-spacing:0.5px;
-  }
-  .meta-row {
-    margin-top:4px;
-    display:flex;
-    justify-content:center;
-    gap:26px;
-    font-size:13px;
-    font-weight:600;
-    color:#5a3010;
-  }
-  .meta-row .icon { margin-right:4px; }
-  .meta-row #panchang-date,
-  .meta-row #panchang-location { font-weight:700; color:#7a1d1d; }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
 
-  /* ── BODY LAYOUT ──────────────────────────────────────── */
-  .body-grid {
-    display:grid;
-    grid-template-columns: 200px 1fr;
-    gap:14px;
-    align-items:stretch;
-  }
+    .header-logo img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
 
-  .left-col { display:flex; flex-direction:column; gap:8px; height:100%; }
+    .header-logo .logo-text .name {
+      font-family: 'Mukta', serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #1c1c1c;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
 
-  
+    .header-logo .logo-text .tag {
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: #666;
+    }
 
-  .mangal-banner {
-    width:100%;
-    flex:0 0 auto;
-    background:linear-gradient(180deg,#fff,#f3e6c8);
-    border:2px solid #7a1d1d;
-    border-radius:10px;
-    text-align:center;
-    padding:6px 4px;
-  }
-  .mangal-banner .om-row { display:flex; align-items:center; justify-content:center; gap:6px; }
-  .mangal-banner .om-row img { width:16px; height:16px; }
-  .mangal-banner .mb-title { color:#7a1d1d; font-weight:800; font-size:14px; }
-  .mangal-banner .mb-sub { font-size:8px; color:#666; letter-spacing:0.5px; margin-top:1px; line-height:1.3; }
+    .header-center {
+      flex: 1;
+      text-align: center;
+    }
 
-  /* ── RIGHT COLUMN ─────────────────────────────────────── */
-  .right-col { display:flex; flex-direction:column; gap:7px; }
+    .header-center h1 {
+      color: #a8431a;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
 
-  .row-a { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
-  .row-b { display:grid; grid-template-columns:1.25fr 1fr; gap:7px; }
-  .row-c { display:grid; grid-template-columns:1fr 1.2fr; gap:7px; }
+    .meta-row {
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      gap: 26px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #5a3010;
+    }
 
-  /* ── CARD ─────────────────────────────────────────────── */
-  .card {
-    border:1px solid #ecdcb8;
-    border-radius:12px;
-    background:#fffefb;
-    box-shadow:0 2px 6px rgba(122,29,29,0.06);
-    overflow:hidden;
-  }
+    .meta-row .icon {
+      margin-right: 4px;
+    }
 
-  /* pill-style header: inset with margin, rounded on all corners,
+    .meta-row #panchang-date,
+    .meta-row #panchang-location {
+      font-weight: 700;
+      color: #7a1d1d;
+    }
+
+    /* ── BODY LAYOUT ──────────────────────────────────────── */
+    .body-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+
+
+    .mangal-banner {
+      width: 100%;
+      flex: 0 0 auto;
+      background: linear-gradient(180deg, #fff, #f3e6c8);
+      border: 2px solid #7a1d1d;
+      border-radius: 10px;
+      text-align: center;
+      padding: 6px 4px;
+    }
+
+    .mangal-banner .om-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mangal-banner .om-row img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .mangal-banner .mb-title {
+      color: #7a1d1d;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .mangal-banner .mb-sub {
+      font-size: 8px;
+      color: #666;
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+      line-height: 1.3;
+    }
+
+    /* ── RIGHT COLUMN ─────────────────────────────────────── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .row-a {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .row-b {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 7px;
+    }
+
+    .row-c {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 7px;
+    }
+
+    /* ── CARD ─────────────────────────────────────────────── */
+    .card {
+      border: 1px solid #ecdcb8;
+      border-radius: 12px;
+      background: #fffefb;
+      box-shadow: 0 2px 6px rgba(122, 29, 29, 0.06);
+      overflow: hidden;
+    }
+
+    /* pill-style header: inset with margin, rounded on all corners,
      rather than a bar running edge-to-edge */
-  .card-head {
-    margin:6px 6px 0;
-    color:#fff;
-    font-weight:700;
-    font-size:12.5px;
-    padding:4px 12px;
-    border-radius:9px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .card-head.orange { background:linear-gradient(90deg,#c1531f,#a8431a); }
-  .card-head.maroon { background:linear-gradient(90deg,#8a1c1c,#6b1414); }
-  .card-head.teal   { background:linear-gradient(90deg,#0e6b6e,#0a5254); }
-  .card-head.purple { background:linear-gradient(90deg,#7a1d5e,#5c1547); }
-  .card-head.green  { background:linear-gradient(90deg,#1f5e2e,#174621); }
+    .card-head {
+      margin: 6px 6px 0;
+      color: #fff;
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 4px 12px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  .card-body {
-    padding:8px 14px 9px;
-    display:flex;
-    flex-direction:column;
-    gap:0;
-  }
+    .card-head.orange {
+      background: linear-gradient(90deg, #c1531f, #a8431a);
+    }
 
-  /* accent colors used by the label-dot below, matched per card */
-  .card.accent-orange { --accent:#c1531f; }
-  .card.accent-maroon { --accent:#8a1c1c; }
-  .card.accent-teal   { --accent:#0e6b6e; }
-  .card.accent-purple { --accent:#7a1d5e; }
-  .card.accent-green  { --accent:#1f5e2e; }
+    .card-head.maroon {
+      background: linear-gradient(90deg, #8a1c1c, #6b1414);
+    }
 
-  /* rows generated dynamically by the Angular code as .kv-row > .label + .val
+    .card-head.teal {
+      background: linear-gradient(90deg, #0e6b6e, #0a5254);
+    }
+
+    .card-head.purple {
+      background: linear-gradient(90deg, #7a1d5e, #5c1547);
+    }
+
+    .card-head.green {
+      background: linear-gradient(90deg, #1f5e2e, #174621);
+    }
+
+    .card-body {
+      padding: 8px 14px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* accent colors used by the label-dot below, matched per card */
+    .card.accent-orange {
+      --accent: #c1531f;
+    }
+
+    .card.accent-maroon {
+      --accent: #8a1c1c;
+    }
+
+    .card.accent-teal {
+      --accent: #0e6b6e;
+    }
+
+    .card.accent-purple {
+      --accent: #7a1d5e;
+    }
+
+    .card.accent-green {
+      --accent: #1f5e2e;
+    }
+
+    /* rows generated dynamically by the Angular code as .kv-row > .label + .val
      — restyled here without needing to change the TS that builds them */
-  .kv-row {
-    display:flex;
-    align-items:center;
-    gap:6px;
-    padding:2.5px 0;
-  }
-  .kv-row:not(:last-child) {
-    border-bottom:1px dashed #f0e2c0;
-  }
-  .kv-row .label {
-    display:flex; align-items:center;
-    min-width:88px;
-    font-weight:700;
-    color:#5a3010;
-    font-size:12.5px;
-    white-space:nowrap;
-  }
-  .kv-row .label .ico {
-    margin-right:6px;
-    font-size:13px;
-  }
-  .kv-row .val {
-    flex:1;
-    font-size:12.5px;
-    color:#2b2b2b;
-    line-height:1.3;
-  }
+    .kv-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2.5px 0;
+    }
 
-  /* ग्रह स्थिति and संवत्सर एवं काल are now split into two real side-by-side
+    .kv-row:not(:last-child) {
+      border-bottom: 1px dashed #f0e2c0;
+    }
+
+    .kv-row .label {
+      display: flex;
+      align-items: center;
+      min-width: 88px;
+      font-weight: 700;
+      color: #5a3010;
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    .kv-row .label .ico {
+      margin-right: 6px;
+      font-size: 13px;
+    }
+
+    .kv-row .val {
+      flex: 1;
+      font-size: 12.5px;
+      color: #2b2b2b;
+      line-height: 1.3;
+    }
+
+    /* ग्रह स्थिति and संवत्सर एवं काल are now split into two real side-by-side
      columns directly by the Angular code (see PANCHANG_ICON_MAP /
      TWO_COL_SECTIONS in the component), so no CSS multi-column or flex-wrap
      trick is needed here — the JS already builds two column <div>s. */
 
-  /* शुभ-अशुभ समय: stack icon+label above value, like the reference
+    /* शुभ-अशुभ समय: stack icon+label above value, like the reference
      (✅ अभिजीत मुहूर्त: / value on the next line, indented) */
-  [data-section="शुभ-अशुभ समय"] .kv-row {
-    flex-direction:column;
-    align-items:flex-start;
-    gap:2px;
-    padding:6px 0;
-  }
-  [data-section="शुभ-अशुभ समय"] .kv-row .val {
-    padding-left:20px;
-  }
+    [data-section="शुभ-अशुभ समय"] .kv-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      padding: 6px 0;
+    }
 
-  /* Paragraph-style cards (festival / dharmik significance / upay / suvichar):
+    [data-section="शुभ-अशुभ समय"] .kv-row .val {
+      padding-left: 20px;
+    }
+
+    /* Paragraph-style cards (festival / dharmik significance / upay / suvichar):
      the DB stores a generic "विवरण" label for these, which the reference
      design doesn't show at all — just the plain text. Hiding the label
      here gives the same clean single-paragraph look regardless of what
      that label field happens to contain. */
-  [data-section="आज के पर्व एवं विशेष दिवस"] .label,
-  [data-section="आज का धार्मिक महत्व"] .label,
-  [data-section="आज का शुभ उपाय"] .label,
-  [data-section="सुविचार"] .label {
-    display:none;
-  }
-  [data-section="आज के पर्व एवं विशेष दिवस"] .val,
-  [data-section="आज का धार्मिक महत्व"] .val,
-  [data-section="आज का शुभ उपाय"] .val,
-  [data-section="सुविचार"] .val {
-    padding-left:0;
-  }
+    [data-section="आज के पर्व एवं विशेष दिवस"] .label,
+    [data-section="आज का धार्मिक महत्व"] .label,
+    [data-section="आज का शुभ उपाय"] .label,
+    [data-section="सुविचार"] .label {
+      display: none;
+    }
 
-  .mini-card { display:flex; align-items:center; gap:8px; }
-  .mini-card .line { flex:1; font-size:12.5px; color:#2b2b2b; line-height:1.35; }
-  .mini-card .emoji { font-size:16px; }
+    [data-section="आज के पर्व एवं विशेष दिवस"] .val,
+    [data-section="आज का धार्मिक महत्व"] .val,
+    [data-section="आज का शुभ उपाय"] .val,
+    [data-section="सुविचार"] .val {
+      padding-left: 0;
+    }
 
-  .card-body:empty { padding:0; min-height:0; }
-  .card:has(.card-body:empty) { display:none; }
+    .mini-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  /* ── FOOTER ───────────────────────────────────────────── */
-  .footer-strip {
-    margin-top:6px;
-    text-align:center;
-    background:linear-gradient(90deg,#7a1d1d,#561010);
-    color:#f5d99a;
-    font-weight:700;
-    font-size:14px;
-    padding:5px 0;
-    border-radius:8px;
-    letter-spacing:0.5px;
-  }
+    .mini-card .line {
+      flex: 1;
+      font-size: 12.5px;
+      color: #2b2b2b;
+      line-height: 1.35;
+    }
 
-.kv-row .label {
-  display:flex; align-items:center;
-  min-width:88px;
-  font-weight:700;
-  color:#5a3010;
-  font-size:15px;      /* was 12.5px */
-  white-space:nowrap;
-}
-.kv-row .label .ico {
-  margin-right:6px;
-  font-size:15px;      /* was 13px, optional bump to match */
-}
-.kv-row .val {
-  flex:1;
-  font-size:15px;      /* was 12.5px */
-  color:#2b2b2b;
-  line-height:1.4;     /* slightly more line-height helps at bigger size */
-}
-[data-section="आज के पर्व एवं विशेष दिवस"] .val,
-[data-section="आज का धार्मिक महत्व"] .val,
-[data-section="आज का शुभ उपाय"] .val,
-[data-section="सुविचार"] .val {
-  padding-left:0;
-  font-size:12.5px;   /* keep paragraph text at original size */
-}
-.row-c {
-  display:grid;
-  grid-template-columns:1fr 1.2fr;
-  gap:7px;
-  align-items:start;   /* was stretching by default via .body-grid */
-}
-[data-section="आज के पर्व एवं विशेष दिवस"] .label,
-[data-section="आज का धार्मिक महत्व"] .label,
-[data-section="आज का शुभ उपाय"] .label,
-[data-section="सुविचार"] .label {
-  display:none !important;
-}
-.card-body {
-  padding:5px 12px 6px;   /* was 8px 14px 9px */
-}
-.kv-row {
-  padding:3px 0;          /* was 4px 0 */
-}
-.right-col {
-  gap:8px;                /* was 10px */
-}
-.row-a, .row-b, .row-c {
-  gap:8px;                /* was 10px */
-}
-.card-head {
-  margin:7px 7px 0;       /* was 9px 9px 0 */
-  padding:5px 12px;       /* was 6px 12px */
-}
-[data-section="आज के पर्व एवं विशेष दिवस"] .val,
-[data-section="आज का धार्मिक महत्व"] .val,
-[data-section="आज का शुभ उपाय"] .val,
-[data-section="सुविचार"] .val {
-  padding-left:0;
-  line-height:1.3;   /* was likely inheriting 1.35 from .kv-row .val */
-}
-.sheet {
- padding:10px 16px;
-}
-.left-col {
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  height:100%;
-  min-height:0;   /* add this so flex children can shrink/grow properly */
-}
+    .mini-card .emoji {
+      font-size: 16px;
+    }
 
-[data-section="ग्रह स्थिति"] {
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap:14px;
-}
+    .card-body:empty {
+      padding: 0;
+      min-height: 0;
+    }
 
-[data-section="ग्रह स्थिति"] .kv-row {
-  display:flex;
-  align-items:center;
-}
+    .card:has(.card-body:empty) {
+      display: none;
+    }
 
-[data-section="ग्रह स्थिति"] .label {
-  min-width:62px;      /* fixed width so all planet names align */
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  gap:4px;
-}
+    /* ── FOOTER ───────────────────────────────────────────── */
+    .footer-strip {
+      margin-top: 6px;
+      text-align: center;
+      background: linear-gradient(90deg, #7a1d1d, #561010);
+      color: #f5d99a;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 5px 0;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
 
-[data-section="ग्रह स्थिति"] .val {
-  flex:1;
-}
+    .kv-row .label {
+      display: flex;
+      align-items: center;
+      min-width: 88px;
+      font-weight: 700;
+      color: #5a3010;
+      font-size: 15px;
+      /* was 12.5px */
+      white-space: nowrap;
+    }
 
-[data-section="ग्रह स्थिति"] .kv-row {
-  display:flex;
-  align-items:center;
-  font-size:14px;       /* bumped up, section-only */
-}
+    .kv-row .label .ico {
+      margin-right: 6px;
+      font-size: 15px;
+      /* was 13px, optional bump to match */
+    }
 
-[data-section="ग्रह स्थिति"] .label {
-  min-width:78px;       /* was inheriting default; widen if राहु still clips */
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:14px;
-}
+    .kv-row .val {
+      flex: 1;
+      font-size: 15px;
+      /* was 12.5px */
+      color: #2b2b2b;
+      line-height: 1.4;
+      /* slightly more line-height helps at bigger size */
+    }
 
-[data-section="ग्रह स्थिति"] .label .ico {
-  display:inline-flex;
-  justify-content:center;
-  width:20px;            /* fixed icon box — this is the actual fix */
-  flex-shrink:0;
-  font-size:14px;
-}
+    [data-section="आज के पर्व एवं विशेष दिवस"] .val,
+    [data-section="आज का धार्मिक महत्व"] .val,
+    [data-section="आज का शुभ उपाय"] .val,
+    [data-section="सुविचार"] .val {
+      padding-left: 0;
+      font-size: 12.5px;
+      /* keep paragraph text at original size */
+    }
 
-[data-section="ग्रह स्थिति"] .val {
-  font-size:14px;
-}
-[data-section="ग्रह स्थिति"] {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  column-gap:14px;
-  align-content:space-between;   /* spreads rows to fill the extra height */
-  height:100%;
-}
-.hanuman-frame {
-  width:100%;
-  aspect-ratio: 3 / 5;   /* match your hanuman.png's actual w:h ratio */
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 3px 10px rgba(0,0,0,0.25);
-  border:2px solid #d8a850;
-}
-.hanuman-frame img {
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 20%;  /* keeps the temple crown + Hanuman face in frame */
-}
-.body-grid {
-  display:grid;
-  grid-template-columns: 200px 1fr;
-  gap:14px;
-  align-items:stretch;   /* make sure this is stretch, not start */
-}
+    .row-c {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 7px;
+      align-items: start;
+      /* was stretching by default via .body-grid */
+    }
 
-.left-col {
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  height:100%;      /* fill the stretched grid row height */
-}
+    [data-section="आज के पर्व एवं विशेष दिवस"] .label,
+    [data-section="आज का धार्मिक महत्व"] .label,
+    [data-section="आज का शुभ उपाय"] .label,
+    [data-section="सुविचार"] .label {
+      display: none !important;
+    }
 
-.right-col {
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  height:100%;      /* also pin to full grid height */
-}
+    .card-body {
+      padding: 5px 12px 6px;
+      /* was 8px 14px 9px */
+    }
 
-.hanuman-frame {
-  flex:1 1 auto;    /* grow to fill whatever space is left after the banner */
-  min-height:0;     /* critical — without this, flex-grow can get ignored in some renderers */
-  width:100%;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 3px 10px rgba(0,0,0,0.25);
-  border:2px solid #d8a850;
-}
+    .kv-row {
+      padding: 3px 0;
+      /* was 4px 0 */
+    }
 
-.mangal-banner {
-  flex:0 0 auto;    /* keeps its natural height, doesn't stretch */
-}
-.body-grid {
-  display:grid;
-  grid-template-columns: 280px 1fr;   /* was 200px 1fr */
-  gap:14px;
-  align-items:stretch;
-}
-  @media print {
-    @page { size: landscape; }
-    body { background:#fff; padding:0; }
-    .sheet { border-width:3px; }
-  }
-</style>
+    .right-col {
+      gap: 8px;
+      /* was 10px */
+    }
+
+    .row-a,
+    .row-b,
+    .row-c {
+      gap: 8px;
+      /* was 10px */
+    }
+
+    .card-head {
+      margin: 7px 7px 0;
+      /* was 9px 9px 0 */
+      padding: 5px 12px;
+      /* was 6px 12px */
+    }
+
+    [data-section="आज के पर्व एवं विशेष दिवस"] .val,
+    [data-section="आज का धार्मिक महत्व"] .val,
+    [data-section="आज का शुभ उपाय"] .val,
+    [data-section="सुविचार"] .val {
+      padding-left: 0;
+      line-height: 1.3;
+      /* was likely inheriting 1.35 from .kv-row .val */
+    }
+
+    .sheet {
+      padding: 10px 16px;
+    }
+
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      /* add this so flex children can shrink/grow properly */
+    }
+
+    [data-section="ग्रह स्थिति"] {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 14px;
+    }
+
+    [data-section="ग्रह स्थिति"] .kv-row {
+      display: flex;
+      align-items: center;
+    }
+
+    [data-section="ग्रह स्थिति"] .label {
+      min-width: 62px;
+      /* fixed width so all planet names align */
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    [data-section="ग्रह स्थिति"] .val {
+      flex: 1;
+    }
+
+    [data-section="ग्रह स्थिति"] .kv-row {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      /* bumped up, section-only */
+    }
+
+    [data-section="ग्रह स्थिति"] .label {
+      min-width: 78px;
+      /* was inheriting default; widen if राहु still clips */
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    [data-section="ग्रह स्थिति"] .label .ico {
+      display: inline-flex;
+      justify-content: center;
+      width: 20px;
+      /* fixed icon box — this is the actual fix */
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    [data-section="ग्रह स्थिति"] .val {
+      font-size: 14px;
+    }
+
+    [data-section="ग्रह स्थिति"] {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 14px;
+      align-content: space-between;
+      /* spreads rows to fill the extra height */
+      height: 100%;
+    }
+
+    .hanuman-frame {
+      width: 100%;
+      aspect-ratio: 3 / 5;
+      /* match your hanuman.png's actual w:h ratio */
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      border: 2px solid #d8a850;
+    }
+
+    .hanuman-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      /* keeps the temple crown + Hanuman face in frame */
+    }
+
+    .body-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 14px;
+      align-items: stretch;
+      /* make sure this is stretch, not start */
+    }
+
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      /* fill the stretched grid row height */
+    }
+
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      /* also pin to full grid height */
+    }
+
+    .hanuman-frame {
+      flex: 1 1 auto;
+      /* grow to fill whatever space is left after the banner */
+      min-height: 0;
+      /* critical — without this, flex-grow can get ignored in some renderers */
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      border: 2px solid #d8a850;
+    }
+
+    .mangal-banner {
+      flex: 0 0 auto;
+      /* keeps its natural height, doesn't stretch */
+    }
+
+    .body-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      /* was 200px 1fr */
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    @media print {
+      @page {
+        size: landscape;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .sheet {
+        border-width: 3px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="sheet">
+  <div class="sheet">
 
-  <!-- HEADER: logo, centered title, date/location as one inline meta row -->
-  <div class="header">
-    <div class="header-logo">
-      <img src="images/logo.jpeg" alt="Mangal Bhav Logo">
-      <div class="logo-text">
-        <div class="name">MANGAL BHAV</div>
-        <div class="tag">Peace • Prosperity • Protection</div>
+    <!-- HEADER: logo, centered title, date/location as one inline meta row -->
+    <div class="header">
+      <div class="header-logo">
+        <img src="images/logo.jpeg" alt="Mangal Bhav Logo">
+        <div class="logo-text">
+          <div class="name">MANGAL BHAV</div>
+          <div class="tag">Peace • Prosperity • Protection</div>
+        </div>
+      </div>
+      <div class="header-center">
+        <h1>ॐ मंगल भव : दैनिक पंचांग ॐ</h1>
+        <div class="meta-row">
+          <div><span class="icon">📅</span>दिनांक: <span id="panchang-date"></span></div>
+          <div><span class="icon">📍</span>स्थान: <span id="panchang-location"></span></div>
+        </div>
       </div>
     </div>
-    <div class="header-center">
-      <h1>ॐ मंगल भव : दैनिक पंचांग ॐ</h1>
-      <div class="meta-row">
-        <div><span class="icon">📅</span>दिनांक: <span id="panchang-date"></span></div>
-        <div><span class="icon">📍</span>स्थान: <span id="panchang-location"></span></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- MAIN BODY -->
-  <div class="body-grid">
+    <!-- MAIN BODY -->
+    <div class="body-grid">
 
-    <!-- LEFT COLUMN -->
-    <div class="left-col">
-      <div class="hanuman-frame">
-        <img src="images/hanuman.png" alt="Hanuman Ji">
-      </div>
-      <div class="mangal-banner">
-  <div class="om-row">
-    <span style="font-size:16px;">🕉️</span>
-    <div class="mb-title">मंगल भव</div>
-  </div>
-  <div class="mb-sub">शांति • समृद्धि • संरक्षण</div>
-</div>
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div class="right-col">
-
-      <!-- Row 1: सूर्य संबंधी जानकारी | संवत्सर एवं काल -->
-      <div class="row-a">
-        <div class="card accent-orange">
-          <div class="card-head orange">☀️ सूर्य संबंधी जानकारी</div>
-          <div class="card-body" data-section="सूर्य संबंधी जानकारी"></div>
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+        <div class="hanuman-frame">
+          <img src="images/hanuman.png" alt="Hanuman Ji">
         </div>
-        <div class="card accent-orange">
-          <div class="card-head orange">📖 संवत्सर एवं काल</div>
-          <div class="card-body" data-section="संवत्सर एवं काल"></div>
-        </div>
-      </div>
-
-      <!-- Row 2: पंचांग विवरण | शुभ-अशुभ समय -->
-      <div class="row-b">
-        <div class="card accent-maroon">
-          <div class="card-head maroon">🌙 पंचांग विवरण</div>
-          <div class="card-body" data-section="पंचांग विवरण"></div>
-        </div>
-        <div class="card accent-maroon">
-          <div class="card-head maroon">🕐 शुभ-अशुभ समय</div>
-          <div class="card-body" data-section="शुभ-अशुभ समय"></div>
-        </div>
-      </div>
-
-      <!-- Row 3: ग्रह स्थिति | पर्व / धार्मिक महत्व / शुभ उपाय stack -->
-      <div class="row-c">
-        <div class="card accent-orange">
-          <div class="card-head orange">☀️ ग्रह स्थिति</div>
-          <div class="card-body" data-section="ग्रह स्थिति"></div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <div class="card accent-purple">
-            <div class="card-head purple">🪔 आज के पर्व एवं विशेष दिवस</div>
-            <div class="card-body" data-section="आज के पर्व एवं विशेष दिवस"></div>
+        <div class="mangal-banner">
+          <div class="om-row">
+            <span style="font-size:16px;">🕉️</span>
+            <div class="mb-title">मंगल भव</div>
           </div>
-          <div class="card accent-teal">
-            <div class="card-head teal">📘 आज का धार्मिक महत्व</div>
-            <div class="card-body" data-section="आज का धार्मिक महत्व"></div>
-          </div>
-         
+          <div class="mb-sub">शांति • समृद्धि • संरक्षण</div>
         </div>
       </div>
 
- <div class="card accent-green">
-            <div class="card-head green">🌸 आज का शुभ उपाय</div>
-            <div class="card-body" data-section="आज का शुभ उपाय"></div>
+      <!-- RIGHT COLUMN -->
+      <div class="right-col">
+
+        <!-- Row 1: सूर्य संबंधी जानकारी | संवत्सर एवं काल -->
+        <div class="row-a">
+          <div class="card accent-orange">
+            <div class="card-head orange">☀️ सूर्य संबंधी जानकारी</div>
+            <div class="card-body" data-section="सूर्य संबंधी जानकारी"></div>
           </div>
-      <!-- सुविचार -->
-      <div class="card accent-teal">
-        <div class="card-head teal">📜 सुविचार</div>
-        <div class="card-body" data-section="सुविचार"></div>
+          <div class="card accent-orange">
+            <div class="card-head orange">📖 संवत्सर एवं काल</div>
+            <div class="card-body" data-section="संवत्सर एवं काल"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: पंचांग विवरण | शुभ-अशुभ समय -->
+        <div class="row-b">
+          <div class="card accent-maroon">
+            <div class="card-head maroon">🌙 पंचांग विवरण</div>
+            <div class="card-body" data-section="पंचांग विवरण"></div>
+          </div>
+          <div class="card accent-maroon">
+            <div class="card-head maroon">🕐 शुभ-अशुभ समय</div>
+            <div class="card-body" data-section="शुभ-अशुभ समय"></div>
+          </div>
+        </div>
+
+        <!-- Row 3: ग्रह स्थिति | पर्व / धार्मिक महत्व / शुभ उपाय stack -->
+        <div class="row-c">
+          <div class="card accent-orange">
+            <div class="card-head orange">☀️ ग्रह स्थिति</div>
+            <div class="card-body" data-section="ग्रह स्थिति"></div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div class="card accent-purple">
+              <div class="card-head purple">🪔 आज के पर्व एवं विशेष दिवस</div>
+              <div class="card-body" data-section="आज के पर्व एवं विशेष दिवस"></div>
+            </div>
+            <div class="card accent-teal">
+              <div class="card-head teal">📘 आज का धार्मिक महत्व</div>
+              <div class="card-body" data-section="आज का धार्मिक महत्व"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card accent-green">
+          <div class="card-head green">🌸 आज का शुभ उपाय</div>
+          <div class="card-body" data-section="आज का शुभ उपाय"></div>
+        </div>
+        <!-- सुविचार -->
+        <div class="card accent-teal">
+          <div class="card-head teal">📜 सुविचार</div>
+          <div class="card-body" data-section="सुविचार"></div>
+        </div>
+
       </div>
-
     </div>
+
+    <!-- FOOTER -->
+    <div class="footer-strip">🪔 ॐ "धर्मो रक्षति रक्षितः" ॐ</div>
+
   </div>
-
-  <!-- FOOTER -->
-  <div class="footer-strip">🪔 ॐ "धर्मो रक्षति रक्षितः" ॐ</div>
-
-</div>
 </body>
+
 </html>

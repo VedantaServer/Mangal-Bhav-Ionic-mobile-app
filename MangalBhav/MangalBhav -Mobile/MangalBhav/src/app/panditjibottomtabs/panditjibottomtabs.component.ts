@@ -25,7 +25,6 @@ export class PanditjibottomtabsComponent implements OnInit {
   isLoggedIn = false;
   adminloggedin: boolean = false;
   currentUrl = '';
-  private loginTriggeredBy: 'pooja' | 'profile' = 'profile';
 
   constructor(
     private alertCtrl: AlertController, private toastCtrl: ToastController,
@@ -83,20 +82,12 @@ export class PanditjibottomtabsComponent implements OnInit {
     this.isLoggedIn = !!this.userDetails?.UserID;
     this.currentUrl = this.router.url;
 
-    const saved = await this.storage.get('loginTriggeredBy');
-    this.loginTriggeredBy = saved || 'profile';
-
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe(async (e: any) => {
       this.currentUrl = e.urlAfterRedirects;
       this.userDetails = await this.storage.get('account');
       this.isLoggedIn = !!this.userDetails?.UserID;
-
-      if (!this.currentUrl.includes('login')) {
-        this.loginTriggeredBy = 'profile';
-        this.storage.set('loginTriggeredBy', 'profile');
-      }
     });
 
     if (!this.userDetails?.UserID) return;
@@ -113,6 +104,7 @@ export class PanditjibottomtabsComponent implements OnInit {
       }
     });
   }
+
 
   loadProfileImage(imageName: string) {
     this.api.getImage('DownloadImages', {
@@ -144,34 +136,33 @@ export class PanditjibottomtabsComponent implements OnInit {
     this.routerCtrl.navigateForward(`/open-find-pandit`);
   }
 
+
+
   openPooja() {
     if (this.isLoggedIn || this.adminloggedin) {
       this.routerCtrl.navigateForward('/tabs/tab3');
     } else {
-      this.routerCtrl.navigateForward('/login?from=pooja');
+      this.routerCtrl.navigateForward('/guest-home');
     }
   }
 
   openProfile() {
     if (!this.isLoggedIn) {
-      this.storage.set('openLoginSection', 'true');
-      this.routerCtrl.navigateForward('/login?from=profile');
+      this.routerCtrl.navigateForward('/login');
       return;
     }
     this.routerCtrl.navigateForward('/tabs/tab1');
   }
 
+
   isPoojaActive(): boolean {
-    if (this.currentUrl.includes('loggedin-home')) return true;
-    if (this.currentUrl.includes('login') && this.currentUrl.includes('from=pooja')) return true;
-    return false;
+    return this.currentUrl.includes('loggedin-home') || this.currentUrl.includes('guest-home');
   }
 
   isProfileActive(): boolean {
-    if (this.currentUrl.includes('jajmandashboard')) return true;
-    if (this.currentUrl.includes('login') && this.currentUrl.includes('from=profile')) return true;
-    return false;
+    return this.currentUrl.includes('jajmandashboard') || this.currentUrl.includes('/login');
   }
+
 
   openAdminDashboard() {
     this.router.navigateByUrl('/admindashboard');

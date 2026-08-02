@@ -137,8 +137,8 @@
           (click)="openFeedDetail(item)">
           <video *ngIf="item.MediaType?.trim()?.toLowerCase() !== 'image'" [src]="getFeedMediaPath(item)"
             class="ip-media" controls playsinline muted (error)="onMediaError(item)"></video>
-          <img *ngIf="item.MediaType?.trim()?.toLowerCase() === 'image'" [src]="getFeedMediaPath(item)" class="ip-media"
-            crossorigin="anonymous" (error)="onMediaError(item)" />
+            <img *ngIf="item.MediaType?.trim()?.toLowerCase() === 'image'" [src]="getFeedMediaPath(item)" class="ip-media"
+            (error)="onMediaError(item)" />
         </div>
 
 
@@ -219,155 +219,8 @@
 
 </ion-content>
 
-<app-panditjibottomtabs *ngIf="userDetails?.Role == 'PANDIT' && showbottomAndHeader"></app-panditjibottomtabs>
-<app-common-bottom-tabs *ngIf="userDetails?.Role != 'PANDIT' && showbottomAndHeader"></app-common-bottom-tabs>
 
-<!-- ═══ FAMILY MANDIR FORM ═══ -->
-<!-- <div class="fm-overlay" [class.visible]="showFamilyMandirForm">
-  <div class="fm-sheet">
-
-    <div class="fm-header">
-      <button class="fm-close" (click)="showFamilyMandirForm = false">✕</button>
-      <div class="fm-header-title">🛕 अपना मंदिर जोड़ें</div>
-      <div class="fm-header-sub">Admin approval के बाद दिखेगा</div>
-    </div>
-
-    <div class="fm-body">
-
-      <div class="fm-field">
-        <label class="fm-label">मंदिर का नाम *</label>
-        <input class="fm-input" type="text" [(ngModel)]="familyMandir.MandirName"
-          placeholder="जैसे: श्री हनुमान मंदिर" />
-      </div>
-
-      <div class="fm-field">
-        <label class="fm-label">देवता *</label>
-        <input class="fm-input" type="text" [(ngModel)]="familyMandir.GodName"
-          placeholder="जैसे: हनुमान जी, श्री राम" />
-      </div>
-
-      <div class="fm-field">
-        <label class="fm-label">विवरण</label>
-        <textarea class="fm-input fm-textarea" [(ngModel)]="familyMandir.MandirDescription"
-          placeholder="मंदिर का संक्षिप्त विवरण..."></textarea>
-      </div>
-
-      <div class="fm-field">
-        <label class="fm-label">फ़ोटो (अधिकतम 3)</label>
-
-        <div class="fm-photo-row">
-          <div class="fm-thumb">
-            <img *ngIf="fmPhoto1Preview" [src]="fmPhoto1Preview" class="fm-thumb-img" />
-            <span *ngIf="!fmPhoto1Preview">📷</span>
-            <span class="fm-tick" *ngIf="familyMandir.MandirPhoto1">✅</span>
-          </div>
-          <div class="fm-photo-actions">
-            <label class="fm-pick-btn">
-              फ़ोटो 1 चुनें
-              <input type="file" accept="image/*" style="display:none" (change)="onFmPhotoSelected($event, 1)" />
-            </label>
-            <button class="fm-upload-btn" *ngIf="fmPhoto1File && !familyMandir.MandirPhoto1" [disabled]="fmUploading1"
-              (click)="uploadFmPhoto(1)">
-              {{ fmUploading1 ? 'अपलोड...' : '⬆ Upload' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="fm-photo-row">
-          <div class="fm-thumb">
-            <img *ngIf="fmPhoto2Preview" [src]="fmPhoto2Preview" class="fm-thumb-img" />
-            <span *ngIf="!fmPhoto2Preview">📷</span>
-            <span class="fm-tick" *ngIf="familyMandir.MandirPhoto2">✅</span>
-          </div>
-          <div class="fm-photo-actions">
-            <label class="fm-pick-btn">
-              फ़ोटो 2 चुनें
-              <input type="file" accept="image/*" style="display:none" (change)="onFmPhotoSelected($event, 2)" />
-            </label>
-            <button class="fm-upload-btn" *ngIf="fmPhoto2File && !familyMandir.MandirPhoto2" [disabled]="fmUploading2"
-              (click)="uploadFmPhoto(2)">
-              {{ fmUploading2 ? 'अपलोड...' : '⬆ Upload' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="fm-photo-row">
-          <div class="fm-thumb">
-            <img *ngIf="fmPhoto3Preview" [src]="fmPhoto3Preview" class="fm-thumb-img" />
-            <span *ngIf="!fmPhoto3Preview">📷</span>
-            <span class="fm-tick" *ngIf="familyMandir.MandirPhoto3">✅</span>
-          </div>
-          <div class="fm-photo-actions">
-            <label class="fm-pick-btn">
-              फ़ोटो 3 चुनें
-              <input type="file" accept="image/*" style="display:none" (change)="onFmPhotoSelected($event, 3)" />
-            </label>
-            <button class="fm-upload-btn" *ngIf="fmPhoto3File && !familyMandir.MandirPhoto3" [disabled]="fmUploading3"
-              (click)="uploadFmPhoto(3)">
-              {{ fmUploading3 ? 'अपलोड...' : '⬆ Upload' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="fm-field">
-        <label class="fm-label">आरती ऑडियो (वैकल्पिक)</label>
-
-        <div class="fm-audio-row fm-mt">
-          <span class="fm-audio-icon">🎵</span>
-          <span class="fm-audio-filename" *ngIf="fmAudio1Name && !familyMandir.AartiName1">{{ fmAudio1Name }}</span>
-          <span class="fm-audio-done" *ngIf="familyMandir.AartiName1">✅ {{ familyMandir.AartiName1 }}</span>
-          <label class="fm-pick-btn fm-audio-pick">
-            आरती 1 MP3
-            <input type="file" accept="audio/mp3,audio/*" style="display:none"
-              (change)="onFmAudioSelected($event, 1)" />
-          </label>
-          <button class="fm-upload-btn" *ngIf="fmAudio1File && !familyMandir.AartiName1" [disabled]="fmUploadingA1"
-            (click)="uploadFmAudio(1)">
-            {{ fmUploadingA1 ? 'अपलोड...' : '⬆ Upload' }}
-          </button>
-        </div>
-
-        <div class="fm-audio-row fm-mt">
-          <span class="fm-audio-icon">🎵</span>
-          <span class="fm-audio-filename" *ngIf="fmAudio2Name && !familyMandir.AartiName2">{{ fmAudio2Name }}</span>
-          <span class="fm-audio-done" *ngIf="familyMandir.AartiName2">✅ {{ familyMandir.AartiName2 }}</span>
-          <label class="fm-pick-btn fm-audio-pick">
-            आरती 2 MP3
-            <input type="file" accept="audio/mp3,audio/*" style="display:none"
-              (change)="onFmAudioSelected($event, 2)" />
-          </label>
-          <button class="fm-upload-btn" *ngIf="fmAudio2File && !familyMandir.AartiName2" [disabled]="fmUploadingA2"
-            (click)="uploadFmAudio(2)">
-            {{ fmUploadingA2 ? 'अपलोड...' : '⬆ Upload' }}
-          </button>
-        </div>
-
-        <div class="fm-audio-row fm-mt">
-          <span class="fm-audio-icon">🎵</span>
-          <span class="fm-audio-filename" *ngIf="fmAudio3Name && !familyMandir.AartiName3">{{ fmAudio3Name }}</span>
-          <span class="fm-audio-done" *ngIf="familyMandir.AartiName3">✅ {{ familyMandir.AartiName3 }}</span>
-          <label class="fm-pick-btn fm-audio-pick">
-            आरती 3 MP3
-            <input type="file" accept="audio/mp3,audio/*" style="display:none"
-              (change)="onFmAudioSelected($event, 3)" />
-          </label>
-          <button class="fm-upload-btn" *ngIf="fmAudio3File && !familyMandir.AartiName3" [disabled]="fmUploadingA3"
-            (click)="uploadFmAudio(3)">
-            {{ fmUploadingA3 ? 'अपलोड...' : '⬆ Upload' }}
-          </button>
-        </div>
-      </div>
-
-      <button class="fm-submit-btn" [disabled]="isSubmittingFamilyMandir" (click)="submitFamilyMandir()">
-        {{ isSubmittingFamilyMandir ? 'जमा हो रहा है...' : '🛕 मंदिर जमा करें' }}
-      </button>
-
-      <div class="fm-note">📋 Admin अनुमोदन के बाद आपका मंदिर दिखाई देगा।</div>
-      <div style="height: 48px;"></div>
-    </div>
-  </div>
-</div> -->
+<app-panditjibottomtabs *ngIf="showbottomAndHeader"></app-panditjibottomtabs>
 
 
 <!-- ═══ COMMENTS SHEET (Instagram-style) ═══ -->

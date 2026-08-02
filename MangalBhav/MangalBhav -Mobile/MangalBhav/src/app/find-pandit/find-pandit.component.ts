@@ -26,7 +26,7 @@ declare let gtag: Function;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, IonicModule, ZXingScannerModule,
-    TabscommonheaderComponent, PanditjibottomtabsComponent, CommonBottomTabsComponent]
+    TabscommonheaderComponent, PanditjibottomtabsComponent]
 })
 export class FindPanditComponent implements OnInit, OnDestroy {
 

@@ -11,7 +11,7 @@ import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-t
   templateUrl: './language-change.component.html',
   styleUrls: ['./language-change.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, CommonBottomTabsComponent,PanditjibottomtabsComponent]
+  imports: [CommonModule, IonicModule,PanditjibottomtabsComponent]
 })
 export class LanguageChangeComponent implements OnInit {
 

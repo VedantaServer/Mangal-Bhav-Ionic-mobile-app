@@ -1,0 +1,481 @@
+<app-tabscommonheader></app-tabscommonheader>
+<ion-content fullscreen>
+  <div class="main-wrapper">
+    <section class="puja-list-section" id="pooja-list">
+      <p class="puja-welcome-line">
+        🪔 Sacred rituals for every movement of life
+      </p>
+      <div class="category-dropdown-wrap">
+        <div class="category-select-box" (click)="toggleCategoryDropdown()">
+          <div class="category-select-left">
+            <span class="category-select-icon">
+              {{ selectedCategory ? getCategoryIcon(selectedCategory.CategoryName) : '🙏' }}
+            </span>
+            <span class="category-select-text">
+              {{ selectedCategory
+              ? (Language === 'Hindi' ? selectedCategory.CategoryName_HI : selectedCategory.CategoryName)
+              : 'Choose a life stage...' }}
+            </span>
+          </div>
+          <ion-icon [name]="isCategoryDropdownOpen ? 'chevron-up-outline' : 'chevron-down-outline'"
+            class="category-select-arrow"></ion-icon>
+        </div>
+
+        <div class="category-dropdown-list" *ngIf="isCategoryDropdownOpen">
+          <div class="category-dropdown-item" *ngFor="let cat of categoryList" (click)="selectCategory(cat)">
+            <span class="category-item-icon">{{ getCategoryIcon(cat.CategoryName) }}</span>
+            <div class="category-item-text">
+              <span class="category-item-name">
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+                <span class="category-item-age" *ngIf="cat.AgeText">&nbsp;· {{ cat.AgeText }}</span>
+              </span>
+              <span class="category-item-desc">
+                {{ Language === 'Hindi'
+                ? cat.Description_HI?.split('।')?.[0]
+                : cat.Description?.split('.')?.[0] }}
+              </span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="category-item-arrow"></ion-icon>
+          </div>
+        </div>
+
+      </div>
+      <div class="puja-list-inner">
+        <div class="puja-phase" *ngFor="let cat of enrichedCategories" [id]="cat.CategoryName">
+
+          <div class="phase-header">
+            <div class="phase-icon-wrap">{{ getCategoryIcon(cat.CategoryName) }}</div>
+            <div>
+              <h3 class="phase-title">
+                {{ Language === 'Hindi' ? cat.CategoryName_HI : cat.CategoryName }}
+              </h3>
+              <p class="phase-sub">{{ cat.services.length }} Rituals</p>
+            </div>
+            <div class="phase-line"></div>
+          </div>
+
+          <div class="puja-carousel-wrap">
+
+            <button class="carousel-btn carousel-prev"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'prev')">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <div class="puja-carousel" [id]="'carousel-cat-' + cat.CategoryID">
+
+              <div class="puja-card" *ngFor="let svc of cat.services"
+                (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
+
+                <!-- IMAGE SECTION -->
+                <div class="puja-img-wrap">
+                  <img [src]="getServiceImagePath(svc.Name)" class="puja-img" (error)="onImgError($event, svc.Name)" />
+                  <div class="puja-img-overlay"></div>
+                  <div class="puja-img-badge">{{ getServiceBadge(svc.Name) }}</div>
+
+                  <!-- Booking count on image -->
+                  <div class="puja-img-count"
+                    *ngIf="serviceBookingCountMap && serviceBookingCountMap[svc.ServiceID.toString()] > 0">
+                    <ion-icon name="people-outline"></ion-icon>
+                    {{ serviceBookingCountMap[svc.ServiceID.toString()] }}+ booked
+                  </div>
+                </div>
+
+                <!-- BODY SECTION -->
+                <div class="puja-body">
+
+                  <!-- Rating row -->
+                  <div class="puja-rating-row">
+                    <div class="puja-rating-badge">
+                      <ion-icon name="star"></ion-icon>
+                      4.8
+                    </div>
+                    <span class="puja-rating-text">Very Good &nbsp;·&nbsp; 100+ Reviews</span>
+                  </div>
+
+                  <!-- Name -->
+                  <h4 class="puja-name">
+                    {{ Language === 'Hindi'
+                    ? (svc.Name?.split('/')?.[1]?.trim() || svc.Name)
+                    : (svc.Name?.split('/')?.[0]?.trim() || svc.Name) }}
+                  </h4>
+
+                  <!-- Duration chip -->
+                  <p class="puja-location-row">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ svc.DurationMinutes || 90 }} mins &nbsp;·&nbsp; At your home &nbsp;·&nbsp;
+                    <ion-icon name="cash-outline"></ion-icon>
+                    ₹ 999
+                  </p>
+
+                  <!-- Description -->
+                  <p class="puja-subtitle">
+                    {{ Language === 'Hindi'
+                    ? (svc.Description?.split('/')?.[1]?.trim() || svc.Description)
+                    : (svc.Description?.split('/')?.[0]?.trim() || svc.Description) }}
+                  </p>
+
+                  <!-- Features -->
+                  <div class="puja-features">
+                    <div class="puja-feature-item">
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                      Verified Pandit Ji
+                    </div>
+                    <div class="puja-feature-item">
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                      Samagri checklist provided
+                    </div>
+                  </div>
+
+                  <!-- Price + CTA row -->
+                  <div class="puja-price-row">
+                    <a class="puja-book-btn" (click)="gotToOpenPanditPage(cat.CategoryID, svc.ServiceID)">
+                      🧘 Find Pandit ji →
+                    </a>
+                    <div class="puja-price-block">
+                      <span class="puja-price-label"></span>
+                      <!-- <span class="puja-price-original">₹1,499</span> -->
+                      <span class="puja-price-final"></span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="carousel-btn carousel-next"
+              (click)="slideCarousel('carousel-cat-' + cat.CategoryID, 'next')">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <section class="hero">
+
+      <div class="hero-bg"></div>
+      <div class="hero-mandala-outer"></div>
+      <div class="hero-mandala-inner"></div>
+      <div class="diya diya-1">🪔</div>
+      <div class="diya diya-2">🪔</div>
+      <div class="diya diya-3">🔥</div>
+      <div class="diya diya-4">🔥</div>
+
+      <div class="hero-content">
+        <div class="hero-om">ॐ</div>
+        <div class="hero-badge">🙏 &nbsp; Connecting Yajman &amp; Pandit</div>
+        <h1 class="hero-title">Mangal<span class="title-dot">.</span>Bhav</h1>
+        <p class="hero-devanagari">मंगल.भव: — शांति. समृद्धि. संरक्षण.</p>
+        <div class="hero-divider">
+          <span class="divider-line"></span>
+          <span class="divider-symbol">🌸</span>
+          <span class="divider-line"></span>
+        </div>
+        <p class="hero-tagline">A platform for booking verified Pandits
+          for every sacred ritual — from the first breath to the final farewell.</p>
+        <div class="hero-pills">
+          <div class="pill">🔥 16 Samskaras Covered</div>
+          <div class="pill">🧘 Verified Pandits</div>
+          <div class="pill">📍 At Your Doorstep</div>
+          <div class="pill">🛡️ Trusted by Families</div>
+        </div>
+      </div>
+    </section>
+
+
+    <div class="stats-band">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">Sacred Rituals</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Verified Pandits</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Families Served</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Cities Covered</div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <section style="padding:80px 24px; background: white;">
+      <div class="section" style="padding: 0 0;">
+        <p class="section-label">Simple Process</p>
+        <h2 class="section-title">How Mangal.Bhav Works</h2>
+        <p class="section-sub">Connecting devotees with qualified pandits in 3 simple steps</p>
+        <div class="how-it-works-grid">
+          <div class="how-card">
+            <div class="how-icon">📿</div>
+            <div class="how-step">Step 01</div>
+            <div class="how-title">Choose Your Ritual</div>
+            <p class="how-desc">Browse from 30+ sacred havans and pooja ceremonies — from birth to ancestral rites.
+              Select the one that fits your need.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🧘</div>
+            <div class="how-step">Step 02</div>
+            <div class="how-title">Match a Pandit</div>
+            <p class="how-desc">Get matched with a verified, experienced Pandit from your region. View profiles,
+              specializations, languages, and ratings.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">🏠</div>
+            <div class="how-step">Step 03</div>
+            <div class="how-title">Ritual at Your Home</div>
+            <p class="how-desc">The Pandit arrives at your doorstep with all necessary samagri. Experience authentic
+              Vedic rituals in the comfort of your home.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="for-whom-section" id="for-whom">
+      <div class="for-whom-inner">
+
+        <p class="section-label">Built For</p>
+        <h2 class="section-title">Two Sides, One Sacred Bridge</h2>
+        <p class="section-sub">Whether you seek blessings or offer them — Mangal.Bhav is your home</p>
+
+        <div class="for-whom-grid">
+
+          <div class="for-card yajman">
+            <div class="card-glow-strip"></div>
+            <div class="for-card-header">
+              <div class="for-card-avatar">🙏</div>
+              <div>
+                <div class="for-card-title">Yajman</div>
+                <div class="for-card-subtitle">The Devotee · भक्त</div>
+              </div>
+              <div class="for-card-badge">For You</div>
+            </div>
+            <div class="for-card-divider"></div>
+            <ul class="for-features">
+              <li><span class="feat-icon">📿</span><span>Browse 30+ rituals by life stage</span></li>
+              <li><span class="feat-icon">✅</span><span>View verified Pandit profiles &amp; ratings</span></li>
+              <li><span class="feat-icon">📅</span><span>Book at-home ceremonies in minutes</span></li>
+              <li><span class="feat-icon">🌙</span><span>Get muhurat (auspicious timing) suggestions</span></li>
+              <li><span class="feat-icon">📜</span><span>Track ritual progress and history</span></li>
+              <li><span class="feat-icon">🛒</span><span>Samagri checklist provided beforehand</span></li>
+            </ul>
+
+          </div>
+
+          <div class="cards-divider">
+            <div class="divider-vert"></div>
+            <div class="divider-om">ॐ</div>
+            <div class="divider-vert"></div>
+          </div>
+
+          <div class="for-card pandit">
+            <div class="card-glow-strip pandit-strip"></div>
+            <div class="for-card-header">
+              <div class="for-card-avatar pandit-avatar">🧘</div>
+              <div>
+                <div class="for-card-title">Pandit Ji</div>
+                <div class="for-card-subtitle">The Priest · पंडित जी</div>
+              </div>
+              <div class="for-card-badge pandit-badge">Join Us</div>
+            </div>
+            <div class="for-card-divider"></div>
+            <ul class="for-features">
+              <li><span class="feat-icon">🛡️</span><span>Create a verified professional profile</span></li>
+              <li><span class="feat-icon">📍</span><span>Receive booking requests near your location</span></li>
+              <li><span class="feat-icon">🗓️</span><span>Manage your schedule and availability</span></li>
+              <li><span class="feat-icon">🌐</span><span>Grow your reach beyond word-of-mouth</span></li>
+              <li><span class="feat-icon">⭐</span><span>Earn trust through reviews &amp; ratings</span></li>
+              <li><span class="feat-icon">📿</span><span>List all specializations and expertise</span></li>
+            </ul>
+
+          </div>
+
+        </div>
+
+        <div class="for-whom-footer">
+          <span>✦</span><span>Trusted by families across India</span><span>✦</span>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+      <div class="testimonials-inner">
+        <p class="section-label">Trusted By Families</p>
+        <h2 class="section-title">What Families Say</h2>
+        <p class="section-sub" style="margin-bottom:48px">Real experiences from Yajmans across India</p>
+        <div class="testimonials-grid">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"We found a wonderful pandit for our daughter's Namakaran through Mangal.Bhav. He was
+              punctual, knowledgeable, and conducted the ceremony beautifully. Will definitely use again!"</p>
+            <div class="testi-author">
+              <div class="testi-avatar">👩</div>
+              <div>
+                <div class="testi-name">Priya Sharma</div>
+                <div class="testi-role">New Mother, Delhi</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"Booked a Griha Pravesh for our new flat. The pandit arrived on time with all samagri.
+              The havan was done with full Vedic vidhi. Our home feels so blessed now."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">👨</div>
+              <div>
+                <div class="testi-name">Rajesh Verma</div>
+                <div class="testi-role">Homeowner, Mumbai</div>
+              </div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p class="testi-text">"As a Pandit, this app has transformed my practice. I now get bookings from families I
+              would never have reached. Very easy to use and the support team is responsive."</p>
+            <div class="testi-author">
+              <div class="testi-avatar">🧘</div>
+              <div>
+                <div class="testi-name">Pt. Suresh Tiwari</div>
+                <div class="testi-role">Pandit, Varanasi</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <div class="divider">✦ ॐ ✦ ॐ ✦ ॐ ✦</div>
+
+
+
+    <section class="refer-section" id="refer">
+      <div class="refer-box">
+
+        <div class="refer-glow"></div>
+
+        <div class="refer-top">
+          <div class="refer-icon">🎁</div>
+          <h2 class="refer-title">Refer & Earn</h2>
+          <p class="refer-sub">Invite your family & friends to Mangal.Bhav<br>and earn sacred rewards together 🪔</p>
+        </div>
+
+        <div class="refer-rewards-row">
+          <div class="refer-reward-item">
+            <div class="reward-icon">👤</div>
+            <div class="reward-label">You Get</div>
+            <div class="reward-value">₹100 Off</div>
+          </div>
+          <div class="refer-reward-divider">✦</div>
+          <div class="refer-reward-item">
+            <div class="reward-icon">🙏</div>
+            <div class="reward-label">Friend Gets</div>
+            <div class="reward-value">₹50 Off</div>
+          </div>
+        </div>
+
+        <div class="refer-code-wrap">
+          <p class="refer-code-label">Your Referral Code</p>
+          <div class="refer-code-row">
+            <span class="refer-code">MANGAL{{ userReferCode }}</span>
+            <button class="refer-copy-btn" (click)="copyReferCode()">
+              <ion-icon name="copy-outline"></ion-icon>
+              {{ referCopied ? 'Copied!' : 'Copy' }}
+            </button>
+          </div>
+        </div>
+
+        <button class="refer-share-btn" (click)="shareReferCode()">
+          <ion-icon name="share-social-outline"></ion-icon>
+          Share with Friends
+        </button>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+      <div class="footer-inner">
+
+        <!-- Brand block -->
+        <div class="footer-brand">
+          <div class="footer-logo-wrap">
+            <img src="assets/mangalbhavlogo1.jpeg" class="footer-logo-img" />
+            <div>
+              <div class="footer-logo-text">Mangal<span class="footer-dot">.</span>Bhav</div>
+              <div class="footer-logo-sub">✦ Peace · Prosperity · Protection ✦</div>
+            </div>
+          </div>
+          <p class="footer-tagline">
+            A platform for booking verified pandits for every sacred ritual —
+            from the first breath to the final farewell.
+          </p>
+          <p class="footer-om">ॐ नमः शिवाय</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="footer-divider"></div>
+
+        <!-- Links grid -->
+        <div class="footer-links-grid">
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">🙏 Platform</h4>
+            <a class="footer-link">About Us</a>
+            <a class="footer-link">How It Works</a>
+            <a class="footer-link">All Rituals</a>
+            <a class="footer-link">Cities We Serve</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">🧘 For Pandits</h4>
+            <a class="footer-link">Join as Pandit</a>
+            <a class="footer-link">Pandit Dashboard</a>
+            <a class="footer-link">Manage Bookings</a>
+            <a class="footer-link">Support</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">📜 Legal</h4>
+            <a class="footer-link" (click)="openPage('privacypolicy')">Privacy Policy</a>
+            <a class="footer-link">Terms of Service</a>
+            <a class="footer-link">Refund Policy</a>
+            <a class="footer-link">Contact Us</a>
+          </div>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="footer-divider"></div>
+
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+          <p class="footer-copy">
+            © 2026 Mangal.Bhav . All rights reserved.
+          </p>
+          <!-- <p class="footer-made">Made with 🙏 in India</p> -->
+        </div>
+
+      </div>
+
+    </footer>
+
+  </div>
+</ion-content>
+
+
+<app-bottom-nav-bar [tabs]="tabs" (tabSelected)="onTabSelected($event)"></app-bottom-nav-bar>

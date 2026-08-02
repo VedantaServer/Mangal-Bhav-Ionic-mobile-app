@@ -1,6 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+
     <div class="header-inner">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
       <div class="nav-logo" routerLink="/open-community-page">
         <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
         <div class="logo-text-block">

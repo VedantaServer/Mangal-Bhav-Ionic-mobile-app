@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admindashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Send Support Message</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="bulk-wrapper">
+
+    <div class="search-bar">
+      <ion-searchbar
+        [(ngModel)]="searchText"
+        (ionInput)="onSearchChange()"
+        placeholder="Search by name or phone">
+      </ion-searchbar>
+    </div>
+
+    <div class="select-all-row" *ngIf="!isLoading && filteredList.length > 0">
+      <label class="select-all-label" (click)="toggleSelectAll()">
+        <div class="checkbox" [class.checked]="selectAllChecked">
+          <span *ngIf="selectAllChecked">✓</span>
+        </div>
+        <span>Select All ({{ filteredList.length }})</span>
+      </label>
+      <span class="selected-count">{{ selectedCount }} selected</span>
+    </div>
+
+    <div class="loading-row" *ngIf="isLoading">
+      <ion-spinner name="crescent" color="warning"></ion-spinner>
+      <span>Loading Pandit Ji list…</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && filteredList.length === 0">
+      <div class="empty-icon">🕉️</div>
+      <p>No Pandit Ji found.</p>
+    </div>
+
+    <div class="pandit-list" *ngIf="!isLoading && filteredList.length > 0">
+      <div class="pandit-item" *ngFor="let p of filteredList" (click)="toggleOne(p)">
+        <div class="checkbox" [class.checked]="p.selected">
+          <span *ngIf="p.selected">✓</span>
+        </div>
+        <div class="pandit-avatar">🕉️</div>
+        <div class="pandit-info">
+          <div class="pandit-name">{{ p.FullName }}</div>
+          <div class="pandit-phone">{{ p.PhoneNumber }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-spacer"></div>
+  </div>
+</ion-content>
+
+<ion-footer class="message-footer">
+  <div class="message-box">
+    <ion-textarea
+      [(ngModel)]="messageText"
+      placeholder="Type support message to send to selected Pandit Ji…"
+      [autoGrow]="true"
+      rows="2">
+    </ion-textarea>
+    <button class="send-bulk-btn" [disabled]="!canSend" (click)="sendBulkMessage()">
+      <ion-spinner name="crescent" *ngIf="isSending"></ion-spinner>
+      <span *ngIf="!isSending">Send to {{ selectedCount }} 🙏</span>
+    </button>
+  </div>
+</ion-footer>

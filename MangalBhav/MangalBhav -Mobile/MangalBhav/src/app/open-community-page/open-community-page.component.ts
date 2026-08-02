@@ -14,6 +14,7 @@ import { CommunityService } from '../services/community';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Router } from '@angular/router';
 
 interface AartiStep { icon: string; label: string; sub: string; sub2?: string; }
 interface FeedItem {
@@ -60,7 +61,7 @@ interface FeedDateGroup {
   imports: [
     CommonModule, FormsModule, IonicModule,
     TabscommonheaderComponent,
-    PanditjibottomtabsComponent, CommonBottomTabsComponent
+    PanditjibottomtabsComponent
   ]
 })
 export class OpenCommunityPageComponent implements OnInit, OnDestroy {
@@ -98,7 +99,8 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   };
 
   showbottomAndHeader = true;
-
+  private pendingShareType: 'feed' | 'panchang' = 'feed';
+  private pendingShareGroup: FeedDateGroup | null = null;
   fmPhoto1File: File | null = null; fmPhoto1Preview: string | null = null; fmUploading1 = false;
   fmPhoto2File: File | null = null; fmPhoto2Preview: string | null = null; fmUploading2 = false;
   fmPhoto3File: File | null = null; fmPhoto3Preview: string | null = null; fmUploading3 = false;
@@ -162,7 +164,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     public api: Api,
     public routerCtrl: NavController,
     public apinu: ApiNU,
-    private storage: Storage,
+    private storage: Storage, private router: Router,
     public http: HttpClient, private communityService: CommunityService, private cdr: ChangeDetectorRef,
   ) { }
 
@@ -183,8 +185,30 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
   // class property
   private feedFormSub?: Subscription;
-
+  pendingPanditUserID: any;
+  pendingPanditCategoryID: any;
+  pendingPanditServiceID: any;
   async ngOnInit() {
+
+
+    this.pendingPanditUserID = await this.storage.get('pendingPanditUserID');
+    this.pendingPanditCategoryID = await this.storage.get('pendingPanditCategoryID');
+    this.pendingPanditServiceID = await this.storage.get('pendingPanditServiceID');
+
+    if (Number(this.pendingPanditServiceID) > 0) {
+      this.router.navigate(['/book-pooja'], {
+        queryParams: { id: this.pendingPanditServiceID }
+      });
+    }
+
+    if (this.pendingPanditCategoryID && this.pendingPanditUserID) {
+      this.router.navigate(['/book-pooja'], {
+        queryParams: { id: -1 }
+      });
+    }
+
+
+
     this.feedFormSub = this.communityService.openFeedForm$.subscribe(() => {
       this.openFeedForm();
     });
@@ -192,7 +216,15 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     await this.refreshUserDetails();
     this.language = this.userDetails?.Languages || 'English';
     this.loadFamilyActiveMandir();
-    this.loadMoreFeed();
+    await this.loadMoreFeed();
+
+    const today = this.toDateKey(new Date().toISOString());
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = this.toDateKey(yesterday.toISOString());
+
+    await this.loadPanchangForDateIfNoGroup(today);
+    await this.loadPanchangForDateIfNoGroup(yesterdayKey);
     this.loadMangalMudraPoints();
   }
 
@@ -248,12 +280,34 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     this.toastTimer = setTimeout(() => { this.toastVisible = false; }, 3000);
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     const fab = document.querySelector('.custom-fab-wrap') as HTMLElement;
     if (fab) fab.style.display = 'none';
 
     // refresh login state every time the tab is entered
-    this.refreshUserDetails();
+    await this.refreshUserDetails();
+    await this.refreshPage();
+  }
+
+  async refreshPage() {
+    this.feedGroups = [];
+    this.feedWindowEnd = null;
+    this.feedAllLoaded = false;
+    this.feedEmptyWindowStreak = 0;
+
+    await this.loadMoreFeed();
+
+    const today = this.toDateKey(new Date().toISOString());
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    await this.loadPanchangForDateIfNoGroup(today);
+    await this.loadPanchangForDateIfNoGroup(
+      this.toDateKey(yesterday.toISOString())
+    );
+
+    this.loadFamilyActiveMandir();
+    this.loadMangalMudraPoints();
   }
 
   private async refreshUserDetails() {
@@ -609,6 +663,30 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   //     this.loadFeedMedia(item);
   //   });
   // }
+
+
+  async loadPanchangForDateIfNoGroup(dateKey: string) {
+    // Skip if group already exists (feed created it)
+    if (this.feedGroups.find(g => g.dateKey === dateKey)) return;
+
+    // Check if panchang data exists for this date
+    const list = await this.fetchPanchangListForDate(dateKey);
+    if (!list.length) return;
+
+    // Create an empty feed group just to show the panchang
+    const group: FeedDateGroup = {
+      dateKey,
+      dateLabel: this.toDateLabel(dateKey),
+      items: []
+    };
+    this.feedGroups.push(group);
+    this.feedGroups.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+    this.cdr.detectChanges();
+
+    // Now load the panchang image for it
+    await this.loadPanchangImageForGroup(group);
+  }
+
 
   private appendFeedBatch(batch: FeedItem[]) {
     batch.forEach(item => {
@@ -1190,17 +1268,22 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
       if (!html) return;
 
       group.panchangImage = await this.rasterizePanchangHtml(html);
+      this.cdr.detectChanges();  // ← ADD THIS
     } catch (e) {
       console.error('panchang image load failed:', e);
     } finally {
       group.panchangLoading = false;
+      this.cdr.detectChanges();  // ← ADD THIS TOO (handles spinner hiding)
     }
   }
+
+
 
   private fetchPanchangListForDate(dateKey: string): Promise<any[]> {
     return new Promise((resolve) => {
       const query =
         `PanchangDate >= '${dateKey} 00:00:00.000' AND PanchangDate < '${this.nextDateKey(dateKey)} 00:00:00.000'`;
+      console.log(query)
       this.apinu.postUrlData(
         `DailyPanchangSelectByQuery?Query=${encodeURIComponent(query)}`, null
       ).subscribe({
@@ -1548,10 +1631,10 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   async openFeedForm() {
 
 
-    const isAdmin = await this.storage.get('adminloggedin') == 'true';
-    const userID = isAdmin ? 0 : this.userDetails?.UserID;
+    const isAdmin = this.userDetails.Role == 'ADMIN';
+    const userID = this.userDetails?.UserID;
 
-    if (!userID && !isAdmin) {
+    if (!userID) {
       this.showToast('⚠️', 'कृपया पहले लॉगिन करें');
 
 
@@ -2082,60 +2165,19 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     const shareText = `आज का पंचांग\n\n${shareLink}`;
 
     try {
-      // Composite the sharing user's photo onto a copy of the base image —
-      // group.panchangImage itself stays untouched since it's shared by all viewers
-      const imageToShare = await this.addUserPhotoOverlay(group.panchangImage,0.12);
+      const imageToShare = await this.addUserPhotoOverlay(group.panchangImage, 0.12);
 
-      if (Capacitor.isNativePlatform()) {
-        const base64Data = imageToShare.split(',')[1];
-        const fileName = `panchang-${group.dateKey}.png`;
-
-        const savedFile = await Filesystem.writeFile({
-          path: fileName,
-          data: base64Data,
-          directory: Directory.Cache
-        });
-
-        await Share.share({
-          title: 'आज का पंचांग',
-          text: shareText,
-          url: savedFile.uri,
-          dialogTitle: 'पंचांग शेयर करें'
-        });
-      } else {
-        const blob = await (await fetch(imageToShare)).blob();
-        const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
-
-        if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
-          await (navigator as any).share({
-            files: [file],
-            title: 'आज का पंचांग',
-            text: shareText
-          });
-        } else if ((navigator as any).share) {
-          await (navigator as any).share({
-            title: 'आज का पंचांग',
-            text: shareText,
-            url: shareLink
-          });
-        } else {
-          const a = document.createElement('a');
-          a.href = imageToShare;
-          a.download = `panchang-${group.dateKey}.png`;
-          a.click();
-
-          try {
-            await navigator.clipboard.writeText(shareLink);
-            this.showToast('🔗', 'लिंक कॉपी हो गया');
-          } catch { /* ignore */ }
-        }
-      }
+      this.pendingShareType = 'panchang';
+      this.pendingShareGroup = group;
+      this.pendingShareItem = null;
+      this.pendingShareText = shareText;
+      this.sharePreviewImageUrl = imageToShare;
+      this.showSharePreview = true;
     } catch (e) {
       console.error('sharePanchangImage failed:', e);
       this.showToast('❌', 'शेयर नहीं हुआ');
     }
   }
-
 
 
   /** Loads the current user's profile photo via the DownloadImages API and
@@ -2243,25 +2285,25 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   private readonly shareLinkBaseUrl = 'https://app.mangalbhav.com';
 
   /** Maps a Feed row's SourceTable to the page it should deep-link to when shared. */
-  // private getFeedShareLink(item: FeedItem): string {
-  //   switch ((item.SourceTable || '').trim()) {
-  //     case 'Profile':
-  //       // ⚠️ confirm: SourceID here should be the pandit/profile's UserID
-  //       return `${this.shareLinkBaseUrl}/open-find-pandit/${item.SourceID ?? ''}`;
-  //     case 'Mandir':
-  //       return `${this.shareLinkBaseUrl}/mandirfulldetails/${item.SourceID ?? ''}`;
-  //     case 'Service':
-  //     case 'Booking':
-  //       return `${this.shareLinkBaseUrl}/tabs/tab3`;
-  //     case 'Feed':
-  //     default:
-  //       return `${this.shareLinkBaseUrl}/open-community-page`;
-  //   }
-  // }
-
   private getFeedShareLink(item: FeedItem): string {
-    return `${this.shareLinkBaseUrl}/feed/${item.FeedID}`;
+    switch ((item.SourceTable || '').trim()) {
+      case 'Profile':
+        // ⚠️ confirm: SourceID here should be the pandit/profile's UserID
+        return `${this.shareLinkBaseUrl}/open-find-pandit/${item.SourceID ?? ''}`;
+      case 'Mandir':
+        return `${this.shareLinkBaseUrl}/mandirfulldetails/${item.SourceID ?? ''}`;
+      case 'Service':
+      case 'Booking':
+        return `${this.shareLinkBaseUrl}/tabs/tab3`;
+      case 'Feed':
+      default:
+        return `${this.shareLinkBaseUrl}/open-community-page`;
+    }
   }
+
+  // private getFeedShareLink(item: FeedItem): string {
+  //   return `${this.shareLinkBaseUrl}/feed/${item.FeedID}`;
+  // }
 
   // ── Share preview ──────────────────────────────────────
   showSharePreview = false;
@@ -2271,7 +2313,15 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
   private pendingShareText = '';
 
 
+
+
   async shareFeedAsImage(item: FeedItem) {
+    const isVideo = this.hasFeedMedia(item) && item.MediaType?.trim()?.toLowerCase() !== 'image';
+
+    if (isVideo) {
+      await this.shareFeedVideoDirect(item);
+      return;
+    }
 
     const cardEl = document.querySelector(
       `.insta-post[data-feed-id="${item.FeedID}"]`
@@ -2282,8 +2332,6 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Capture only the media itself — not header/caption/actions.
-    // Falls back to the whole card for text-only posts.
     const mediaWrapEl = cardEl.querySelector('.ip-media-wrap') as HTMLElement | null;
     const targetEl = mediaWrapEl || cardEl;
 
@@ -2301,13 +2349,29 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     document.body.appendChild(captureHost);
 
     const clone = targetEl.cloneNode(true) as HTMLElement;
-    clone.querySelectorAll('video').forEach((videoEl: HTMLVideoElement) => {
-      const img = document.createElement('img');
-      img.src = videoEl.currentSrc || videoEl.src;
-      img.className = videoEl.className;
-      img.crossOrigin = 'anonymous';
-      videoEl.replaceWith(img);
-    });
+
+    // ── NEW: swap the cross-origin <img> for a same-origin blob data URL ──
+    if (this.hasFeedMedia(item)) {
+      const clonedImg = clone.querySelector('img') as HTMLImageElement | null;
+      if (clonedImg) {
+        try {
+          const imagePurpose = this.getImagePurposeForFeedItem(item);
+          const blob: any = await firstValueFrom(
+            this.api.getImage('DownloadImages', { imageName: item.MediaURL, imagePurpose })
+          );
+          const dataUrl: string = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          clonedImg.src = dataUrl;
+        } catch (e) {
+          console.error('Failed to fetch media as blob for share capture:', e);
+          // fall through — will still attempt capture with the original src
+        }
+      }
+    }
 
     captureHost.appendChild(clone);
 
@@ -2333,7 +2397,9 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
       const imageData = canvas.toDataURL('image/png');
       const imageToShare = await this.addUserPhotoOverlay(imageData, 0.16);
 
+      this.pendingShareType = 'feed';
       this.pendingShareItem = item;
+      this.pendingShareGroup = null;
       this.pendingShareText = shareText;
       this.sharePreviewImageUrl = imageToShare;
       this.showSharePreview = true;
@@ -2352,25 +2418,170 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Video share path: fetches the real video file through the same
+   * DownloadImages API used for photos (CORS-safe, no canvas involved),
+   * then hands it directly to the native/web share sheet as a video file. */
+  private async shareFeedVideoDirect(item: FeedItem) {
+    this.isPreparingShare = true;
+
+    try {
+      const imagePurpose = this.getImagePurposeForFeedItem(item);
+      const blob: any = await firstValueFrom(
+        this.api.getImage('DownloadImages', { imageName: item.MediaURL, imagePurpose })
+      );
+
+      const shareLink = this.getFeedShareLink(item);
+      const shareText = item.Title ? `${item.Title}\n\n${shareLink}` : shareLink;
+
+      const userID = this.userDetails?.UserID || 0;
+      this.apinu.postUrlData('FeedShareInsert', {
+        FeedID: item.FeedID,
+        UserID: userID,
+        ShareType: 'Video',
+        SharedOn: new Date()
+      }).subscribe({
+        next: () => item.shareCount = (item.shareCount ?? 0) + 1,
+        error: () => { }
+      });
+
+      if (Capacitor.isNativePlatform()) {
+        const base64Data = await this.blobToBase64(blob);
+        const fileName = `feed-${item.FeedID}.mp4`;
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Cache
+        });
+        await Share.share({
+          title: item.Title || 'Post',
+          text: shareText,
+          url: savedFile.uri,
+          dialogTitle: 'वीडियो शेयर करें'
+        });
+      } else {
+        const file = new File([blob], `feed-${item.FeedID}.mp4`, { type: blob.type || 'video/mp4' });
+
+        if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+          await (navigator as any).share({ files: [file], title: item.Title || 'Post', text: shareText });
+        } else if ((navigator as any).share) {
+          await (navigator as any).share({ title: item.Title || 'Post', text: shareText, url: shareLink });
+        } else {
+          const objectUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = objectUrl;
+          a.download = `feed-${item.FeedID}.mp4`;
+          a.click();
+          URL.revokeObjectURL(objectUrl);
+
+          try {
+            await navigator.clipboard.writeText(shareLink);
+            this.showToast('🔗', 'लिंक कॉपी हो गया');
+          } catch { /* clipboard may be blocked; ignore silently */ }
+        }
+      }
+    } catch (e) {
+      console.error('shareFeedVideoDirect failed:', e);
+      this.showToast('❌', 'वीडियो शेयर नहीं हुआ');
+    } finally {
+      this.isPreparingShare = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+
+
+  private blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
   cancelSharePreview() {
     this.showSharePreview = false;
     this.sharePreviewImageUrl = null;
     this.pendingShareItem = null;
+    this.pendingShareGroup = null;
     this.pendingShareText = '';
+    this.pendingShareType = 'feed';
   }
 
+
   async confirmShare() {
-    const item = this.pendingShareItem;
     const imageToShare = this.sharePreviewImageUrl;
     const shareText = this.pendingShareText;
-    const shareLink = item ? this.getFeedShareLink(item) : '';
 
-    if (!item || !imageToShare) {
+    if (!imageToShare) {
       this.cancelSharePreview();
       return;
     }
 
     this.showSharePreview = false;
+
+    // ══════════ PANCHANG SHARE ══════════
+    if (this.pendingShareType === 'panchang') {
+      const group = this.pendingShareGroup;
+      if (!group) { this.cancelSharePreview(); return; }
+      const shareLink = `${this.shareLinkBaseUrl}/india-festival`;
+
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const base64Data = imageToShare.split(',')[1];
+          const fileName = `panchang-${group.dateKey}.png`;
+          const savedFile = await Filesystem.writeFile({
+            path: fileName,
+            data: base64Data,
+            directory: Directory.Cache
+          });
+          await Share.share({
+            title: 'आज का पंचांग',
+            text: shareText,
+            url: savedFile.uri,
+            dialogTitle: 'पंचांग शेयर करें'
+          });
+        } else {
+          const blob = await (await fetch(imageToShare)).blob();
+          const file = new File([blob], `panchang-${group.dateKey}.png`, { type: 'image/png' });
+
+          if ((navigator as any).share && (navigator as any).canShare?.({ files: [file] })) {
+            await (navigator as any).share({
+              files: [file],
+              title: 'आज का पंचांग',
+              text: shareText
+            });
+          } else if ((navigator as any).share) {
+            await (navigator as any).share({
+              title: 'आज का पंचांग',
+              text: shareText,
+              url: shareLink
+            });
+          } else {
+            const a = document.createElement('a');
+            a.href = imageToShare;
+            a.download = `panchang-${group.dateKey}.png`;
+            a.click();
+
+            try {
+              await navigator.clipboard.writeText(shareLink);
+              this.showToast('🔗', 'लिंक कॉपी हो गया');
+            } catch { /* ignore */ }
+          }
+        }
+      } catch (e) {
+        console.error('confirmShare (panchang) failed:', e);
+        this.showToast('❌', 'शेयर नहीं हुआ');
+      } finally {
+        this.cancelSharePreview();
+      }
+      return;
+    }
+
+    // ══════════ FEED SHARE ══════════
+    const item = this.pendingShareItem;
+    if (!item) { this.cancelSharePreview(); return; }
+    const shareLink = this.getFeedShareLink(item);
 
     const userID = this.userDetails?.UserID || 0;
     this.apinu.postUrlData('FeedShareInsert', {
@@ -2427,12 +2638,13 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
         }
       }
     } catch (e) {
-      console.error('confirmShare failed:', e);
+      console.error('confirmShare (feed) failed:', e);
       this.showToast('❌', 'शेयर नहीं हुआ');
     } finally {
       this.cancelSharePreview();
     }
   }
+
 
   private async addUserPhotoOverlay(
     baseImageDataUrl: string,

@@ -26,6 +26,8 @@ namespace FaceUPAI.Models
 		private string pinCode;
 		private string lat;
 		private string longitude;
+		private string specializations;
+		private string category;
 		private bool isActive;
 		private DateTime dateAdded;
 		private DateTime dateModified;
@@ -45,7 +47,7 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the Profile class.
 		/// </summary>
-		public Profile(int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
+		public Profile(int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, string specializations, string category, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
 		{
 			this.tenantID = tenantID;
 			this.userID = userID;
@@ -67,6 +69,8 @@ namespace FaceUPAI.Models
 			this.pinCode = pinCode;
 			this.lat = lat;
 			this.longitude = longitude;
+			this.specializations = specializations;
+			this.category = category;
 			this.isActive = isActive;
 			this.dateAdded = dateAdded;
 			this.dateModified = dateModified;
@@ -76,7 +80,7 @@ namespace FaceUPAI.Models
 		/// <summary>
 		/// Initializes a new instance of the Profile class.
 		/// </summary>
-		public Profile(int profileID, int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
+		public Profile(int profileID, int tenantID, int userID, string fullName, DateTime dOB, string gender, string phoneNumber, string email, int experienceYears, string bio, string languages, decimal basePrice, string profilePhotoUrl, string verificationStatus, string addressLine1, string addressLine2, string city, string state, string pinCode, string lat, string longitude, string specializations, string category, bool isActive, DateTime dateAdded, DateTime dateModified, string updatedByUser)
 		{
 			this.profileID = profileID;
 			this.tenantID = tenantID;
@@ -99,6 +103,8 @@ namespace FaceUPAI.Models
 			this.pinCode = pinCode;
 			this.lat = lat;
 			this.longitude = longitude;
+			this.specializations = specializations;
+			this.category = category;
 			this.isActive = isActive;
 			this.dateAdded = dateAdded;
 			this.dateModified = dateModified;
@@ -295,6 +301,24 @@ namespace FaceUPAI.Models
 		{
 			get { return longitude; }
 			set { longitude = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the Specializations value.
+		/// </summary>
+		public  string Specializations
+		{
+			get { return specializations; }
+			set { specializations = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the Category value.
+		/// </summary>
+		public  string Category
+		{
+			get { return category; }
+			set { category = value; }
 		}
 
 		/// <summary>

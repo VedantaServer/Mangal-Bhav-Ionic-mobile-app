@@ -43,43 +43,21 @@
 
 
     <!-- ===== SECTION LABEL ===== -->
+    <!-- ===== SECTION LABEL ===== -->
     <div class="section-label">{{ t.mySeva }}</div>
 
-
-
     <div class="dashboard-grid">
-      <div class="dash-card" (click)="openPage('panditservice')">
-        <div class="dash-icon">🕉️</div>
-        <span>{{ t.addSeva }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPageee('yajman-booking')">
-        <div class="dash-icon">📜</div>
-        <span>{{ t.bookings }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPage('user-profile')">
-        <div class="dash-icon">👤</div>
-        <span>{{ t.profile }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPage('allchats')">
-        <div class="dash-icon">💬</div>
-        <span>{{ t.chatSupport }}</span>
-      </div>
-
-      <div class="dash-card" (click)="openPage('mangalmart')">
-        <div class="dash-icon">🛍️</div>
-        <span>{{ t.mangalMart }}</span>
+      <div class="dash-card" *ngFor="let item of dashboardIcons" (click)="onDashCardClick(item)">
+        <div class="dash-icon">{{ item.ImageName }}</div>
+        <span>{{ language === 'Hindi' ? item.CaptionNameHindi : item.CaptionName }}</span>
       </div>
     </div>
 
-
     <!-- ===== SECTION LABEL ===== -->
-    <div class="section-label">{{ t.bookedSeva }}</div>
+    <!-- <div class="section-label">{{ t.bookedSeva }}</div> -->
 
     <!-- ===== SUMMARY ROW ===== -->
-    <div class="dashboard-grid">
+    <!-- <div class="dashboard-grid">
       <div class="dash-card" (click)="openPage('booking')">
         <div class="dash-icon">📅</div>
         <span>{{ t.myBookings }}</span>
@@ -89,7 +67,7 @@
         <div class="dash-icon">🙏</div>
         <span>{{ t.askPanditJi }}</span>
       </div>
-    </div>
+    </div> -->
 
     <div class="referral-strip" *ngIf="referralCode">
       <div class="referral-strip-left">

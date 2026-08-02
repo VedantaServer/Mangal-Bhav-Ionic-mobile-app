@@ -48,10 +48,11 @@
       </div>
     </div>
 
+
     <div class="ip-media-wrap" *ngIf="hasFeedMedia(post) && !brokenMedia" (click)="openSourcePage()">
-      <video *ngIf="post.MediaType === 'Video'" [src]="getFeedMediaPath(post)" class="ip-media" controls playsinline
-        muted crossorigin="anonymous" (error)="onMediaError()"></video>
-      <img *ngIf="post.MediaType !== 'Video'" [src]="getFeedMediaPath(post)" class="ip-media" crossorigin="anonymous"
+      <video *ngIf="post.MediaType?.trim()?.toLowerCase() !== 'image'" [src]="getFeedMediaPath(post)" class="ip-media"
+        controls playsinline muted (error)="onMediaError()"></video>
+      <img *ngIf="post.MediaType?.trim()?.toLowerCase() === 'image'" [src]="getFeedMediaPath(post)" class="ip-media"
         (error)="onMediaError()" />
     </div>
 

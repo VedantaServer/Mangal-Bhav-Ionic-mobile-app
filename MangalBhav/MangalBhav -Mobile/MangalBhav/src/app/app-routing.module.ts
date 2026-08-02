@@ -59,6 +59,8 @@ import { PanditChatReportComponent } from './pandit-chat-report/pandit-chat-repo
 import { AdminUserSignupReportComponent } from './admin-user-signup-report/admin-user-signup-report.component';
 import { FeedDetailsComponent } from './feed-details/feed-details.component';
 import { DigitalCardComponent } from './digital-card/digital-card.component';
+import { SendBulkSupportMessageComponent } from './send-bulk-support-message/send-bulk-support-message.component';
+import { GuestHomeComponent } from './guest-home/guest-home.component';
 
 const routes: Routes = [
 
@@ -95,9 +97,18 @@ const routes: Routes = [
     path: 'ChangePassword',
     component: ChangePasswordPage  // directly use the standalone component
   },
+  // {
+  //   path: 'jajmandashboard',
+  //   component: JajmanDashboardComponent  // directly use the standalone component
+  // },
   {
     path: 'jajmandashboard',
-    component: JajmanDashboardComponent  // directly use the standalone component
+    component: OpenCommunityPageComponent  // directly use the standalone component
+  },
+
+  {
+    path: 'guest-home',
+    component: GuestHomeComponent  // directly use the standalone component
   },
   {
     path: 'user-profile',
@@ -158,7 +169,12 @@ const routes: Routes = [
     path: 'open-find-pandit/:id',
     component: FindPanditDetailComponent  // directly use the standalone component
   }
-
+,
+  
+  {
+    path: 'sendbulksupportmessage',
+    component: SendBulkSupportMessageComponent  // directly use the standalone component
+  }
   ,
   {
     path: 'adminbroadcastinsert',

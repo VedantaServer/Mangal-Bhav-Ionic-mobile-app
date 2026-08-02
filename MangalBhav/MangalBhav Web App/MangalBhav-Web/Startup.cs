@@ -44,7 +44,10 @@ namespace FaceUPAI
                         "https://localhost",
                         "https://localhost:8100",
                         "capacitor://localhost",
-                        "ionic://localhost")
+                        "ionic://localhost",
+                          "https://app.mangalbhav.com"
+
+                        )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

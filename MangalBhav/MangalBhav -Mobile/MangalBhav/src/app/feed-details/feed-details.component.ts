@@ -716,6 +716,18 @@ export class FeedDetailsComponent implements OnInit {
   // MEDIA
   // ══════════════════════════════════════════════════════
 
+
+  private getImagePurposeForFeedItem(item: FeedItem): string {
+    switch ((item.SourceTable || '').trim()) {
+      case 'Mandir': return 'ProfilePhoto';
+      case 'Profile': return 'ProfilePhoto';
+      case 'Service': return 'PoojaPhoto';
+      case 'Booking': return 'PoojaPhoto';
+      case 'Feed': return 'feed';
+      default: return 'feed';
+    }
+  }
+
   private getFeedMediaFolder(item: FeedItem): string {
     switch ((item.SourceTable || '').trim()) {
       case 'Mandir': return 'ProfilePhoto';
@@ -893,8 +905,6 @@ export class FeedDetailsComponent implements OnInit {
       return;
     }
 
-    // Capture only the media itself — not the header, caption, or action row.
-    // Falls back to the whole card if the post has no media (text-only post).
     const mediaWrapEl = cardEl.querySelector('.ip-media-wrap') as HTMLElement | null;
     const targetEl = mediaWrapEl || cardEl;
 
@@ -912,13 +922,35 @@ export class FeedDetailsComponent implements OnInit {
     document.body.appendChild(captureHost);
 
     const clone = targetEl.cloneNode(true) as HTMLElement;
+
+    // Convert any <video> to <img> first (existing behavior)
     clone.querySelectorAll('video').forEach((videoEl: HTMLVideoElement) => {
       const img = document.createElement('img');
       img.src = videoEl.currentSrc || videoEl.src;
       img.className = videoEl.className;
-      img.crossOrigin = 'anonymous';
       videoEl.replaceWith(img);
     });
+
+    // ── NEW: swap every cloned <img>'s cross-origin src for a same-origin blob data URL ──
+    if (this.hasFeedMedia(item)) {
+      try {
+        const imagePurpose = this.getImagePurposeForFeedItem(item); // matches folder→purpose mapping used elsewhere
+        const blob: any = await firstValueFrom(
+          this.api.getImage('DownloadImages', { imageName: item.MediaURL, imagePurpose })
+        );
+        const dataUrl: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        const clonedImg = clone.querySelector('img') as HTMLImageElement | null;
+        if (clonedImg) clonedImg.src = dataUrl;
+      } catch (e) {
+        console.error('Failed to fetch media as blob for share capture:', e);
+        // fall through — capture will proceed with the original src (may still taint)
+      }
+    }
 
     captureHost.appendChild(clone);
 
@@ -962,6 +994,7 @@ export class FeedDetailsComponent implements OnInit {
       this.cdr.markForCheck();
     }
   }
+
 
 
   // async shareFeedAsImage(item: FeedItem) {
@@ -1047,6 +1080,10 @@ export class FeedDetailsComponent implements OnInit {
     this.pendingShareItem = null;
     this.pendingShareText = '';
   }
+
+
+
+
 
   async confirmShare() {
     const item = this.pendingShareItem;
