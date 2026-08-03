@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temple – Mangal Bhav</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* ============================================================
+   INDEX.HTML CSS VARIABLES OVERRIDE
+============================================================ */
+:root {
+  --saffron:        #e8621a;
+  --saffron-dark:   #b8480f;
+  --saffron-50:     #fff3eb;
+  --gold:           #c8870a;
+  --gold-bright:    #f5a623;
+  --maroon:         #6b1a1a;
+  --cream:          #fffaf4;
+  --warm-white:     #fff8f0;
+  --text-dark:      #2d1a0e;
+  --text-mid:       #5c3d2a;
+  --text-light:     #8a6a55;
+  --border:         rgba(200,135,10,0.18);
+  --radius:         12px;
+  --radius-lg:      20px;
+  --shadow-soft:    0 4px 24px rgba(232,98,26,0.10);
+  --shadow-card:    0 2px 16px rgba(200,135,10,0.08);
+  --transition:     0.25s ease;
+}
+
+body { font-family: 'DM Sans', sans-serif; background: #fffaf4; color: #2d1a0e; line-height: 1.6; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* TOPBAR */
+.topbar { background: var(--maroon); color: #ffd9a0; text-align: center; font-size: 13px; font-weight: 500; padding: 9px 16px; letter-spacing: 0.01em; }
+.topbar span { margin: 0 8px; opacity: 0.5; }
+
+/* HEADER */
+header { position: sticky; top: 0; z-index: 100; background: rgba(255,250,244,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); box-shadow: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.navbar { display: flex; align-items: center; gap: 20px; height: 68px; padding: 0; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo img { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; border: none; box-shadow: none; }
+.logo-text h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--maroon); line-height: 1.1; letter-spacing: 0.04em; }
+.logo-text p { font-size: 9px; font-weight: 500; color: var(--gold); letter-spacing: 0.12em; margin-top: 2px; }
+nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+nav a { font-size: 14px; font-weight: 500; color: var(--text-mid); padding: 7px 12px; border-radius: 8px; transition: color var(--transition), background var(--transition); }
+nav a::after { display: none !important; }
+nav a:hover { color: var(--saffron); background: var(--saffron-50); }
+nav a.active { color: var(--saffron-dark) !important; background: none; font-weight: 700; }
+.nav-cta { background: var(--saffron) !important; color: #fff !important; border-radius: 50px !important; padding: 8px 20px !important; font-weight: 600 !important; font-size: 14px !important; box-shadow: none !important; transition: background var(--transition), transform var(--transition) !important; }
+.nav-cta:hover { background: var(--saffron-dark) !important; transform: translateY(-1px); box-shadow: none !important; }
+.nav-app { display: flex !important; align-items: center !important; gap: 6px !important; background: transparent !important; border-radius: 50px !important; padding: 7px 14px !important; font-size: 13px !important; font-weight: 600 !important; border: 1.5px solid !important; box-shadow: none !important; transition: transform var(--transition) !important; }
+.nav-app:hover { transform: translateY(-1px); background: transparent !important; }
+.android-btn { border-color: #2ea44f !important; color: #2ea44f !important; }
+.android-btn:hover { background: #f0faf4 !important; }
+.ios-btn { border-color: var(--maroon) !important; color: var(--maroon) !important; }
+.ios-btn:hover { background: #fdf3f3 !important; }
+
+/* Hamburger */
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; z-index: auto; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--maroon); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile Nav */
+.mobile-nav { display: none; position: static !important; width: auto !important; height: auto !important; background: var(--cream) !important; flex-direction: column; padding: 12px 24px 20px; border-bottom: 1px solid var(--border); gap: 4px; opacity: 1 !important; pointer-events: auto !important; transition: none !important; }
+.mobile-nav.open { display: flex; }
+.mobile-nav a { font-size: 15px !important; font-weight: 500 !important; color: var(--text-mid) !important; padding: 10px 12px !important; border-radius: 8px; font-family: 'DM Sans', sans-serif !important; border-bottom: none !important; text-align: left !important; }
+.mobile-nav a:hover { background: var(--saffron-50) !important; color: var(--saffron) !important; }
+.mobile-nav a.active { background: var(--saffron-dark) !important; color: #fff !important; font-weight: 700 !important; }
+.nav-cta-mob { background: var(--saffron) !important; color: #fff !important; border-radius: 8px !important; text-align: center !important; margin-top: 8px; box-shadow: none !important; padding: 10px 12px !important; font-size: 15px !important; }
+.nav-app-mob { border: 1.5px solid var(--border) !important; border-radius: 8px !important; text-align: center !important; font-size: 14px !important; background: transparent !important; box-shadow: none !important; padding: 10px 12px !important; color: var(--text-mid) !important; }
+.android-mob { border-color: #2ea44f !important; color: #2ea44f !important; }
+.ios-mob { border-color: var(--maroon) !important; color: var(--maroon) !important; }
+
+/* FOOTER */
+footer { background: linear-gradient(180deg, #3a0e0e, #2a0808) !important; color: #ffffff !important; padding-top: 56px !important; }
+.footer-top { display: grid !important; grid-template-columns: 2fr 1fr 1fr 1.2fr !important; gap: 36px !important; padding-bottom: 40px !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+.footer-brand .logo img { width: 44px !important; height: 44px !important; border-radius: 8px !important; filter: brightness(1.1) !important; }
+.footer-brand .logo-text h5 { font-size: 14px !important; font-weight: 700 !important; color: #ffffff !important; letter-spacing: 0.06em !important; }
+.footer-brand p { font-size: 13.5px !important; line-height: 1.65 !important; margin-top: 14px !important; max-width: 300px !important; color: #ffffff !important; }
+/* Pehle wala generic rule hata do ya override karo */
+.footer-social-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.footer-social {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,215,150,0.8);
+  transition: background var(--transition), transform var(--transition), color var(--transition);
+}
+
+/* Instagram — brand gradient */
+.footer-social[aria-label="Instagram"] { color: #E1306C; }
+.footer-social[aria-label="Instagram"]:hover {
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Facebook — brand blue */
+.footer-social[aria-label="Facebook"] { color: #1877F2; }
+.footer-social[aria-label="Facebook"]:hover {
+  background: #1877F2;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* YouTube — brand red */
+.footer-social[aria-label="YouTube"] { color: #FF0000; }
+.footer-social[aria-label="YouTube"]:hover {
+  background: #FF0000;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.footer-app-badges { display: flex !important; gap: 10px !important; flex-wrap: wrap !important; margin-top: 16px !important; }
+.footer-app-badges .store-badge { padding: 8px 14px !important; font-size: 13px !important; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.12) !important; }
+.footer-app-badges .store-badge:hover { background: rgba(255,255,255,0.14) !important; transform: translateY(-2px) !important; }
+.footer-col h4 { font-size: 13px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; color: #ffffff !important; margin-bottom: 16px !important; }
+.footer-col a, .footer-col p { display: block !important; font-size: 13.5px !important; color: rgba(255,255,255,0.80) !important; margin-bottom: 9px !important; line-height: 1.5 !important; transition: color var(--transition) !important; }
+.footer-col a:hover { color: #ffffff !important; }
+.footer-bottom { display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap !important; gap: 8px !important; padding: 18px 0 !important; font-size: 12.5px !important; color: rgba(255,255,255,0.70) !important; border-top: none !important; }
+.store-badge { display: inline-flex; align-items: center; gap: 10px; background: #000; color: #fff; border-radius: 10px; padding: 9px 18px; text-decoration: none; transition: all 0.25s; border: 1.5px solid rgba(255,255,255,0.15); min-width: 148px; }
+.store-badge:hover { background: #1a1a1a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+.store-badge .badge-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.store-badge .badge-text { display: flex; flex-direction: column; line-height: 1.2; }
+.store-badge .badge-sub { font-size: 9.5px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+.store-badge .badge-name { font-size: 14px; font-weight: 600; color: #fff; font-family: 'DM Sans', sans-serif; }
+
+@media (max-width: 960px) { .footer-top { grid-template-columns: 1fr 1fr !important; } }
+@media (max-width: 700px) { nav { display: none !important; } .hamburger { display: flex !important; margin-left: auto; } .footer-top { grid-template-columns: 1fr !important; } }
+@media (max-width: 480px) { .logo-text h1 { font-size: 18px; } .logo-text p { font-size: 8px; } .topbar { font-size: 11px; } }
+</style>
+</head>
+<body>
+<div class="topbar">
+  🕉️ Book Verified Pandit Ji for Puja, Hawan, Katha &amp; Astrology
+  <span>•</span> Pan-India Service <span>•</span> 4.8★ Rated
+</div>
+<header>
+  <div class="container navbar">
+   <a href="index.html" class="logo">
+  <img src="Images/logo.jpeg" alt="Mangal Bhav Logo">
+  <div class="logo-text">
+    <h1>MANGAL BHAV</h1>
+    <p>PEACE • PROSPERITY • PROTECTION</p>
+  </div>
+</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="Services.html">Vedic Puja</a>
+      <a href="Pandit_ji.html">Pandit Booking</a>
+	  <a href="Temple.html" class="active">Temple</a>
+      <a href="About.html">About</a>
+      <a href="Contact_Us.html">Contact</a>
+      <a href="https://app.mangalbhav.com" target="_blank" class="nav-cta">Login→</a>
+      <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="nav-app android-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zm-11.046 0a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zM14.386 2.027l.844-1.574a.197.197 0 0 0-.349-.185l-.855 1.594A5.97 5.97 0 0 0 12 1.5c-.703 0-1.38.12-2.026.362L9.12.268a.197.197 0 0 0-.35.185l.844 1.574C7.891 2.92 6.75 4.617 6.75 6.6H17.25c0-1.983-1.141-3.68-2.864-4.573zM9.75 4.95a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zm4.5 0a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zM6.75 17.4c0 .828.672 1.5 1.5 1.5h.75v2.55a.92.92 0 0 0 1.84 0V18.9h2.32v2.55a.92.92 0 0 0 1.84 0V18.9h.75c.828 0 1.5-.672 1.5-1.5V7.5H6.75v9.9z"/></svg>
+        Android
+      </a>
+      <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="nav-app ios-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS
+      </a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">Home</a>
+  <a href="Services.html">Vedic Puja</a>
+  <a href="Pandit_ji.html">Pandit Booking</a>
+  <a href="Temple.html" class="active">Temple</a>
+  <a href="About.html">About</a>
+  <a href="Contact_Us.html">Contact</a>
+  <a href="https://app.mangalbhav.com" target="_blank" class="nav-cta-mob">Login →</a>
+  <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="nav-app-mob android-mob">🤖 Android</a>
+  <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="nav-app-mob ios-mob"> iOS</a>
+</div>
+<!-- TEMPLE SEARCH & LISTING SECTION -->
+<section class="temple-section">
+  <div class="container">
+    <!-- Hero Header -->
+    <div class="temple-hero">
+      <p class="section-eyebrow">🛕 पवित्र तीर्थ</p>
+      <h2 class="section-title">भारत के प्रसिद्ध मंदिर</h2>
+      <p class="section-sub">देश के प्रमुख मंदिरों की जानकारी, दर्शन समय और पूजा बुकिंग एक जगह</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="temple-search-wrap">
+      <div class="temple-search-box">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="templeSearch" placeholder="मंदिर खोजें... जैसे Akshardham, Kashi, Tirupati" autocomplete="off" />
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Clear">✕</button>
+      </div>
+      <div class="temple-result-count" id="resultCount">6 मंदिर मिले</div>
+    </div>
+
+    <!-- Temple Cards Grid -->
+    <div class="temple-grid" id="templeGrid">
+
+      <!-- 1. Akshardham -->
+      <div class="temple-card" data-name="akshardham swaminarayan delhi">
+        <div class="temple-card-img-wrap">
+          <img src="Images/Pandit_Images/Akshardham.png" alt="Akshardham Temple" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=400&q=80'">
+          <div class="temple-badge">⭐ 4.9</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦ Bhagwan Swaminarayan</div>
+          <h3 class="temple-name">Akshardham Temple</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Swaminarayan Akshardham, NH 24, New Delhi
+          </div>
+          <div class="temple-timing">🕐 10:00 AM – 6:30 PM | मंगलवार बंद</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place/28%C2%B036'45.6%22N+77%C2%B016'38.1%22E/@28.6126735,77.274687,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.6126735!4d77.2772619?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/21" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Kashi Vishwanath -->
+      <div class="temple-card" data-name="kashi vishwanath varanasi banaras shiva">
+        <div class="temple-card-img-wrap">
+          <img src="Images/Pandit_Images/LotusTemple.png" alt="Kashi Vishwanath Temple" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1561361058-c24e021e93d2?w=400&q=80'">
+          <div class="temple-badge">⭐ 5.0</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦ Lotus Temple</div>
+          <h3 class="temple-name">Lotus Temple</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+           Bahá’í Lotus Temple, Lotus Temple Rd Bahapur, Kalkaji, New Delhi, Delhi 110019
+          </div>
+          <div class="temple-timing">🕐 9:00 AM – 7:00 PM | प्रतिदिन खुला</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place//@28.553492,77.2562515,17z/data=!4m6!1m5!3m4!2zMjjCsDMzJzEyLjYiTiA3N8KwMTUnMzEuOCJF!8m2!3d28.553492!4d77.2588264?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/49" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Tirupati Balaji -->
+      <div class="temple-card" data-name="tirupati balaji venkateswara andhra pradesh">
+        <div class="temple-card-img-wrap">
+          <img src="Images/Pandit_Images/Jhandewalan.png" alt="Tirupati Balaji Temple" loading="lazy">
+          <div class="temple-badge">⭐ 4.9</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦ Jhandewalan Mandir</div>
+          <h3 class="temple-name">Jhandewalan Mandir</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+           Jhandewalan Mandir, third floor, 49, Jhandewalan Extension, Jhandewalan, New Delhi, Delhi 110055
+          </div>
+          <div class="temple-timing">🕐 5:30 AM – 11:00 PM | प्रतिदिन खुला</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place//@28.6300549,77.2056498,17z/data=!4m6!1m5!3m4!2zMjjCsDM3JzQ4LjIiTiA3N8KwMTInMjkuNiJF!8m2!3d28.6300549!4d77.2082247?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/17" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Somnath Temple -->
+      <div class="temple-card" data-name="somnath shiva gujarat jyotirlinga">
+        <div class="temple-card-img-wrap">
+          <img src="Images/Pandit_Images/PracheenShivMandir.png"Somnath Temple" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1630612234024-6aa6aa89a5b1?w=400&q=80'">
+          <div class="temple-badge">⭐ 4.8</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦ Pracheen Shiv Mandir</div>
+          <h3 class="temple-name">Pracheen Shiv Mandir</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+Pracheen Shiv Mandir, J3HQ+WW8, B1 Market, Pocket B 1, Super Bazar, Janakpuri, New Delhi, Delhi, 110058
+          </div>
+          <div class="temple-timing">🕐 6:00 AM – 9:30 PM | प्रतिदिन खुला</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place//@28.6293635,77.0869379,17z/data=!4m6!1m5!3m4!2zMjjCsDM3JzQ1LjciTiA3N8KwMDUnMjIuMyJF!8m2!3d28.6293635!4d77.0895128?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/123" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Siddhivinayak -->
+      <div class="temple-card" data-name="siddhivinayak ganesh mumbai maharashtra">
+        <div class="temple-card-img-wrap">
+          <img src="Images/Pandit_Images/Kalkajimandir.png" alt="Siddhivinayak Temple" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1598091383021-15ddea10925d?w=400&q=80'">
+          <div class="temple-badge">⭐ 4.8</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦ Kalkaji mandir</div>
+          <h3 class="temple-name">Kalkaji mandir</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Kalkaji mandir, Mandir Station, metro Station, near Kalkaji Mandir, Block 9, Kalkaji, New Delhi, Delhi 110019
+          </div>
+          <div class="temple-timing">🕐 5:30 AM – 9:30 PM | प्रतिदिन खुला</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place//@28.54945,77.2566451,17z/data=!4m6!1m5!3m4!2zMjjCsDMyJzU4LjAiTiA3N8KwMTUnMzMuMiJF!8m2!3d28.54945!4d77.25922?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/156" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Vaishno Devi -->
+      <div class="temple-card" data-name="vaishno devi mata rani jammu kashmir">
+        <div class="temple-card-img-wrap">
+                   <img src="Images/Pandit_Images/ChattarpurTempleHanumanmandir.png" alt="Devansh Dwivedi">
+          <div class="temple-badge">⭐ 4.9</div>
+        </div>
+        <div class="temple-card-body">
+          <div class="temple-deity">✦Chattarpur Temple Hanuman mandir</div>
+          <h3 class="temple-name">Chattarpur Temple Hanuman mandir</h3>
+          <div class="temple-location">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Chattarpur Temple Hanuman mandir, New Delhi, G52H+R2F, Hanuman Sthal, Chattarpur,, Chattarpur Mandir Rd, Satbari, New Delhi, Delhi 110074
+          </div>
+          <div class="temple-timing">🕐 24 घंटे | प्रतिदिन खुला</div>
+          <div class="temple-actions">
+            <a href="https://www.google.com/maps/place//@28.5020493,77.1750237,17z/data=!4m6!1m5!3m4!2zMjjCsDMwJzA3LjQiTiA3N8KwMTAnMzkuNCJF!8m2!3d28.5020493!4d77.1775986?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn-map">🗺️ View on Map</a>
+            <a href="https://app.mangalbhav.com/mandirfulldetails/46" target="_blank" class="btn-book">पूजा बुक करें →</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /temple-grid -->
+
+    <!-- No Results -->
+    <div class="temple-no-results" id="noResults" style="display:none;">
+      <div class="no-res-icon">🔍</div>
+      <h3>कोई मंदिर नहीं मिला</h3>
+      <p>कृपया दूसरा नाम या शहर खोजें</p>
+      <button onclick="clearSearch()">सभी मंदिर देखें</button>
+    </div>
+
+  </div>
+</section>
+
+<style>
+/* ============ TEMPLE SECTION ============ */
+.temple-section {
+  padding: 70px 0 50px;
+  background: linear-gradient(160deg, #fff8f0 0%, #fffaf4 50%, #fff3e8 100%);
+  position: relative;
+  overflow: hidden;
+}
+.temple-section::before {
+  content: '🕉';
+  position: absolute; top: -20px; right: -30px;
+  font-size: 220px; opacity: 0.03; pointer-events: none; line-height: 1;
+}
+.temple-hero { text-align: center; margin-bottom: 40px; }
+
+/* Search */
+.temple-search-wrap { max-width: 580px; margin: 0 auto 48px; }
+.temple-search-box {
+  position: relative; display: flex; align-items: center;
+  background: #fff; border: 2px solid var(--border);
+  border-radius: 50px; padding: 0 18px; gap: 10px;
+  box-shadow: 0 4px 24px rgba(232,98,26,0.09);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.temple-search-box:focus-within {
+  border-color: var(--saffron); box-shadow: 0 4px 32px rgba(232,98,26,0.18);
+}
+.search-icon { color: var(--saffron); flex-shrink: 0; }
+.temple-search-box input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text-dark);
+  padding: 16px 0;
+}
+.temple-search-box input::placeholder { color: var(--text-light); }
+.search-clear {
+  background: none; border: none; cursor: pointer; color: var(--text-light);
+  font-size: 16px; padding: 4px 6px; border-radius: 50%;
+  transition: background 0.2s, color 0.2s; line-height: 1;
+  display: none;
+}
+.search-clear.visible { display: block; }
+.search-clear:hover { background: var(--saffron-50); color: var(--saffron); }
+.temple-result-count {
+  text-align: center; margin-top: 10px;
+  font-size: 13px; color: var(--text-light); font-weight: 500;
+}
+
+/* Cards Grid */
+.temple-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.temple-card {
+  background: #fff; border-radius: 20px; overflow: hidden;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 16px rgba(200,135,10,0.07);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  display: flex; flex-direction: column;
+}
+.temple-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(232,98,26,0.15); }
+.temple-card-img-wrap { position: relative; width: 100%; padding-top: 58%; overflow: hidden; background: #f5e8d0; }
+.temple-card-img-wrap img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: transform 0.4s ease;
+}
+.temple-card:hover .temple-card-img-wrap img { transform: scale(1.06); }
+.temple-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(0,0,0,0.55); color: #fff;
+  font-size: 12px; font-weight: 700; padding: 4px 10px;
+  border-radius: 50px; backdrop-filter: blur(4px);
+}
+.temple-card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.temple-deity { font-size: 12px; font-weight: 600; color: var(--gold); letter-spacing: 0.04em; }
+.temple-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text-dark); line-height: 1.25; margin: 2px 0 4px; }
+.temple-location { display: flex; align-items: flex-start; gap: 5px; font-size: 12.5px; color: var(--text-light); line-height: 1.45; }
+.temple-location svg { flex-shrink: 0; margin-top: 2px; fill: var(--saffron); }
+.temple-timing { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+.temple-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 14px; flex-wrap: wrap; }
+.btn-map {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1.5px solid var(--border); border-radius: 50px;
+  padding: 7px 14px; font-size: 12.5px; font-weight: 600;
+  color: var(--text-mid); background: var(--saffron-50);
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-map:hover { border-color: var(--saffron); color: var(--saffron); background: #fff3eb; }
+.btn-book {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--saffron); color: #fff;
+  border-radius: 50px; padding: 7px 16px;
+  font-size: 12.5px; font-weight: 600;
+  transition: background 0.2s, transform 0.2s; white-space: nowrap;
+}
+.btn-book:hover { background: var(--saffron-dark); transform: translateY(-1px); }
+
+/* No Results */
+.temple-no-results {
+  text-align: center; padding: 60px 20px;
+}
+.no-res-icon { font-size: 52px; margin-bottom: 16px; }
+.temple-no-results h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text-dark); margin-bottom: 8px; }
+.temple-no-results p { color: var(--text-light); margin-bottom: 20px; }
+.temple-no-results button {
+  background: var(--saffron); color: #fff; border: none; border-radius: 50px;
+  padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.temple-no-results button:hover { background: var(--saffron-dark); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 960px) {
+  .temple-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 580px) {
+  .temple-section { padding: 50px 0 70px; }
+  .temple-grid { grid-template-columns: 1fr; gap: 18px; }
+  .temple-hero .section-title { font-size: 26px; }
+  .temple-search-box input { font-size: 14px; }
+  .temple-actions { flex-direction: column; }
+  .btn-map, .btn-book { justify-content: center; }
+}
+@media (max-width: 400px) {
+  .temple-card-body { padding: 14px 16px 16px; }
+  .temple-name { font-size: 16px; }
+}
+</style>
+
+<script>
+(function() {
+  const input = document.getElementById('templeSearch');
+  const clearBtn = document.getElementById('searchClear');
+  const grid = document.getElementById('templeGrid');
+  const noRes = document.getElementById('noResults');
+  const countEl = document.getElementById('resultCount');
+  const cards = Array.from(grid.querySelectorAll('.temple-card'));
+
+  input.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    clearBtn.classList.toggle('visible', q.length > 0);
+    let visible = 0;
+    cards.forEach(card => {
+      const match = card.dataset.name.includes(q) ||
+        card.querySelector('.temple-name').textContent.toLowerCase().includes(q) ||
+        card.querySelector('.temple-location').textContent.toLowerCase().includes(q);
+      card.style.display = (!q || match) ? '' : 'none';
+      if (!q || match) visible++;
+    });
+    countEl.textContent = visible + ' मंदिर मिले';
+    noRes.style.display = visible === 0 ? 'block' : 'none';
+    grid.style.display = visible === 0 ? 'none' : '';
+  });
+
+  window.clearSearch = function() {
+    input.value = '';
+    clearBtn.classList.remove('visible');
+    cards.forEach(c => c.style.display = '');
+    noRes.style.display = 'none';
+    grid.style.display = '';
+    countEl.textContent = cards.length + ' मंदिर मिले';
+  };
+})();
+</script>
+
+<!-- HOW IT WORKS VIDEO SECTION — UPGRADED -->
+<section class="how-it-works">
+  <div class="container">
+    <div class="section-head">
+      <p class="section-eyebrow">🎬 देखें कैसे करें</p>
+      <h2 class="section-title">तीन आसान कदम</h2>
+      <p class="section-sub">Mangal Bhav App पर इन simple videos से सब कुछ सीखें</p>
+    </div>
+
+    <div class="reel-grid">
+
+      <!-- Reel Card 1 -->
+      <a href="https://www.instagram.com/reel/DYmbV_BP_dq/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" class="reel-card reel-card--1">
+        <!-- Phone Mockup Thumbnail -->
+        <div class="reel-thumb">
+          <div class="reel-phone">
+            <div class="reel-phone-inner">
+              <!-- Simulated Reel UI -->
+              <div class="reel-phone-screen">
+                <div class="reel-bg reel-bg--1"></div>
+                <div class="reel-screen-content">
+                  <div class="reel-app-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <p class="reel-screen-label">App Install</p>
+                </div>
+                <!-- Play Button Overlay -->
+                <div class="reel-play-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <!-- IG Reel UI Elements -->
+                <div class="reel-ui-bar">
+                  <div class="reel-ui-likes">❤️ 2.4K</div>
+                  <div class="reel-ui-views">▶ 18K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Step Number Badge -->
+          <div class="reel-step-badge reel-step-badge--1">01</div>
+          <!-- Instagram Reel Badge -->
+          <div class="reel-ig-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Reel
+          </div>
+        </div>
+        <!-- Card Info -->
+        <div class="reel-info">
+          <div class="reel-meta">
+            <span class="reel-duration">⏱ 60 sec</span>
+            <span class="reel-tag reel-tag--1">App Setup</span>
+          </div>
+          <h3 class="reel-title">App Install &amp; Signup</h3>
+          <p class="reel-desc">App download करें और आसानी से account बनाएं। सिर्फ 2 मिनट में शुरू हो जाएं।</p>
+          <div class="reel-cta reel-cta--1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram पर देखें →
+          </div>
+        </div>
+      </a>
+
+      <!-- Reel Card 2 -->
+      <a href="https://www.instagram.com/reel/DY141RTv_uH/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" class="reel-card reel-card--2">
+        <div class="reel-thumb">
+          <div class="reel-phone">
+            <div class="reel-phone-inner">
+              <div class="reel-phone-screen">
+                <div class="reel-bg reel-bg--2"></div>
+                <div class="reel-screen-content">
+                  <div class="reel-app-icon reel-app-icon--2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                  <p class="reel-screen-label">Profile</p>
+                </div>
+                <div class="reel-play-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <div class="reel-ui-bar">
+                  <div class="reel-ui-likes">❤️ 1.8K</div>
+                  <div class="reel-ui-views">▶ 12K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="reel-step-badge reel-step-badge--2">02</div>
+          <div class="reel-ig-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Reel
+          </div>
+        </div>
+        <div class="reel-info">
+          <div class="reel-meta">
+            <span class="reel-duration">⏱ 45 sec</span>
+            <span class="reel-tag reel-tag--2">Pandit Setup</span>
+          </div>
+          <h3 class="reel-title">Panditji Profile Update</h3>
+          <p class="reel-desc">Pandit जी की profile कैसे setup करें और अपनी expertise दिखाएं — step by step guide।</p>
+          <div class="reel-cta reel-cta--2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram पर देखें →
+          </div>
+        </div>
+      </a>
+
+      <!-- Reel Card 3 -->
+      <a href="https://www.instagram.com/reel/DY7DXxtPyyE/?utm_source=ig_web_copy_link" target="_blank" class="reel-card reel-card--3">
+        <div class="reel-thumb">
+          <div class="reel-phone">
+            <div class="reel-phone-inner">
+              <div class="reel-phone-screen">
+                <div class="reel-bg reel-bg--3"></div>
+                <div class="reel-screen-content">
+                  <div class="reel-app-icon reel-app-icon--3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                  <p class="reel-screen-label">Donation</p>
+                </div>
+                <div class="reel-play-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <div class="reel-ui-bar">
+                  <div class="reel-ui-likes">❤️ 3.1K</div>
+                  <div class="reel-ui-views">▶ 22K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="reel-step-badge reel-step-badge--3">03</div>
+          <div class="reel-ig-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Reel
+          </div>
+        </div>
+        <div class="reel-info">
+          <div class="reel-meta">
+            <span class="reel-duration">⏱ 55 sec</span>
+            <span class="reel-tag reel-tag--3">Donation</span>
+          </div>
+          <h3 class="reel-title">Mandir Donation</h3>
+          <p class="reel-desc">अपने मंदिर के लिए online donation कैसे accept करें। भक्तों से सीधे जुड़ें।</p>
+          <div class="reel-cta reel-cta--3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram पर देखें →
+          </div>
+        </div>
+      </a>
+
+      <!-- Reel Card 4 -->
+      <a href="https://www.instagram.com/reel/DZfAB5NPo2a/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" class="reel-card reel-card--4">
+        <div class="reel-thumb">
+          <div class="reel-phone">
+            <div class="reel-phone-inner">
+              <div class="reel-phone-screen">
+                <div class="reel-bg reel-bg--4"></div>
+                <div class="reel-screen-content">
+                  <div class="reel-app-icon reel-app-icon--4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4zm0 0v10l9 4 9-4V7"/></svg>
+                  </div>
+                  <p class="reel-screen-label">Services</p>
+                </div>
+                <div class="reel-play-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+                <div class="reel-ui-bar">
+                  <div class="reel-ui-likes">❤️ 14</div>
+                  <div class="reel-ui-views">▶ 2K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="reel-step-badge reel-step-badge--4">04</div>
+          <div class="reel-ig-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Reel
+          </div>
+        </div>
+        <div class="reel-info">
+          <div class="reel-meta">
+            <span class="reel-duration">⏱ 50 sec</span>
+            <span class="reel-tag reel-tag--4">Pandit Setup</span>
+          </div>
+          <h3 class="reel-title">Pandit Ji Services Add करें</h3>
+          <p class="reel-desc">Login करें, Puja, Havan व Astrology services add करें और Dakshina set करके bookings पाना शुरू करें।</p>
+          <div class="reel-cta reel-cta--4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram पर देखें →
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Bottom CTA Strip -->
+    <div class="reel-footer-strip">
+      <p>और भी helpful videos देखने के लिए हमारा Instagram follow करें 🙏</p>
+      <a href="https://www.instagram.com/mangal_bhav_official/" target="_blank" class="reel-follow-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @mangal_bhav_official Follow करें
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+/* ============ HOW IT WORKS — UPGRADED REEL CARDS ============ */
+.how-it-works {
+  padding: 60px 0 90px;
+  background: linear-gradient(160deg, #fff8f0 0%, #fffaf4 50%, #fff0e6 100%);
+  position: relative; overflow: hidden;
+}
+.how-it-works::before {
+  content: '🕉'; position: absolute; top: -40px; right: -40px;
+  font-size: 240px; opacity: 0.03; pointer-events: none; line-height: 1;
+}
+
+/* Section head */
+.section-head { text-align: center; margin-bottom: 48px; }
+.section-eyebrow {
+  display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--saffron); background: var(--saffron-50);
+  border: 1px solid rgba(232,98,26,0.18); border-radius: 50px;
+  padding: 5px 16px; margin-bottom: 14px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 40px); font-weight: 700;
+  color: var(--maroon); line-height: 1.2; margin-bottom: 12px;
+}
+.section-sub { font-size: 15.5px; color: var(--text-light); max-width: 480px; margin: 0 auto; }
+
+/* Reel Grid */
+.reel-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 28px; align-items: stretch;
+}
+
+/* Reel Card */
+.reel-card {
+  display: flex; flex-direction: column;
+  background: #fff; border-radius: 24px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 6px 28px rgba(200,135,10,0.08);
+  text-decoration: none; color: inherit;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.reel-card:hover { transform: translateY(-8px); }
+.reel-card--1:hover { box-shadow: 0 20px 56px rgba(232,98,26,0.20); }
+.reel-card--2:hover { box-shadow: 0 20px 56px rgba(200,135,10,0.20); }
+.reel-card--3:hover { box-shadow: 0 20px 56px rgba(107,26,26,0.18); }
+.reel-card--4:hover { box-shadow: 0 20px 56px rgba(232,98,26,0.20); }
+
+/* ---- Phone Thumbnail Area ---- */
+.reel-thumb {
+  position: relative; width: 100%;
+  background: #f5ece0;
+  padding: 28px 0 20px;
+  display: flex; justify-content: center; align-items: center;
+  min-height: 220px;
+}
+.reel-card--1 .reel-thumb { background: linear-gradient(140deg, #fff0e6, #fde0cb); }
+.reel-card--2 .reel-thumb { background: linear-gradient(140deg, #fff8e0, #fdecc0); }
+.reel-card--3 .reel-thumb { background: linear-gradient(140deg, #fdeaea, #f7d0d0); }
+.reel-card--4 .reel-thumb { background: linear-gradient(140deg, #fff8e0, #fdecc0); }
+
+/* Phone mockup */
+.reel-phone {
+  width: 110px; height: 192px;
+  background: #1a1a2e;
+  border-radius: 18px;
+  padding: 5px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.30), inset 0 0 0 1px rgba(255,255,255,0.08);
+  position: relative; z-index: 2;
+}
+.reel-phone-inner {
+  width: 100%; height: 100%;
+  border-radius: 14px; overflow: hidden;
+  position: relative;
+}
+.reel-phone-screen {
+  width: 100%; height: 100%;
+  position: relative; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+/* Gradient screen backgrounds per card */
+.reel-bg { position: absolute; inset: 0; }
+.reel-bg--1 { background: linear-gradient(160deg, #e8621a 0%, #b8480f 60%, #6b1a1a 100%); }
+.reel-bg--2 { background: linear-gradient(160deg, #c8870a 0%, #a06808 60%, #6b3a00 100%); }
+.reel-bg--3 { background: linear-gradient(160deg, #6b1a1a 0%, #8b2020 50%, #c8870a 100%); }
+.reel-bg--4 { background: linear-gradient(160deg, #c8870a 0%, #a06808 60%, #6b3a00 100%); }
+
+/* App icon + label inside the screen */
+.reel-screen-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.reel-app-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.reel-screen-label {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9);
+  letter-spacing: 0.06em; margin: 0;
+}
+
+/* Play button */
+.reel-play-btn {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  z-index: 3;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255,255,255,0.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+}
+.reel-card:hover .reel-play-btn {
+  transform: translateX(-50%) scale(1.12);
+  background: rgba(255,255,255,0.35);
+}
+
+/* Likes/views bar */
+.reel-ui-bar {
+  position: absolute; bottom: 6px; left: 0; right: 0;
+  display: flex; justify-content: space-between;
+  padding: 0 7px;
+  font-size: 8px; color: rgba(255,255,255,0.7);
+  font-weight: 600; z-index: 3;
+}
+
+/* Step Number Badge — top left of thumb */
+.reel-step-badge {
+  position: absolute; top: 14px; left: 14px;
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+  line-height: 1; z-index: 4;
+}
+.reel-step-badge--1 { color: var(--saffron); }
+.reel-step-badge--2 { color: var(--gold); }
+.reel-step-badge--3 { color: var(--maroon); }
+.reel-step-badge--4 { color: var(--gold); }
+
+/* Instagram Reel badge — top right */
+.reel-ig-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 4;
+  display: flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 4px 9px; border-radius: 50px;
+  box-shadow: 0 2px 10px rgba(220,39,67,0.35);
+}
+
+/* ---- Card Info Area ---- */
+.reel-info { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.reel-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.reel-duration {
+  font-size: 11.5px; color: var(--text-light); font-weight: 500;
+}
+.reel-tag {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 50px;
+}
+.reel-tag--1 { background: rgba(232,98,26,0.10); color: var(--saffron); }
+.reel-tag--2 { background: rgba(200,135,10,0.10); color: var(--gold); }
+.reel-tag--3 { background: rgba(107,26,26,0.10); color: var(--maroon); }
+.reel-tag--4 { background: rgba(200,135,10,0.10); color: var(--gold); }
+
+.reel-title {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+  color: var(--text-dark); line-height: 1.25; margin: 0;
+}
+.reel-desc {
+  font-size: 13.5px; color: var(--text-light); line-height: 1.65; margin: 0; flex: 1;
+}
+
+/* CTA link row */
+.reel-cta {
+  display: flex; align-items: center; gap: 7px;
+  margin-top: 6px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 13px; font-weight: 700;
+  transition: gap 0.2s;
+}
+.reel-card:hover .reel-cta { gap: 11px; }
+.reel-cta--1 { color: var(--saffron); }
+.reel-cta--2 { color: var(--gold); }
+.reel-cta--3 { color: var(--maroon); }
+.reel-cta--4 { color: var(--gold); }
+
+/* ---- Footer Strip ---- */
+.reel-footer-strip {
+  margin-top: 48px;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 16px;
+  padding: 20px 28px;
+  background: rgba(255,255,255,0.65);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+.reel-footer-strip p {
+  font-size: 14.5px; color: var(--text-mid);
+  font-weight: 500; margin: 0;
+}
+.reel-follow-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: 50px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff; font-size: 13.5px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(220,39,67,0.30);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.reel-follow-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(220,39,67,0.40); }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .reel-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .reel-card:last-child { grid-column: 1 / -1; max-width: 420px; margin: 0 auto; width: 100%; }
+}
+@media (max-width: 600px) {
+  .reel-grid { grid-template-columns: 1fr; gap: 18px; }
+  .reel-card:last-child { grid-column: auto; max-width: 100%; }
+  .reel-thumb { min-height: 180px; padding: 22px 0 16px; }
+  .reel-phone { width: 90px; height: 158px; }
+  .reel-info { padding: 16px 18px 18px; }
+  .reel-title { font-size: 16px; }
+  .how-it-works { padding: 44px 0 60px; }
+  .reel-footer-strip { flex-direction: column; text-align: center; padding: 18px 20px; }
+}
+@media (max-width: 380px) {
+  .reel-phone { width: 80px; height: 140px; }
+  .reel-app-icon { width: 38px; height: 38px; border-radius: 9px; }
+}
+</style>
+
+  <!-- FOOTER -->
+
+  
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <img src="Images/logo.jpeg" alt="Mangal Bhav Logo">
+          <div class="logo-text">
+            <h5>MANGAL BHAV</h5>
+            <h5>PEACE • PROSPERITY • PROTECTION</h5>
+          </div>
+        </div>
+        <p>Trusted platform for verified pandit booking, online puja services, astrology consultation, and spiritual guidance across India.</p>
+        <div class="footer-social-wrap">
+          <a href="https://www.instagram.com/mangal_bhav_official/" target="_blank" class="footer-social" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61575446319952" target="_blank" class="footer-social" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@mangal_bhav_official" target="_blank" class="footer-social" aria-label="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+        </div>
+        <div class="footer-app-badges">
+          <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="store-badge">
+            <span class="badge-icon">▶</span>
+            <span class="badge-text"><span class="badge-sub">Get it on</span><span class="badge-name">Google Play</span></span>
+          </a>
+          <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="store-badge">
+            <span class="badge-icon"></span>
+            <span class="badge-text"><span class="badge-sub">Download on the</span><span class="badge-name">App Store</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="Services.html">Vedic Puja</a>
+        <a href="Pandit_ji.html">Pandit Booking</a>
+      <a href="kaal_sarp_dosh_pooja_in_ujjain.html">Kaal Sarp Dosh</a>
+		<a href="Temple.html">Temple</a>
+        <a href="About.html">About Us</a>
+        <a href="Contact_Us.html">Contact</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Login / Sign Up</a>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Online Puja Booking</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Astrology Consultation</a>
+        <a href="https://app.mangalbhav.com/openfindmandir" target="_blank">Temple Donation</a>
+        <a href="https://app.mangalbhav.com/open-find-pandit" target="_blank">Verified Pandit Booking</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Hawan &amp; Yagya</a>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&amp;serviceid=32" target="_blank">Vastu Consultation</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>📧 mangalbhav09@gmail.com</p>
+        <p>📞 +91 8796917944</p>
+        <p>📍 L29, Connaught Place,<br>New Delhi – 110001, India</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mangal Bhav • Peace • Prosperity • Protection</span>
+      <span>Made with 🙏 for devotees across India</span>
+    </div>
+  </div>
+</footer>
+<script>
+  const ham = document.getElementById('hamburger');
+  const mob = document.getElementById('mobileNav');
+  ham.addEventListener('click', () => {
+    ham.classList.toggle('open');
+    mob.classList.toggle('open');
+    document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+  });
+  mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    ham.classList.remove('open');
+    mob.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+</script>
+</body>
+</html>

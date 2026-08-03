@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services – Mangal Bhav</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+<style>
+/* ============================================================
+   INDEX.HTML CSS VARIABLES OVERRIDE
+============================================================ */
+:root {
+  --saffron:        #e8621a;
+  --saffron-dark:   #b8480f;
+  --saffron-50:     #fff3eb;
+  --gold:           #c8870a;
+  --gold-bright:    #f5a623;
+  --maroon:         #6b1a1a;
+  --cream:          #fffaf4;
+  --warm-white:     #fff8f0;
+  --text-dark:      #2d1a0e;
+  --text-mid:       #5c3d2a;
+  --text-light:     #8a6a55;
+  --border:         rgba(200,135,10,0.18);
+  --radius:         12px;
+  --radius-lg:      20px;
+  --shadow-soft:    0 4px 24px rgba(232,98,26,0.10);
+  --shadow-card:    0 2px 16px rgba(200,135,10,0.08);
+  --transition:     0.25s ease;
+}
+
+.service-card-combined .lang-divider { height: 1px; background: var(--border); margin: 16px 0; }
+.service-card-combined .eng-title { margin-top: 2px; }
+.service-card-combined .eng-para { font-size: inherit; }
+
+/* Wider cards for combined Hindi+English Ujjain pooja section so text/buttons don't misalign */
+.services-grid-wide { grid-template-columns: repeat(3, 1fr) !important; gap: 28px !important; }
+.services-grid-wide .service-content .btn { align-self: flex-start; }
+.services-grid-wide .service-card img { width: 100% !important; height: 220px !important; object-fit: cover !important; object-position: center; display: block; }
+.services-grid-wide .cta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 4px; }
+.services-grid-wide .cta-row p { margin: 0; flex: 1 1 auto; min-width: 180px; }
+.services-grid-wide .cta-row .btn { flex-shrink: 0; }
+@media (max-width: 1100px) {
+  .services-grid-wide { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .services-grid-wide { grid-template-columns: 1fr !important; }
+  .services-grid-wide .cta-row { flex-direction: column; align-items: flex-start; }
+}
+
+body { font-family: 'DM Sans', sans-serif; background: #fffaf4; color: #2d1a0e; line-height: 1.6; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* TOPBAR */
+.topbar { background: var(--maroon); color: #ffd9a0; text-align: center; font-size: 13px; font-weight: 500; padding: 9px 16px; letter-spacing: 0.01em; }
+.topbar span { margin: 0 8px; opacity: 0.5; }
+
+/* HEADER */
+header { position: sticky; top: 0; z-index: 100; background: rgba(255,250,244,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); box-shadow: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.navbar { display: flex; align-items: center; gap: 20px; height: 68px; padding: 0; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo img { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; border: none; box-shadow: none; }
+.logo-text h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--maroon); line-height: 1.1; letter-spacing: 0.04em; }
+.logo-text p { font-size: 9px; font-weight: 500; color: var(--gold); letter-spacing: 0.12em; margin-top: 2px; }
+nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+nav a { font-size: 14px; font-weight: 500; color: var(--text-mid); padding: 7px 12px; border-radius: 8px; transition: color var(--transition), background var(--transition); }
+nav a::after { display: none !important; }
+nav a:hover { color: var(--saffron); background: var(--saffron-50); }
+nav a.active { color: var(--saffron-dark) !important; background: none; font-weight: 700; }
+.nav-cta { background: var(--saffron) !important; color: #fff !important; border-radius: 50px !important; padding: 8px 20px !important; font-weight: 600 !important; font-size: 14px !important; box-shadow: none !important; transition: background var(--transition), transform var(--transition) !important; }
+.nav-cta:hover { background: var(--saffron-dark) !important; transform: translateY(-1px); box-shadow: none !important; }
+.nav-app { display: flex !important; align-items: center !important; gap: 6px !important; background: transparent !important; border-radius: 50px !important; padding: 7px 14px !important; font-size: 13px !important; font-weight: 600 !important; border: 1.5px solid !important; box-shadow: none !important; transition: transform var(--transition) !important; }
+.nav-app:hover { transform: translateY(-1px); background: transparent !important; }
+.android-btn { border-color: #2ea44f !important; color: #2ea44f !important; }
+.android-btn:hover { background: #f0faf4 !important; }
+.ios-btn { border-color: var(--maroon) !important; color: var(--maroon) !important; }
+.ios-btn:hover { background: #fdf3f3 !important; }
+
+/* Hamburger */
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; z-index: auto; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--maroon); border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile Nav */
+.mobile-nav { display: none; position: static !important; width: auto !important; height: auto !important; background: var(--cream) !important; flex-direction: column; padding: 12px 24px 20px; border-bottom: 1px solid var(--border); gap: 4px; opacity: 1 !important; pointer-events: auto !important; transition: none !important; }
+.mobile-nav.open { display: flex; }
+.mobile-nav a { font-size: 15px !important; font-weight: 500 !important; color: var(--text-mid) !important; padding: 10px 12px !important; border-radius: 8px; font-family: 'DM Sans', sans-serif !important; border-bottom: none !important; text-align: left !important; }
+.mobile-nav a:hover { background: var(--saffron-50) !important; color: var(--saffron) !important; }
+.mobile-nav a.active { background: var(--saffron-dark) !important; color: #fff !important; font-weight: 700 !important; }
+.nav-cta-mob { background: var(--saffron) !important; color: #fff !important; border-radius: 8px !important; text-align: center !important; margin-top: 8px; box-shadow: none !important; padding: 10px 12px !important; font-size: 15px !important; }
+.nav-app-mob { border: 1.5px solid var(--border) !important; border-radius: 8px !important; text-align: center !important; font-size: 14px !important; background: transparent !important; box-shadow: none !important; padding: 10px 12px !important; color: var(--text-mid) !important; }
+.android-mob { border-color: #2ea44f !important; color: #2ea44f !important; }
+.ios-mob { border-color: var(--maroon) !important; color: var(--maroon) !important; }
+
+/* FOOTER */
+/* Pehle wala generic rule hata do ya override karo */
+.footer-social {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,215,150,0.8);
+  transition: background var(--transition), transform var(--transition), color var(--transition);
+}
+
+/* Instagram — brand gradient */
+.footer-social[aria-label="Instagram"] { color: #E1306C; }
+.footer-social[aria-label="Instagram"]:hover {
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Facebook — brand blue */
+.footer-social[aria-label="Facebook"] { color: #1877F2; }
+.footer-social[aria-label="Facebook"]:hover {
+  background: #1877F2;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* YouTube — brand red */
+.footer-social[aria-label="YouTube"] { color: #FF0000; }
+.footer-social[aria-label="YouTube"]:hover {
+  background: #FF0000;
+  color: #fff;
+  transform: translateY(-2px);
+}
+footer { background: linear-gradient(180deg, #3a0e0e, #2a0808) !important; color: #ffffff !important; padding-top: 56px !important; }
+.footer-top { display: grid !important; grid-template-columns: 2fr 1fr 1fr 1.2fr !important; gap: 36px !important; padding-bottom: 40px !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+.footer-brand .logo img { width: 44px !important; height: 44px !important; border-radius: 8px !important; filter: brightness(1.1) !important; }
+.footer-brand .logo-text h5 { font-size: 14px !important; font-weight: 700 !important; color: #ffffff !important; letter-spacing: 0.06em !important; }
+.footer-brand p { font-size: 13.5px !important; line-height: 1.65 !important; margin-top: 14px !important; max-width: 300px !important; color: #ffffff !important; }
+.footer-app-badges { display: flex !important; gap: 10px !important; flex-wrap: wrap !important; margin-top: 16px !important; }
+.footer-app-badges .store-badge { padding: 8px 14px !important; font-size: 13px !important; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.12) !important; }
+.footer-app-badges .store-badge:hover { background: rgba(255,255,255,0.14) !important; transform: translateY(-2px) !important; }
+.footer-col h4 { font-size: 13px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; color: #ffffff !important; margin-bottom: 16px !important; }
+.footer-col a, .footer-col p { display: block !important; font-size: 13.5px !important; color: rgba(255,255,255,0.80) !important; margin-bottom: 9px !important; line-height: 1.5 !important; transition: color var(--transition) !important; }
+.footer-col a:hover { color: #ffffff !important; }
+.footer-bottom { display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap !important; gap: 8px !important; padding: 18px 0 !important; font-size: 12.5px !important; color: rgba(255,255,255,0.70) !important; border-top: none !important; }
+.store-badge { display: inline-flex; align-items: center; gap: 10px; background: #000; color: #fff; border-radius: 10px; padding: 9px 18px; text-decoration: none; transition: all 0.25s; border: 1.5px solid rgba(255,255,255,0.15); min-width: 148px; }
+.store-badge:hover { background: #1a1a1a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+.store-badge .badge-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.store-badge .badge-text { display: flex; flex-direction: column; line-height: 1.2; }
+.store-badge .badge-sub { font-size: 9.5px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+.store-badge .badge-name { font-size: 14px; font-weight: 600; color: #fff; font-family: 'DM Sans', sans-serif; }
+
+@media (max-width: 960px) { .footer-top { grid-template-columns: 1fr 1fr !important; } }
+@media (max-width: 700px) { nav { display: none !important; } .hamburger { display: flex !important; margin-left: auto; } .footer-top { grid-template-columns: 1fr !important; } }
+@media (max-width: 480px) { .logo-text h1 { font-size: 18px; } .logo-text p { font-size: 8px; } .topbar { font-size: 11px; } }
+
+/* ============================================================
+   IMPROVED SECTION-TITLE & CATEGORY-HEADING UI
+============================================================ */
+
+/* Main Section Title */
+.section-title {
+  text-align: center;
+  margin-bottom: 24px !important;
+  margin-top: 0 !important;
+  position: relative;
+}
+.section-title h2 {
+  font-family: 'Playfair Display', serif !important;
+  font-size: clamp(26px, 4vw, 40px) !important;
+  font-weight: 700 !important;
+  color: var(--maroon) !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.2 !important;
+  margin-bottom: 10px !important;
+  position: relative;
+  display: inline-block;
+}
+.section-title h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--saffron), var(--gold));
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+.section-title p {
+  font-size: 15px !important;
+  color: var(--text-mid) !important;
+  max-width: 520px !important;
+  margin: 0 auto !important;
+  line-height: 1.65 !important;
+}
+
+/* Page Hero */
+.page-hero {
+  background: linear-gradient(135deg, #6b1a1a 0%, #3a0e0e 60%, #e8621a22 100%);
+  padding: 36px 24px 32px !important;
+  margin: 0 !important;
+  text-align: center;
+}
+.page-hero + .section {
+  padding-top: 8px !important;
+}
+.page-hero h2 {
+  font-family: 'Playfair Display', serif !important;
+  font-size: clamp(24px, 4.5vw, 44px) !important;
+  font-weight: 700 !important;
+  color: #ffd9a0 !important;
+  letter-spacing: 0.01em !important;
+  margin-bottom: 10px !important;
+  line-height: 1.2 !important;
+}
+.page-hero p {
+  font-size: 14.5px !important;
+  color: rgba(255,215,150,0.75) !important;
+  max-width: 600px !important;
+  margin: 0 auto !important;
+  line-height: 1.5 !important;
+}
+
+/* Category Heading — improved pill style */
+.category-heading {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+  padding: 18px 24px !important;
+  background: linear-gradient(135deg, #fff8f0, #fff3eb) !important;
+  border-left: 4px solid var(--saffron) !important;
+  border-radius: 0 14px 14px 0 !important;
+  box-shadow: 0 2px 12px rgba(232,98,26,0.08) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.category-heading::before {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(232,98,26,0.06), transparent 70%);
+  border-radius: 50%;
+}
+.category-icon {
+  font-size: 32px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+  width: 54px !important;
+  height: 54px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(232,98,26,0.10) !important;
+  border-radius: 14px !important;
+  border: 1.5px solid rgba(232,98,26,0.18) !important;
+}
+.category-heading > div h3 {
+  font-family: 'Playfair Display', serif !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: var(--maroon) !important;
+  margin: 0 0 4px 0 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.2 !important;
+}
+.category-count {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  color: var(--saffron) !important;
+  background: rgba(232,98,26,0.10) !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(232,98,26,0.2) !important;
+}
+.service-category {
+  margin-bottom: 48px !important;
+}
+@media (max-width: 600px) {
+  .category-heading { padding: 14px 16px !important; gap: 12px !important; }
+  .category-icon { width: 44px !important; height: 44px !important; font-size: 24px !important; }
+  .category-heading > div h3 { font-size: 18px !important; }
+}
+</style>
+  
+</head>
+<body>
+<div class="topbar">
+Book Verified Pandit Ji for Puja, Hawan, Katha &amp; Astrology
+  <span>•</span> Pan-India Service <span>•</span> 4.8★ Rated
+</div>
+<header>
+  <div class="container navbar">
+  <a href="index.html" class="logo">
+  <img src="Images/logo.jpeg" alt="Mangal Bhav Logo">
+  <div class="logo-text">
+    <h1>MANGAL BHAV</h1>
+    <p>PEACE • PROSPERITY • PROTECTION</p>
+  </div>
+</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="Services.html" class="active">Vedic Puja</a>
+      <a href="Pandit_ji.html">Pandit Booking</a>
+	  <a href="Temple.html">Temple</a>
+      <a href="About.html">About</a>
+      <a href="Contact_Us.html">Contact</a>
+      <a href="https://app.mangalbhav.com" target="_blank" class="nav-cta">Login→</a>
+      <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="nav-app android-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zm-11.046 0a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zM14.386 2.027l.844-1.574a.197.197 0 0 0-.349-.185l-.855 1.594A5.97 5.97 0 0 0 12 1.5c-.703 0-1.38.12-2.026.362L9.12.268a.197.197 0 0 0-.35.185l.844 1.574C7.891 2.92 6.75 4.617 6.75 6.6H17.25c0-1.983-1.141-3.68-2.864-4.573zM9.75 4.95a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zm4.5 0a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zM6.75 17.4c0 .828.672 1.5 1.5 1.5h.75v2.55a.92.92 0 0 0 1.84 0V18.9h2.32v2.55a.92.92 0 0 0 1.84 0V18.9h.75c.828 0 1.5-.672 1.5-1.5V7.5H6.75v9.9z"/></svg>
+        Android
+      </a>
+      <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="nav-app ios-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS
+      </a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">Home</a>
+  <a href="Services.html" class="active">Vedic Puja</a>
+  <a href="Pandit_ji.html">Pandit Booking</a>
+    <a href="Temple.html">Temple</a>
+  <a href="About.html">About</a>
+  <a href="Contact_Us.html">Contact</a>
+  <a href="https://app.mangalbhav.com" target="_blank" class="nav-cta-mob">Login →</a>
+  <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="nav-app-mob android-mob">🤖 Android</a>
+  <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="nav-app-mob ios-mob"> iOS</a>
+</div>
+
+  <!-- HEADER -->
+
+<!-- HEADER -->
+
+
+<!-- MOBILE NAV -->
+
+  <section class="page-hero">
+    <div class="container">
+      <h2>Popular Spiritual Services</h2>
+  <p>Book spiritual rituals and puja services online with experienced and verified Pandit Ji.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+<!-- Category 0: Kaal Sarp Dosh Pooja in Ujjain (Hindi / English combined) -->
+<div class="service-category">
+  <div class="category-heading">
+   <div>
+      <h3>Ujjain Vedic Pooja Services</h3>
+      <span class="category-count">7 POOJAS · 2 LANGUAGES</span>
+    </div>
+  </div>
+  <div class="services-grid services-grid-wide">
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/Kaal_sarp.png" alt="Kaal Sarp Dosh Pooja in Ujjain - Hindi">
+      <div class="service-content">
+        <h3>काल सर्प दोष पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">उज्जैन में सत्यापित पंडितों द्वारा रुद्राभिषेक और हवन सहित प्रामाणिक काल सर्प दोष निवारण पूजा बुक करें... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">उज्जैन में सत्यापित पंडितों द्वारा रुद्राभिषेक और हवन सहित प्रामाणिक काल सर्प दोष निवारण पूजा बुक करें। लाइव वीडियो पूजा, घर बैठे प्रसाद और पारदर्शी मूल्य निर्धारण के साथ राहु-केतु के दुष्प्रभावों को दूर करें और शांति, समृद्धि व सुरक्षा प्राप्त करें। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="kaal_sarp_dosh_pooja_in_ujjain_Hindi.html" class="btn">अभी बुक करें</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Kaal Sarp Dosh Pooja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">Book an authentic Kaal Sarp Dosh Nivaran Pooja in Ujjain with verified pandits, complete with Rudrabhishek and Havan.... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Book an authentic Kaal Sarp Dosh Nivaran Pooja in Ujjain with verified pandits, complete with Rudrabhishek and Havan. Live video puja, doorstep prasad, and transparent pricing help remove the ill effects of Rahu-Ketu and bring peace, prosperity, and protection. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="kaal_sarp_dosh_pooja_in_ujjain_English.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/Mangal_dosh.png" alt="mangal dosh pooja in ujjain Hindi">
+      <div class="service-content">
+        <h3>मंगल दोष पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">पौराणिक मान्यता है कि मंगल ग्रह की उत्पत्ति स्वयं उज्जैन में, शिप्रा नदी के तट पर स्थित मंगलनाथ मंदिर से हुई थी। यही कारण है कि मंगल दोष और मंगल दोष निवारण पूजा के लिए यह स्थान सबसे शुभ माना जाता है।.... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">पौराणिक मान्यता है कि मंगल देव का प्राकट्य उज्जैन की इसी पवित्र भूमि पर हुआ था — यही वजह है कि मंगलनाथ मंदिर, मंगल दोष पूजा और मांगलिक शांति अनुष्ठान के लिए सबसे प्रामाणिक स्थल माना जाता है। यहां हर पूजा शुद्ध वैदिक विधि-विधान से, शास्त्रों में बताए गए क्रम के अनुसार ही संपन्न कराई जाती है। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="mangal_dosh_pooja_in_ujjain_Hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Mangal Dosh Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">According to ancient tradition, Mars (Mangal Graha) itself originated in Ujjain, at the Mangalnath Mandir on the banks of the Shipra River....<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">According to ancient tradition, Mars (Mangal Graha) itself originated in Ujjain, at the Mangalnath Mandir on the banks of the Shipra River. This is why the temple is considered the most auspicious site for Manglik Dosh and Mangal Dosh Nivaran Puja.<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="mangal_dosh_pooja_in_ujjain_english.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/pitradosh_1.png" alt="mangal dosh pooja in ujjain Hindi">
+      <div class="service-content">
+        <h3>पितृ दोष पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">जब परिवार के पितर (पूर्वज) अतृप्त रह जाते हैं — किसी अकाल मृत्यु के कारण, या अधूरे रह गए संस्कारों के चलते — तो ज्योतिष शास्त्र में इसे पितृ दोष कहा जाता है।....<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जब परिवार के पितर (पूर्वज) अतृप्त रह जाते हैं — किसी अकाल मृत्यु के कारण, या अधूरे रह गए संस्कारों के चलते — तो ज्योतिष शास्त्र में इसे पितृ दोष कहा जाता है। शिप्रा नदी के तट पर स्थित सिद्धवट, उज्जैन में सदियों से नारायण बलि, त्रिपिंडी श्राद्ध और पिंड दान की विधि संपन्न होती आई है।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="pitru_dosh_puja_narayan_bali_tripindi_shraddha_pind_daan_ujjain_hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Pitru Dosh Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">When a family's ancestors (pitras) remain unsettled — due to an untimely death, or rites that were never completed — Vedic tradition calls this Pitru Dosh...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">When a family's ancestors (pitras) remain unsettled — due to an untimely death, or rites that were never completed — Vedic tradition calls this Pitru Dosh. At Siddhavat, the sacred banyan on the banks of the Shipra river in Ujjain, priests have performed Narayan Bali, Tripindi Shraddha and Pind Daan for generations.<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="pitru_dosh_puja_narayan_bali_tripindi_shraddha_pind_daan_ujjain_english.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/Navgrah.png" alt="Navagraha Shanti Puja">
+      <div class="service-content">
+        <h3>नवग्रह शांति पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">जब जन्म कुंडली में कोई ग्रह कमजोर, पीड़ित या वक्री स्थिति में हो — चाहे वह शनि की साढ़ेसाती हो, राहु-केतु की उलझन हो, या मंगल-बुध का असंतुलन — तो काम, सेहत और रिश्तों में बार-बार रुकावटें महसूस होने लगती हैं।....<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जब जन्म कुंडली में कोई ग्रह कमजोर, पीड़ित या वक्री स्थिति में हो — चाहे वह शनि की साढ़ेसाती हो, राहु-केतु की उलझन हो, या मंगल-बुध का असंतुलन — तो काम, सेहत और रिश्तों में बार-बार रुकावटें महसूस होने लगती हैं। ज्योतिष में इसे ग्रह दोष कहा जाता है। शिप्रा नदी के तट पर स्थित त्रिवेणी के नवग्रह मंदिर, उज्जैन में सदियों से नवग्रह शांति पूजा संपन्न होती आई है। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="navagraha_shanti_puja_ujjain_hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Navagraha Shanti Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">When a planet in your birth chart is weak, afflicted or retrograde — whether it's Shani's Sade Sati, the confusion of Rahu-Ketu, or an imbalance between Mangal and Budh...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">When a planet in your birth chart is weak, afflicted or retrograde — whether it's Shani's Sade Sati, the confusion of Rahu-Ketu, or an imbalance between Mangal and Budh — you start to feel repeated obstacles in work, health and relationships. In astrology this is called Graha Dosh.<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="navagraha_shanti_puja_ujjain_english.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/rudrabhishek_puja_ujjain_Image.jpg" alt="Navagraha Shanti Puja">
+      <div class="service-content">
+        <h3>रुद्राभिषेक पूजा(उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">जब जीवन में शनि की साढ़ेसाती, राहु-केतु की महादशा या किसी और ग्रह की पीड़ा के कारण काम, सेहत और मन की शांति बार-बार भंग होने लगे....<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जब जीवन में शनि की साढ़ेसाती, राहु-केतु की महादशा या किसी और ग्रह की पीड़ा के कारण काम, सेहत और मन की शांति बार-बार भंग होने लगे, तो शास्त्रों में भगवान शिव के रुद्राभिषेक को सबसे प्रभावी उपायों में गिना जाता है। भारत के 12 ज्योतिर्लिंगों में से एक<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">....कम पढ़ें</a></span></p>
+          <a href="rudrabhishek_puja_ujjain_hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Rudrabhishek Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">When Shani's Sade Sati, the Mahadasha of Rahu-Ketu, or the affliction of any other planet repeatedly disturbs your career...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">When Shani's Sade Sati, the Mahadasha of Rahu-Ketu, or the affliction of any other planet repeatedly disturbs your career, health and peace of mind, the scriptures regard Lord Shiva's Rudrabhishek as one of the most powerful remedies.<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="rudrabhishek_puja_ujjain_english.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/SatyanarayanPooja_1.png" alt="Navagraha Shanti Puja">
+      <div class="service-content">
+        <h3>श्री सत्यनारायण पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">"सत्य ही नारायण है" — इसी भाव के साथ भगवान विष्णु के इस स्वरूप की पूजा घर में सुख-शांति और मनोकामना पूर्ति के लिए सदियों से की जाती रही है...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">"सत्य ही नारायण है" — इसी भाव के साथ भगवान विष्णु के इस स्वरूप की पूजा घर में सुख-शांति और मनोकामना पूर्ति के लिए सदियों से की जाती रही है। पूर्णिमा हो, कोई नया संकल्प हो या बस मन में एक शुक्रिया कहने की इच्छा <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="satyanarayan_puja_Hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Shri Satyanarayan Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">A puja families turn to when a wish is fulfilled, a new home is entered, or simply to thank Bhagwan Vishnu for His grace...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">A puja families turn to when a wish is fulfilled, a new home is entered, or simply to thank Bhagwan Vishnu for His grace — Satyanarayan Puja is done with the panchamrit, the kalash, the five chapters of katha, and a warm aarti at the end.<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="satyanarayan_puja_Hindi.html" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card service-card-combined">
+      <img src="Images/Service/Mahamrityunjaya.png" alt="Navagraha Shanti Puja">
+      <div class="service-content">
+        <h3>महामृत्युंजय जाप पूजा (उज्जैन)</h3>
+        <div class="cta-row">
+          <p><span class="desc-short">जब कोई गंभीर या पुरानी बीमारी बार-बार परेशान करे, ऑपरेशन से पहले मन में भय बना रहे, या परिवार में किसी के स्वास्थ्य को लेकर लगातार चिंता बनी रहे...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जब कोई गंभीर या पुरानी बीमारी बार-बार परेशान करे, ऑपरेशन से पहले मन में भय बना रहे, या परिवार में किसी के स्वास्थ्य को लेकर लगातार चिंता बनी रहे — तो शास्त्रों में इसका उपाय महामृत्युंजय मंत्र के जाप को बताया गया है। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+          <a href="maha_mrityunjaya_jaap_ujjain_hindi.html" class="btn">Book Now</a>
+        </div>
+
+        <div class="lang-divider"></div>
+
+        <h3 class="eng-title">Maha Mrityunjaya Jaap Puja (Ujjain)</h3>
+        <p class="eng-para"><span class="desc-short">When a serious or chronic illness keeps troubling you, fear lingers before an operation, or worry over a family member's health never seems to go away...<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">When a serious or chronic illness keeps troubling you, fear lingers before an operation, or worry over a family member's health never seems to go away — the scriptures point to one remedy: chanting the Maha Mrityunjaya Mantra.  <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.eng-para .desc-full').style.display='none'; this.closest('.service-content').querySelector('.eng-para .desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="maha_mrityunjaya_jaap_ujjain_english.html" class="btn">Book Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category 0.5: 12 Jyotirlinga Yatra -->
+<div class="service-category">
+  <div class="category-heading">
+    <span class="category-icon">🔱</span>
+    <div>
+      <h3><a href="https://www.claudeusercontent.com/12-jyotirlinga.html" target="_blank">12 ज्योतिर्लिंग</a></h3>
+      <span class="category-count">4 ज्योतिर्लिंग उपलब्ध</span>
+    </div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <img src="Images/Service/Somnath_Temple.jpg" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री सोमनाथ ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">द्वादश ज्योतिर्लिंगों में प्रथम श्री सोमनाथ महादेव के पावन धाम में शास्त्रोक्त वैदिक रुद्राभिषेक एवं दर्शन पूजा बुक करें... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">द्वादश ज्योतिर्लिंगों में प्रथम श्री सोमनाथ महादेव के पावन धाम में वेद-वेदांगों के विद्वान आचार्यों द्वारा आपके नाम एवं गोत्र से वैदिक रुद्राभिषेक, महामृत्युंजय जप, शिवपूजन एवं विशेष संकल्प सम्पन्न कराया जाता है। लाइव वीडियो दर्शन, पूजित प्रसाद एवं डिजिटल प्रमाण पत्र के साथ। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="somnath_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/nageshwar.png" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री नागेश्वर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ भगवान शिव ने भक्त सुप्रिय की रक्षा हेतु दारुक राक्षस का संहार कर "नागेश्वर" रूप में स्वयं प्रकट होने का वरदान दिया... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ भगवान शिव ने भक्त सुप्रिय की रक्षा हेतु दारुक राक्षस का संहार कर "नागेश्वर" रूप में स्वयं प्रकट होने का वरदान दिया… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="nageshwar_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Mahakaleshwar.png" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री महाकालेश्वर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ स्वयं काल के अधिपति भगवान शिव, बालक भक्त की रक्षा हेतु "महाकाल" रूप में प्रकट हुए और सदा के लिए उज्जैन नगरी में विराजमान हो गए... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ स्वयं काल के अधिपति भगवान शिव, बालक भक्त की रक्षा हेतु "महाकाल" रूप में प्रकट हुए और सदा के लिए उज्जैन नगरी में विराजमान हो गए… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="mahakaleshwar_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/omkareshwar.png" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री ओंकारेश्वर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ नर्मदा नदी की गोद में स्वयं 'ॐ' आकार धारण करके भगवान शिव प्रकट हुए… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ नर्मदा नदी की गोद में स्वयं 'ॐ' आकार धारण करके भगवान शिव प्रकट हुए… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="omkareshwar_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+     <div class="service-card">
+      <img src="Images/Service/Bhimashankar.png" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री भीमाशंकर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ भगवान शिव ने स्वयं दैत्य त्रिपुरासुर का संहार कर भक्तों की रक्षा की थी… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ भगवान शिव ने स्वयं दैत्य त्रिपुरासुर का संहार कर भक्तों की रक्षा की थी… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठानयह केवल एक पूजा नहीं, बल्कि भगवान शिव की दिव्य कृपा प्राप्त करने का वैदिक आध्यात्मिक अनुष्ठान है। ॥ हर हर महादेव ॥<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="bhimashankar_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+     <div class="service-card">
+      <img src="Images/Service/Baidyanath.png" alt="Somnath Jyotirlinga Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री वैद्यनाथ ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ स्वयं भगवान शिव ने रावण को स्वस्थ कर 'वैद्यनाथ' रूप में चिकित्सा का वरदान दिया…<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ स्वयं भगवान शिव ने रावण को स्वस्थ कर 'वैद्यनाथ' रूप में चिकित्सा का वरदान दिया… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="vaidyanath_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+      <div class="service-card">
+      <img src="Images/Service/Kedarnath.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री केदारनाथ ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ पांडवों ने स्वयं भगवान शिव की आराधना कर मोक्ष प्राप्त किया था…<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ पांडवों ने स्वयं भगवान शिव की आराधना कर मोक्ष प्राप्त किया था… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="kedarnath_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/KashiVishwanath.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री काशी विश्वनाथ ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जिस मोक्षदायिनी काशी नगरी को स्वयं भगवान शिव ने अपना निवास चुना…<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जिस मोक्षदायिनी काशी नगरी को स्वयं भगवान शिव ने अपना निवास चुना… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="kashi_vishwanath_jyotirlinga_darshan_pooja.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+       <div class="service-card">
+      <img src="Images/Service/Trimbakeshwar.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री त्र्यंबकेश्वर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ पवित्र गोदावरी नदी — दक्षिण गंगा — स्वयं ब्रह्मगिरि पर्वत से प्रकट होकर बहती है….<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ पवित्र गोदावरी नदी — दक्षिण गंगा — स्वयं ब्रह्मगिरि पर्वत से प्रकट होकर बहती है… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="trimbakeshwar_jyotirlinga_darshan_pooja.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+     <div class="service-card">
+      <img src="Images/Service/Grishneshwar.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री घृष्णेश्वर ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जिस पावन भूमि पर भक्तिन घुश्मा की अटूट शिवभक्ति से स्वयं भगवान शिव प्रकट हुए….<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जिस पावन भूमि पर भक्तिन घुश्मा की अटूट शिवभक्ति से स्वयं भगवान शिव प्रकट हुए… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान। <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="grishneshwar_jyotirlinga_darshan_pooja.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Mallikarjuna.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री मल्लिकार्जुन ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहां भगवान शिव स्वयं कार्तिकेय को खोजते हुए माता पार्वती सहित पधारे और श्रीशैलम पर्वत पर मल्लिकार्जुन स्वरूप में सदा के लिए विराजमान हो गए।….<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहां भगवान शिव स्वयं कार्तिकेय को खोजते हुए माता पार्वती सहित पधारे और श्रीशैलम पर्वत पर मल्लिकार्जुन स्वरूप में सदा के लिए विराजमान हो गए।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="grishneshwar_jyotirlinga_darshan_pooja.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Rameshwaram.png" alt="Kedarnath Darshan Pooja">
+      <div class="service-content">
+        <h3>श्री रामेश्वरम ज्योतिर्लिंग दर्शन-पूजा</h3>
+        <p><span class="desc-short">जहाँ स्वयं भगवान श्रीराम ने लंका विजय से पूर्व शिवलिंग स्थापित कर आराधना की थी… <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">और पढ़ें</a></span><span class="desc-full" style="display:none;">जहाँ स्वयं भगवान श्रीराम ने लंका विजय से पूर्व शिवलिंग स्थापित कर आराधना की थी… वहीं आपके नाम एवं गोत्र से होगा शास्त्रोक्त वैदिक अनुष्ठान।<a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">कम पढ़ें</a></span></p>
+        <a href="rameshwaram_jyotirlinga_darshan_pooja_Hindi.html" class="btn">अभी बुक करें</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category 1: Sanskar & Lifecycle -->
+<div class="service-category">
+  <div class="category-heading">
+    <span class="category-icon">🌱</span>
+    <div>
+      <h3>Birth Sanskar</h3>
+      <span class="category-count">4 RITUALS</span>
+    </div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <img src="Images/Service/AnnaprashanCeremony.png" alt="Annaprashan Ceremony">
+      <div class="service-content">
+        <h3>Annaprashan Ceremony</h3>
+        <p>Annaprashan marks a baby's first intake of solid food with Vedic rituals.</p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=2&serviceid=25" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/PunsavanSanskar.png" alt="Garbhadharan Sanskar">
+      <div class="service-content">
+        <h3>Punsavan Sanskar</h3>
+        <p><span class="desc-short">The Punsavan Sanskar is the second sanskar for the baby in your womb and is perf... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">The Punsavan Sanskar is the second sanskar for the baby in your womb and is performed after the conception ceremony (Garbhadhaan Sanskar) <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=1&serviceid=22" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Seemantonnayana(GodhBharai).png" alt="Antim Sanskar">
+      <div class="service-content">
+        <h3>Seemantonnayana (Godh Bharai)</h3>
+        <p>Seemantonnayana is a prenatal ceremony blessing the expecting mother.</p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=1&serviceid=23" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+       <div class="service-card">
+      <img src="Images/Service/BabyShowerPuja.png" alt="Antim Sanskar">
+      <div class="service-content">
+        <h3>Baby Shower Puja</h3>
+        <p><span class="desc-short">Baby Shower Puja is conducted to bless the expecting mother and pray for a healt... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Baby Shower Puja is conducted to bless the expecting mother and pray for a healthy baby and safe delivery.Safe delivery of the mother and baby. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=1&serviceid=38" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category 2: Vivah & Celebrations -->
+<div class="service-category">
+  <div class="category-heading">
+    <span class="category-icon">💍</span>
+    <div>
+      <h3>Childhood Sanskar</h3>
+      <span class="category-count">4 RITUAL</span>
+    </div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <img src="Images/Service/NaamkaranCeremony.png" alt="Engagement Ceremony Puja">
+      <div class="service-content">
+        <h3>Naamkaran Ceremony</h3>
+        <p><span class="desc-short">Naamkaran is the traditional Hindu naming ceremony of a newborn child, performed... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Naamkaran is the traditional Hindu naming ceremony of a newborn child, performed to bless the baby with a meaningful name and a prosperous future. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=2&serviceid=24" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+      <div class="service-card">
+      <img src="Images/Service/AnnaprashanCeremony.png" alt="Annaprashan Ceremony">
+      <div class="service-content">
+        <h3>Annaprashan Ceremony</h3>
+        <p><span class="desc-short">This sacred ritual has been performed by Hindu families for thousands of years.... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">This sacred ritual has been performed by Hindu families for thousands of years. It invokes divine blessings, purifies the surroundings, and brings peace, prosperity, and protection to all family members. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=2&serviceid=25" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+     <div class="service-card">
+      <img src="Images/Service/MundanSanskar.png" alt="Annaprashan Ceremony">
+      <div class="service-content">
+        <h3>Mundan Sanskar</h3>
+        <p><span class="desc-short">This sacred ritual has been performed by Hindu families for thousands of years.... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">This sacred ritual has been performed by Hindu families for thousands of years. It invokes divine blessings, purifies the surroundings, and brings peace, prosperity, and protection to all family members. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=2&serviceid=26" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+       <div class="service-card">
+      <img src="Images/Service/UpanayanCeremony.png" alt="Annaprashan Ceremony">
+      <div class="service-content">
+        <h3>Upanayan Ceremony</h3>
+        <p><span class="desc-short">This sacred ritual has been performed by Hindu families for thousands of years.... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">This sacred ritual has been performed by Hindu families for thousands of years. It invokes divine blessings, purifies the surroundings, and brings peace, prosperity, and protection to all family members. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=2&serviceid=28" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category 3: Griha & Puja -->
+<div class="service-category">
+  <div class="category-heading">
+    <span class="category-icon">🏠</span>
+    <div>
+      <h3>House & Property Rituals</h3>
+      <span class="category-count">4 RITUALS</span>
+    </div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <img src="Images/Service/GrihaPraveshPuja.png" alt="Griha Pravesh Puja">
+      <div class="service-content">
+        <h3>Griha Pravesh Puja</h3>
+        <p><span class="desc-short">Griha Pravesh Puja is a traditional housewarming ritual performed to seek peace,... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Griha Pravesh Puja is a traditional housewarming ritual performed to seek peace, prosperity, and positive energy in a new home. It brings happiness and removes negative influences from the house. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&serviceid=29" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/VastuShantiPuja.jpeg" alt="Vastu Shanti Puja">
+      <div class="service-content">
+        <h3>Vastu Shanti Puja</h3>
+        <p><span class="desc-short">Vastu Shanti Puja is performed to balance the five elements of nature in your ho... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Vastu Shanti Puja is performed to balance the five elements of nature in your home and remove Vastu doshas. It invokes divine blessings, purifies the surroundings, and brings peace and prosperity. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&serviceid=32" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Bhoomi Puja.jpg" alt="Bhoomi Puja">
+      <div class="service-content">
+        <h3>Bhoomi Puja</h3>
+        <p><span class="desc-short">Bhoomi Puja is performed before beginning construction of a new home or building... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">Bhoomi Puja is performed before beginning construction of a new home or building. This sacred ritual seeks blessings from Mother Earth and ensures a prosperous and obstacle-free construction. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&serviceid=29" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+    <div class="service-card">
+      <img src="Images/Service/Officepuja.png" alt="Office / Shop Opening Puja">
+      <div class="service-content">
+        <h3>Office / Shop Opening Puja</h3>
+        <p><span class="desc-short">A sacred ceremony to inaugurate a new office or shop with divine blessings. This... <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-short').style.display='none'; this.closest('.service-content').querySelector('.desc-full').style.display='inline';">Read more</a></span><span class="desc-full" style="display:none;">A sacred ceremony to inaugurate a new office or shop with divine blessings. This ritual attracts prosperity, success, and positive energy to ensure a thriving business environment. <a href="javascript:void(0)" class="read-more-link" onclick="this.closest('.service-content').querySelector('.desc-full').style.display='none'; this.closest('.service-content').querySelector('.desc-short').style.display='inline';">Read less</a></span></p>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&serviceid=32" target="_blank" class="btn">Book Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <div class="banner">
+        <h2>Experience Divine Spiritual Services Online</h2>
+        <p>
+          Mangal Bhav connects devotees with verified Pandit Ji for trusted spiritual rituals, astrology consultation, and online puja booking across India.
+        </p>
+        <a href="javascript:void(0)" class="btn" style="background:#fff;color:#ff6a00;pointer-events:none;cursor:default;">Download Mangal Bhav App</a>
+    <div class="footer-app-badges" style="display:flex; justify-content:center; align-items:center;">
+                    <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="store-badge">
+                        <span class="badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.523 15.341a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zm-11.046 0a.92.92 0 0 1-.92-.92V9.58a.92.92 0 0 1 1.84 0v4.841a.92.92 0 0 1-.92.92zM14.386 2.027l.844-1.574a.197.197 0 0 0-.349-.185l-.855 1.594A5.97 5.97 0 0 0 12 1.5c-.703 0-1.38.12-2.026.362L9.12.268a.197.197 0 0 0-.35.185l.844 1.574C7.891 2.92 6.75 4.617 6.75 6.6H17.25c0-1.983-1.141-3.68-2.864-4.573zM9.75 4.95a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zm4.5 0a.45.45 0 1 1 0-.9.45.45 0 0 1 0 .9zM6.75 17.4c0 .828.672 1.5 1.5 1.5h.75v2.55a.92.92 0 0 0 1.84 0V18.9h2.32v2.55a.92.92 0 0 0 1.84 0V18.9h.75c.828 0 1.5-.672 1.5-1.5V7.5H6.75v9.9z"/>
+                            </svg>
+                        </span>
+                        <span class="badge-text">
+                            <span class="badge-sub">Get it on</span>
+                            <span class="badge-name">Google Play</span>
+                        </span>
+                    </a>
+                    <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="store-badge">
+                        <span class="badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                            </svg>
+                        </span>
+                        <span class="badge-text">
+                            <span class="badge-sub">Download on the</span>
+                            <span class="badge-name">App Store</span>
+                        </span>
+                    </a>
+                </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+
+
+  
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <img src="Images/logo.jpeg" alt="Mangal Bhav Logo">
+          <div class="logo-text">
+            <h5>MANGAL BHAV</h5>
+            <h5>PEACE • PROSPERITY • PROTECTION</h5>
+          </div>
+        </div>
+        <p>Trusted platform for verified pandit booking, online puja services, astrology consultation, and spiritual guidance across India.</p>
+        <div class="footer-social-wrap">
+          <a href="https://www.instagram.com/mangal_bhav_official/" target="_blank" class="footer-social" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61575446319952" target="_blank" class="footer-social" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@mangal_bhav_official" target="_blank" class="footer-social" aria-label="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+        </div>
+        <div class="footer-app-badges">
+          <a href="https://play.google.com/store/apps/details?id=mobile.mangalbhav.com" target="_blank" class="store-badge">
+            <span class="badge-icon">▶</span>
+            <span class="badge-text"><span class="badge-sub">Get it on</span><span class="badge-name">Google Play</span></span>
+          </a>
+          <a href="https://apps.apple.com/in/app/mangal-bhav/id6764030842" target="_blank" class="store-badge">
+            <span class="badge-icon"></span>
+            <span class="badge-text"><span class="badge-sub">Download on the</span><span class="badge-name">App Store</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="Services.html">Vedic Puja</a>
+        <a href="Pandit_ji.html">Pandit Booking</a>
+		  <a href="Temple.html">Temple</a>
+        <a href="About.html">About Us</a>
+        <a href="Contact_Us.html">Contact</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Login / Sign Up</a>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Online Puja Booking</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Astrology Consultation</a>
+        <a href="https://app.mangalbhav.com/openfindmandir" target="_blank">Temple Donation</a>
+        <a href="https://app.mangalbhav.com/open-find-pandit" target="_blank">Verified Pandit Booking</a>
+        <a href="https://app.mangalbhav.com/login" target="_blank">Hawan &amp; Yagya</a>
+        <a href="https://app.mangalbhav.com/pandit-list?categoryid=4&amp;serviceid=32" target="_blank">Vastu Consultation</a>
+        <a href="kaal_sarp_dosh_pooja_in_ujjain.html">Kaal Sarp Dosh Pooja</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>📧 mangalbhav09@gmail.com</p>
+        <p>📞 +91 8796917944</p>
+        <p>📍 L29, Connaught Place,<br>New Delhi – 110001, India</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mangal Bhav • Peace • Prosperity • Protection</span>
+      <span>Made with 🙏 for devotees across India</span>
+    </div>
+  </div>
+</footer>
+<script>
+  const ham = document.getElementById('hamburger');
+  const mob = document.getElementById('mobileNav');
+  ham.addEventListener('click', () => {
+    ham.classList.toggle('open');
+    mob.classList.toggle('open');
+    document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+  });
+  mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    ham.classList.remove('open');
+    mob.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+</script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ganga Jal Seva from Haridwar | Mangal Bhav</title>
+<meta name="description" content="Authentic Ganga Jal, 5 Mukhi Rudraksha, Prasad, Tulsi Mala, Roli & Samagri delivered to your doorstep across Delhi, Haryana, Punjab, UP & MP — every order packed on camera for 100% transparency, only ₹499.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --saffron:#FF7A1A;
+    --saffron-deep:#E85D04;
+    --maroon:#7A1F1F;
+    --maroon-deep:#5C1414;
+    --gold:#C9962C;
+    --cream:#FFF7EC;
+    --cream-2:#FCEFDA;
+    --ink:#2B1810;
+    --ink-soft:#5B443A;
+    --line:#EBD9BE;
+    --white:#FFFFFF;
+    --shadow: 0 10px 30px rgba(122,31,31,0.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    color:var(--maroon-deep);
+    margin:0;
+  }
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--saffron-deep);font-weight:700;
+  }
+
+  /* ===== Top strip ===== */
+  .topstrip{background:var(--maroon-deep);color:#F6E3C9;font-size:13px;text-align:center;padding:8px 16px;}
+  .topstrip strong{color:#FFD98A;}
+
+  /* ===== Nav ===== */
+  header.nav{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;}
+  .navrow{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1120px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .om{font-size:26px;}
+  .brand .name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:var(--maroon-deep);line-height:1;}
+  .brand .tag{font-size:9.5px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;}
+  .navlinks{display:flex;gap:26px;font-size:14.5px;font-weight:500;color:var(--ink-soft);}
+  .navlinks a:hover{color:var(--saffron-deep);}
+  .navcta{background:var(--saffron);color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;font-size:14px;}
+  @media(max-width:820px){.navlinks{display:none;}}
+
+  /* ===== Hero ===== */
+  .hero{
+    position:relative;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(255,122,26,0.16), transparent 60%),
+      radial-gradient(700px 400px at 5% 10%, rgba(201,150,44,0.14), transparent 60%),
+      var(--cream);
+    padding:64px 0 56px;
+    overflow:hidden;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:36px;}}
+  .hero h1{font-size:44px;line-height:1.1;margin:14px 0 18px;}
+  .hero h1 em{font-style:normal;color:var(--saffron-deep);}
+  .hero p.lede{font-size:16.5px;color:var(--ink-soft);line-height:1.7;max-width:520px;margin-bottom:26px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 26px;border-radius:9px;font-weight:600;font-size:15px;
+    border:none;cursor:pointer;
+  }
+  .btn-primary{background:linear-gradient(135deg,var(--saffron),var(--saffron-deep));color:#fff;box-shadow:var(--shadow);}
+  .btn-primary:hover{filter:brightness(1.04);}
+  .btn-ghost{background:transparent;border:1.5px solid var(--maroon);color:var(--maroon-deep);}
+  .trust-row{display:flex;gap:22px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);}
+  .trust-row span{display:flex;align-items:center;gap:6px;}
+
+  /* Seal graphic */
+  .seal-wrap{display:flex;justify-content:center;}
+  .seal{
+    width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #8B2A2A, var(--maroon-deep) 70%);
+    border:6px double #E7B968;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    color:#FCEFDA;position:relative;box-shadow:0 18px 40px rgba(122,31,31,0.28);
+  }
+  .seal::before{
+    content:'';position:absolute;inset:14px;border:1px dashed rgba(252,239,218,0.5);border-radius:50%;
+  }
+  .seal .inner{padding:18px;}
+  .seal .om{font-size:34px;display:block;margin-bottom:6px;}
+  .seal .line1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:17px;letter-spacing:.05em;}
+  .seal .line2{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#FFD98A;margin-top:6px;}
+  .seal .line3{font-size:9px;letter-spacing:.1em;color:rgba(252,239,218,0.75);margin-top:10px;}
+
+  /* ===== Section shell ===== */
+  section{padding:64px 0;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 42px;}
+  .section-head h2{font-size:34px;margin-top:10px;}
+  .section-head p{color:var(--ink-soft);font-size:15px;margin-top:12px;line-height:1.7;}
+
+  /* ===== Kit items ===== */
+  .kit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media(max-width:900px){.kit-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.kit-grid{grid-template-columns:1fr;}}
+  .kit-card{
+    background:var(--white);border:1px solid var(--line);border-radius:14px;
+    padding:26px 22px;text-align:center;transition:transform .2s, box-shadow .2s;
+  }
+  .kit-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+  .kit-card .ic{font-size:34px;margin-bottom:12px;}
+  .kit-card h3{font-size:19px;margin-bottom:8px;}
+  .kit-card p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0;}
+
+  /* ===== Price block ===== */
+  .price-band{background:linear-gradient(135deg,var(--maroon-deep),var(--maroon) 60%,#8C3A1E);}
+  .price-card{
+    background:var(--white);border-radius:18px;padding:44px 40px;
+    display:grid;grid-template-columns:1fr auto;gap:36px;align-items:center;
+    box-shadow:0 24px 60px rgba(0,0,0,0.25);
+  }
+  @media(max-width:760px){.price-card{grid-template-columns:1fr;text-align:center;}}
+  .price-card .lbl{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--saffron-deep);font-weight:700;}
+  .price-card h3{font-size:26px;margin:8px 0 14px;color:var(--maroon-deep);}
+  .price-list{list-style:none;padding:0;margin:0;font-size:14.5px;color:var(--ink-soft);}
+  .price-list li{padding:5px 0;display:flex;gap:8px;align-items:baseline;}
+  .price-list li::before{content:'✓';color:var(--saffron-deep);font-weight:700;}
+  @media(max-width:760px){.price-list li{justify-content:center;}}
+  .price-tag{text-align:center;}
+  .price-tag .amt{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;color:var(--maroon-deep);line-height:1;}
+  .price-tag .sub{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+  .price-tag .btn{margin-top:16px;width:100%;justify-content:center;}
+
+  /* ===== Coverage ===== */
+  .coverage-band{background:var(--cream-2);}
+  .state-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  .state-chip{
+    background:var(--white);border:1px solid var(--line);border-radius:999px;
+    padding:12px 24px;font-weight:600;font-size:15px;color:var(--maroon-deep);
+    display:flex;align-items:center;gap:8px;
+  }
+
+  /* ===== Transparency timeline ===== */
+  .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  @media(max-width:900px){.timeline{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.timeline{grid-template-columns:1fr;}}
+  .tl-step{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:26px 20px;position:relative;}
+  .tl-step .num{
+    width:34px;height:34px;border-radius:50%;background:var(--maroon-deep);color:#FCEFDA;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;margin-bottom:14px;
+  }
+  .tl-step h3{font-size:17px;margin-bottom:6px;}
+  .tl-step p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0;}
+  .tl-badge{
+    display:inline-flex;align-items:center;gap:8px;background:#FFF1DE;border:1px solid var(--gold);
+    color:var(--maroon-deep);font-size:12.5px;font-weight:600;padding:8px 16px;border-radius:999px;margin-top:26px;
+  }
+
+  /* ===== Video demo ===== */
+  .video-demo{
+    margin-top:46px;background:var(--white);border:1px solid var(--line);border-radius:18px;
+    padding:32px;display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:center;
+  }
+  @media(max-width:820px){.video-demo{grid-template-columns:1fr;text-align:center;}}
+  .video-demo-text h3{font-size:24px;margin:10px 0 10px;}
+  .video-demo-text p{font-size:14px;color:var(--ink-soft);line-height:1.7;max-width:420px;}
+  @media(max-width:820px){.video-demo-text p{margin:0 auto;}}
+  .video-frame{
+    position:relative;width:100%;max-width:300px;aspect-ratio:9/16;margin:0 auto;
+    border-radius:14px;overflow:hidden;box-shadow:var(--shadow);border:3px solid var(--cream-2);background:#000;
+  }
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+  /* ===== Order form ===== */
+  .order-band{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .order-card{
+    max-width:640px;margin:0 auto;background:var(--cream-2);border:1px solid var(--line);
+    border-radius:18px;padding:38px 34px;
+  }
+  @media(max-width:560px){.order-card{padding:28px 20px;}}
+  .order-card h2{font-size:28px;text-align:center;margin-bottom:6px;}
+  .order-card .sub{text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:26px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--maroon-deep);margin-bottom:6px;}
+  .field input,.field select{
+    width:100%;padding:12px 14px;border-radius:8px;border:1px solid var(--line);
+    font-family:'Poppins',sans-serif;font-size:14.5px;background:#fff;color:var(--ink);
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--saffron);border-color:transparent;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:520px){.row2{grid-template-columns:1fr;}}
+  .order-total{
+    display:flex;justify-content:space-between;align-items:center;
+    background:#fff;border:1px dashed var(--gold);border-radius:10px;padding:14px 18px;margin:18px 0 22px;font-weight:600;
+  }
+  .order-total .amt{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--maroon-deep);}
+  .order-card .submit-btn{width:100%;justify-content:center;font-size:16px;padding:15px;}
+  .order-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:14px;line-height:1.6;}
+  .confirm-box{
+    display:none;margin-top:20px;background:#EAF7EC;border:1px solid #9AD3A5;border-radius:10px;
+    padding:16px 18px;font-size:13.5px;color:#1F5A2A;
+  }
+  .confirm-box.show{display:block;}
+  .confirm-box b{display:block;margin-bottom:4px;color:#12421B;}
+
+  /* ===== Footer ===== */
+  footer{background:var(--maroon-deep);color:#EAD6B8;padding:40px 0 24px;}
+  footer .fgrid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;font-size:13.5px;}
+  footer a{color:#F6E3C9;}
+  footer .fbrand{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:6px;}
+  footer .fcol h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#D9A657;margin-bottom:10px;}
+  footer .fcol div{margin-bottom:6px;color:#E6CFA9;}
+  .fbottom{border-top:1px solid rgba(255,255,255,0.12);margin-top:30px;padding-top:18px;text-align:center;font-size:12px;color:#C9A87A;}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="topstrip">🕉️ <strong>Ganga Jal Seva</strong> — Sacred items collected on camera, sealed & sent to your home • Serving Delhi · Haryana · Punjab · UP · MP</div>
+
+<header class="nav">
+  <div class="navrow">
+    <a class="brand" href="https://mangalbhav.com/index.html">
+        <span class="om"> <img src="Images/logo.jpeg" alt="Mangal Bhav Logo"></span>
+      <div>
+        <div class="name">MANGAL BHAV</div>
+        <div class="tag">Peace · Prosperity · Protection</div>
+      </div>
+    </a>
+    <nav class="navlinks">
+      <a href="https://mangalbhav.com/index.html">Home</a>
+      <a href="https://mangalbhav.com/Services.html">Vedic Puja</a>
+      <a href="https://mangalbhav.com/Pandit_ji.html">Pandit Booking</a>
+      <a href="https://mangalbhav.com/Temple.html">Temple</a>
+      <a href="https://mangalbhav.com/Contact_Us.html">Contact</a>
+    </nav>
+    <a class="navcta" href="#order">Order Now →</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">🪔 Direct from the Ganga Ghats of Haridwar</span>
+      <h1>Sacred Jal & Samagri, <em>Packed On Camera</em>, Delivered to Your Door</h1>
+      <p class="lede">A complete Ganga Jal Seva kit — Ganga Jal, 5 Mukhi Rudraksha, Prasad, Tulsi Mala, Roli & Samagri — collected and sealed on video with your name, date and order number, so you see exactly what leaves Haridwar and reaches your home.</p>
+      <div class="hero-ctas">
+        <a href="#order" class="btn btn-primary">Order Your Kit — ₹499 →</a>
+        <a href="#transparency" class="btn btn-ghost">See How We Record It</a>
+      </div>
+      <div class="trust-row">
+        <span>🎥 Every order video recorded</span>
+        <span>🛡️ Name, date & order no. on record</span>
+        <span>🌍 Delhi · Haryana · Punjab · UP · MP</span>
+      </div>
+    </div>
+    <div class="seal-wrap">
+      <div class="seal">
+        <div class="inner">
+          <svg width="46" height="46" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 8px;display:block;">
+            <circle cx="18" cy="7" r="1.6" fill="#E7B968"/>
+            <circle cx="46" cy="5" r="1.3" fill="#E7B968"/>
+            <circle cx="32" cy="3" r="1.1" fill="#E7B968"/>
+            <path d="M32 14 C26 8 18 10 16 16 C22 18 28 18 32 14Z" fill="#9BB77E"/>
+            <path d="M32 14 C38 8 46 10 48 16 C42 18 36 18 32 14Z" fill="#9BB77E"/>
+            <path d="M32 14 C30 8 30 4 32 2 C34 4 34 8 32 14Z" fill="#9BB77E"/>
+            <circle cx="32" cy="14" r="6" fill="#C9962C"/>
+            <path d="M28.5 12.5 C30 11 34 11 35.5 12.5" stroke="#8A6A1E" stroke-width="0.9" fill="none" opacity="0.7"/>
+            <rect x="27" y="18" width="10" height="6" rx="2" fill="#E7B968"/>
+            <path d="M18 26 C18 22 46 22 46 26 C46 42 40 55 32 55 C24 55 18 42 18 26Z" fill="#E7B968"/>
+            <path d="M20 29 C20 42 26 51 32 51 C38 51 44 42 44 29" stroke="#B9832A" stroke-width="1.2" fill="none" opacity="0.6"/>
+            <path d="M22 26 C22 24 42 24 42 26" stroke="#B9832A" stroke-width="1" fill="none" opacity="0.5"/>
+          </svg>
+          <div class="line1">Haridwar Ganga Jal Seva</div>
+          <div class="line2">100% Video Verified</div>
+          <div class="line3">ORDER NO. · CUSTOMER NAME · DATE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="kit">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">🛕 Inside Your Kit</span>
+      <h2>Six Sacred Items, One Seva</h2>
+      <p>Every item is sourced, blessed and packed with care before it's shipped to your home.</p>
+    </div>
+    <div class="kit-grid">
+      <div class="kit-card reveal"><div class="ic">🪔</div><h3>Ganga Jal</h3><p>Sealed bottle of holy water, taken directly from the Ganga at Haridwar.</p></div>
+      <div class="kit-card reveal"><div class="ic">📿</div><h3>5 Mukhi Rudraksha</h3><p>Genuine five-faced Rudraksha bead, associated with Lord Shiva's blessings.</p></div>
+      <div class="kit-card reveal"><div class="ic">🍬</div><h3>Prasad</h3><p>Blessed prasad, offered and packed for you to receive at home.</p></div>
+      <div class="kit-card reveal"><div class="ic">🌿</div><h3>Tulsi Mala</h3><p>Sacred Tulsi bead mala, used for japa and daily worship.</p></div>
+      <div class="kit-card reveal"><div class="ic">🔴</div><h3>Roli</h3><p>Pure roli (kumkum) for tilak and everyday rituals.</p></div>
+      <div class="kit-card reveal"><div class="ic">🧺</div><h3>Samagri</h3><p>Essential pooja samagri to complete your rituals at home.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="price-band">
+  <div class="wrap">
+    <div class="price-card reveal">
+      <div>
+        <span class="lbl">Ganga Jal Seva Kit</span>
+        <h3>Everything you need, in one box</h3>
+        <ul class="price-list">
+          <li>Ganga Jal, Rudraksha, Prasad, Tulsi Mala, Roli & Samagri</li>
+          <li>Items collected & sealed on camera before dispatch</li>
+          <li>Your name, order number & date recorded with the packing video</li>
+          <li>Delivered across Delhi, Haryana, Punjab, UP & MP</li>
+        </ul>
+      </div>
+      <div class="price-tag">
+        <div class="amt">₹499</div>
+        <div class="sub">per kit, delivered</div>
+        <a href="#order" class="btn btn-primary">Order Now →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="coverage-band">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">🌍 Where We Deliver</span>
+      <h2>Currently Serving 5 States</h2>
+    </div>
+    <div class="state-row reveal">
+      <span class="state-chip">📍 Delhi</span>
+      <span class="state-chip">📍 Haryana</span>
+      <span class="state-chip">📍 Punjab</span>
+      <span class="state-chip">📍 Uttar Pradesh</span>
+      <span class="state-chip">📍 Madhya Pradesh</span>
+    </div>
+  </div>
+</section>
+
+<section id="transparency">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">🎥 100% Transparency Promise</span>
+      <h2>You See Exactly How Your Kit Is Packed</h2>
+      <p>Trust matters most for what enters your home for puja. That's why every single order is recorded, start to finish.</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-step reveal">
+        <div class="num">1</div>
+        <h3>Order Placed</h3>
+        <p>You submit your details and get a unique order number for your kit.</p>
+      </div>
+      <div class="tl-step reveal">
+        <div class="num">2</div>
+        <h3>Collected on Camera</h3>
+        <p>Your Ganga Jal & samagri are gathered on video, with your name, date and order number shown.</p>
+      </div>
+      <div class="tl-step reveal">
+        <div class="num">3</div>
+        <h3>Sealed & Packed</h3>
+        <p>The kit is sealed on camera immediately after collection, with nothing added or removed later.</p>
+      </div>
+      <div class="tl-step reveal">
+        <div class="num">4</div>
+        <h3>Shipped to You</h3>
+        <p>Your sealed kit is dispatched to your address across Delhi, Haryana, Punjab, UP or MP.</p>
+      </div>
+    </div>
+    <div class="video-demo reveal">
+        <div class="video-demo-text">
+            <h3 style="color:#7A1F1F; font-size:19px; font-weight:800; margin:0 0 18px 0; border-bottom:2px solid #FFC94A; padding-bottom:10px;">
+                हरिद्वार और हर की पौड़ी का सनातन धर्म में महत्व
+            </h3>
+
+            <ul style="list-style:none; margin:0; padding:0; color:#3A2A1D; font-size:16px; line-height:1.7;">
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">🙏</span>हरिद्वार सप्तपुरियों (7 पवित्र नगरों) में से एक है और मोक्षदायिनी नगरी मानी जाती है।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">🌊</span>हर की पौड़ी वह पवित्र घाट है जहाँ माँ गंगा पर्वतों से मैदानों में प्रवेश करती हैं।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">👣</span>मान्यता है कि भगवान विष्णु (हरि) के चरणचिह्न यहाँ विद्यमान हैं, इसलिए इसका नाम हर की पौड़ी पड़ा।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">🔱</span>सावन में गंगाजल से भगवान शिव का अभिषेक अत्यंत शुभ और पुण्यदायी माना जाता है।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">💧</span>गंगाजल को सनातन धर्म में शुद्धता, पवित्रता और आध्यात्मिक ऊर्जा का प्रतीक माना जाता है।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">🕉️</span>हर की पौड़ी का गंगाजल पूजा, रुद्राभिषेक, गृह प्रवेश, यज्ञ एवं अन्य धार्मिक कार्यों में विशेष महत्व रखता है।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">🪔</span>प्रतिदिन होने वाली गंगा आरती विश्वभर के श्रद्धालुओं के लिए आस्था और भक्ति का अद्भुत अनुभव है।</li>
+                <li style="margin-bottom:12px;"><span style="margin-right:8px;">📿</span>हरिद्वार से लाया गया गंगाजल वर्षों तक पवित्र माना जाता है और धार्मिक अनुष्ठानों में उपयोग किया जाता है।</li>
+                <li style="margin-bottom:0;"><span style="margin-right:8px;">❤️</span>यदि हरिद्वार जाना संभव न हो, तो भी श्रद्धा और विश्वास के साथ प्राप्त पवित्र गंगाजल से घर पर शिव पूजा की जा सकती है।</li>
+            </ul>
+
+        </div>
+      <div class="video-frame">
+        <iframe
+          src="https://www.youtube.com/embed/g4z1OBVUAlA"
+          title="Ganga Jal Seva — packing on camera"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <span class="tl-badge reveal">🛡️ Ask us for your order's packing video anytime after delivery</span>
+    </div>
+  </div>
+</section>
+
+<section class="order-band" id="order">
+  <div class="wrap">
+    <div class="order-card reveal">
+      <h2>Place Your Order</h2>
+      <p class="sub">Fill in your details — we'll confirm on WhatsApp with your order number.</p>
+
+      <form id="orderForm">
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required placeholder="As it should appear on your order">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="phone">Mobile Number</label>
+            <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10-digit mobile number">
+          </div>
+          <div class="field">
+            <label for="qty">Number of Kits</label>
+            <input type="number" id="qty" min="1" value="1" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="address">Delivery Address</label>
+          <input type="text" id="address" required placeholder="House no., street, area, city">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="state">State</label>
+            <select id="state" required>
+              <option value="">Select state</option>
+              <option>Delhi</option>
+              <option>Haryana</option>
+              <option>Punjab</option>
+              <option>Uttar Pradesh</option>
+              <option>Madhya Pradesh</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pincode">Pincode</label>
+            <input type="text" id="pincode" required pattern="[0-9]{6}" placeholder="6-digit pincode">
+          </div>
+        </div>
+
+        <div class="order-total">
+          <span>Total Amount</span>
+          <span class="amt" id="totalAmt">₹499</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary submit-btn">📲 Confirm Order on WhatsApp</button>
+        <div class="order-note">On confirming, WhatsApp will open with your order details and a unique order number already filled in — just hit send to us at +91 87969 17944.</div>
+        <div class="confirm-box" id="confirmBox">
+          <b>Order number generated: <span id="orderNoOut"></span></b>
+          Please tap send in WhatsApp to complete your order. We'll reply with delivery confirmation.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <div class="fbrand">🕉️ MANGAL BHAV</div>
+      <div style="max-width:260px;color:#E6CFA9;">Ganga Jal Seva is a Mangal Bhav initiative bringing sacred items from Haridwar to your home, with full video transparency.</div>
+    </div>
+    <div class="fcol">
+      <h4>Contact</h4>
+      <div>📞 +91 87969 17944</div>
+      <div>📧 mangalbhav09@gmail.com</div>
+      <div>📍 L29, Connaught Place, New Delhi – 110001</div>
+    </div>
+    <div class="fcol">
+      <h4>Explore</h4>
+      <div><a href="https://mangalbhav.com/index.html">Home</a></div>
+      <div><a href="https://mangalbhav.com/Services.html">Vedic Puja</a></div>
+      <div><a href="https://mangalbhav.com/Temple.html">Temple Donations</a></div>
+      <div><a href="https://mangalbhav.com/About.html">About Us</a></div>
+    </div>
+  </div>
+  <div class="fbottom">© 2026 Mangal Bhav • Ganga Jal Seva • Made with 🙏 for devotees across India</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  els.forEach(el=>io.observe(el));
+
+  // Live total
+  const qtyInput = document.getElementById('qty');
+  const totalAmt = document.getElementById('totalAmt');
+  function updateTotal(){
+    const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
+    totalAmt.textContent = '₹' + (qty * 499);
+  }
+  qtyInput.addEventListener('input', updateTotal);
+
+  // Order submit -> WhatsApp
+  const form = document.getElementById('orderForm');
+  const confirmBox = document.getElementById('confirmBox');
+  const orderNoOut = document.getElementById('orderNoOut');
+  const WHATSAPP_NUMBER = '918796917944';
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
+    const address = document.getElementById('address').value.trim();
+    const state = document.getElementById('state').value;
+    const pincode = document.getElementById('pincode').value.trim();
+    const total = qty * 499;
+    const orderNo = 'GJ' + Date.now().toString().slice(-6);
+    const today = new Date().toLocaleDateString('en-IN');
+
+    const message =
+`🕉️ Ganga Jal Seva - New Order
+Order No: ${orderNo}
+Date: ${today}
+Name: ${name}
+Phone: ${phone}
+Qty: ${qty} kit(s)
+Amount: ₹${total}
+Address: ${address}, ${state} - ${pincode}`;
+
+    orderNoOut.textContent = orderNo;
+    confirmBox.classList.add('show');
+
+    const url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
