@@ -1,0 +1,196 @@
+<ion-content [fullscreen]="true">
+  <div class="po-wrapper">
+
+    <!-- ── LOADING ── -->
+    <div class="po-loading" *ngIf="isLoadingProduct">
+      <div class="po-spinner"></div>
+      <p>Loading product…</p>
+    </div>
+
+    <!-- ── PRODUCT NOT FOUND ── -->
+    <div class="po-empty" *ngIf="!isLoadingProduct && !Product && !orderPlaced">
+      <div class="po-empty-icon">⚠️</div>
+      <p>Product not found.</p>
+      <button class="po-secondary-btn" (click)="goBackToMart()">Back to Mangal Mart</button>
+    </div>
+
+    <!-- ── SUCCESS STATE ── -->
+    <div class="po-success" *ngIf="orderPlaced">
+      <div class="po-success-icon">✅</div>
+      <h2>Order Placed Successfully!</h2>
+      <p class="po-success-sub">Your pooja items are on their way 🙏</p>
+
+      <div class="po-success-card">
+        <div class="po-success-row">
+          <span>Order No.</span>
+          <strong>{{ placedOrderNo }}</strong>
+        </div>
+        <div class="po-success-row" *ngIf="placedOrderId">
+          <span>Order ID</span>
+          <strong>#{{ placedOrderId }}</strong>
+        </div>
+        <div class="po-success-row">
+          <span>Grand Total</span>
+          <strong>₹{{ Order.GrandTotal }}</strong>
+        </div>
+        <div class="po-success-row">
+          <span>Payment Method</span>
+          <strong>{{ Order.PaymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment' }}</strong>
+        </div>
+      </div>
+
+      <button class="po-submit-btn" (click)="goBackToMart()">Continue Shopping</button>
+    </div>
+
+    <!-- ── ORDER FORM ── -->
+    <ng-container *ngIf="!isLoadingProduct && Product && !orderPlaced">
+
+      <!-- PRODUCT SUMMARY -->
+      <div class="po-section-label">Order Summary</div>
+      <div class="po-product-card">
+        <img *ngIf="productMainImageUrl" [src]="productMainImageUrl" class="po-product-img" />
+        <div *ngIf="!productMainImageUrl" class="po-product-img-placeholder">🛍</div>
+
+        <div class="po-product-info">
+          <div class="po-product-name">{{ Product.ProductName }}</div>
+          <div class="po-product-cat" *ngIf="Product.Category">✦ {{ Product.Category }}</div>
+          <div class="po-product-price-row">
+            <span class="po-price-current">₹{{ Product.SellingPrice }}</span>
+            <s class="po-price-orig" *ngIf="Product.MRP && Product.MRP > Product.SellingPrice">
+              ₹{{ Product.MRP }}
+            </s>
+          </div>
+          <div class="po-stock-tag" [class.out]="!Product.StockQuantity || Product.StockQuantity <= 0">
+            {{ (Product.StockQuantity > 0) ? Product.StockQuantity + ' in stock' : 'Out of stock' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- QUANTITY -->
+      <div class="po-qty-row">
+        <span class="po-qty-label">Quantity</span>
+        <div class="po-qty-stepper">
+          <button (click)="decreaseQty()" [disabled]="quantity <= 1">−</button>
+          <input type="number" [(ngModel)]="quantity" (change)="onQuantityChange()" min="1" [max]="maxQuantity" />
+          <button (click)="increaseQty()" [disabled]="quantity >= maxQuantity">+</button>
+        </div>
+      </div>
+
+      <!-- SHIPPING DETAILS -->
+      <div class="po-section-label">Delivery Details</div>
+
+      <div class="po-form-row">
+        <div class="po-form-group full">
+          <label>Full Name *</label>
+          <input type="text" [(ngModel)]="Order.CustomerName" placeholder="e.g. Nehul Aggarwal" />
+        </div>
+      </div>
+
+      <div class="po-form-row two-col">
+        <div class="po-form-group">
+          <label>Mobile Number *</label>
+          <input type="tel" [(ngModel)]="Order.MobileNumber" maxlength="10" placeholder="10-digit mobile" />
+        </div>
+        <div class="po-form-group">
+          <label>Alternate Mobile</label>
+          <input type="tel" [(ngModel)]="Order.AlternateMobile" maxlength="10" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="po-form-row">
+        <div class="po-form-group full">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="Order.Email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div class="po-form-row">
+        <div class="po-form-group full">
+          <label>Address *</label>
+          <textarea [(ngModel)]="Order.Address" rows="2" placeholder="House no., street, area"></textarea>
+        </div>
+      </div>
+
+      <div class="po-form-row two-col">
+        <div class="po-form-group">
+          <label>Landmark</label>
+          <input type="text" [(ngModel)]="Order.Landmark" placeholder="Nearby landmark" />
+        </div>
+        <div class="po-form-group">
+          <label>Pincode *</label>
+          <input type="text" [(ngModel)]="Order.Pincode" maxlength="6" placeholder="6-digit pincode" />
+        </div>
+      </div>
+
+      <div class="po-form-row two-col">
+        <div class="po-form-group">
+          <label>City *</label>
+          <input type="text" [(ngModel)]="Order.City" placeholder="e.g. Faridabad" />
+        </div>
+        <div class="po-form-group">
+          <label>State *</label>
+          <input type="text" [(ngModel)]="Order.State" placeholder="e.g. Haryana" />
+        </div>
+      </div>
+
+      <div class="po-form-row">
+        <div class="po-form-group full">
+          <label>Order Remarks</label>
+          <input type="text" [(ngModel)]="Order.OrderRemarks" placeholder="Any special instructions (optional)" />
+        </div>
+      </div>
+
+      <!-- PAYMENT METHOD -->
+      <div class="po-section-label">Payment Method</div>
+      <div class="po-payment-options">
+        <div class="po-payment-option" [class.active]="Order.PaymentMethod === 'COD'"
+          (click)="Order.PaymentMethod = 'COD'">
+          <span class="po-payment-icon">💵</span>
+          <div>
+            <div class="po-payment-title">Cash on Delivery</div>
+            <div class="po-payment-sub">Pay when your order arrives</div>
+          </div>
+          <ion-icon [name]="Order.PaymentMethod === 'COD' ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+        </div>
+      </div>
+
+      <!-- PRICE BREAKDOWN -->
+      <div class="po-section-label">Price Details</div>
+      <div class="po-price-breakdown">
+        <div class="po-price-line">
+          <span>Price ({{ quantity }} item{{ quantity > 1 ? 's' : '' }})</span>
+          <span>₹{{ Order.SubTotal }}</span>
+        </div>
+        <div class="po-price-line" *ngIf="Order.Discount > 0">
+          <span>Discount</span>
+          <span class="po-discount-text">− ₹{{ Order.Discount }}</span>
+        </div>
+        <div class="po-price-line">
+          <span>Delivery Charges</span>
+          <span *ngIf="Order.ShippingCharge > 0">₹{{ Order.ShippingCharge }}</span>
+          <span *ngIf="Order.ShippingCharge === 0" class="po-free-text">FREE</span>
+        </div>
+        <div class="po-price-divider"></div>
+        <div class="po-price-line total">
+          <span>Grand Total</span>
+          <span>₹{{ Order.GrandTotal }}</span>
+        </div>
+      </div>
+
+      <!-- ── PLACE ORDER (normal in-page block, not sticky) ── -->
+      <div class="po-order-block">
+        <div class="po-order-total-row">
+          <div class="po-sticky-total">
+            <div class="po-sticky-amount">₹{{ Order.GrandTotal }}</div>
+            <div class="po-sticky-sub">{{ quantity }} item{{ quantity > 1 ? 's' : '' }}</div>
+          </div>
+        </div>
+        <button class="po-submit-btn po-submit-btn-full" (click)="submitOrder()" [disabled]="isPlacingOrder">
+          <span *ngIf="!isPlacingOrder">🙏 Place Order</span>
+          <span *ngIf="isPlacingOrder">Placing Order…</span>
+        </button>
+      </div>
+
+    </ng-container>
+  </div>
+</ion-content>

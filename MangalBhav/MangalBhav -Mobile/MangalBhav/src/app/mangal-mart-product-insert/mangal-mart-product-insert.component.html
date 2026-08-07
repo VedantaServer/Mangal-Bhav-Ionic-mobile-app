@@ -1,0 +1,297 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">Mangal Mart</div>
+        <div class="inner-title-sub">Product Directory</div>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <section class="mmpi-section">
+
+    <p class="mmpi-eyebrow">🛍 Mangal Mart</p>
+    <h2 class="mmpi-heading">Product Directory</h2>
+    <p class="mmpi-sub">Browse, add and manage products</p>
+
+    <!-- Search + Add Bar -->
+    <div class="mmpi-toolbar">
+      <div class="mmpi-search-wrap">
+        <span class="mmpi-search-icon">🔍</span>
+        <input class="mmpi-search-input" type="text" placeholder="Search by name, SKU or category..."
+          [(ngModel)]="productSearchQuery" (input)="onProductSearch()" style="color:black;" />
+      </div>
+      <button class="mmpi-add-btn" (click)="openAddProduct()">
+        <span>+</span> Add Product
+      </button>
+    </div>
+
+    <!-- Product Cards -->
+    <div class="mmpi-grid" *ngIf="filteredProducts.length > 0; else noProducts">
+      <div class="mmpi-card" *ngFor="let p of filteredProducts">
+        <div class="card-top-border"></div>
+
+        <div class="mmpi-img-wrap">
+          <img *ngIf="p.MainImageUrl" [src]="p.MainImageUrl" class="mmpi-card-img" [alt]="p.ProductName" />
+          <div *ngIf="!p.MainImageUrl" class="mmpi-card-img-placeholder">
+            <span class="mmpi-glyph">🛍</span>
+          </div>
+
+          <div class="card-badges">
+            <span class="mmpi-status-badge" [class.inactive]="!p.IsActive">
+              {{ p.IsActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+
+          <button class="mmpi-edit-fab" (click)="openEditProduct(p, $event)" title="Edit Product">✏️</button>
+        </div>
+
+        <div class="mmpi-card-body">
+          <div class="mmpi-card-name">{{ p.ProductName }}</div>
+          <div class="card-divider"></div>
+
+          <div class="mmpi-card-category" *ngIf="p.Category">✦ {{ p.Category }}</div>
+
+          <div class="mmpi-card-meta">
+            <div class="meta-row" *ngIf="p.SKU">
+              <span class="meta-icon">🏷</span>
+              <span class="meta-text">{{ p.SKU }}</span>
+            </div>
+            <div class="meta-row price-row">
+              <span class="meta-icon">₹</span>
+              <span class="meta-text">
+                <strong>{{ p.SellingPrice }}</strong>
+                <s *ngIf="p.MRP && p.MRP > p.SellingPrice">₹{{ p.MRP }}</s>
+              </span>
+            </div>
+            <div class="meta-row" *ngIf="p.StockQuantity !== null && p.StockQuantity !== undefined">
+              <span class="meta-icon">📦</span>
+              <span class="meta-text">{{ p.StockQuantity }} in stock</span>
+            </div>
+          </div>
+
+          <p class="mmpi-card-desc" *ngIf="p.ShortDescription">
+            {{ p.ShortDescription | slice:0:100 }}{{ p.ShortDescription.length > 100 ? '…' : '' }}
+          </p>
+
+          <div class="mmpi-card-actions">
+            <button class="mmpi-edit-btn" (click)="openEditProduct(p, $event)">✏️ Edit</button>
+            <button class="mmpi-delete-btn" (click)="deleteProduct(p, $event)">🗑 Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <ng-template #noProducts>
+      <div class="mmpi-empty">
+        <div class="mmpi-empty-icon">🛍</div>
+        <p>No products found. Be the first to add one!</p>
+        <button class="mmpi-add-btn" (click)="openAddProduct()">+ Add Product</button>
+      </div>
+    </ng-template>
+
+  </section>
+
+  <!-- MODAL BACKDROP -->
+  <div class="mmpi-modal-backdrop" [class.active]="showAddProductForm" (click)="closeAddProduct()"></div>
+
+  <!-- ADD / EDIT BOTTOM SHEET -->
+  <div class="mmpi-modal" [class.active]="showAddProductForm">
+
+    <div class="mmpi-modal-header">
+      <div class="mmpi-modal-title">
+        {{ isEditMode ? '✏️ Edit Product' : '🛍 Add a Product' }}
+      </div>
+      <div class="mmpi-modal-sub">
+        {{ isEditMode ? 'Update product details below' : 'List a new product on Mangal Mart' }}
+      </div>
+      <button class="mmpi-modal-close" (click)="closeAddProduct()">✕</button>
+    </div>
+
+    <div class="mmpi-modal-body">
+
+      <!-- Basic Info -->
+      <div class="mmpi-form-section-label">Basic Information</div>
+
+      <div class="mmpi-form-row">
+        <div class="mmpi-form-group full">
+          <label>Product Name *</label>
+          <input type="text" [(ngModel)]="Product.ProductName" placeholder="e.g. Brass Pooja Thali" />
+        </div>
+      </div>
+
+      <div class="mmpi-form-row">
+        <div class="mmpi-form-group full">
+          <label>Short Description</label>
+          <input type="text" [(ngModel)]="Product.ShortDescription" placeholder="One line summary" />
+        </div>
+      </div>
+
+      <div class="mmpi-form-row">
+        <div class="mmpi-form-group full">
+          <label>Description</label>
+          <textarea [(ngModel)]="Product.Description" rows="4" placeholder="Full product description..."></textarea>
+        </div>
+      </div>
+
+      <div class="mmpi-form-row two-col">
+        <div class="mmpi-form-group">
+          <label>Category</label>
+          <select [(ngModel)]="Product.Category">
+            <option value="">Select category</option>
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="mmpi-form-group">
+          <label>SKU *</label>
+          <input type="text" [(ngModel)]="Product.SKU" placeholder="e.g. MB-THALI-001" />
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="mmpi-form-section-label">Pricing</div>
+
+      <div class="mmpi-form-row two-col">
+        <div class="mmpi-form-group">
+          <label>MRP (₹) *</label>
+          <input type="number" [(ngModel)]="Product.MRP" placeholder="e.g. 999" />
+        </div>
+        <div class="mmpi-form-group">
+          <label>Selling Price (₹) *</label>
+          <input type="number" [(ngModel)]="Product.SellingPrice" placeholder="e.g. 799" />
+        </div>
+      </div>
+
+      <div class="mmpi-form-row two-col">
+        <div class="mmpi-form-group">
+          <label>Discount (%)</label>
+          <input type="number" [(ngModel)]="Product.DiscountPercentage" placeholder="e.g. 20" />
+        </div>
+        <div class="mmpi-form-group">
+          <label>Stock Quantity</label>
+          <input type="number" [(ngModel)]="Product.StockQuantity" placeholder="e.g. 50" />
+        </div>
+      </div>
+
+      <!-- Dimensions -->
+      <div class="mmpi-form-section-label">Weight & Dimensions</div>
+
+      <div class="mmpi-form-row two-col">
+        <div class="mmpi-form-group">
+          <label>Weight (kg)</label>
+          <input type="number" [(ngModel)]="Product.Weight" placeholder="e.g. 0.5" />
+        </div>
+        <div class="mmpi-form-group"><!-- spacer --></div>
+      </div>
+
+      <div class="mmpi-form-row three-col">
+        <div class="mmpi-form-group">
+          <label>Length (cm)</label>
+          <input type="number" [(ngModel)]="Product.Length" placeholder="L" />
+        </div>
+        <div class="mmpi-form-group">
+          <label>Width (cm)</label>
+          <input type="number" [(ngModel)]="Product.Width" placeholder="W" />
+        </div>
+        <div class="mmpi-form-group">
+          <label>Height (cm)</label>
+          <input type="number" [(ngModel)]="Product.Height" placeholder="H" />
+        </div>
+      </div>
+
+      <!-- Status (edit mode only, mirrors Mandir's verification block) -->
+      <ng-container *ngIf="isEditMode">
+        <div class="mmpi-form-section-label">Status</div>
+        <div class="mmpi-form-row">
+          <div class="mmpi-form-group verify-toggle">
+            <label>Is Active</label>
+            <div class="toggle-row">
+              <ion-toggle [(ngModel)]="Product.IsActive" color="warning"></ion-toggle>
+              <span>{{ Product.IsActive ? 'Active' : 'Inactive' }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Main Image -->
+      <div class="mmpi-form-section-label">Main Photo</div>
+
+      <div class="mmpi-form-row">
+        <div class="mmpi-form-group full">
+          <div class="mmpi-upload-box" (click)="mainImageInput.click()">
+            <img *ngIf="mainImagePreview" [src]="mainImagePreview" class="mmpi-upload-preview" />
+            <div *ngIf="!mainImagePreview && !Product.MainImage" class="mmpi-upload-placeholder">
+              <span class="mmpi-upload-icon">📷</span>
+              <span>Tap to choose main photo</span>
+            </div>
+            <div *ngIf="Product.MainImage && !mainImagePreview && !selectedMainImageFile" class="mmpi-upload-saved">
+              ✅ Photo saved: {{ Product.MainImage }}
+            </div>
+          </div>
+          <input #mainImageInput type="file" accept="image/*" style="display:none"
+            (change)="onMainImageSelected($event)" />
+          <div class="mmpi-upload-actions" *ngIf="selectedMainImageFile && !Product.MainImage">
+            <span class="mmpi-file-name">📄 {{ selectedMainImageFile.name }}</span>
+            <button class="mmpi-upload-btn" (click)="uploadMainImage()" [disabled]="isUploadingMainImage">
+              {{ isUploadingMainImage ? 'Uploading…' : '⬆ Upload' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Images -->
+      <div class="mmpi-form-section-label">Gallery Photos</div>
+
+      <div class="mmpi-form-row">
+        <div class="mmpi-form-group full">
+          <div class="mmpi-gallery-grid">
+
+            <!-- already saved images (edit mode) -->
+            <div class="mmpi-gallery-item" *ngFor="let img of existingGalleryImages">
+              <img *ngIf="img.previewUrl" [src]="img.previewUrl" />
+              <div *ngIf="!img.previewUrl" class="mmpi-gallery-loading">…</div>
+              <button class="mmpi-gallery-remove" (click)="deleteExistingGalleryImage(img)">✕</button>
+            </div>
+
+            <!-- newly picked, not yet uploaded -->
+            <div class="mmpi-gallery-item pending" *ngFor="let img of pendingGalleryFiles; let i = index">
+              <img [src]="img.previewUrl" />
+              <button class="mmpi-gallery-remove" (click)="removePendingGalleryImage(i)">✕</button>
+            </div>
+
+            <div class="mmpi-gallery-add" (click)="galleryInput.click()">
+              <span class="mmpi-upload-icon">＋</span>
+              <span>Add photo</span>
+            </div>
+          </div>
+          <input #galleryInput type="file" accept="image/*" multiple style="display:none"
+            (change)="onGalleryImagesSelected($event)" />
+          <p class="mmpi-hint" *ngIf="pendingGalleryFiles.length > 0">
+            {{ pendingGalleryFiles.length }} new photo(s) will upload when you save.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <div class="mmpi-modal-footer">
+      <button class="mmpi-cancel-btn" (click)="closeAddProduct()">Cancel</button>
+      <button class="mmpi-submit-btn" (click)="submitProduct()"
+        [disabled]="isSubmittingProduct || isUploadingMainImage || isUploadingGallery">
+        <span *ngIf="!isSubmittingProduct">
+          {{ isEditMode ? '💾 Update Product' : '🙏 Submit Product' }}
+        </span>
+        <span *ngIf="isSubmittingProduct">
+          {{ isEditMode ? 'Updating…' : 'Submitting…' }}
+        </span>
+      </button>
+    </div>
+
+  </div>
+</ion-content>

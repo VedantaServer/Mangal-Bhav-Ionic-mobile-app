@@ -3,177 +3,148 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import { PanditjibottomtabsComponent } from '../panditjibottomtabs/panditjibottomtabs.component';
-import { JajmanbottomtabsComponent } from '../jajmanbottomtabs/jajmanbottomtabs.component';
-import { CommonBottomTabsComponent } from '../common-bottom-tabs/common-bottom-tabs.component';
-
-
-export interface Product {
-  id: number;
-  name: string;
-  desc: string;
-  description?: string;
-  emoji: string;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  rating: number;
-  reviews: number;
-  category: string;
-  wishlisted: boolean;
-  addedToCart: boolean;
-}
-
-export interface Category {
-  key: string;
-  label: string;
-  icon: string;
-}
+import { Api, ApiNU } from 'src/providers';
 
 @Component({
   selector: 'app-mangal-mart',
   templateUrl: './mangal-mart.component.html',
   styleUrls: ['./mangal-mart.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule,FormsModule]
+  imports: [CommonModule, IonicModule, FormsModule]
 })
 export class MangalMartComponent implements OnInit {
 
-  searchQuery: string = '';
-  activeCategory: string = 'all';
-  cartCount: number = 0;
-
-  categories: Category[] = [
-    { key: 'all', label: 'All', icon: '🌺' },
-    { key: 'diyas', label: 'Diyas', icon: '🪔' },
-    { key: 'flowers', label: 'Flowers', icon: '🌸' },
-    { key: 'threads', label: 'Sacred Threads', icon: '🧵' },
-    { key: 'malas', label: 'Malas', icon: '📿' },
-    { key: 'havan', label: 'Havan', icon: '🪵' },
-    { key: 'idols', label: 'Idols', icon: '🛕' },
-  ];
-
-  featuredProduct: Product = {
-    id: 0,
-    name: 'Navratri Puja Complete Kit',
-    desc: '',
-    description: 'Everything you need for 9 days of divine celebration',
-    emoji: '🪔',
-    price: 599,
-    originalPrice: 999,
-    discount: 40,
-    rating: 4.9,
-    reviews: 512,
-    category: 'all',
-    wishlisted: false,
-    addedToCart: false,
-  };
-
-  trendingProducts: Product[] = [
-    { id: 10, name: 'Mitti Diyas (Pack 12)', desc: 'Clay · Pack of 12', emoji: '🪔', price: 49, originalPrice: 75, discount: 35, rating: 4.7, reviews: 88, category: 'diyas', wishlisted: false, addedToCart: false },
-    { id: 11, name: 'Rudraksha Mala', desc: 'Natural · 108 beads', emoji: '📿', price: 299, originalPrice: 450, discount: 33, rating: 4.9, reviews: 210, category: 'malas', wishlisted: false, addedToCart: false },
-    { id: 12, name: 'Pooja Thali Set', desc: 'Brass · 5 piece', emoji: '🌺', price: 189, originalPrice: 250, discount: 24, rating: 4.6, reviews: 63, category: 'flowers', wishlisted: false, addedToCart: false },
-    { id: 13, name: 'Mauli Thread', desc: 'Cotton · Red & Yellow', emoji: '🧵', price: 29, originalPrice: 45, discount: 36, rating: 4.5, reviews: 177, category: 'threads', wishlisted: false, addedToCart: false },
-    { id: 14, name: 'Lotus Agarbatti', desc: 'Pack of 100', emoji: '🪷', price: 65, originalPrice: 90, discount: 28, rating: 4.8, reviews: 145, category: 'flowers', wishlisted: false, addedToCart: false },
-  ];
-
-  allProducts: Product[] = [
-    { id: 1, name: 'Premium Ghee Diya Set', desc: 'Brass finish · Pack of 6', emoji: '🪔', price: 149, originalPrice: 210, discount: 30, rating: 4.8, reviews: 124, category: 'diyas', wishlisted: false, addedToCart: false },
-    { id: 2, name: '5 Mukhi Rudraksha Mala', desc: 'Natural · 108 beads', emoji: '📿', price: 349, originalPrice: 499, discount: 0, rating: 4.9, reviews: 89, category: 'malas', wishlisted: false, addedToCart: false },
-    { id: 3, name: 'Pure Ganga Jal', desc: '500ml sealed bottle', emoji: '🧴', price: 89, originalPrice: 120, discount: 25, rating: 4.7, reviews: 203, category: 'all', wishlisted: false, addedToCart: false },
-    { id: 4, name: 'Brass Pooja Thali', desc: 'Engraved · 12 inch', emoji: '🌸', price: 299, originalPrice: 450, discount: 0, rating: 4.6, reviews: 57, category: 'flowers', wishlisted: false, addedToCart: false },
-    { id: 5, name: 'Havan Samagri Kit', desc: '250g · Pure herbs', emoji: '🪵', price: 199, originalPrice: 249, discount: 20, rating: 4.8, reviews: 311, category: 'havan', wishlisted: false, addedToCart: false },
-    { id: 6, name: 'Ganesh Idol Brass', desc: 'Hand-crafted · 5 inch', emoji: '🛕', price: 699, originalPrice: 950, discount: 0, rating: 5.0, reviews: 42, category: 'idols', wishlisted: false, addedToCart: false },
-    { id: 7, name: 'Camphor Tablets', desc: 'Pure · Pack of 50', emoji: '🕯️', price: 55, originalPrice: 80, discount: 31, rating: 4.7, reviews: 192, category: 'all', wishlisted: false, addedToCart: false },
-    { id: 8, name: 'Shankh (Conch Shell)', desc: 'Natural · Polished', emoji: '🐚', price: 249, originalPrice: 350, discount: 29, rating: 4.8, reviews: 76, category: 'idols', wishlisted: false, addedToCart: false },
-  ];
-
-  filteredProducts: Product[] = [...this.allProducts];
+  Products: any[] = [];
+  isLoadingProducts = true;
+  cartCount = 0;
   userDetails: any;
 
-  constructor(public routerCtrl: NavController,
-    private navCtrl: NavController,
-    private toastCtrl: ToastController, private storage: Storage,
+  constructor(
+    public routerCtrl: NavController,
+    public api: Api,
+    public apinu: ApiNU,
+    private toastCtrl: ToastController,
+    private storage: Storage,
   ) { }
 
   async ngOnInit() {
-    this.filterProducts();
-    
-    this.userDetails = await this.storage.get("account");
+    this.userDetails = await this.storage.get('account');
+    this.loadAllProducts();
+  }
+
+  // ── LOAD PRODUCTS ──────────────────────────────────────
+
+  loadAllProducts() {
+    this.isLoadingProducts = true;
+
+    this.apinu
+      .postUrlData('ProductSelectByQuery?Query=IsActive=1 ORDER BY ProductName', null)
+      .subscribe({
+        next: (res: any) => {
+          this.Products = (res.ProductList || []).map((p: any) => ({
+            ...p,
+            CarouselImages: [] as string[],
+            activeSlide: 0
+          }));
+
+          this.isLoadingProducts = false;
+
+          this.Products.forEach((p: any) => {
+            this.loadMainImage(p);
+            this.loadGalleryImages(p);
+          });
+        },
+        error: () => {
+          this.isLoadingProducts = false;
+          this.showToast('Unable to load products right now.');
+        }
+      });
+  }
+
+  loadMainImage(product: any) {
+    if (!product.MainImage) return;
+
+    this.api.getImage('DownloadImages', {
+      imageName: product.MainImage,
+      imagePurpose: 'ProductImage'
+    }).subscribe((blob: any) => {
+      // main image goes first in the carousel
+      product.CarouselImages = [URL.createObjectURL(blob), ...product.CarouselImages];
+    });
+  }
+
+  loadGalleryImages(product: any) {
+    this.apinu
+      .postUrlData(
+        `ProductImageSelectByQuery?Query=FK_ProductID=${product.ProductID} ORDER BY DisplayOrder ASC`,
+        null
+      )
+      .subscribe((res: any) => {
+        (res.ProductImageList || []).forEach((img: any) => {
+          this.api.getImage('DownloadImages', {
+            imageName: img.ImageURL,
+            imagePurpose: 'ProductImage'
+          }).subscribe((blob: any) => {
+            product.CarouselImages = [...product.CarouselImages, URL.createObjectURL(blob)];
+          });
+        });
+      });
   }
 
   // ── NAVIGATION ─────────────────────────────────────────
 
   goHome() {
-    this.navCtrl.navigateBack('/');
+    this.routerCtrl.navigateBack('/');
   }
 
   openCart() {
-    // this.navCtrl.navigateForward('/cart');
+     this.routerCtrl.navigateForward('/orderlist');
   }
 
-  openProduct(product: Product) {
-    // this.navCtrl.navigateForward(`/product-detail/${product.id}`);
+  placeOrder(product: any) {
+    this.routerCtrl.navigateForward(`/placeorder/${product.ProductID}`);
   }
 
-  // ── FILTERS & SEARCH ───────────────────────────────────
+  // ── CAROUSEL (per product, since each card has its own slide index) ──
 
-  selectCategory(key: string) {
-    this.activeCategory = key;
-    this.filterProducts();
-  }
-
-  onSearch() {
-    this.filterProducts();
-  }
-
-  
-  openPage(pageName: any) {
-    this.routerCtrl.navigateForward(`/${pageName}`);
-  }
-
-  filterProducts() {
-    let result = [...this.allProducts];
-
-    if (this.activeCategory !== 'all') {
-      result = result.filter(p => p.category === this.activeCategory);
+  nextSlide(product: any) {
+    if (product.activeSlide < product.CarouselImages.length - 1) {
+      product.activeSlide++;
     }
+  }
 
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.desc.toLowerCase().includes(q)
-      );
+  prevSlide(product: any) {
+    if (product.activeSlide > 0) {
+      product.activeSlide--;
     }
-
-    this.filteredProducts = result;
   }
 
-  openFilter() {
-    // open filter sheet
+  goToSlide(product: any, index: number) {
+    product.activeSlide = index;
   }
 
-  // ── CART ───────────────────────────────────────────────
+  // ── HELPERS ──────────────────────────────────────────────
 
-  addToCart(product: Product) {
-    if (product.addedToCart) return;
-
-    product.addedToCart = true;
-    this.cartCount++;
-
-    this.showToast(`${product.name} added to cart 🛒`);
-
-    // Reset the tick after 1.5s
-    setTimeout(() => {
-      product.addedToCart = false;
-    }, 1500);
+  discountPercent(product: any): number {
+    if (!product.MRP || !product.SellingPrice || product.MRP <= product.SellingPrice) return 0;
+    return Math.round((1 - (product.SellingPrice / product.MRP)) * 100);
   }
 
-  // ── WISHLIST ───────────────────────────────────────────
+  // ── SHARE ────────────────────────────────────────────────
 
-  toggleWishlist() {
+  async shareProduct(product: any) {
+    const shareUrl = `https://app.mangalbhav.com/mangalmart`;
 
+    if (navigator.share) {
+      await navigator.share({
+        title: product.ProductName,
+        text: product.ShortDescription || product.ProductName,
+        url: shareUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      this.showToast('Product link copied 📋');
+    }
   }
 
   // ── TOAST ──────────────────────────────────────────────
@@ -188,61 +159,4 @@ export class MangalMartComponent implements OnInit {
     });
     await toast.present();
   }
-
-  // ─── Add these to your component class ───────────────────
-
-  // Carpet image paths — put your 3 images in assets/ folder
-  carpetImages: string[] = [
-    '../../assets/carpet1.jpeg',
-    '../../assets/carpet2.jpeg',
-    '../../assets/carpet3.jpeg',
-  ];
-
-  activeSlide = 0;
-  wishlisted = false;
-
-  readonly AMAZON_LINK = 'https://www.amazon.in/dp/B0GXKJDD65';
-
-  // ── Carousel controls ──────────────────────────────────
-
-  nextSlide() {
-    if (this.activeSlide < this.carpetImages.length - 1) {
-      this.activeSlide++;
-    }
-  }
-
-  prevSlide() {
-    if (this.activeSlide > 0) {
-      this.activeSlide--;
-    }
-  }
-
-  goToSlide(index: number) {
-    this.activeSlide = index;
-  }
-
-  // ── CTA ───────────────────────────────────────────────
-
-  buyNow(platform: string) {
-    window.open(this.AMAZON_LINK, '_blank');
-  }
-
-
-  // ── Share ─────────────────────────────────────────────
-
-  async shareProduct() {
-    if (navigator.share) {
-      await navigator.share({
-        title: 'मंगल पूजा कालीन',
-        text: 'Check out this beautiful Pooja Carpet on Amazon!',
-        url: this.AMAZON_LINK,
-      });
-    } else {
-      // Fallback: copy link to clipboard
-      navigator.clipboard.writeText(this.AMAZON_LINK);
-    }
-  }
-
-
-
 }

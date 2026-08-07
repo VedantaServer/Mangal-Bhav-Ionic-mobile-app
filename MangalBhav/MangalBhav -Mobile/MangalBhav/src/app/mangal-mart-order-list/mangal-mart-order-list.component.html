@@ -1,0 +1,521 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="inner-header">
+      <button class="inner-back-btn" (click)="routerCtrl.back()">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <div class="inner-title-block">
+        <div class="inner-title">My Orders</div>
+        <div class="inner-title-sub">
+          {{ isAdmin ? '🔐 Admin · All Orders' : '🛍 Mangal Mart' }}
+        </div>
+      </div>
+      <div class="header-right-group">
+        <div class="admin-pill" *ngIf="isAdmin">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Admin
+        </div>
+        <button class="header-refresh-btn" (click)="loadOrders()">
+          <ion-icon name="refresh-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ol-wrapper">
+
+    <!-- ── LOADING ── -->
+    <div class="ol-loading" *ngIf="isLoading">
+      <div class="ol-skeleton" *ngFor="let s of [1,2,3]">
+        <div class="skel-header"></div>
+        <div class="skel-body">
+          <div class="skel-img"></div>
+          <div class="skel-lines">
+            <div class="skel-line w-60"></div>
+            <div class="skel-line w-40"></div>
+            <div class="skel-line w-80"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMPTY STATE ── -->
+    <div class="ol-empty" *ngIf="!isLoading && Orders.length === 0">
+      <div class="ol-empty-icon">🛍️</div>
+      <h2>No Orders Yet</h2>
+      <p>Your pooja items are waiting for you.<br />Start shopping from Mangal Mart!</p>
+      <button class="ol-shop-btn" (click)="placeNewOrder()">
+        <ion-icon name="bag-handle-outline"></ion-icon>
+        Shop Now
+      </button>
+      <div class="om-divider">✦ ॐ ✦</div>
+    </div>
+
+    <!-- ── ORDER CARDS ── -->
+    <ng-container *ngIf="!isLoading && Orders.length > 0">
+
+      <div class="ol-count-bar">
+        <ion-icon name="receipt-outline"></ion-icon>
+        {{ Orders.length }} order{{ Orders.length > 1 ? 's' : '' }} placed
+      </div>
+
+      <div class="ol-card" *ngFor="let order of Orders">
+
+        <!-- CARD HEADER -->
+        <div class="ol-card-header" (click)="toggleExpand(order.OrderID)">
+          <div class="ol-header-left">
+            <div class="ol-order-no-label">Order No.</div>
+            <div class="ol-order-no">{{ order.OrderNo }}</div>
+            <div class="ol-order-date">{{ formatDate(order.DateAdded) }}</div>
+          </div>
+          <div class="ol-header-right">
+            <div class="ol-status-badge" [ngClass]="getStatusClass(order.OrderStatus)">
+              <ion-icon [name]="getStatusIcon(order.OrderStatus)"></ion-icon>
+              {{ getStatusLabel(order.OrderStatus) }}
+            </div>
+            <ion-icon class="ol-chevron"
+              [name]="isExpanded(order.OrderID) ? 'chevron-up-outline' : 'chevron-down-outline'">
+            </ion-icon>
+          </div>
+        </div>
+
+        <!-- ADMIN: customer name tag -->
+        <div class="ol-admin-customer-tag" *ngIf="isAdmin">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          {{ order.CustomerName }} · {{ order.MobileNumber }}
+        </div>
+
+        <!-- PRODUCT ROW -->
+        <div class="ol-product-row">
+          <div class="ol-product-img-wrap">
+            <img *ngIf="order.ProductImage" [src]="order.ProductImage" class="ol-product-img" />
+            <div *ngIf="!order.ProductImage" class="ol-product-img-placeholder">🛍</div>
+          </div>
+          <div class="ol-product-info">
+            <div class="ol-product-name">{{ order.ProductName }}</div>
+            <div class="ol-product-cat" *ngIf="order.Category">✦ {{ order.Category }}</div>
+            <div class="ol-product-meta">
+              <span class="ol-grand-total">₹{{ order.GrandTotal }}</span>
+              <span class="ol-dot">·</span>
+              <span class="ol-qty">Qty: {{ order.Quantity }}</span>
+              <span class="ol-dot">·</span>
+              <span class="ol-pay-method">
+                {{ order.PaymentMethod === 'COD' ? '💵 COD' : '💳 Online' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ACTION BUTTONS ── -->
+
+        <!-- ── ACTION BUTTONS ── -->
+        <div class="ol-action-row" [class.admin-row]="isAdmin">
+
+          <!-- View Product (both) -->
+          <button class="ol-action-btn ol-btn-product" (click)="viewProduct()">
+            <ion-icon name="storefront-outline"></ion-icon>
+            View Product
+          </button>
+
+          <!-- Dispatch Details (both) -->
+          <button class="ol-action-btn ol-btn-dispatch" [class.active]="dispatchOpenMap[order.OrderID]"
+            (click)="toggleDispatch(order.OrderID)">
+            <ion-icon [name]="dispatchOpenMap[order.OrderID] ? 'chevron-up-outline' : 'cube-outline'"></ion-icon>
+            {{ dispatchOpenMap[order.OrderID] ? 'Hide Dispatch' : 'Dispatch Details' }}
+          </button>
+
+          <!-- Dispatch This (admin only) -->
+          <button *ngIf="isAdmin" class="ol-action-btn ol-btn-dispatch-admin"
+            [class.active]="dispatchFormOpenMap[order.OrderID]" (click)="toggleDispatchForm(order.OrderID)">
+            <ion-icon [name]="dispatchFormOpenMap[order.OrderID] ? 'chevron-up-outline' : 'send-outline'"></ion-icon>
+            {{ dispatchFormOpenMap[order.OrderID] ? 'Cancel' : 'Dispatch This' }}
+          </button>
+
+          <!-- View Feedback (admin only) -->
+          <button *ngIf="isAdmin" class="ol-action-btn ol-btn-feedback-admin"
+            [class.active]="feedbackViewOpenMap[order.OrderID]" (click)="toggleFeedbackView(order.OrderID)">
+            <ion-icon [name]="feedbackViewOpenMap[order.OrderID] ? 'chevron-up-outline' : 'star-outline'"></ion-icon>
+            {{ feedbackViewOpenMap[order.OrderID] ? 'Hide Feedback' : 'View Feedback' }}
+          </button>
+
+          <!-- Give Feedback (user only) -->
+          <button *ngIf="!isAdmin" class="ol-action-btn ol-btn-feedback"
+            [class.active]="feedbackFormOpenMap[order.OrderID]" [class.done]="feedbackMap[order.OrderID]"
+            (click)="feedbackMap[order.OrderID] ? toggleFeedbackView(order.OrderID) : toggleFeedbackForm(order.OrderID)">
+            <ion-icon [name]="feedbackMap[order.OrderID] ? 'star' : 'star-outline'"></ion-icon>
+            {{ feedbackMap[order.OrderID] ? 'View Review' : (feedbackFormOpenMap[order.OrderID] ? 'Cancel' : 'Give
+            Feedback') }}
+          </button>
+
+        </div>
+
+
+        <!-- ── DISPATCH VIEW PANEL (both) ── -->
+        <div class="ol-dispatch-panel" *ngIf="dispatchOpenMap[order.OrderID]">
+          <div class="ol-dispatch-loading" *ngIf="dispatchLoadingMap[order.OrderID]">
+            <div class="dispatch-spinner"></div>
+            <span>Fetching dispatch details…</span>
+          </div>
+          <div class="ol-dispatch-empty" *ngIf="!dispatchLoadingMap[order.OrderID] && !dispatchMap[order.OrderID]">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>Dispatch details not available yet.</span>
+          </div>
+          <ng-container *ngIf="!dispatchLoadingMap[order.OrderID] && dispatchMap[order.OrderID] as d">
+            <div class="ol-dispatch-header">
+              <ion-icon name="cube-outline"></ion-icon>
+              Dispatch Details
+            </div>
+            <div class="ol-dispatch-grid">
+              <div class="ol-dispatch-item" *ngIf="d.CourierName">
+                <div class="ol-dispatch-label">Courier</div>
+                <div class="ol-dispatch-value">{{ d.CourierName }}</div>
+              </div>
+              <div class="ol-dispatch-item" *ngIf="d.TrackingNumber">
+                <div class="ol-dispatch-label">Tracking No.</div>
+                <div class="ol-dispatch-value tracking">{{ d.TrackingNumber }}</div>
+              </div>
+              <div class="ol-dispatch-item" *ngIf="d.AWBNumber">
+                <div class="ol-dispatch-label">AWB No.</div>
+                <div class="ol-dispatch-value tracking">{{ d.AWBNumber }}</div>
+              </div>
+              <div class="ol-dispatch-item" *ngIf="d.DispatchDate">
+                <div class="ol-dispatch-label">Dispatched On</div>
+                <div class="ol-dispatch-value">{{ formatDate(d.DispatchDate) }}</div>
+              </div>
+              <div class="ol-dispatch-item" *ngIf="d.DeliveredDate">
+                <div class="ol-dispatch-label">Delivered On</div>
+                <div class="ol-dispatch-value">{{ formatDate(d.DeliveredDate) }}</div>
+              </div>
+              <div class="ol-dispatch-item full-width" *ngIf="d.DispatchStatus">
+                <div class="ol-dispatch-label">Dispatch Status</div>
+                <div class="ol-dispatch-status" [ngClass]="getStatusClass(d.DispatchStatus)">
+                  <ion-icon [name]="getStatusIcon(d.DispatchStatus)"></ion-icon>
+                  {{ getStatusLabel(d.DispatchStatus) }}
+                </div>
+              </div>
+              <div class="ol-dispatch-item full-width" *ngIf="d.Remarks">
+                <div class="ol-dispatch-label">Remarks</div>
+                <div class="ol-dispatch-value">{{ d.Remarks }}</div>
+              </div>
+            </div>
+
+            <!-- ── Dispatch Videos (view) — small squares, tap to play ── -->
+            <div class="ol-dispatch-video-section" *ngIf="dispatchMediaMap[order.OrderID]?.length">
+              <div class="ol-dispatch-label" style="margin-bottom:6px;">Dispatch Videos</div>
+
+              <div class="ol-video-gallery-grid">
+                <div class="ol-video-square" *ngFor="let m of dispatchMediaMap[order.OrderID]">
+
+                  <ng-container *ngIf="m.MediaType === 'VIDEO'">
+
+                    <ng-container *ngIf="!isSavedVideoExpanded(order.OrderID, m)">
+                      <div class="ol-video-thumb" (click)="toggleSavedDispatchVideo(order.OrderID, m)">
+                        <span class="ol-video-play-icon">▶</span>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="isSavedVideoExpanded(order.OrderID, m)">
+                      <div class="ol-video-modal-backdrop" (click)="toggleSavedDispatchVideo(order.OrderID, m)">
+                        <div class="ol-video-modal-inner" (click)="$event.stopPropagation()">
+                          <button class="ol-video-close-x"
+                            (click)="toggleSavedDispatchVideo(order.OrderID, m)">✕</button>
+                          <video [src]="m.previewUrl" controls autoplay class="ol-video-expanded"></video>
+                        </div>
+                      </div>
+                    </ng-container>
+
+
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+
+
+            <a *ngIf="d.TrackingURL" [href]="d.TrackingURL" target="_blank" class="ol-track-link">
+              <ion-icon name="navigate-outline"></ion-icon>
+              Track Shipment
+              <ion-icon name="open-outline"></ion-icon>
+            </a>
+          </ng-container>
+        </div>
+
+        <!-- ── ADMIN DISPATCH FORM PANEL ── -->
+        <div class="ol-dispatch-form-panel" *ngIf="isAdmin && dispatchFormOpenMap[order.OrderID]">
+          <div class="ol-dispatch-form-header">
+            <ion-icon name="send-outline"></ion-icon>
+            Dispatch Order · {{ order.OrderNo }}
+          </div>
+          <div class="ol-dispatch-form-body" *ngIf="dispatchFormMap[order.OrderID] as f">
+            <div class="ol-form-row two-col">
+              <div class="ol-form-group">
+                <label>Courier Name *</label>
+                <input type="text" [(ngModel)]="f.CourierName" placeholder="e.g. DTDC, Delhivery" />
+              </div>
+              <div class="ol-form-group">
+                <label>Tracking Number *</label>
+                <input type="text" [(ngModel)]="f.TrackingNumber" placeholder="e.g. DL123456789IN" />
+              </div>
+            </div>
+            <div class="ol-form-row two-col">
+              <div class="ol-form-group">
+                <label>AWB Number</label>
+                <input type="text" [(ngModel)]="f.AWBNumber" placeholder="Optional" />
+              </div>
+              <div class="ol-form-group">
+                <label>Dispatch Date *</label>
+                <input type="date" [(ngModel)]="f.DispatchDate" [max]="todayISO()" />
+              </div>
+            </div>
+            <div class="ol-form-row">
+              <div class="ol-form-group full">
+                <label>Dispatch Status</label>
+                <select [(ngModel)]="f.DispatchStatus">
+                  <option *ngFor="let s of DISPATCH_STATUSES" [value]="s">{{ getStatusLabel(s) }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="ol-form-row">
+              <div class="ol-form-group full">
+                <label>Remarks</label>
+                <input type="text" [(ngModel)]="f.Remarks" placeholder="Any notes (optional)" />
+              </div>
+            </div>
+
+            <!-- ── Dispatch Videos — MANDATORY, minimum required (mirrors Gallery Photos) ── -->
+            <div class="ol-form-row">
+              <div class="ol-form-group full">
+                <label>
+                  Dispatch Videos * (minimum {{ MIN_DISPATCH_VIDEOS }})
+                </label>
+
+                <div class="ol-video-gallery-grid">
+
+                  <!-- pending videos: small square, no auto preview -->
+                  <div class="ol-video-square" *ngFor="let v of pendingDispatchVideosMap[order.OrderID]; let i = index">
+
+                    <ng-container *ngIf="!isPendingVideoExpanded(order.OrderID, i)">
+                      <div class="ol-video-thumb" (click)="togglePendingDispatchVideo(order.OrderID, i)">
+                        <span class="ol-video-play-icon">▶</span>
+                        <span class="ol-video-file-name">{{ v.name | slice:0:14 }}{{ v.name.length > 14 ? '…' : ''
+                          }}</span>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="isPendingVideoExpanded(order.OrderID, i)">
+                      <div class="ol-video-modal-backdrop" (click)="togglePendingDispatchVideo(order.OrderID, i)">
+                        <div class="ol-video-modal-inner" (click)="$event.stopPropagation()">
+                          <button class="ol-video-close-x"
+                            (click)="togglePendingDispatchVideo(order.OrderID, i)">✕</button>
+                          <video [src]="v.previewUrl" controls autoplay class="ol-video-expanded"></video>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <button class="ol-video-remove" (click)="removePendingDispatchVideo(order.OrderID, i)"
+                      title="Remove video">✕</button>
+                  </div>
+
+                  <div class="ol-video-add-square" (click)="dispatchVideoInput.click()">
+                    <span class="ol-upload-icon">＋</span>
+                    <span>Add video</span>
+                  </div>
+                </div>
+
+                <input #dispatchVideoInput type="file" accept="video/*" multiple style="display:none"
+                  (change)="onDispatchVideosSelected(order.OrderID, $event)" />
+
+                <p class="ol-hint" [class.ol-hint-warn]="pendingVideoCount(order.OrderID) < MIN_DISPATCH_VIDEOS">
+                  {{ pendingVideoCount(order.OrderID) }} of {{ MIN_DISPATCH_VIDEOS }} required video(s) added.
+                </p>
+              </div>
+            </div>
+
+            <button class="ol-dispatch-submit-btn" (click)="submitDispatch(order)"
+              [disabled]="dispatchSubmittingMap[order.OrderID] || isUploadingDispatchVideoMap[order.OrderID]">
+              <div class="btn-spinner"
+                *ngIf="dispatchSubmittingMap[order.OrderID] || isUploadingDispatchVideoMap[order.OrderID]"></div>
+              <ion-icon name="send-outline"
+                *ngIf="!dispatchSubmittingMap[order.OrderID] && !isUploadingDispatchVideoMap[order.OrderID]"></ion-icon>
+              {{ isUploadingDispatchVideoMap[order.OrderID] ? 'Uploading videos…' :
+              (dispatchSubmittingMap[order.OrderID] ?
+              'Dispatching…' : 'Confirm Dispatch') }}
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ── USER: FEEDBACK VIEW PANEL ── -->
+        <div class="ol-feedback-view-panel" *ngIf="feedbackViewOpenMap[order.OrderID]">
+          <div class="ol-feedback-loading" *ngIf="feedbackLoadingMap[order.OrderID]">
+            <div class="feedback-spinner"></div>
+            <span>Loading feedback…</span>
+          </div>
+          <div class="ol-feedback-empty" *ngIf="!feedbackLoadingMap[order.OrderID] && !feedbackMap[order.OrderID]">
+            <ion-icon name="star-outline"></ion-icon>
+            <span>No feedback submitted yet.</span>
+          </div>
+          <ng-container *ngIf="!feedbackLoadingMap[order.OrderID] && feedbackMap[order.OrderID] as fb">
+            <div class="ol-feedback-view-header">
+              <ion-icon name="star"></ion-icon>
+              Your Review
+            </div>
+            <div class="ol-feedback-view-body">
+              <!-- Stars display -->
+              <div class="ol-feedback-stars-display">
+                <span *ngFor="let s of getStarArray()" class="star-icon" [class.filled]="s <= (fb.Rating ?? 0)">★</span>
+                <span class="ol-star-label-text" *ngIf="fb.Rating">
+                  {{ STAR_LABELS[fb.Rating] }}
+                </span>
+              </div>
+              <div class="ol-feedback-review-title" *ngIf="fb.ReviewTitle">
+                "{{ fb.ReviewTitle }}"
+              </div>
+              <div class="ol-feedback-review-text" *ngIf="fb.Review">
+                {{ fb.Review }}
+              </div>
+              <div class="ol-feedback-meta">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ formatDate(fb.DateAdded ?? '') }}
+                <span class="ol-feedback-approval" *ngIf="!fb.IsApproved">
+                  <ion-icon name="time-outline"></ion-icon>
+                  Pending Approval
+                </span>
+                <span class="ol-feedback-approval approved" *ngIf="fb.IsApproved">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  Approved
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- ── USER: FEEDBACK FORM PANEL ── -->
+        <div class="ol-feedback-form-panel"
+          *ngIf="!isAdmin && feedbackFormOpenMap[order.OrderID] && !feedbackMap[order.OrderID]">
+
+          <div class="ol-feedback-form-header">
+            <ion-icon name="star-outline"></ion-icon>
+            Rate Your Order · {{ order.OrderNo }}
+          </div>
+
+          <div class="ol-feedback-form-body" *ngIf="feedbackFormMap[order.OrderID] as f">
+
+            <!-- Star Rating Picker -->
+            <div class="ol-star-picker-label">Your Rating *</div>
+            <div class="ol-star-picker">
+              <button *ngFor="let s of getStarArray()" class="star-btn" [class.selected]="s <= f.Rating"
+                (click)="setRating(order.OrderID, s)" type="button">
+                ★
+              </button>
+              <span class="ol-star-label" *ngIf="f.Rating > 0">
+                {{ STAR_LABELS[f.Rating] }}
+              </span>
+            </div>
+
+            <!-- Review Title -->
+            <div class="ol-form-row">
+              <div class="ol-form-group full feedback-group">
+                <label>Review Title</label>
+                <input type="text" [(ngModel)]="f.ReviewTitle" placeholder="e.g. Excellent quality, fast delivery!" />
+              </div>
+            </div>
+
+            <!-- Review Text -->
+            <div class="ol-form-row">
+              <div class="ol-form-group full feedback-group">
+                <label>Your Review *</label>
+                <textarea [(ngModel)]="f.Review" rows="3"
+                  placeholder="Share your experience with this product and delivery…"></textarea>
+              </div>
+            </div>
+
+            <button class="ol-feedback-submit-btn" (click)="submitFeedback(order)"
+              [disabled]="feedbackSubmittingMap[order.OrderID]">
+              <div class="btn-spinner" *ngIf="feedbackSubmittingMap[order.OrderID]"></div>
+              <ion-icon name="star-outline" *ngIf="!feedbackSubmittingMap[order.OrderID]"></ion-icon>
+              {{ feedbackSubmittingMap[order.OrderID] ? 'Submitting…' : 'Submit Feedback' }}
+            </button>
+
+          </div>
+        </div><!-- /feedback form -->
+
+        <!-- EXPANDED ORDER DETAILS -->
+        <div class="ol-expand-section" *ngIf="isExpanded(order.OrderID)">
+          <div class="ol-section-label">Delivery Details</div>
+          <div class="ol-info-grid">
+            <div class="ol-info-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <div>
+                <div class="ol-info-label">Customer</div>
+                <div class="ol-info-value">{{ order.CustomerName }}</div>
+              </div>
+            </div>
+            <div class="ol-info-item">
+              <ion-icon name="call-outline"></ion-icon>
+              <div>
+                <div class="ol-info-label">Mobile</div>
+                <div class="ol-info-value">{{ order.MobileNumber }}</div>
+              </div>
+            </div>
+            <div class="ol-info-item" *ngIf="order.Email">
+              <ion-icon name="mail-outline"></ion-icon>
+              <div>
+                <div class="ol-info-label">Email</div>
+                <div class="ol-info-value">{{ order.Email }}</div>
+              </div>
+            </div>
+            <div class="ol-info-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <div>
+                <div class="ol-info-label">Expected Delivery</div>
+                <div class="ol-info-value">{{ formatDate(order.ExpectedDeliveryDate) }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="ol-address-box">
+            <div class="ol-address-icon-row">
+              <ion-icon name="location-outline"></ion-icon>
+              <span class="ol-section-label" style="margin-bottom:0">Delivery Address</span>
+            </div>
+            <div class="ol-address-text">
+              {{ order.Address }}<span *ngIf="order.Landmark">, {{ order.Landmark }}</span>,
+              {{ order.City }}, {{ order.State }} – {{ order.Pincode }}
+            </div>
+          </div>
+          <div class="ol-section-label">Price Breakdown</div>
+          <div class="ol-price-breakdown">
+            <div class="ol-price-line">
+              <span>Price ({{ order.Quantity }} item{{ order.Quantity > 1 ? 's' : '' }})</span>
+              <span>₹{{ order.SubTotal }}</span>
+            </div>
+            <div class="ol-price-line" *ngIf="order.Discount > 0">
+              <span>Discount</span>
+              <span class="ol-discount-text">− ₹{{ order.Discount }}</span>
+            </div>
+            <div class="ol-price-line">
+              <span>Delivery Charges</span>
+              <span *ngIf="order.ShippingCharge > 0">₹{{ order.ShippingCharge }}</span>
+              <span *ngIf="order.ShippingCharge === 0" class="ol-free-text">FREE</span>
+            </div>
+            <div class="ol-price-divider"></div>
+            <div class="ol-price-line ol-price-total">
+              <span>Grand Total</span>
+              <span>₹{{ order.GrandTotal }}</span>
+            </div>
+          </div>
+          <div *ngIf="order.OrderRemarks" class="ol-remarks">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+            <span>{{ order.OrderRemarks }}</span>
+          </div>
+        </div>
+
+      </div><!-- /ol-card -->
+
+      <div class="ol-footer-divider">✦ ॐ ✦ ॐ ✦</div>
+
+    </ng-container>
+  </div>
+</ion-content>

@@ -715,3 +715,116 @@ ion-content {
   ion-icon { font-size: 20px; color: #ffffff; }
   &:active { background: rgba(255,255,255,0.28); }
 }
+
+
+// ── LOOP CARD WRAPPER ────────────────────────────────────
+
+.product-card-block {
+  background: #FFFBF0;
+  margin-bottom: 14px;
+  padding-bottom: 4px;
+  border-bottom: 8px solid #FFF5D6;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// ── LOADING / EMPTY STATES ───────────────────────────────
+
+.mm-loading, .mm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #C4934A;
+  font-size: 13px;
+}
+
+.mm-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 149, 0, 0.2);
+  border-top-color: #FF9500;
+  animation: mmSpin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes mmSpin {
+  to { transform: rotate(360deg); }
+}
+
+.mm-empty-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+// ── CAROUSEL EXTRAS ───────────────────────────────────────
+
+.carousel-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  opacity: 0.4;
+}
+
+.share-btn-floating {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+
+  ion-icon {
+    font-size: 18px;
+    color: #E07B00;
+  }
+}
+
+// ── HEADER EXTRAS ─────────────────────────────────────────
+
+.sku-tag {
+  font-size: 10px;
+  color: #C4934A;
+  margin-left: 4px;
+}
+
+.in-stock.out {
+  color: #D93A1A;
+  background: rgba(217, 58, 26, 0.1);
+}
+
+// ── ORDER NOW BUTTON ──────────────────────────────────────
+
+.btn-order-now {
+  width: 100%;
+  background: linear-gradient(135deg, #FF9500, #E07B00);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(224, 123, 0, 0.35);
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+}

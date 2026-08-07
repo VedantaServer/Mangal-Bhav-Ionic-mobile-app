@@ -61,6 +61,9 @@ import { FeedDetailsComponent } from './feed-details/feed-details.component';
 import { DigitalCardComponent } from './digital-card/digital-card.component';
 import { SendBulkSupportMessageComponent } from './send-bulk-support-message/send-bulk-support-message.component';
 import { GuestHomeComponent } from './guest-home/guest-home.component';
+import { MangalMartProductInsertComponent } from './mangal-mart-product-insert/mangal-mart-product-insert.component';
+import { MangalMartPlaceOrderComponent } from './mangal-mart-place-order/mangal-mart-place-order.component';
+import { MangalMartOrderListComponent } from './mangal-mart-order-list/mangal-mart-order-list.component';
 
 const routes: Routes = [
 
@@ -109,6 +112,14 @@ const routes: Routes = [
   {
     path: 'guest-home',
     component: GuestHomeComponent  // directly use the standalone component
+  },
+  {
+    path: 'addproduct',
+    component: MangalMartProductInsertComponent  // directly use the standalone component
+  },
+  {
+    path: 'placeorder/:productId',
+    component: MangalMartPlaceOrderComponent
   },
   {
     path: 'user-profile',
@@ -225,6 +236,12 @@ const routes: Routes = [
   {
     path: 'mangalmart',
     component: MangalMartComponent  // directly use the standalone component
+  }
+
+  ,
+  {
+    path: 'orderlist',
+    component: MangalMartOrderListComponent  // directly use the standalone component
   }
   ,
   {

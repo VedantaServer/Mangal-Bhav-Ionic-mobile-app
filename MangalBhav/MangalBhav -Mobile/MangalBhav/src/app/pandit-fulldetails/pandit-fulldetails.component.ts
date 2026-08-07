@@ -207,18 +207,12 @@ export class PanditFulldetailsComponent implements OnInit {
         console.log(res)
         if (res) {
           //  this.fcm.initPush(res.UserID);
-          if (res.Role == 'PANDIT') {
-            await this.storage.set("account", res);
-            await this.storage.set("IsUserLoggedIn", "true");
-            await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateForward('/tabs/tab1');
-          } else {
 
-            await this.storage.set("account", res);
-            await this.storage.set("IsUserLoggedIn", "true");
-            await this.storage.set("Language", res.Languages);
-            this.routerCtrl.navigateForward('/jajmandashboard');
-          }
+          await this.storage.set("account", res);
+          await this.storage.set("IsUserLoggedIn", "true");
+          await this.storage.set("Language", res.Languages);
+          this.routerCtrl.navigateForward('/tabs/tab1');
+
         }
       })
   }

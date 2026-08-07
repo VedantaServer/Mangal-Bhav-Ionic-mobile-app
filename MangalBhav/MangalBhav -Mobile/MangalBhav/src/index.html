@@ -21,8 +21,33 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <script src="https://checkout.razorpay.com/v1/checkout.js" async defer></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZif8VP7vp4X_eA7U0XhSQXIt6wXOkomQ&libraries=marker&loading=async"
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZif8VP7vp4X_eA7U0XhSQXIt6wXOkomQ&libraries=marker&loading=async"
     async defer></script>
+
+  <script>
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ?
+          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = '2.0';
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+    fbq('init', '3142761515931741');
+    fbq('track', 'PageView');
+  </script>
+
   <!-- ✅ FusionCharts CDN -->
   <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
   <script type="text/javascript"

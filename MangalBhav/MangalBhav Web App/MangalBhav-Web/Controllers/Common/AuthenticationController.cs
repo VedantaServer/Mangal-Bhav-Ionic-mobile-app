@@ -2710,6 +2710,10 @@ WHERE IsSent = 0 AND UserID IS NOT NULL
                 PathData = "ClientApp\\dist\\assets\\ChatAudio\\";
             if (imagePurpose == "feed")
                 PathData = "ClientApp\\dist\\assets\\feed\\";
+            if (imagePurpose == "ProductImage")
+                PathData = "ClientApp\\dist\\assets\\ProductImage\\";
+            if (imagePurpose == "DispatchVideo")
+                PathData = "ClientApp\\dist\\assets\\DispatchVideo\\";
 
 
 
