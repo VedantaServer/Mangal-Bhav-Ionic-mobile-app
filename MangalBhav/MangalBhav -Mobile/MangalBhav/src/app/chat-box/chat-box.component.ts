@@ -34,7 +34,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
   // ── Notification sound state ──
   private isInitialLoad = true;
   private notificationAudioCtx: AudioContext | null = null;
-
+  pujaName: string = '';
   @ViewChild('chatContent') content!: IonContent;
 
   // ── Auto-reload (polling) ──────────────────────────────
@@ -101,7 +101,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     const withUserID = this.route.snapshot.queryParamMap.get('withUserID');
     const chatType = this.route.snapshot.queryParamMap.get('chatType');
     const withUserName = this.route.snapshot.queryParamMap.get('withUserName');
-
+    this.pujaName = this.route.snapshot.queryParamMap.get('pujaName') || '';
     this.withUserID = withUserID ? Number(withUserID) : 0;
     this.chatType = chatType || '';
     this.withUserName = withUserName || 'Pandit Ji';
@@ -151,7 +151,7 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
       ).subscribe((res: any) => {
         this.AskPanditUserID = Number(res.MasterDataList[0].Description);
         const filterID = this.withUserID || this.userDetails.UserID;
-        this.loadAskPanditMessages(filterID);
+        this.loadAskPanditMessages(filterID, true);
         this.startPolling(() => this.loadAskPanditMessages(filterID));
       });
       return;
@@ -203,13 +203,43 @@ export class ChatBoxComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadAskPanditMessages(filterID: number) {
+  private pujaMessageAlreadySent = false;
+
+  loadAskPanditMessages(filterID: number, checkInitialPujaMessage: boolean = false) {
     this.apinu.postUrlData(
       `MessagesSelectByQuery?Query= ChatType = 'AskPandit' and (SenderID = ${filterID} or ReceiverID = ${filterID})`, null
     ).subscribe((res: any) => {
       this.applyMessages(res.MessageList);
+
+      if (checkInitialPujaMessage && this.pujaName && !this.pujaMessageAlreadySent) {
+        this.pujaMessageAlreadySent = true;
+        this.sendInitialPujaMessage();
+      }
     });
   }
+  
+
+
+  private sendInitialPujaMessage() {
+    const text = `🙏 नमस्ते पंडित जी,\nमुझे "${this.pujaName}" पूजा के बारे में जानकारी चाहिए। कृपया विधि, सामग्री और शुभ मुहूर्त के बारे में बताएं।`;
+
+    const body = {
+      chatGroupID: 0,
+      chatType: 'AskPandit',
+      senderID: this.userDetails.UserID,
+      receiverID: this.withUserID ? this.withUserID : this.AskPanditUserID,
+      messageText: text,
+      messageType: 'Text',
+      mediaURL: '',
+      sentAt: new Date(),
+      isDeleted: false
+    };
+
+    this.apinu.postUrlData('MessagesInsert', body).subscribe(() => {
+      this.refreshAfterSend();
+    });
+  }
+
 
   loadGroupMessages() {
     this.apinu.postUrlData(

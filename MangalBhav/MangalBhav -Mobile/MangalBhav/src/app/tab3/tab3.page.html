@@ -1,31 +1,8 @@
-
-
-
-
 <app-tabscommonheader></app-tabscommonheader>
 
 
 <ion-content fullscreen>
-  <!-- <div>
-    <nav>
-      <div class="nav-logo" (click)="backToMain()">
-        <img src="../../assets/mangalbhavlogo1.jpeg" class="nav-logo-img" />
-        <div class="logo-text-block">
-          <div class="nav-logo-text">{{t.logoTitle}}</div>
-          <div class="nav-logo-sub">{{t.logoSub}}</div>
-        </div>
-      </div>
 
-      <div style="display: flex;gap: 4px;">
-        <button class="header-logout-btn" title="Change Language" (click)="openWhatsApp()"><ion-icon
-            name="logo-whatsapp" style="color: white;"></ion-icon></button>
-
-        <button class="header-logout-btn" (click)="openShare()">
-          <ion-icon name="share-social-outline"></ion-icon>
-        </button>
-      </div>
-    </nav>
-  </div> -->
 
   <div *ngIf="showMainSection" class="main-wrapper">
 
@@ -136,21 +113,21 @@
                       <ion-icon name="time-outline"></ion-icon>
                       {{ svc.DurationMinutes || 90 }} {{ t.mins }}
                     </span>
-                  
+
                     <span class="puja-meta-dot">·</span>
-                  
+
                     <span class="puja-meta-chip">
                       <ion-icon name="home-outline"></ion-icon>
                       {{ t.atHome }}
                     </span>
-                  
+
                     <span class="puja-meta-dot">·</span>
-                  
+
                     <span class="puja-meta-chip">
                       <ion-icon name="cash-outline"></ion-icon>
                       ₹ 999
                     </span>
-                  
+
                     <ng-container *ngIf="cat.AgeText">
                       <span class="puja-meta-dot">·</span>
                       <span class="puja-meta-chip puja-meta-age">{{ cat.AgeText }}</span>
@@ -179,6 +156,9 @@
                       🧘 {{ t.findPandit }} →
                     </a>
 
+                    <a class="puja-consult-link" (click)="goToConsultChat($event, svc.Name)">
+                      {{ t.consultPandit }}
+                    </a>
                   </div>
 
                 </div>
@@ -198,9 +178,7 @@
     </section>
 
 
-    <!-- ================================================
-         2. HERO — Below puja list
-    ================================================ -->
+
     <section class="hero">
 
       <div class="hero-bg"></div>

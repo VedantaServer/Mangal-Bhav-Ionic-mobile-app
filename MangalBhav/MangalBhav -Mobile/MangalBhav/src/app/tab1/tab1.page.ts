@@ -217,7 +217,7 @@ export class Tab1Page {
     if (
       isLoggedIn !== "true"
     ) {
-      alert('IsUserLoggedIn')
+    //  alert('IsUserLoggedIn')
       this.routerCtrl.navigateForward('/login');
     }
 

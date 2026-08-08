@@ -119,7 +119,7 @@ export class Tab3Page {
       trusted: 'Trusted by Families',
       logoTitle: 'Mangal.Bhav',
       logoSub: '✦ Peace · Prosperity · Protection ✦',
-
+      consultPandit: 'Consult Pandit ji',
       statsRituals: 'Sacred Rituals',
       statsPandits: 'Verified Pandits',
       statsFamilies: 'Families Served',
@@ -237,7 +237,7 @@ export class Tab3Page {
       reviews: 'समीक्षाएँ',
 
       heroTagline: 'भारत का सबसे विश्वसनीय प्लेटफॉर्म  बुक करने के लिए — जन्म से अंतिम संस्कार तक',
-
+      consultPandit: 'पंडित जी से सलाह लें',
       samskaras: '16 संस्कार शामिल',
       verified: 'सत्यापित ',
       doorstep: 'घर तक सेवा',
@@ -427,7 +427,7 @@ export class Tab3Page {
     if (
       isLoggedIn !== "true"
     ) {
-      alert('IsUserLoggedIn')
+      // alert('IsUserLoggedIn')
       this.routerCtrl.navigateForward('/login');
     }
 
@@ -1222,4 +1222,20 @@ export class Tab3Page {
     });
   }
 
+  goToConsultChat(event: Event, serviceName?: string) {
+    event.stopPropagation();
+
+    const cleanName = serviceName
+      ? (this.Language === 'Hindi'
+        ? (serviceName.split('/')[1]?.trim() || serviceName)
+        : (serviceName.split('/')[0]?.trim() || serviceName))
+      : '';
+
+    this.routerCtrl.navigateForward('/chatbox', {
+      queryParams: {
+        groupId: -2,
+        pujaName: cleanName || null
+      }
+    });
+  }
 }

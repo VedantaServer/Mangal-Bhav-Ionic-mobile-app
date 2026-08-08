@@ -1,20 +1,56 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admindashboard"></ion-back-button>
+      <ion-back-button *ngIf="!selectedRole" defaultHref="/admindashboard"></ion-back-button>
+      <ion-button *ngIf="selectedRole" (click)="backToRoleSelect()">
+        <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Send Support Message</ion-title>
+    <ion-title>
+      {{ selectedRole ? 'Send to ' + roleLabel : 'Send Support Message' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="bulk-wrapper">
+
+  <!-- ═══════════════════════════════════════
+       STEP 1 — ROLE SELECTION
+  ═══════════════════════════════════════ -->
+  <div class="role-select-wrapper" *ngIf="!selectedRole">
+
+    <p class="role-select-intro">Who do you want to send a message to?</p>
+
+    <div class="role-card" (click)="chooseRole('PANDIT')">
+      <div class="role-card-icon pandit-icon">🧘</div>
+      <div class="role-card-info">
+        <div class="role-card-title">Pandit Ji</div>
+        <div class="role-card-sub">Send a message to registered Pandits</div>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="role-card-arrow"></ion-icon>
+    </div>
+
+    <div class="role-card" (click)="chooseRole('BHAKT')">
+      <div class="role-card-icon bhakt-icon">🙏</div>
+      <div class="role-card-info">
+        <div class="role-card-title">Bhakt</div>
+        <div class="role-card-sub">Send a message to devotees</div>
+      </div>
+      <ion-icon name="chevron-forward-outline" class="role-card-arrow"></ion-icon>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STEP 2 — RECIPIENT LIST + MESSAGE
+  ═══════════════════════════════════════ -->
+  <div class="bulk-wrapper" *ngIf="selectedRole">
 
     <div class="search-bar">
       <ion-searchbar
         [(ngModel)]="searchText"
         (ionInput)="onSearchChange()"
-        placeholder="Search by name or phone">
+        [placeholder]="'Search ' + roleLabel + ' by name or phone'">
       </ion-searchbar>
     </div>
 
@@ -30,12 +66,12 @@
 
     <div class="loading-row" *ngIf="isLoading">
       <ion-spinner name="crescent" color="warning"></ion-spinner>
-      <span>Loading Pandit Ji list…</span>
+      <span>Loading {{ roleLabel }} list…</span>
     </div>
 
     <div class="empty-state" *ngIf="!isLoading && filteredList.length === 0">
       <div class="empty-icon">🕉️</div>
-      <p>No Pandit Ji found.</p>
+      <p>No {{ roleLabel }} found.</p>
     </div>
 
     <div class="pandit-list" *ngIf="!isLoading && filteredList.length > 0">
@@ -43,7 +79,7 @@
         <div class="checkbox" [class.checked]="p.selected">
           <span *ngIf="p.selected">✓</span>
         </div>
-        <div class="pandit-avatar">🕉️</div>
+        <div class="pandit-avatar">{{ selectedRole === 'PANDIT' ? '🧘' : '🙏' }}</div>
         <div class="pandit-info">
           <div class="pandit-name">{{ p.FullName }}</div>
           <div class="pandit-phone">{{ p.PhoneNumber }}</div>
@@ -55,11 +91,11 @@
   </div>
 </ion-content>
 
-<ion-footer class="message-footer">
+<ion-footer class="message-footer" *ngIf="selectedRole">
   <div class="message-box">
     <ion-textarea
       [(ngModel)]="messageText"
-      placeholder="Type support message to send to selected Pandit Ji…"
+      [placeholder]="'Type support message to send to selected ' + roleLabel + '…'"
       [autoGrow]="true"
       rows="2">
     </ion-textarea>

@@ -1141,7 +1141,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
 
     this.saveMangalMudraPoints();
 
-    this.blessingCountdown = 30;
+    this.blessingCountdown = 10;
     this.blessingCDInterval = setInterval(() => {
       this.blessingCountdown--;
       if (this.blessingCountdown <= 0) {
@@ -1283,7 +1283,7 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
     return new Promise((resolve) => {
       const query =
         `PanchangDate >= '${dateKey} 00:00:00.000' AND PanchangDate < '${this.nextDateKey(dateKey)} 00:00:00.000'`;
-      console.log(query)
+    //  console.log(query)
       this.apinu.postUrlData(
         `DailyPanchangSelectByQuery?Query=${encodeURIComponent(query)}`, null
       ).subscribe({
@@ -1479,6 +1479,8 @@ export class OpenCommunityPageComponent implements OnInit, OnDestroy {
       case 'Service': return 'img';        // PoojaPhoto purpose -> "img" folder
       case 'Booking': return 'img';        // ⚠️ confirm: should this be 'BookingPhoto' instead?
       case 'Feed': return 'feed';
+      case 'Product': return 'ProductImage';
+      case 'Order': return 'ProductImage';
       default: return 'feed';
     }
   }

@@ -5,12 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { Api, ApiNU } from '../../providers';
 import { forkJoin } from 'rxjs';
 
-interface PanditItem {
+interface RecipientItem {
   UserID: number;
   FullName: string;
   PhoneNumber: string;
   selected: boolean;
 }
+
+type RecipientRole = 'PANDIT' | 'BHAKT';
 
 @Component({
   selector: 'app-send-bulk-support-message',
@@ -23,11 +25,14 @@ export class SendBulkSupportMessageComponent implements OnInit {
 
   supportUserID: number = 0;
 
-  panditList: PanditItem[] = [];
-  filteredList: PanditItem[] = [];
+  // ── Role selection step ──
+  selectedRole: RecipientRole | null = null;
+
+  recipientList: RecipientItem[] = [];
+  filteredList: RecipientItem[] = [];
   searchText: string = '';
 
-  isLoading: boolean = true;
+  isLoading: boolean = false;
   isSending: boolean = false;
 
   messageText: string = '';
@@ -41,10 +46,8 @@ export class SendBulkSupportMessageComponent implements OnInit {
 
   ngOnInit() {
     this.loadSupportUserID();
-    this.loadPanditList();
   }
 
-  // ── Same lookup chat-box.component.ts uses to get the Support account ──
   private loadSupportUserID() {
     this.apinu.postUrlData(
       `MasterDataSelectByQuery?tenantID=-1&Query=${`domain='Support' and identifier='Support'`}`, null
@@ -52,50 +55,70 @@ export class SendBulkSupportMessageComponent implements OnInit {
       next: (res: any) => {
         this.supportUserID = Number(res.MasterDataList[0].Description);
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Failed to load Support UserID:', err);
         this.showToast('Failed to load Support account', 'danger');
       }
     });
   }
 
-  // ── Pandit Ji list ──
-  // NOTE: endpoint name assumed as "ProfileSelectByQuery" (table = Profiles),
-  // matching your [Entity][Action]ByQuery convention. Rename if different.
-  loadPanditList() {
+  // ── Called when admin picks Pandit ji or Bhakt ──
+  chooseRole(role: RecipientRole) {
+    this.selectedRole = role;
+    this.searchText = '';
+    this.selectAllChecked = false;
+    this.messageText = '';
+    this.loadRecipientList(role);
+  }
+
+  // ── Go back to the role picker ──
+  backToRoleSelect() {
+    this.selectedRole = null;
+    this.recipientList = [];
+    this.filteredList = [];
+    this.searchText = '';
+    this.messageText = '';
+    this.selectAllChecked = false;
+  }
+
+  loadRecipientList(role: RecipientRole) {
     this.isLoading = true;
 
-    const query = `UserID in (select UserID from Users where Role='PANDIT')`;
+    const query = `UserID in (select UserID from Users where Role='${role}')`;
 
     this.apinu.postUrlData(
       `ProfilesNUSelectByQuery?Query=${query}`, null
     ).subscribe({
       next: (res: any) => {
         const list = res.ProfileList || res.ProfilesList || [];
-        this.panditList = list.map((p: any) => ({
+        this.recipientList = list.map((p: any) => ({
           UserID: p.UserID,
           FullName: p.FullName,
           PhoneNumber: p.PhoneNumber,
           selected: false
         }));
-        this.filteredList = [...this.panditList];
+        this.filteredList = [...this.recipientList];
         this.isLoading = false;
       },
-      error: (err:any) => {
-        console.error('Failed to load Pandit list:', err);
-        this.showToast('Failed to load Pandit Ji list', 'danger');
+      error: (err: any) => {
+        console.error('Failed to load recipient list:', err);
+        this.showToast(`Failed to load ${this.roleLabel} list`, 'danger');
         this.isLoading = false;
       }
     });
   }
 
+  get roleLabel(): string {
+    return this.selectedRole === 'PANDIT' ? 'Pandit Ji' : 'Bhakt';
+  }
+
   onSearchChange() {
     const term = this.searchText.trim().toLowerCase();
     if (!term) {
-      this.filteredList = [...this.panditList];
+      this.filteredList = [...this.recipientList];
       return;
     }
-    this.filteredList = this.panditList.filter(p =>
+    this.filteredList = this.recipientList.filter(p =>
       p.FullName?.toLowerCase().includes(term) ||
       p.PhoneNumber?.toLowerCase().includes(term)
     );
@@ -106,14 +129,14 @@ export class SendBulkSupportMessageComponent implements OnInit {
     this.filteredList.forEach(p => p.selected = this.selectAllChecked);
   }
 
-  toggleOne(item: PanditItem) {
+  toggleOne(item: RecipientItem) {
     item.selected = !item.selected;
     this.selectAllChecked = this.filteredList.length > 0 &&
       this.filteredList.every(p => p.selected);
   }
 
   get selectedCount(): number {
-    return this.panditList.filter(p => p.selected).length;
+    return this.recipientList.filter(p => p.selected).length;
   }
 
   get canSend(): boolean {
@@ -126,15 +149,15 @@ export class SendBulkSupportMessageComponent implements OnInit {
   async sendBulkMessage() {
     if (!this.canSend) return;
 
-    const selectedPandits = this.panditList.filter(p => p.selected);
+    const selectedRecipients = this.recipientList.filter(p => p.selected);
     this.isSending = true;
 
-    const requests = selectedPandits.map(p => {
+    const requests = selectedRecipients.map(p => {
       const body = {
         chatGroupID: 0,
         chatType: 'Support',
-        senderID: this.supportUserID,   // sending FROM support account
-        receiverID: p.UserID,           // TO this Pandit Ji
+        senderID: this.supportUserID,
+        receiverID: p.UserID,
         messageText: this.messageText.trim(),
         messageType: 'Text',
         mediaURL: '',
@@ -147,9 +170,9 @@ export class SendBulkSupportMessageComponent implements OnInit {
     forkJoin(requests).subscribe({
       next: async () => {
         this.isSending = false;
-        await this.showToast(`Message sent to ${selectedPandits.length} Pandit Ji`, 'success');
+        await this.showToast(`Message sent to ${selectedRecipients.length} ${this.roleLabel}`, 'success');
         this.messageText = '';
-        this.panditList.forEach(p => p.selected = false);
+        this.recipientList.forEach(p => p.selected = false);
         this.selectAllChecked = false;
       },
       error: async (err) => {
